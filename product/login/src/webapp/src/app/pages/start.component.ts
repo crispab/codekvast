@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {LoginApiService} from '../services/LoginApi.service';
 import {User} from '../model/User';
-import {Observable} from 'rxjs/Observable';
+import {CustomerData} from '../model/CustomerData';
 
 @Component({
     selector: 'ck-start',
@@ -9,13 +9,17 @@ import {Observable} from 'rxjs/Observable';
 })
 export class StartComponent implements OnInit {
 
-    user: Observable<User>;
+    user: User;
 
     constructor(private api: LoginApiService) {
     }
 
     ngOnInit(): void {
-        this.user = this.api.getUser();
+        this.api.getUser().subscribe(user => this.user = user);
+    }
+
+    launchDashboard(cd: CustomerData): void {
+        this.api.launchDashboard(cd.customerId);
     }
 
     logout(): void {

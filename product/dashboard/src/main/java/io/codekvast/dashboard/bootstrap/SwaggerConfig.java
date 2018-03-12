@@ -65,9 +65,9 @@ public class SwaggerConfig {
     public Docket webappDocket(CodekvastDashboardSettings settings) {
         return new Docket(DocumentationType.SWAGGER_2)
             .apiInfo(getApiInfo(settings, "Endpoints used by the dashboard web app"))
-            .groupName("Webapp endpoints")
+            .groupName("Dashboard endpoints")
             .select()
-            .paths(path -> path.startsWith("/webapp"))
+            .paths(path -> path.startsWith("/dashboard"))
             .build();
     }
 

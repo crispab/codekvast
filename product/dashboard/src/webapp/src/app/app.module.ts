@@ -21,7 +21,6 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NotLoggedInComponent} from './pages/auth/not-logged-in.component'
 import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
 import {SettingsComponent} from './components/settings-editor.component';
-import {SsoComponent} from './components/sso.component';
 import {StateService} from './services/state.service';
 import {VoteComponent} from './components/vote.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
@@ -71,7 +70,6 @@ function selectBestLocale() {
         NotLoggedInComponent,
         ReportGeneratorComponent,
         SettingsComponent,
-        SsoComponent,
         VoteComponent,
         VoteResultComponent,
     ],

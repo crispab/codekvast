@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="dev-servers" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+    <toRun type="SpringBootApplicationConfigurationType" name="CodekvastDashboardApplication" />
+    <toRun type="SpringBootApplicationConfigurationType" name="CodekvastLoginApplication" />
+    <toRun type="js.build_tools.npm" name="npm start dashboard" />
+    <toRun type="js.build_tools.npm" name="npm start login" />
+    <method />
+  </configuration>
+</component>

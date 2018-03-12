@@ -8,14 +8,14 @@ import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
+import io.codekvast.dashboard.dashboard.DashboardService;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
+import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
+import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
+import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
-import io.codekvast.dashboard.webapp.WebappService;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
-import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
-import io.codekvast.dashboard.webapp.model.status.AgentDescriptor;
-import io.codekvast.dashboard.webapp.model.status.GetStatusResponse;
 import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.CommonPublicationData;
@@ -25,13 +25,14 @@ import io.codekvast.javaagent.model.v2.*;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import org.flywaydb.core.Flyway;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -113,7 +114,7 @@ public class MariadbIntegrationTest {
     private CustomerService customerService;
 
     @Inject
-    private WebappService webappService;
+    private DashboardService dashboardService;
 
     @Inject
     private AgentService agentService;
@@ -130,6 +131,11 @@ public class MariadbIntegrationTest {
     @Before
     public void beforeTest() {
         assumeTrue(mariadb.isRunning());
+    }
+
+    @After
+    public void afterTest() {
+        setSecurityContextCustomerId(null);
     }
 
     @Test
@@ -414,15 +420,16 @@ public class MariadbIntegrationTest {
         // given
 
         // when query with too short signature
-        webappService.getMethods(GetMethodsRequest.defaults().toBuilder().signature("").build());
+        dashboardService.getMethods(GetMethodsRequest.defaults().toBuilder().signature("").build());
     }
 
     @Test
     public void should_query_unknown_signature_correctly() {
         // given
+        setSecurityContextCustomerId(1L);
 
         // when find exact signature
-        GetMethodsResponse response = webappService.getMethods(
+        GetMethodsResponse response = dashboardService.getMethods(
             GetMethodsRequest.defaults().toBuilder().signature("foobar").build());
 
         // then
@@ -437,7 +444,7 @@ public class MariadbIntegrationTest {
         // List<Long> validIds = jdbcTemplate.query("SELECT id FROM methods", (rs, rowNum) -> rs.getLong(1));
 
         // when
-        // Optional<MethodDescriptor> result = webappService.getMethodById(validIds.get(0));
+        // Optional<MethodDescriptor> result = dashboardService.getMethodById(validIds.get(0));
 
         // then
         // assertThat(result.isPresent(), is(true));
@@ -447,12 +454,23 @@ public class MariadbIntegrationTest {
     public void should_query_by_unknown_id() {
         // given
         // generateQueryTestData();
+        setSecurityContextCustomerId(1L);
 
         // when
-        Optional<MethodDescriptor> result = webappService.getMethodById(-1L);
+        Optional<MethodDescriptor> result = dashboardService.getMethodById(-1L);
 
         // then
         assertThat(result.isPresent(), is(false));
+    }
+
+    private void setSecurityContextCustomerId(Long customerId) {
+        if (customerId == null) {
+            SecurityContextHolder.clearContext();
+        } else {
+            SecurityContext securityContext = new SecurityContextImpl();
+            securityContext.setAuthentication(new TestingAuthenticationToken(customerId, null));
+            SecurityContextHolder.setContext(securityContext);
+        }
     }
 
 
@@ -508,9 +526,10 @@ public class MariadbIntegrationTest {
     public void should_getStatus_correctly() {
         // given
         Timestamps timestamps = new Timestamps().invoke();
+        setSecurityContextCustomerId(1L);
 
         // when
-        GetStatusResponse status = webappService.getStatus();
+        GetStatusResponse status = dashboardService.getStatus();
 
         // then
         assertThat(status.getPricePlan(), is("DEMO"));

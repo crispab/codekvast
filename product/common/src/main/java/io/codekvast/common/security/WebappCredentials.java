@@ -31,13 +31,18 @@ import lombok.Value;
 @Value
 @Builder
 public class WebappCredentials {
-
-    @NonNull
-    private final String externalId;
     @NonNull
     private final String customerName;
     @NonNull
     private final String email;
     @NonNull
     private final String source;
+
+    public static WebappCredentials sample() {
+        return builder()
+            .customerName("customerName")
+            .email("email")
+            .source("source")
+            .build();
+    }
 }

@@ -6,7 +6,6 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.customer.PricePlanDefaults;
 import lombok.Getter;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -14,7 +13,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 
-import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 
@@ -58,54 +56,6 @@ public class SecurityServiceImplTest {
 
         // then
         assertThat(token, is("bb466eb1d6bc345d11072c3cd25c311f21be130d"));
-    }
-
-    @Test
-    public void should_generate_correct_sessionToken_cookie_when_hostHeader_contains_port() {
-        // given
-
-        // when
-        Cookie cookie = securityService.createSessionTokenCookie("foo/bar", "some.domain.com:8080");
-
-        // then
-        assertThat(cookie.getDomain(), Matchers.is("some.domain.com"));
-        assertThat(cookie.getValue(), Matchers.is("foo%2Fbar"));
-        assertThat(cookie.getPath(), Matchers.is("/"));
-        assertThat(cookie.getMaxAge(), Matchers.is(-1));
-        assertThat(cookie.isHttpOnly(), Matchers.is(true));
-    }
-
-    @Test
-    public void should_generate_correct_sessionToken_cookie_when_hostHeader_lacks_port() {
-        // given
-
-        // when
-        Cookie cookie = securityService.createSessionTokenCookie("foo/bar", "some.domain.com");
-
-        // then
-        assertThat(cookie.getDomain(), Matchers.is("some.domain.com"));
-    }
-
-    @Test
-    public void should_generate_correct_sessionToken_cookie_when_hostHeader_is_empty() {
-        // given
-
-        // when
-        Cookie cookie = securityService.createSessionTokenCookie("foo/bar", "");
-
-        // then
-        assertThat(cookie.getDomain(), Matchers.is(nullValue()));
-    }
-
-    @Test
-    public void should_generate_correct_sessionToken_cookie_when_hostHeader_is_null() {
-        // given
-
-        // when
-        Cookie cookie = securityService.createSessionTokenCookie("foo/bar", null);
-
-        // then
-        assertThat(cookie.getDomain(), Matchers.is(nullValue()));
     }
 
     @Test
@@ -180,8 +130,8 @@ public class SecurityServiceImplTest {
 
         // Example data from https://devcenter.heroku.com/articles/add-on-single-sign-on
         private String herokuApiSsoSalt = "2f97bfa52ca102f8874716e2eb1d3b4920ad0be4";
-        private String webappJwtSecret = "secret";
-        private Long webappJwtExpirationHours = 1L;
+        private String dashboardJwtSecret = "secret";
+        private Long dashboardJwtExpirationHours = 1L;
 
         // not used in test
         private String applicationName = null;

@@ -11,8 +11,11 @@ export class HttpResponseInterceptor implements HttpInterceptor {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        const xhr = req.clone({
+            headers: req.headers.set('X-Requested-With', 'XMLHttpRequest')
+        });
         return next
-            .handle(req)
+            .handle(xhr)
             .do(event => {
                 if (event instanceof HttpResponse) {
                     console.log('[ck] HttpResponse=%o', event);

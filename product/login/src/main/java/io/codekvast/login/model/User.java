@@ -35,12 +35,6 @@ import java.util.List;
 @Builder
 public class User {
     @NonNull
-    String id;
-
-    @NonNull
-    String name;
-
-    @NonNull
     String email;
 
     @NonNull

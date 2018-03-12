@@ -26,7 +26,6 @@ export class StateService {
     private readonly AUTH_DATA = 'codekvast.authData';
 
     private state = {};
-    private demoMode = true;
     private authData = new Subject<AuthData>();
 
     getState<T>(key: string, initialState: () => T): T {
@@ -38,14 +37,6 @@ export class StateService {
 
     getAuthData(): Observable<AuthData> {
         return this.authData;
-    }
-
-    isDemoMode() {
-        return this.demoMode;
-    }
-
-    setDemoMode(demoMode: boolean) {
-        this.demoMode = demoMode;
     }
 
     isLoggedIn() {
@@ -65,10 +56,6 @@ export class StateService {
     }
 
     getLoginState() {
-        if (this.demoMode) {
-            return 'Demo mode';
-        }
-
         let authDataJson = sessionStorage.getItem(this.AUTH_DATA);
 
         if (authDataJson) {

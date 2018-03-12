@@ -21,17 +21,23 @@
  */
 package io.codekvast.common.security;
 
-import javax.servlet.http.Cookie;
-
 /**
  * Additional internal interface to the security service.
  *
  * @author olle.hallin@crisp.se
  */
-public interface SecurityService extends CustomerIdProvider, WebappTokenProvider {
+public interface SecurityService extends CustomerIdProvider {
 
-    String SESSION_TOKEN_COOKIE = "sessionToken";
     String USER_ROLE = "USER";
+
+    /**
+     * Used for converting a successful login to a webapp JWT token.
+     *
+     * @param customerId  The internal customerId
+     * @param credentials The credentials to convert to a token
+     * @return A (JWT) token to use when launching the webapp.
+     */
+    String createWebappToken(Long customerId, WebappCredentials credentials);
 
     /**
      * Authenticates a token attached to an incoming request.
@@ -49,16 +55,6 @@ public interface SecurityService extends CustomerIdProvider, WebappTokenProvider
      * threads.
      */
     void removeAuthentication();
-
-    /**
-     * Creates a cookie with the name {@value SESSION_TOKEN_COOKIE}.
-     *
-     * @param token      The cookie value
-     * @param hostHeader The value of the HTTP header "Host". Is used for setting the cookie domain. The port number (if present) is
-     *                   ignored.
-     * @return A httpOnly session cookie with the path '/'.
-     */
-    Cookie createSessionTokenCookie(String token, String hostHeader);
 
     /**
      * Perform a Single-Sign On using the parameters given by Heroku.

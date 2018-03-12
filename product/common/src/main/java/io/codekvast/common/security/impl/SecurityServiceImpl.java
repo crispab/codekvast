@@ -43,9 +43,7 @@ import org.springframework.security.web.authentication.www.NonceExpiredException
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -66,7 +64,6 @@ public class SecurityServiceImpl implements SecurityService {
 
     private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_" + USER_ROLE));
 
-    private static final String JWT_CLAIM_CUSTOMER_NAME = "customerName";
     private static final String JWT_CLAIM_EMAIL = "email";
     private static final String JWT_CLAIM_SOURCE = "source";
     private static final String BEARER_ = "Bearer ";
@@ -79,7 +76,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     @PostConstruct
     public void postConstruct() throws UnsupportedEncodingException {
-        String secret = settings.getWebappJwtSecret();
+        String secret = settings.getDashboardJwtSecret();
         if (secret == null) {
             secret = "";
         }
@@ -89,7 +86,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public Long getCustomerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null ? settings.getDemoCustomerId() : (Long) authentication.getPrincipal();
+        return (Long) authentication.getPrincipal();
     }
 
     @Override
@@ -103,47 +100,27 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    @SneakyThrows(UnsupportedEncodingException.class)
-    public Cookie createSessionTokenCookie(String token, String hostHeader) {
-        Cookie result = new Cookie(SESSION_TOKEN_COOKIE, URLEncoder.encode(token, "UTF-8"));
-        if (hostHeader != null && !hostHeader.isEmpty()) {
-            result.setDomain(hostHeader.replaceAll(":[0-9]+$", ""));
-        }
-        result.setPath("/");
-        result.setMaxAge(-1); // Remove when browser exits.
-        result.setHttpOnly(true); // Hide from JavaScript in the browser
-        logger.debug("Created {} cookie with domain={}, path={}, httpOnly={}", SESSION_TOKEN_COOKIE, result.getDomain(), result.getPath(),
-                     result.isHttpOnly());
-        return result;
-    }
-
-
-    @Override
     public String createWebappToken(Long customerId, WebappCredentials credentials) {
-        return settings.isDemoMode()
-            ? null
-            : Jwts.builder()
-                  .setId(credentials.getExternalId())
-                  .setSubject(Long.toString(customerId))
-                  .setIssuedAt(new Date())
-                  .setExpiration(calculateExpirationDate())
-                  .claim(JWT_CLAIM_CUSTOMER_NAME, credentials.getCustomerName())
-                  .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
-                  .claim(JWT_CLAIM_SOURCE, credentials.getSource())
-                  .signWith(signatureAlgorithm, jwtSecret)
-                  .compact();
+        return Jwts.builder()
+                   .setId(Long.toString(customerId))
+                   .setSubject(credentials.getCustomerName())
+                   .setIssuedAt(new Date())
+                   .setExpiration(calculateExpirationDate())
+                   .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
+                   .claim(JWT_CLAIM_SOURCE, credentials.getSource())
+                   .signWith(signatureAlgorithm, jwtSecret)
+                   .compact();
     }
 
     private Date calculateExpirationDate() {
-        Long hours = settings.getWebappJwtExpirationHours();
+        Long hours = settings.getDashboardJwtExpirationHours();
         Duration duration = hours <= 0L ? Duration.ofMinutes(-hours) : Duration.ofHours(hours);
         logger.debug("The session token will live for {}", duration);
         return Date.from(Instant.now().plus(duration));
     }
 
     private Authentication toAuthentication(String token) throws AuthenticationException {
-
-        if (token == null || settings.isDemoMode()) {
+        if (token == null) {
             return null;
         }
 
@@ -153,10 +130,9 @@ public class SecurityServiceImpl implements SecurityService {
             Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token.substring(pos));
 
             return new PreAuthenticatedAuthenticationToken(
-                Long.valueOf(claims.getBody().getSubject()),
+                Long.valueOf(claims.getBody().getId()),
                 WebappCredentials.builder()
-                                 .externalId(claims.getBody().getId())
-                                 .customerName(claims.getBody().get(JWT_CLAIM_CUSTOMER_NAME, String.class))
+                                 .customerName((claims.getBody().getSubject()))
                                  .email(claims.getBody().get(JWT_CLAIM_EMAIL, String.class))
                                  .source(claims.getBody().get(JWT_CLAIM_SOURCE, String.class))
                                  .build(),
@@ -205,7 +181,6 @@ public class SecurityServiceImpl implements SecurityService {
         return createWebappToken(
             customerData.getCustomerId(),
             WebappCredentials.builder()
-                             .externalId(externalId)
                              .customerName(customerData.getCustomerName())
                              .email(email)
                              .source(customerData.getSource())

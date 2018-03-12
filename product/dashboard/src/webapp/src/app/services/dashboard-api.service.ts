@@ -19,10 +19,9 @@ export class GetMethodsRequest {
 @Injectable()
 export class DashboardApiService {
 
-    readonly METHODS_URL = '/webapp/v1/methods';
-    readonly METHOD_BY_ID_URL = '/webapp/v1/method/detail/';
-    readonly STATUS_URL = '/webapp/v1/status';
-    readonly IS_DEMO_MODE_URL = '/webapp/isDemoMode';
+    readonly METHODS_URL = '/dashboard/api/v1/methods';
+    readonly METHOD_BY_ID_URL = '/dashboard/api/v1/method/detail/';
+    readonly STATUS_URL = '/dashboard/api/v1/status';
     readonly HEADERS = new HttpHeaders().set('Content-type', 'application/json; charset=utf-8');
 
     constructor(private http: HttpClient, private configService: ConfigService) {
@@ -76,10 +75,6 @@ export class DashboardApiService {
 
     getStatus(): Observable<StatusData> {
         return this.http.get<StatusData>(this.STATUS_URL, {headers: this.HEADERS});
-    }
-
-    isDemoMode(): Observable<boolean> {
-        return this.http.get<boolean>(this.IS_DEMO_MODE_URL);
     }
 
     constructGetMethodByIdUrl(id: number) {

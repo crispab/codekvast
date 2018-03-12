@@ -42,7 +42,7 @@ import java.io.File;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
-@ToString(exclude = {"herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret", "slackWebHookToken"})
+@ToString(exclude = {"herokuApiPassword", "herokuApiSsoSalt", "dashboardJwtSecret", "slackWebHookToken"})
 public class CodekvastDashboardSettings implements CodekvastCommonSettings {
 
     /**
@@ -101,21 +101,14 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
     private String herokuCodekvastUrl;
 
     /**
-     * Should the webapp be secured?
-     * Leaving this empty will enable running the webapp in demo mode, with only one customerId=1
+     * What secret should be used for signing JWT tokens?
      */
-    private String webappJwtSecret;
+    private String dashboardJwtSecret;
 
     /**
      * How long shall a webapp authentication token live?
      */
-    private Long webappJwtExpirationHours = 8760L;
-
-    /**
-     * Which domain should we set on the JWT cookie?
-     * TODO: remove webappJwtCookieDomain
-     */
-    private String webappJwtCookieDomain;
+    private Long dashboardJwtExpirationHours = 8760L;
 
     /**
      * Which is the Slack Incoming Webhook URL?
@@ -131,11 +124,6 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
      * What is my server's CNAME?
      */
     private String dnsCname;
-
-    /**
-     * What is the URL of the Codekvast dashboard webapp?
-     */
-    private String webappUrl;
 
     @PostConstruct
     public void logStartup() {

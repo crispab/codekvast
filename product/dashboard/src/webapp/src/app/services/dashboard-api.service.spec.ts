@@ -7,9 +7,6 @@ const configServiceMock: ConfigService = {
     getVersion() {
         return 'dev'
     },
-    isDemoMode() {
-        return true;
-    }
 } as ConfigService;
 
 describe('DashboardApiService', () => {
@@ -20,7 +17,7 @@ describe('DashboardApiService', () => {
 
     it('should construct a get methods url with signature containing wildcard', () => {
         expect(api.constructGetMethodsUrl({signature: 'sample.app.SampleApp%foo*bar'} as GetMethodsRequest))
-            .toBe('/webapp/v1/methods?signature=sample.app.SampleApp%25foo*bar');
+            .toBe('/dashboard/api/v1/methods?signature=sample.app.SampleApp%25foo*bar');
     });
 
 });

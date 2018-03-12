@@ -43,25 +43,7 @@ public interface CodekvastCommonSettings {
 
     String getHerokuApiSsoSalt();
 
-    String getWebappJwtSecret();
+    String getDashboardJwtSecret();
 
-    Long getWebappJwtExpirationHours();
-
-    /**
-     * @return true unless the webapp is secured
-     */
-    default boolean isDemoMode() {
-        return getWebappJwtSecret() == null || getWebappJwtSecret().trim().isEmpty();
-    }
-
-    /**
-     * @return The customerId to use for unauthenticated data queries. Will return -1 if running in secure mode and an unauthenticated
-     * request is received.
-     */
-
-    default Long getDemoCustomerId() {
-        return isDemoMode() ? 1L : -1L;
-    }
-
-
+    Long getDashboardJwtExpirationHours();
 }
