@@ -52,8 +52,8 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     @Transactional
-    public String getDashboardLaunchLink(Long customerId) {
-        User user = getUserFromAuthentication(SecurityContextHolder.getContext().getAuthentication());
+    public String getDashboardLaunchURL(Long customerId) {
+        User user = getUserFromSecurityContext();
 
         if (user.getCustomerData().stream().anyMatch(cd -> cd.getCustomerId().equals(customerId))) {
             customerService.registerLogin(
@@ -75,6 +75,11 @@ public class LoginServiceImpl implements LoginService {
             return String.format("%s/dashboard/launch?sessionToken=%s", settings.getDashboardUrl(), sessionToken);
         }
         return null;
+    }
+
+    @Override
+    public User getUserFromSecurityContext() {
+        return getUserFromAuthentication(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Override

@@ -28,7 +28,9 @@ import org.springframework.security.core.Authentication;
  * @author olle.hallin@crisp.se
  */
 public interface LoginService {
-    String getDashboardLaunchLink(Long customerId);
+    String getDashboardLaunchURL(Long customerId);
+
+    User getUserFromSecurityContext();
 
     User getUserFromAuthentication(Authentication authentication);
 }

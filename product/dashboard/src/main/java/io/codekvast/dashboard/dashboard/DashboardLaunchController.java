@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -51,7 +50,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Slf4j
 public class DashboardLaunchController {
 
-    @RequestMapping(path = "/dashboard/launch", method = {GET, POST})
+    @RequestMapping(path = "/dashboard/launch", method = POST)
     public String launchDashboard(
         @RequestParam("sessionToken") String sessionToken,
         @RequestParam(value = "navData", required = false) String navData,
@@ -62,7 +61,7 @@ public class DashboardLaunchController {
 
         response.addCookie(createSessionTokenCookie(sessionToken));
         response.addCookie(createOrRemoveNavDataCookie(navData));
-        return "redirect:/";
+        return "redirect:/index.html";
     }
 
     @SneakyThrows(UnsupportedEncodingException.class)

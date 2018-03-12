@@ -24,6 +24,8 @@ package io.codekvast.login.api;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -73,18 +75,20 @@ public class LoginApiController {
     }
 
     @RequestMapping(path = "/api/launchDashboard/{customerId}", method = POST)
-    public ResponseEntity<String> launchDashboard(@PathVariable("customerId") Long customerId,
-                                                  Principal principal,
-                                                  HttpServletResponse response) {
-        String link = loginService.getDashboardLaunchLink(customerId);
+    public ResponseEntity<String> launchDashboard(@PathVariable("customerId") Long customerId, HttpServletResponse response) {
+        User user = loginService.getUserFromSecurityContext();
 
-        if (link != null) {
-            logger.info("{} is launching dashboard for customerId {}", principal.getName(), customerId);
-            return ResponseEntity.ok(link);
+        String url = loginService.getDashboardLaunchURL(customerId);
+
+        if (url != null) {
+            logger.info("{} is launching dashboard for customerId {}", user.getEmail(), customerId);
+            return ResponseEntity
+                .status(HttpStatus.TEMPORARY_REDIRECT)
+                .header(HttpHeaders.LOCATION, url)
+                .build();
         }
 
-        logger.warn("{} has no rights to launch dashboard for customerId {}", principal.getName(), customerId);
+        logger.warn("{} has no rights to launch dashboard for customerId {}", user.getEmail(), customerId);
         return ResponseEntity.notFound().build();
     }
-
 }

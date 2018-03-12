@@ -67,7 +67,7 @@ public class HerokuSsoController {
 
         String sessionToken = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds);
 
-        return String.format("%s/dashboard/launch?sessionToken=%s", settings.getDashboardUrl(), sessionToken, navData);
+        return String.format("redirect:%s/dashboard/launch?sessionToken=%s&navData=%s", settings.getDashboardUrl(), sessionToken, navData);
     }
 
 }
