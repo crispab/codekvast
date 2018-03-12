@@ -12,6 +12,9 @@ fi
 
 declare tasks=${@:-build}
 
+echo "Resolving frontend dependencies..."
+${GRADLEW} ${GRADLE_OPTS} frontendInstall --max-workers=1
+
 echo "Building..."
 ${GRADLEW} ${GRADLE_OPTS} ${tasks}
 
