@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
     private setLoggedInState() {
         let Boomerang = window['Boomerang'];
         let token = this.cookieService.get('sessionToken');
-        let navData = this.cookieService.get('navData');
+        let navData = sessionStorage.getItem('navData') || '';
 
         let parts = token.split('\.');
         if (parts.length >= 2) {

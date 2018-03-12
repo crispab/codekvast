@@ -5,10 +5,11 @@ import {LoggedOutComponent} from './pages/auth/logged-out.component';
 import {MethodDetailComponent} from './pages/methods/method-detail.component';
 import {MethodsComponent} from './pages/methods/methods.component';
 import {NgModule} from '@angular/core';
+import {NotLoggedInComponent} from './pages/auth/not-logged-in.component';
 import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
 import {RouterModule, Routes} from '@angular/router';
+import {SsoComponent} from './pages/auth/sso.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
-import {NotLoggedInComponent} from './pages/auth/not-logged-in.component';
 
 const routes: Routes = [
     {
@@ -32,6 +33,9 @@ const routes: Routes = [
     }, {
         path: 'not-logged-in',
         component: NotLoggedInComponent
+    }, {
+        path: 'sso/:token/:navData',
+        component: SsoComponent
     }, {
         path: 'status',
         component: CollectionStatusComponent,

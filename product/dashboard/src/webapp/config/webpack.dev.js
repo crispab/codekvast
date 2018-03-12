@@ -27,6 +27,10 @@ module.exports = webpackMerge(commonConfig, {
             disableDotRule: true
         },
         stats: 'minimal',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*'
+        },
         proxy: {
             '/api-docs': 'http://localhost:8081',
             '/swagger-ui.html': 'http://localhost:8081',
