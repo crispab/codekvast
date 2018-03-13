@@ -53,7 +53,7 @@ export class CollectionStatusComponentState {
     private startAutoRefresh() {
         let timer = TimerObservable.create(0, this.refreshIntervalSeconds * 1000);
         this.timerSubscription = timer.subscribe((tick: number) => {
-            console.log('[ck] Doing auto-refresh #%o', tick);
+            console.log('[ck dashboard] Doing auto-refresh #%o', tick);
             this.refreshNow();
         });
     }
@@ -64,7 +64,7 @@ export class CollectionStatusComponentState {
 
     updateRefreshTimer() {
         this.refreshIntervalSeconds = Math.max(10, this.refreshIntervalSeconds);
-        console.log('[ck] New refreshIntervalSeconds: %o', this.refreshIntervalSeconds);
+        console.log('[ck dashboard] New refreshIntervalSeconds: %o', this.refreshIntervalSeconds);
         if (this.autoRefresh) {
             this.stopAutoRefresh();
             this.startAutoRefresh();

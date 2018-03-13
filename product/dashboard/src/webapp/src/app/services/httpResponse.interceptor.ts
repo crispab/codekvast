@@ -16,11 +16,11 @@ export class HttpResponseInterceptor implements HttpInterceptor {
             .handle(req)
             .do(event => {
                 if (event instanceof HttpResponse) {
-                    console.log('[ck] HttpResponse=%o', event);
+                    console.log('[ck dashboard] HttpResponse=%o', event);
                 }
             }, err => {
                 if (err instanceof HttpErrorResponse) {
-                    console.log('[ck] HttpErrorResponse=%o', err);
+                    console.log('[ck dashboard] HttpErrorResponse=%o', err);
                     if (err.status === 401) {
                         this.stateService.setLoggedOut();
 

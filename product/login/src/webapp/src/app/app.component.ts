@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
                 let ga = window['ga'];
 
                 if (!this.googleAnalyticsInitialized) {
-                    console.log('[ck] Initializing GoogleAnalytics');
+                    console.log('[ck login] Initializing GoogleAnalytics');
                     ga('create', this.googleAnalyticsId, 'auto');
                     this.googleAnalyticsInitialized = true;
                 }
@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
 
                 this.titleService.setTitle('Codekvast ' + feature.substr(0, hash));
 
-                console.log(`[ck] Sending ${feature} to GoogleAnalytics`);
+                console.log(`[ck login] Sending ${feature} to GoogleAnalytics`);
                 ga('set', 'page', feature);
                 ga('send', 'pageview');
             });

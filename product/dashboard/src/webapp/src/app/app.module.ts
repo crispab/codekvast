@@ -43,15 +43,15 @@ function selectBestLocale() {
     let hyphen = result.indexOf('-');
     if (hyphen > 0) {
         result = result.substr(0, hyphen);
-        console.log(`[ck] Stripping variant from window.navigator.language=${window.navigator.language}, using ${result}`);
+        console.log(`[ck dashboard] Stripping variant from window.navigator.language=${window.navigator.language}, using ${result}`);
     }
 
     const supportedLocales = ['de', 'en', 'es', 'fr', 'sv'];
     if (supportedLocales.indexOf(result) < 0) {
-        console.log(`[ck] window.navigator.language=${result}, which is not supported. Falling back to en-US`);
+        console.log(`[ck dashboard] window.navigator.language=${result}, which is not supported. Falling back to en-US`);
         result = 'en-US';
     }
-    console.log('[ck] bestLocale=%o', result);
+    console.log('[ck dashboard] bestLocale=%o', result);
     return result;
 }
 

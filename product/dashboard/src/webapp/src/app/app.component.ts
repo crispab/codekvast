@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
             .filter(event => event instanceof NavigationEnd)
             .map(event => (event as NavigationEnd).urlAfterRedirects)
             .do(url => {
-                console.log('[ck] NavigationEnd: %o', url);
+                console.log('[ck dashboard] NavigationEnd: %o', url);
                 this.updateGoogleAnalytics(url);
                 this.setLoggedInState();
 
@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
 
     private setLoggedInState() {
         let Boomerang = window['Boomerang'];
-        let token = this.cookieService.get('sessionToken');
+        let token = this.cookieService.get('sessionToken') || '';
         let navData = sessionStorage.getItem('navData') || '';
 
         let parts = token.split('\.');
@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
             let sourceApp = 'codekvast-login';
             if (payload.source === 'heroku') {
                 let args = JSON.parse(atob(navData));
-                console.log('[ck] navData=%o', args);
+                console.log('[ck dashboard] navData=%o', args);
                 sourceApp = args.app || args.appname;
                 this.showHerokuIntegrationMenu = true;
                 Boomerang.init({
@@ -93,12 +93,12 @@ export class AppComponent implements OnInit {
         let ga = window['ga'];
 
         if (!this.googleAnalyticsInitialized) {
-            console.log('[ck] Initializing GoogleAnalytics');
+            console.log('[ck dashboard] Initializing GoogleAnalytics');
             ga('create', this.googleAnalyticsId, 'auto');
             this.googleAnalyticsInitialized = true;
         }
 
-        console.log(`[ck] Sending ${url} to GoogleAnalytics`);
+        console.log(`[ck dashboard] Sending ${url} to GoogleAnalytics`);
         ga('set', 'page', url);
         ga('send', 'pageview');
     }
