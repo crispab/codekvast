@@ -65,9 +65,9 @@ public class HerokuSsoController {
 
         logger.debug("externalId={}, nav-data={}", externalId, navData);
 
-        String sessionToken = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds);
+        String code = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds);
 
-        return String.format("redirect:%s/dashboard/launch?sessionToken=%s&navData=%s", settings.getDashboardUrl(), sessionToken, navData);
+        return String.format("redirect:%s/dashboard/launch?code=%s&navData=%s", settings.getDashboardUrl(), code, navData);
     }
 
 }

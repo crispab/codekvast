@@ -21,6 +21,8 @@
  */
 package io.codekvast.dashboard.dashboard;
 
+import io.codekvast.common.security.SecurityService;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +32,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -49,31 +52,42 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
     "http://localhost:8080", "http://localhost:8088",
     "https://login-staging.codekvast.io", "https://login.codekvast.io"})
 @Slf4j
+@RequiredArgsConstructor
 public class DashboardLaunchController {
+
+    private final SecurityService securityService;
 
     @RequestMapping(path = "/dashboard/launch", method = POST)
     public ResponseEntity<String> launchDashboard(
-        @RequestParam("sessionToken") String sessionToken,
-        @RequestParam(value = "navData", required = false) String navData,
-        HttpServletResponse response) {
+        @RequestParam("code") String code,
+        @RequestParam(value = "navData", required = false) String navData) {
 
-        // TODO: mask signature in sessionToken
-        logger.debug("Handling launch request, sessionToken={}", sessionToken);
+        logger.debug("Handling launch request, code={}", code);
 
-        response.addCookie(createSessionTokenCookie(sessionToken));
-        response.addCookie(createOrRemoveNavDataCookie(navData));
+        String sessionToken = securityService.tradeCodeToWebappToken(code);
+        if (sessionToken == null) {
+            return ResponseEntity
+                .badRequest()
+                .location(URI.create("/not-logged-in")) // TODO from settings
+                .header(SET_COOKIE, createOrRemoveSessionTokenCookie(null).toString())
+                .header(SET_COOKIE, createOrRemoveNavDataCookie(null).toString())
+                .build();
+        }
 
-        String baseUrl = "http://localhost:8089";        // TODO: take baseUrl from settings
+        return ResponseEntity
+            .ok()
+            .location(URI.create("/home"))
+            .header(SET_COOKIE, createOrRemoveSessionTokenCookie(sessionToken).toString())
+            .header(SET_COOKIE, createOrRemoveNavDataCookie(navData).toString())
+            .build();
 
-        String location = String.format("%s/index.html", baseUrl);
-        return ResponseEntity.ok(location);
     }
 
     @SneakyThrows(UnsupportedEncodingException.class)
-    Cookie createSessionTokenCookie(String token) {
-        Cookie cookie = new Cookie(CookieNames.SESSION_TOKEN, URLEncoder.encode(token, "UTF-8"));
+    Cookie createOrRemoveSessionTokenCookie(String token) {
+        Cookie cookie = new Cookie(CookieNames.SESSION_TOKEN, token == null ? "" : URLEncoder.encode(token, "UTF-8"));
         cookie.setPath("/");
-        cookie.setMaxAge(-1); // Remove when browser exits.
+        cookie.setMaxAge(token == null ? 0 : -1); // Remove when browser exits.
         cookie.setHttpOnly(false);
         return cookie;
     }

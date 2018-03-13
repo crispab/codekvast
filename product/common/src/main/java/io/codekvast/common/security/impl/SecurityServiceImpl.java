@@ -33,6 +33,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -41,6 +44,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
@@ -50,6 +54,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
+import java.util.UUID;
 
 import static java.util.Collections.singleton;
 import static javax.xml.bind.DatatypeConverter.printHexBinary;
@@ -70,9 +75,11 @@ public class SecurityServiceImpl implements SecurityService {
 
     private final CodekvastCommonSettings settings;
     private final CustomerService customerService;
+    private final JdbcTemplate jdbcTemplate;
 
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
     private byte[] jwtSecret;
+
 
     @PostConstruct
     public void postConstruct() throws UnsupportedEncodingException {
@@ -100,16 +107,58 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public String createWebappToken(Long customerId, WebappCredentials credentials) {
-        return Jwts.builder()
-                   .setId(Long.toString(customerId))
-                   .setSubject(credentials.getCustomerName())
-                   .setIssuedAt(new Date())
-                   .setExpiration(calculateExpirationDate())
-                   .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
-                   .claim(JWT_CLAIM_SOURCE, credentials.getSource())
-                   .signWith(signatureAlgorithm, jwtSecret)
-                   .compact();
+    @Transactional(rollbackFor = Exception.class)
+    public String createCodeForWebappToken(Long customerId, WebappCredentials credentials) {
+        String token = Jwts.builder()
+                           .setId(Long.toString(customerId))
+                           .setSubject(credentials.getCustomerName())
+                           .setIssuedAt(new Date())
+                           .setExpiration(calculateExpirationDate())
+                           .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
+                           .claim(JWT_CLAIM_SOURCE, credentials.getSource())
+                           .signWith(signatureAlgorithm, jwtSecret)
+                           .compact();
+
+        String code = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+
+        int updated = jdbcTemplate.update("INSERT INTO tokens(code, token, expiresAtSeconds) VALUES(?, ?, ?)", code, token,
+                                          Instant.now().plusSeconds(300).getEpochSecond());
+        if (updated <= 0) {
+            logger.warn("Could not INSERT INTO tokens");
+        } else {
+            logger.info("Inserted token with code '{}' into database", code);
+        }
+        return code;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String tradeCodeToWebappToken(String code) {
+        String token;
+        try {
+            token = jdbcTemplate.queryForObject(
+                "SELECT token FROM tokens WHERE code = ? AND expiresAtSeconds > ? FOR UPDATE ", String.class,
+                code, Instant.now().getEpochSecond());
+        } catch (IncorrectResultSizeDataAccessException e) {
+            logger.warn("Invalid token code: {}", code);
+            return null;
+        }
+        int deleted = jdbcTemplate.update("DELETE FROM tokens WHERE code = ? ", code);
+        if (deleted > 0) {
+            logger.info("Deleted token with code '{}' from database", code);
+        } else {
+            logger.warn("Could node delete token with code '{}' from database", code);
+        }
+        return token;
+    }
+
+    @Scheduled(initialDelay = 60_000L, fixedRate = 600_000L)
+    @Transactional
+    public void cleanupExpiredTokenCodes() {
+        int expired = jdbcTemplate.update("DELETE FROM tokens WHERE expiresAtSeconds <= ? ", Instant.now().getEpochSecond());
+        if (expired > 0) {
+            logger.info("Deleted {} expired token codes", expired);
+        }
     }
 
     private Date calculateExpirationDate() {
@@ -152,6 +201,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds)
         throws AuthenticationException {
         String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds);
@@ -178,7 +228,7 @@ public class SecurityServiceImpl implements SecurityService {
                                                                   .email(email)
                                                                   .build());
 
-        return createWebappToken(
+        return createCodeForWebappToken(
             customerData.getCustomerId(),
             WebappCredentials.builder()
                              .customerName(customerData.getCustomerName())

@@ -24,7 +24,6 @@ package io.codekvast.login.api;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.net.URI;
 import java.security.Principal;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -78,13 +78,13 @@ public class LoginApiController {
     public ResponseEntity<String> launchDashboard(@PathVariable("customerId") Long customerId, HttpServletResponse response) {
         User user = loginService.getUserFromSecurityContext();
 
-        String url = loginService.getDashboardLaunchURL(customerId);
+        URI uri = loginService.getDashboardLaunchURI(customerId);
 
-        if (url != null) {
+        if (uri != null) {
             logger.info("{} is launching dashboard for customerId {}", user.getEmail(), customerId);
             return ResponseEntity
                 .status(HttpStatus.TEMPORARY_REDIRECT)
-                .header(HttpHeaders.LOCATION, url)
+                .location(uri)
                 .build();
         }
 

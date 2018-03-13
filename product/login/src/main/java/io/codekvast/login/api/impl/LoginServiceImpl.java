@@ -36,6 +36,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -51,8 +52,8 @@ public class LoginServiceImpl implements LoginService {
     private final SecurityService securityService;
 
     @Override
-    @Transactional
-    public String getDashboardLaunchURL(Long customerId) {
+    @Transactional(rollbackFor = Exception.class)
+    public URI getDashboardLaunchURI(Long customerId) {
         User user = getUserFromSecurityContext();
 
         if (user.getCustomerData().stream().anyMatch(cd -> cd.getCustomerId().equals(customerId))) {
@@ -64,7 +65,7 @@ public class LoginServiceImpl implements LoginService {
                                             .build());
             CustomerData cd = customerService.getCustomerDataByCustomerId(customerId);
 
-            String sessionToken = securityService.createWebappToken(
+            String code = securityService.createCodeForWebappToken(
                 customerId,
                 WebappCredentials
                     .builder()
@@ -72,7 +73,7 @@ public class LoginServiceImpl implements LoginService {
                     .email(user.getEmail())
                     .source(cd.getSource())
                     .build());
-            return String.format("%s/dashboard/launch?sessionToken=%s", settings.getDashboardUrl(), sessionToken);
+            return URI.create(String.format("%s/dashboard/launch?code=%s", settings.getDashboardUrl(), code));
         }
         return null;
     }

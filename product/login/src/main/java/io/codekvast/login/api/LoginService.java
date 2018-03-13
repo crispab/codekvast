@@ -24,11 +24,13 @@ package io.codekvast.login.api;
 import io.codekvast.login.model.User;
 import org.springframework.security.core.Authentication;
 
+import java.net.URI;
+
 /**
  * @author olle.hallin@crisp.se
  */
 public interface LoginService {
-    String getDashboardLaunchURL(Long customerId);
+    URI getDashboardLaunchURI(Long customerId);
 
     User getUserFromSecurityContext();
 

@@ -35,9 +35,17 @@ public interface SecurityService extends CustomerIdProvider {
      *
      * @param customerId  The internal customerId
      * @param credentials The credentials to convert to a token
-     * @return A (JWT) token to use when launching the webapp.
+     * @return A one-time code that can be used by {@link #tradeCodeToWebappToken(String)}
      */
-    String createWebappToken(Long customerId, WebappCredentials credentials);
+    String createCodeForWebappToken(Long customerId, WebappCredentials credentials);
+
+    /**
+     * Trades a one-time code to a webapp JWT token.
+     *
+     * @param code A code returned by {@link #createCodeForWebappToken(Long, WebappCredentials)}
+     * @return A webapp JWT that can be used for authenticating the dashboard webapp.
+     */
+    String tradeCodeToWebappToken(String code);
 
     /**
      * Authenticates a token attached to an incoming request.
@@ -66,7 +74,7 @@ public interface SecurityService extends CustomerIdProvider {
      * @param externalId       The external (Heroku) id of the customer inside the token
      * @param email            The email inside the token
      * @param timestampSeconds The timestamp inside the token
-     * @return A JWT token to use for accessing the dashboard.
+     * @return A one-time code that can be used by {@link #tradeCodeToWebappToken(String)}
      */
     String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds);
 

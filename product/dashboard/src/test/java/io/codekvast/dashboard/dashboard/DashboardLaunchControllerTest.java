@@ -20,7 +20,7 @@ public class DashboardLaunchControllerTest {
         // given
 
         // when
-        Cookie cookie = dashboardLaunchController.createSessionTokenCookie("foo/bar");
+        Cookie cookie = dashboardLaunchController.createOrRemoveSessionTokenCookie("foo/bar");
 
         // then
         assertThat(cookie.getDomain(), is(nullValue()));
