@@ -1,5 +1,5 @@
 import 'rxjs/add/operator/do';
-import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponseBase} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Router} from '@angular/router';
@@ -11,20 +11,16 @@ export class HttpResponseInterceptor implements HttpInterceptor {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const xhr = req.clone({
-            headers: req.headers.set('X-Requested-With', 'XMLHttpRequest')
-        });
         return next
-            .handle(xhr)
+            .handle(req)
             .do(event => {
-                if (event instanceof HttpResponse) {
-                    console.log('[ck login] HttpResponse=%o', event);
-                }
-            }, err => {
-                console.log('[ck login] HttpResponseInterceptor: err=%o', err);
-                if ((err instanceof HttpErrorResponse) && (err.status === 401 || err.status === 403)) {
-                    // noinspection JSIgnoredPromiseFromCall
-                    this.router.navigateByUrl('forbidden');
+                console.log('[ck login] HttpResponseInterceptor: response=%o', event);
+                if (event instanceof HttpResponseBase) {
+                    const response = event as HttpResponseBase;
+                    if (response.status === 401 || response.status === 403) {
+                        // noinspection JSIgnoredPromiseFromCall
+                        this.router.navigateByUrl('forbidden');
+                    }
                 }
             });
     }

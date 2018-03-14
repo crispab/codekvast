@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 
@@ -33,12 +34,15 @@ public class SecurityServiceImplTest {
     @Mock
     private CustomerService customerService;
 
+    @Mock
+    private JdbcTemplate jdbcTemplate;
+
     private SecurityServiceImpl securityService;
 
     @Before
     public void beforeTest() throws UnsupportedEncodingException {
         MockitoAnnotations.initMocks(this);
-        securityService = new SecurityServiceImpl(settings, customerService);
+        securityService = new SecurityServiceImpl(settings, customerService, jdbcTemplate);
         securityService.postConstruct();
     }
 

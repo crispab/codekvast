@@ -19,9 +19,11 @@ export class GetMethodsRequest {
 @Injectable()
 export class DashboardApiService {
 
-    readonly METHODS_URL = '/dashboard/api/v1/methods';
+    readonly LAUNCH_URL = '/dashboard/launch/';
     readonly METHOD_BY_ID_URL = '/dashboard/api/v1/method/detail/';
+    readonly METHODS_URL = '/dashboard/api/v1/methods';
     readonly STATUS_URL = '/dashboard/api/v1/status';
+
     readonly HEADERS = new HttpHeaders().set('Content-type', 'application/json; charset=utf-8');
 
     constructor(private http: HttpClient, private configService: ConfigService) {
@@ -81,4 +83,7 @@ export class DashboardApiService {
         return this.METHOD_BY_ID_URL + id;
     }
 
+    fetchAuthData(code: string): Observable<string> {
+        return this.http.post<string>(this.LAUNCH_URL + code, {headers: this.HEADERS})
+    }
 }

@@ -21,83 +21,24 @@
  */
 package io.codekvast.dashboard.dashboard;
 
-import io.codekvast.common.security.SecurityService;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.Cookie;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
-
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
- * This is a REST controller that transforms a request from codekvast-login (i.e. another domain)
- * with a request parameter containing a JWT token to a sessionToken cookie.
- *
- * It redirects to the dashboard's start page, with the token in a cookie.
+ * This is a view controller for the special case of /sso/{code}
  *
  * @author olle.hallin@crisp.se
  */
-@RestController
-@CrossOrigin(origins = {
-    "http://localhost:8080", "http://localhost:8088",
-    "https://login-staging.codekvast.io", "https://login.codekvast.io"})
+@Controller
 @Slf4j
-@RequiredArgsConstructor
 public class DashboardLaunchController {
 
-    private final SecurityService securityService;
-
-    @RequestMapping(path = "/dashboard/launch", method = POST)
-    public ResponseEntity<String> launchDashboard(
-        @RequestParam("code") String code,
-        @RequestParam(value = "navData", required = false) String navData) {
-
-        logger.debug("Handling launch request, code={}", code);
-
-        String sessionToken = securityService.tradeCodeToWebappToken(code);
-        if (sessionToken == null) {
-            return ResponseEntity
-                .badRequest()
-                .location(URI.create("/not-logged-in")) // TODO from settings
-                .header(SET_COOKIE, createOrRemoveSessionTokenCookie(null).toString())
-                .header(SET_COOKIE, createOrRemoveNavDataCookie(null).toString())
-                .build();
-        }
-
-        return ResponseEntity
-            .ok()
-            .location(URI.create("/home"))
-            .header(SET_COOKIE, createOrRemoveSessionTokenCookie(sessionToken).toString())
-            .header(SET_COOKIE, createOrRemoveNavDataCookie(navData).toString())
-            .build();
-
+    @RequestMapping(path = "/sso/{code}")
+    public String dashboardLaunch(@PathVariable("code") Long code) {
+        logger.debug("Forwarding /sso/{} to Angular", code);
+        return "forward:/index.html";
     }
 
-    @SneakyThrows(UnsupportedEncodingException.class)
-    Cookie createOrRemoveSessionTokenCookie(String token) {
-        Cookie cookie = new Cookie(CookieNames.SESSION_TOKEN, token == null ? "" : URLEncoder.encode(token, "UTF-8"));
-        cookie.setPath("/");
-        cookie.setMaxAge(token == null ? 0 : -1); // Remove when browser exits.
-        cookie.setHttpOnly(false);
-        return cookie;
-    }
-
-
-    private Cookie createOrRemoveNavDataCookie(String navData) {
-        Cookie cookie = new Cookie(CookieNames.NAV_DATA, navData == null ? "" : navData);
-        cookie.setPath("/");
-        cookie.setMaxAge(navData == null ? 0 : -1);
-        cookie.setHttpOnly(false);
-        return cookie;
-    }
 }

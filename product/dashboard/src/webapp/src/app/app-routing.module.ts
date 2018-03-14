@@ -34,7 +34,7 @@ const routes: Routes = [
         path: 'not-logged-in',
         component: NotLoggedInComponent
     }, {
-        path: 'sso/:token/:navData',
+        path: 'sso/:code',
         component: SsoComponent
     }, {
         path: 'status',
