@@ -185,6 +185,12 @@ public class CustomerServiceImpl implements CustomerService {
                     now, now, request.getSource(), request.getCustomerId(), request.getEmail());
         if (updated > 0) {
             logger.debug("Updated user {}", request);
+            updated = jdbcTemplate
+                .update("UPDATE users SET firstLoginAt = ? WHERE UNIX_TIMESTAMP(firstLoginAt) = 0 AND customerId = ? AND email = ?",
+                        now, request.getCustomerId(), request.getEmail());
+            if (updated > 0) {
+                logger.debug("Assigned {} as firstLoginAt for {}", now, request);
+            }
         } else {
             jdbcTemplate.update(
                 "INSERT INTO users(customerId, email, firstLoginAt, lastLoginAt, lastActivityAt, lastLoginSource, numberOfLogins) " +

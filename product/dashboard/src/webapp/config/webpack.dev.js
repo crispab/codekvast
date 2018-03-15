@@ -33,8 +33,9 @@ module.exports = webpackMerge(commonConfig, {
         },
         proxy: {
             '/api-docs': 'http://localhost:8081',
-            '/swagger-ui.html': 'http://localhost:8081',
-            '/dashboard': 'http://localhost:8081'
+            '/dashboard': 'http://localhost:8081',
+            '/swagger': 'http://localhost:8081',
+            '/webjars': 'http://localhost:8081'
         }
     }
 });
