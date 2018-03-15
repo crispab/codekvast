@@ -81,7 +81,7 @@ public class LoginApiController {
         if (uri != null) {
             logger.info("{} is launching dashboard for customerId {}", user.getEmail(), customerId);
             return ResponseEntity
-                .status(HttpStatus.SEE_OTHER) // Convert POST to GET
+                .status(HttpStatus.TEMPORARY_REDIRECT) // 307, preserves POST
                 .location(uri)
                 .build();
         }

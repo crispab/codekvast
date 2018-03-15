@@ -12,7 +12,9 @@ export class HttpResponseInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next
-            .handle(req)
+            .handle(req.clone({
+                withCredentials: true
+            }))
             .do(event => {
                 console.log('[ck login] HttpResponseInterceptor: response=%o', event);
                 if (event instanceof HttpResponseBase) {

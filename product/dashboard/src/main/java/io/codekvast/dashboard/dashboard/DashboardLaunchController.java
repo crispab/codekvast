@@ -21,24 +21,51 @@
  */
 package io.codekvast.dashboard.dashboard;
 
+import io.codekvast.common.security.SecurityService;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
 /**
- * This is a view controller for the special case of /sso/{code}
- *
  * @author olle.hallin@crisp.se
  */
 @Controller
+@RequiredArgsConstructor
 @Slf4j
 public class DashboardLaunchController {
 
-    @RequestMapping(path = "/sso/{code}")
-    public String dashboardLaunch(@PathVariable("code") Long code) {
-        logger.debug("Forwarding /sso/{} to Angular", code);
-        return "forward:/index.html";
+    private final SecurityService securityService;
+
+    @RequestMapping(method = POST, path = "/dashboard/launch/{code}")
+    public String launch(@PathVariable("code") String code, HttpServletResponse response) {
+
+        logger.debug("Handling launch request, code={}", code);
+
+        String sessionToken = securityService.tradeCodeToWebappToken(code);
+        String navData = "navData"; // TODO: fetch from securityService together with the sessionToken
+
+        response.addCookie(createCookie(CookieNames.SESSION_TOKEN, sessionToken));
+        response.addCookie(createCookie(CookieNames.NAV_DATA, sessionToken == null ? null: navData));
+
+        return "/index.html";
+    }
+
+    @SneakyThrows(UnsupportedEncodingException.class)
+    Cookie createCookie(String name, String value) {
+        Cookie cookie = new Cookie(name, value == null ? "" : URLEncoder.encode(value, "UTF-8"));
+        cookie.setPath("/");
+        cookie.setMaxAge(value == null ? 0 : -1);
+        return cookie;
     }
 
 }

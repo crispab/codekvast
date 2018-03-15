@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // @formatter:off
         httpSecurity
             .csrf()
-                .ignoringAntMatchers("/javaagent/**", "/dashboard/launch")
+                .ignoringAntMatchers("/javaagent/**", "/dashboard/launch/**")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .and()
                 .sessionManagement().sessionCreationPolicy(IF_REQUIRED)
@@ -72,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
             .and()
                 .authorizeRequests()
-                .antMatchers("/sso/**", "/dashboard/launch/**", "/javaagent/**").permitAll()
+                .antMatchers("/dashboard/launch/**", "/javaagent/**").permitAll()
                 .antMatchers("/dashboard/**").hasRole(SecurityService.USER_ROLE)
             .and()
                 .addFilterBefore(dashboardTokenFilter, UsernamePasswordAuthenticationFilter.class)
