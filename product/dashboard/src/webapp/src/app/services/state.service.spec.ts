@@ -1,11 +1,18 @@
 import {StateService} from './state.service';
+import {CookieService} from 'ngx-cookie';
 
 let stateService: StateService;
+
+const cookieServiceMock: CookieService = {
+    remove: function (key: string) {
+        console.log('Removing cookie ' + key);
+    }
+} as CookieService;
 
 describe('StateService', () => {
 
     beforeEach(() => {
-        stateService = new StateService(null);
+        stateService = new StateService(cookieServiceMock);
         stateService.setLoggedOut();
     });
 
