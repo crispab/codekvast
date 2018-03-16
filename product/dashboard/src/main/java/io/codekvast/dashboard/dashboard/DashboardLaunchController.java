@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -65,9 +66,14 @@ public class DashboardLaunchController {
         return String.format("%s/%s", settings.getDashboardBaseUrl(), sessionToken == null ? "not-logged-in" : "home");
     }
 
+    @RequestMapping(method = GET, path="/dashboard/loginUrl")
+    public String getLoginUrl() {
+        return settings.getLoginBaseUrl();
+    }
+
     @SneakyThrows(UnsupportedEncodingException.class)
     Cookie createCookie(String name, String value) {
-        Cookie cookie = new Cookie(name, value == null ? "" : URLEncoder.encode(value, "UTF-8"));
+        Cookie cookie = new Cookie(name, value == null || value.isEmpty() ? "" : URLEncoder.encode(value, "UTF-8"));
         cookie.setPath("/");
         cookie.setMaxAge(value == null ? 0 : -1);
         return cookie;

@@ -28,8 +28,11 @@
 
 <footer class="bg-info small">
     <ul class="nav justify-content-end mr-1">
-        <li class="nav-item px-3">{{ getLoginState() }}</li>
-        <li class="nav-item px-3"><a id="api-docs" href='/swagger-ui.html' target="_new">API docs</a></li>
+        <li class="nav-item px-3" [class.d-none]="isLoggedIn()"><a class="btn btn-info btn-sm" [attr.href]="loginUrl">Login</a></li>
+        <li class="nav-item px-3" [class.d-none]="!isLoggedIn()">{{ loggedInToCustomer }}</li>
+        <li class="nav-item px-3" [class.d-none]="!isLoggedIn()">{{ loggedInAs }}</li>
+        <li class="nav-item px-3" [class.d-none]="!isLoggedIn()"><a class="btn btn-secondary btn-sm" href="#" (click)="logout()">Logout</a></li>
+        <li class="nav-item px-3"><a class="btn btn-info btn-sm" id="api-docs" href='/swagger-ui.html' target="_new">API docs</a></li>
         <li class="nav-item px-3">Codekvast version <span id="codekvastVersion">{{ getVersion() }}</span></li>
     </ul>
 </footer>

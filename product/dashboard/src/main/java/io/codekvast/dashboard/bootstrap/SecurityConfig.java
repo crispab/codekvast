@@ -72,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
             .and()
                 .authorizeRequests()
-                .antMatchers("/dashboard/launch/**", "/javaagent/**").permitAll()
+                .antMatchers("/dashboard/launch/**", "/dashboard/loginUrl", "/javaagent/**").permitAll()
                 .antMatchers("/dashboard/**").hasRole(SecurityService.USER_ROLE)
             .and()
                 .addFilterBefore(dashboardTokenFilter, UsernamePasswordAuthenticationFilter.class)

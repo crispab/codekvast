@@ -5,6 +5,7 @@ import {Injectable} from '@angular/core';
 import {isNullOrUndefined} from 'util';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {CookieService} from 'ngx-cookie';
 
 export class AuthData {
     readonly customerName: string;
@@ -28,6 +29,9 @@ export class StateService {
     private state = {};
     private authData = new Subject<AuthData>();
 
+    constructor(private cookieService: CookieService) {
+    }
+
     getState<T>(key: string, initialState: () => T): T {
         if (isNullOrUndefined(this.state[key])) {
             this.state[key] = initialState();
@@ -40,29 +44,21 @@ export class StateService {
     }
 
     isLoggedIn() {
-        let authData = sessionStorage.getItem(this.AUTH_DATA);
+        let authData = localStorage.getItem(this.AUTH_DATA);
         return !!authData;
     }
 
     setLoggedInAs(customerName: string, email: string, source: string, sourceApp: string) {
         let authData = new AuthData(customerName, email, source, sourceApp);
-        sessionStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));
+        localStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));
         this.authData.next(authData);
     }
 
     setLoggedOut() {
-        sessionStorage.removeItem(this.AUTH_DATA);
+        localStorage.removeItem(this.AUTH_DATA);
         this.authData.next(null);
+        this.cookieService.remove('sessionToken');
+        this.cookieService.remove('navData')
     }
 
-    getLoginState() {
-        let authDataJson = sessionStorage.getItem(this.AUTH_DATA);
-
-        if (authDataJson) {
-            let authData = JSON.parse(authDataJson);
-            return `Logged in as ${authData.email}`
-        }
-
-        return 'Not logged in';
-    }
 }

@@ -23,6 +23,7 @@ export class DashboardApiService {
     readonly METHOD_BY_ID_URL = '/dashboard/api/v1/method/detail/';
     readonly METHODS_URL = '/dashboard/api/v1/methods';
     readonly STATUS_URL = '/dashboard/api/v1/status';
+    readonly LOGIN_URL = '/dashboard/loginUrl'
 
     readonly HEADERS = new HttpHeaders().set('Content-type', 'application/json; charset=utf-8');
 
@@ -85,5 +86,9 @@ export class DashboardApiService {
 
     fetchAuthData(code: string): Observable<string> {
         return this.http.post<string>(this.LAUNCH_URL + code, {headers: this.HEADERS})
+    }
+
+    getLoginUrl() {
+        return this.http.get<string>(this.LOGIN_URL, {headers: this.HEADERS});
     }
 }
