@@ -1,5 +1,5 @@
 import {ConfigService} from './config.service';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {isNumber} from 'util';
 import {MethodData} from '../model/methods/MethodData';
@@ -25,8 +25,6 @@ export class DashboardApiService {
     readonly STATUS_URL = '/dashboard/api/v1/status';
     readonly LOGIN_URL = '/dashboard/loginUrl'
 
-    readonly HEADERS = new HttpHeaders().set('Content-type', 'application/json; charset=utf-8');
-
     constructor(private http: HttpClient, private configService: ConfigService) {
     }
 
@@ -38,7 +36,7 @@ export class DashboardApiService {
 
         const url: string = this.constructGetMethodsUrl(req);
 
-        return this.http.get<MethodData>(url, {headers: this.HEADERS});
+        return this.http.get<MethodData>(url, );
     }
 
     constructGetMethodsUrl(req: GetMethodsRequest): string {
@@ -73,11 +71,11 @@ export class DashboardApiService {
 
     getMethodById(id: number): Observable<Method> {
         const url = this.constructGetMethodByIdUrl(id);
-        return this.http.get<Method>(url, {headers: this.HEADERS});
+        return this.http.get<Method>(url);
     }
 
     getStatus(): Observable<StatusData> {
-        return this.http.get<StatusData>(this.STATUS_URL, {headers: this.HEADERS});
+        return this.http.get<StatusData>(this.STATUS_URL);
     }
 
     constructGetMethodByIdUrl(id: number) {
@@ -85,10 +83,11 @@ export class DashboardApiService {
     }
 
     fetchAuthData(code: string): Observable<string> {
-        return this.http.post<string>(this.LAUNCH_URL + code, {headers: this.HEADERS})
+        return this.http.post<string>(this.LAUNCH_URL + code, {})
     }
 
     getLoginUrl() {
-        return this.http.get<string>(this.LOGIN_URL, {headers: this.HEADERS});
+        return this.http.get<string>(this.LOGIN_URL);
     }
+
 }

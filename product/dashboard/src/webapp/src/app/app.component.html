@@ -1,3 +1,10 @@
+<div id="native-integration-menu" class="bg-info small">
+    <ul class="nav justify-content-end mr-1">
+        <li class="nav-item px-3"><span class="btn disabled">{{ viewingCustomer }}</span></li>
+        <li class="nav-item px-3"><span class="btn disabled">{{ loggedInAs }}</span></li>
+        <li class="nav-item px-3 pt-1"><a class="btn btn-secondary btn-sm" href="#" (click)="logout()"><i class="fas fa-sign-out-alt" [class.d-none]="!loggedIn"></i>{{ logoutButtonText() }}</a></li>
+    </ul>
+</div>
 <header id="top-nav" [ngClass]="topNavClasses()">
     <div class="row align-items-end pt-1 pl-3">
         <div class="col-1">
@@ -11,11 +18,8 @@
         <div class="col-8">
             <nav class="nav nav-tabs">
                 <a routerLink="/home" class="nav-link" routerLinkActive="active">Home</a>
-
                 <a routerLink="/methods" class="nav-link" routerLinkActive="active">Methods</a>
-
                 <a routerLink="/status" class="nav-link" routerLinkActive="active">Status</a>
-
                 <a routerLink="/reports" class="nav-link" routerLinkActive="active">Reports</a>
             </nav>
         </div>
@@ -28,11 +32,7 @@
 
 <footer class="bg-info small">
     <ul class="nav justify-content-end mr-1">
-        <li class="nav-item px-3" [class.d-none]="isLoggedIn()"><a class="btn btn-info btn-sm" [attr.href]="loginUrl">Login</a></li>
-        <li class="nav-item px-3" [class.d-none]="!isLoggedIn()">{{ loggedInToCustomer }}</li>
-        <li class="nav-item px-3" [class.d-none]="!isLoggedIn()">{{ loggedInAs }}</li>
-        <li class="nav-item px-3" [class.d-none]="!isLoggedIn()"><a class="btn btn-secondary btn-sm" href="#" (click)="logout()">Logout</a></li>
-        <li class="nav-item px-3"><a class="btn btn-info btn-sm" id="api-docs" href='/swagger-ui.html' target="_new">API docs</a></li>
-        <li class="nav-item px-3">Codekvast version <span id="codekvastVersion">{{ getVersion() }}</span></li>
+        <li class="nav-item px-3"><a class="btn btn-info" id="api-docs" href='/swagger-ui.html' target="_new">API docs</a></li>
+        <li class="nav-item px-3"><span class="btn disabled">Codekvast Dashboard version <span id="codekvastVersion">{{ getVersion() }}</span></span></li>
     </ul>
 </footer>

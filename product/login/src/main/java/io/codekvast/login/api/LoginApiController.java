@@ -21,6 +21,7 @@
  */
 package io.codekvast.login.api;
 
+import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.security.Principal;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -46,6 +48,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class LoginApiController {
 
     private final LoginService loginService;
+    private final CodekvastLoginSettings settings;
 
     /**
      * This is an unprotected endpoint that returns true if the user is authenticated.
@@ -65,14 +68,14 @@ public class LoginApiController {
      * @param authentication The OAuth2 authentication object
      * @return A User object.
      */
-    @RequestMapping("/api/user")
+    @RequestMapping(method = GET, path = "/api/user")
     public User user(Authentication authentication) {
         logger.info("Authentication={}", authentication);
 
         return loginService.getUserFromAuthentication(authentication);
     }
 
-    @RequestMapping(path = "/api/launchDashboard/{customerId}", method = POST)
+    @RequestMapping(method = POST, path = "/api/dashboard/launch/{customerId}")
     public ResponseEntity<URI> launchDashboard(@PathVariable("customerId") Long customerId, HttpServletResponse response) {
         User user = loginService.getUserFromSecurityContext();
 
@@ -85,5 +88,11 @@ public class LoginApiController {
 
         logger.warn("{} has no rights to launch dashboard for customerId {}", user.getEmail(), customerId);
         return ResponseEntity.notFound().build();
+    }
+
+    @RequestMapping(method = GET, path = "/api/dashboardBaseUrl")
+    public String getDashboardBaseUrl() {
+        logger.debug("Getting dashboardBaseUrl={}", settings.getDashboardBaseUrl());
+        return settings.getDashboardBaseUrl();
     }
 }

@@ -20,16 +20,20 @@ export class AppComponent implements OnInit {
     private showHerokuIntegrationMenu = false;
     private googleAnalyticsInitialized = false;
 
+    loggedIn = false;
     loggedInAs = 'Not logged in';
-    loggedInToCustomer = '';
+    viewingCustomer = '';
     loginUrl = '';
 
     private readonly googleAnalyticsId = 'UA-97240168-3';
 
-    constructor(private configService: ConfigService, private stateService: StateService, private titleService: Title,
-                private router: Router, private titleCasePipe: TitleCasePipe, private cookieService: CookieService,
-                private api: DashboardApiService) {
-    }
+    constructor(private api: DashboardApiService,
+                private configService: ConfigService,
+                private cookieService: CookieService,
+                private router: Router,
+                private stateService: StateService,
+                private titleCasePipe: TitleCasePipe,
+                private titleService: Title) {}
 
     ngOnInit(): void {
         this.router.events
@@ -39,7 +43,6 @@ export class AppComponent implements OnInit {
                 console.log('[ck dashboard] NavigationEnd: %o', url);
                 this.updateGoogleAnalytics(url);
                 this.setLoggedInState();
-
             })
             .subscribe(url => {
                 let feature = this.titleCasePipe.transform(url.substr(1));
@@ -48,8 +51,9 @@ export class AppComponent implements OnInit {
 
         this.stateService.getAuthData()
             .subscribe(authData => {
-                this.loggedInToCustomer = isNullOrUndefined(authData) ? '' : 'Viewing data for ' + authData.customerName;
-                this.loggedInAs = isNullOrUndefined(authData) ? 'Not logged in' : 'Logged in as ' + authData.email;
+                this.loggedIn = !isNullOrUndefined(authData);
+                this.viewingCustomer = this.loggedIn ? 'Viewing data for ' + authData.customerName: '';
+                this.loggedInAs = this.loggedIn ? 'Logged in as ' + authData.email : 'Not logged in';
             });
 
         this.api.getLoginUrl().subscribe(url => this.loginUrl = url);
@@ -68,7 +72,7 @@ export class AppComponent implements OnInit {
             // signature = parts[2]
 
             let sourceApp = 'codekvast-login';
-            if (payload.source === 'heroku' && navData && navData.length > 0) {
+            if (payload.source === 'heroku' && navData && navData.length > 2) {
                 let args = JSON.parse(atob(navData));
                 console.log('[ck dashboard] navData=%o', args);
                 sourceApp = args.app || args.appname;
@@ -80,7 +84,6 @@ export class AppComponent implements OnInit {
             } else {
                 this.showHerokuIntegrationMenu = false;
                 Boomerang.reset();
-                // TODO: show something else
             }
             this.stateService.setLoggedInAs(payload.sub, payload.email, payload.source, sourceApp);
         } else {
@@ -98,12 +101,9 @@ export class AppComponent implements OnInit {
     topNavClasses() {
         return {
             'integration-menu-heroku': this.showHerokuIntegrationMenu,
+            'native-login-menu': this.loggedIn && !this.showHerokuIntegrationMenu,
             container: true
         }
-    }
-
-    isLoggedIn() {
-        return this.stateService.isLoggedIn()
     }
 
     logout() {
@@ -123,5 +123,9 @@ export class AppComponent implements OnInit {
         console.log(`[ck dashboard] Sending ${url} to GoogleAnalytics`);
         ga('set', 'page', url);
         ga('send', 'pageview');
+    }
+
+    logoutButtonText() {
+        return this.loggedIn ? 'Logout' : 'Login';
     }
 }

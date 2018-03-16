@@ -9,11 +9,8 @@ div#app {
     height: 100%;
 }
 
-header.integration-menu-heroku {
-    margin-top: 38px;
-}
-
 header {
+    margin-top: 38px;
     margin-bottom: 2em;
 }
 
@@ -22,6 +19,6 @@ main {
     overflow: auto;
 }
 
-footer li {
+footer li, #native-integration-menu li {
     border-left: 1px solid darkblue;
 }

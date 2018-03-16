@@ -29,10 +29,14 @@ export class LoginApiService {
     }
 
     launchDashboard(customerId: number): void {
-        this.http.post<string>(`/api/launchDashboard/${customerId}`, {}, {headers: this.HEADERS})
-            .do(location => console.log('[ck login] /api/launchDashboard response=%o', location))
+        this.http.post<string>(`/api/dashboard/launch/${customerId}`, {}, {headers: this.HEADERS})
+            .do(location => console.log('[ck login] /api/dashboard/launch response=%o', location))
             .subscribe(location => this.http.post<string>(location, {}, {headers: this.HEADERS})
                                        .do(next => console.log(`[ck dashboard] response to ${location}=%o`, next))
                                        .subscribe(next => window.location.href = next));
+    }
+
+    getDashboardBaseUrl() {
+        return this.http.get<string>('/api/dashboardBaseUrl');
     }
 }

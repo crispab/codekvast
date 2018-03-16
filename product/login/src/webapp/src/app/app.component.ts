@@ -3,6 +3,7 @@ import {ConfigService} from './services/Config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';
+import {LoginApiService} from './services/LoginApi.service';
 
 @Component({
     selector: '#app',
@@ -16,8 +17,10 @@ export class AppComponent implements OnInit {
     private googleAnalyticsInitialized = false;
     private readonly googleAnalyticsId = 'UA-97240168-5';
 
+    swaggerUrl = '';
+
     constructor(private configService: ConfigService, private titleService: Title, private router: Router,
-                private titleCasePipe: TitleCasePipe) {
+                private titleCasePipe: TitleCasePipe, private api: LoginApiService) {
     }
 
     ngOnInit(): void {
@@ -46,6 +49,7 @@ export class AppComponent implements OnInit {
                 ga('set', 'page', feature);
                 ga('send', 'pageview');
             });
+        this.api.getDashboardBaseUrl().subscribe(url => this.swaggerUrl = url + '/swagger-ui.html');
     }
 
     getVersion(): String {

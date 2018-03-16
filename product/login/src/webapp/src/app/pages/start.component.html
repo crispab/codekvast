@@ -1,11 +1,11 @@
 <div class="container">
     <div *ngIf="user">
-        <div class="alert alert-success">Logged in as {{ user.email }}</div>
+        <div class="alert alert-success">Welcome {{ user.email }}!</div>
         <div *ngIf="user.customerData">
             <table class="table">
                 <thead class="thead-light">
                 <tr>
-                    <th>Select Codekvast project to view:</th>
+                    <th>You have access to the following Codekvast projects:</th>
                 </tr>
                 </thead>
                 <tbody>
