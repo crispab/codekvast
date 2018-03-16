@@ -116,6 +116,11 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
     private String dashboardBaseUrl;
 
     /**
+     * What is the login base url?
+     */
+    private String loginBaseUrl;
+
+    /**
      * Which is the Slack Incoming Webhook URL?
      */
     private String slackWebHookUrl;

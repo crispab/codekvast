@@ -73,7 +73,7 @@ public class LoginServiceImpl implements LoginService {
                     .email(user.getEmail())
                     .source(cd.getSource())
                     .build());
-            return URI.create(String.format("%s/dashboard/launch/%s", settings.getDashboardUrl(), code));
+            return URI.create(String.format("%s/dashboard/launch/%s", settings.getDashboardBaseUrl(), code));
         }
         return null;
     }

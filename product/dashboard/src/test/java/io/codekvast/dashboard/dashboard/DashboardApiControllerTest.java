@@ -31,15 +31,12 @@ public class DashboardApiControllerTest {
     @Mock
     private DashboardService dashboardService;
 
-    @Mock
-    private SecurityService securityService;
-
     private MockMvc mockMvc;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        DashboardApiController dashboardApiController = new DashboardApiController(dashboardService, securityService);
+        DashboardApiController dashboardApiController = new DashboardApiController(dashboardService);
         this.mockMvc = MockMvcBuilders.standaloneSetup(dashboardApiController)
                                       .setMessageConverters(new GsonHttpMessageConverter(), new StringHttpMessageConverter())
                                       .build();
