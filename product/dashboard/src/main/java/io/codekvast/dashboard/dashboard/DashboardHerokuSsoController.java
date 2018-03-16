@@ -22,18 +22,18 @@
 package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.common.security.SecurityService;
-import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -41,32 +41,22 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  *
  * @author olle.hallin@crisp.se
  */
-@RestController
-@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:8088", "https://login-staging.codekvast.io",
-                        "https://login.codekvast.io"},
-    allowCredentials = "true")
+@Controller
 @RequiredArgsConstructor
 @Slf4j
-public class DashboardLaunchController {
+public class DashboardHerokuSsoController {
 
     private final SecurityService securityService;
-    private final CodekvastDashboardSettings settings;
 
-    @RequestMapping(method = POST, path = "/dashboard/launch/{code}")
-    public String launch(@PathVariable("code") String code, HttpServletResponse response) {
-
-        logger.debug("Handling launch request, code={}", code);
+    @RequestMapping(method = POST, path = "/dashboard/heroku/sso/{code}/{navData}")
+    public String launch(@PathVariable("code") String code, @PathVariable(name = "navData") String navData, HttpServletResponse response) {
+        logger.debug("Handling Heroku SSO request, code={}, navData={}", code, navData);
 
         String sessionToken = securityService.tradeCodeToWebappToken(code);
 
         response.addCookie(createCookie(CookieNames.SESSION_TOKEN, sessionToken));
-        response.addCookie(createCookie(CookieNames.NAV_DATA, null));
-        return String.format("%s/%s", settings.getDashboardBaseUrl(), sessionToken == null ? "not-logged-in" : "home");
-    }
-
-    @RequestMapping(method = GET, path="/dashboard/loginUrl")
-    public String getLoginUrl() {
-        return settings.getLoginBaseUrl();
+        response.addCookie(createCookie(CookieNames.NAV_DATA, navData));
+        return "redirect:/";
     }
 
     @SneakyThrows(UnsupportedEncodingException.class)

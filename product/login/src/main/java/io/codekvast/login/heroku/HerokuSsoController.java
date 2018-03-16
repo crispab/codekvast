@@ -25,6 +25,7 @@ import io.codekvast.common.security.SecurityService;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -32,6 +33,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -56,18 +59,21 @@ public class HerokuSsoController {
     }
 
     @RequestMapping(path = "/heroku/sso/", method = POST, consumes = APPLICATION_FORM_URLENCODED_VALUE)
-    public String doHerokuSingleSignOn(
+    public void doHerokuSingleSignOn(
         @RequestParam("id") String externalId,
         @RequestParam("timestamp") long timestampSeconds,
         @RequestParam("token") String token,
         @RequestParam("nav-data") String navData,
-        @RequestParam("email") String email) throws AuthenticationException {
+        @RequestParam("email") String email,
+        HttpServletResponse response) throws AuthenticationException {
 
         logger.debug("externalId={}, nav-data={}", externalId, navData);
 
         String code = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds);
 
-        return String.format("redirect:%s/dashboard/launch/%s?navData=%s", settings.getDashboardBaseUrl(), code, navData);
+        response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
+        response
+            .setHeader(HttpHeaders.LOCATION, String.format("%s/dashboard/heroku/sso/%s/%s", settings.getDashboardBaseUrl(), code, navData));
     }
 
 }
