@@ -73,17 +73,14 @@ public class LoginApiController {
     }
 
     @RequestMapping(path = "/api/launchDashboard/{customerId}", method = POST)
-    public ResponseEntity<String> launchDashboard(@PathVariable("customerId") Long customerId, HttpServletResponse response) {
+    public ResponseEntity<URI> launchDashboard(@PathVariable("customerId") Long customerId, HttpServletResponse response) {
         User user = loginService.getUserFromSecurityContext();
 
         URI uri = loginService.getDashboardLaunchURI(customerId);
 
         if (uri != null) {
             logger.info("{} is launching dashboard for customerId {}", user.getEmail(), customerId);
-            return ResponseEntity
-                .status(HttpStatus.TEMPORARY_REDIRECT) // 307, preserves POST
-                .location(uri)
-                .build();
+            return ResponseEntity.ok(uri);
         }
 
         logger.warn("{} has no rights to launch dashboard for customerId {}", user.getEmail(), customerId);
