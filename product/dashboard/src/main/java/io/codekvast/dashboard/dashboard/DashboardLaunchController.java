@@ -22,46 +22,47 @@
 package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.common.security.SecurityService;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
+ * A CORS-enabled REST controller that participates in the login dance with the codekvast-login app.
+ *
  * @author olle.hallin@crisp.se
  */
 @RestController
-@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:8088", "https://login-staging.codekvast.io", "https://login.codekvast.io"},
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:8088", "https://login-staging.codekvast.io",
+                        "https://login.codekvast.io"},
     allowCredentials = "true")
 @RequiredArgsConstructor
 @Slf4j
 public class DashboardLaunchController {
 
     private final SecurityService securityService;
+    private final CodekvastDashboardSettings settings;
 
     @RequestMapping(method = POST, path = "/dashboard/launch/{code}")
-    public String launch(@PathVariable("code") String code, HttpServletResponse response) {
+    public String launch(@PathVariable("code") String code,
+                         @RequestParam(name = "navData", required = false, defaultValue = "") String navData,
+                         HttpServletResponse response) {
 
         logger.debug("Handling launch request, code={}", code);
 
         String sessionToken = securityService.tradeCodeToWebappToken(code);
-        String navData = "navData"; // TODO: fetch from securityService together with the sessionToken
 
         response.addCookie(createCookie(CookieNames.SESSION_TOKEN, sessionToken));
         response.addCookie(createCookie(CookieNames.NAV_DATA, sessionToken == null ? null : navData));
-        return String.format("http://localhost:8089/%s", sessionToken == null ? "not-logged-in" : "home");
+        return String.format("%s/%s", settings.getDashboardBaseUrl(), sessionToken == null ? "not-logged-in" : "home");
     }
 
     @SneakyThrows(UnsupportedEncodingException.class)

@@ -67,7 +67,7 @@ public class HerokuSsoController {
 
         String code = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds);
 
-        return String.format("redirect:%s/dashboard/launch?code=%s&navData=%s", settings.getDashboardUrl(), code, navData);
+        return String.format("redirect:%s/dashboard/launch/%s?navData=%s", settings.getDashboardBaseUrl(), code, navData);
     }
 
 }

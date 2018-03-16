@@ -111,6 +111,11 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
     private Long dashboardJwtExpirationHours = 8760L;
 
     /**
+     * What is the dashboard base url?
+     */
+    private String dashboardBaseUrl;
+
+    /**
      * Which is the Slack Incoming Webhook URL?
      */
     private String slackWebHookUrl;
@@ -122,6 +127,7 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
 
     /**
      * What is my server's CNAME?
+     * Used in Slack messages.
      */
     private String dnsCname;
 

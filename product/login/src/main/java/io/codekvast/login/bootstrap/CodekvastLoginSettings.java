@@ -70,9 +70,9 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
     private String commitMessage;
 
     /**
-     * What is the URL of the Codekvast dashboard?
+     * What is the base URL of the Codekvast dashboard?
      */
-    private String dashboardUrl;
+    private String dashboardBaseUrl;
 
     /**
      * Which is our CNAME in the DNS?
