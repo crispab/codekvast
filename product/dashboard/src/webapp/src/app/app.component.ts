@@ -5,7 +5,6 @@ import {StateService} from './services/state.service';
 import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';
 import {CookieService} from 'ngx-cookie';
-import {isNullOrUndefined} from 'util';
 import {DashboardApiService} from './services/dashboard-api.service';
 
 @Component({
@@ -19,8 +18,8 @@ export class AppComponent implements OnInit {
 
     private showHerokuIntegrationMenu = false;
     private googleAnalyticsInitialized = false;
+    private Boomerang: any = window['Boomerang'];
 
-    loggedIn = false;
     loggedInAs = 'Not logged in';
     viewingCustomer = '';
     loginUrl = '';
@@ -46,18 +45,10 @@ export class AppComponent implements OnInit {
                 this.titleService.setTitle('Codekvast ' + feature);
             });
 
-        this.stateService.getAuthData()
-            .subscribe(authData => {
-                this.loggedIn = !isNullOrUndefined(authData);
-                this.viewingCustomer = this.loggedIn ? 'Viewing data for ' + authData.customerName : '';
-                this.loggedInAs = this.loggedIn ? 'Logged in as ' + authData.email : 'Not logged in';
-            });
-
         this.api.getLoginUrl().subscribe(url => this.loginUrl = url);
     }
 
     private setLoggedInState() {
-        let Boomerang = window['Boomerang'];
         let token = this.cookieService.get('sessionToken') || '';
         let navData = this.cookieService.get('navData') || '';
 
@@ -74,20 +65,30 @@ export class AppComponent implements OnInit {
                 console.log('[ck dashboard] navData=%o', args);
                 sourceApp = args.app || args.appname;
                 this.showHerokuIntegrationMenu = true;
-                Boomerang.init({
+                this.Boomerang.init({
                     app: sourceApp,
                     addon: 'codekvast'
                 });
             } else {
                 this.showHerokuIntegrationMenu = false;
-                Boomerang.reset();
+                this.Boomerang.reset();
             }
             this.stateService.setLoggedInAs(payload.sub, payload.email, payload.source, sourceApp);
+            this.viewingCustomer = 'Viewing data for ' + payload.sub;
+            this.loggedInAs = 'Logged in as ' + payload.email;
         } else {
-            this.stateService.setLoggedOut();
-            this.showHerokuIntegrationMenu = false;
-            Boomerang.reset();
+            this.doLogout();
         }
+    }
+
+    private doLogout() {
+        this.stateService.setLoggedOut();
+        this.viewingCustomer = '';
+        this.loggedInAs = 'Not logged in';
+        this.showHerokuIntegrationMenu = false;
+        this.Boomerang.reset();
+        this.cookieService.remove('sessionToken');
+        this.cookieService.remove('navData');
     }
 
     getVersion(): String {
@@ -96,14 +97,14 @@ export class AppComponent implements OnInit {
 
     topNavClasses() {
         return {
-            'integration-menu-heroku': this.showHerokuIntegrationMenu,
-            'native-login-menu': this.loggedIn && !this.showHerokuIntegrationMenu,
+            'integration-menu-heroku': this.stateService.isLoggedIn() && this.showHerokuIntegrationMenu,
+            'native-login-menu': this.stateService.isLoggedIn() && !this.showHerokuIntegrationMenu,
             container: true
         }
     }
 
     logout() {
-        this.stateService.setLoggedOut();
+        this.doLogout();
         this.api.getLoginUrl().subscribe(url => window.location.href = url);
     }
 
@@ -122,6 +123,6 @@ export class AppComponent implements OnInit {
     }
 
     logoutButtonText() {
-        return this.loggedIn ? 'Logout' : 'Login';
+        return this.stateService.isLoggedIn() ? 'Logout' : 'Login';
     }
 }

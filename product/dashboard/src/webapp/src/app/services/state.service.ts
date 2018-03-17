@@ -5,7 +5,6 @@ import {Injectable} from '@angular/core';
 import {isNullOrUndefined} from 'util';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
-import {CookieService} from 'ngx-cookie';
 
 export class AuthData {
     readonly customerName: string;
@@ -24,13 +23,9 @@ export class AuthData {
 @Injectable()
 export class StateService {
 
-    private readonly AUTH_DATA = 'codekvast.authData';
-
     private state = {};
     private authData = new Subject<AuthData>();
-
-    constructor(private cookieService: CookieService) {
-    }
+    private loggedIn = false;
 
     getState<T>(key: string, initialState: () => T): T {
         if (isNullOrUndefined(this.state[key])) {
@@ -45,15 +40,16 @@ export class StateService {
 
     setLoggedInAs(customerName: string, email: string, source: string, sourceApp: string) {
         let authData = new AuthData(customerName, email, source, sourceApp);
-        localStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));
+        this.loggedIn = true;
         this.authData.next(authData);
     }
 
     setLoggedOut() {
-        localStorage.removeItem(this.AUTH_DATA);
+        this.loggedIn = false;
         this.authData.next(null);
-        this.cookieService.remove('sessionToken');
-        this.cookieService.remove('navData')
     }
 
+    isLoggedIn() {
+        return this.loggedIn;
+    }
 }
