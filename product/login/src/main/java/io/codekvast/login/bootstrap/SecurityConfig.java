@@ -79,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().logoutUrl("/api/logout").logoutSuccessUrl("/login").permitAll()
             .and()
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/login", "/oauth/**", "/api/isAuthenticated", "/api/dashboardBaseUrl", "/heroku/**").permitAll()
+                .antMatchers("/", "/home", "/login", "/oauth/**", "/api/isAuthenticated", "/api/dashboard/baseUrl", "/heroku/**").permitAll()
                 .anyRequest().authenticated()
             .and()
                 .exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))

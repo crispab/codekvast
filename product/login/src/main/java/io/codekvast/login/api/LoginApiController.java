@@ -90,7 +90,7 @@ public class LoginApiController {
         return ResponseEntity.notFound().build();
     }
 
-    @RequestMapping(method = GET, path = "/api/dashboardBaseUrl")
+    @RequestMapping(method = GET, path = "/api/dashboard/baseUrl")
     public String getDashboardBaseUrl() {
         logger.debug("Getting dashboardBaseUrl={}", settings.getDashboardBaseUrl());
         return settings.getDashboardBaseUrl();

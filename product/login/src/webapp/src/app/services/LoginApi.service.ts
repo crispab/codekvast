@@ -37,6 +37,6 @@ export class LoginApiService {
     }
 
     getDashboardBaseUrl() {
-        return this.http.get<string>('/api/dashboardBaseUrl');
+        return this.http.get<string>('/api/dashboard/baseUrl');
     }
 }
