@@ -1,9 +1,11 @@
+import './rxjs-operators';
 import '@angular/common';
+import '@angular/compiler';
 import '@angular/core';
+import '@angular/forms';
 import '@angular/http';
 import '@angular/platform-browser';
 import '@angular/platform-browser-dynamic';
 import '@angular/router';
-import './rxjs-operators';
-import 'angular2-template-loader';
 import '@ng-bootstrap/ng-bootstrap';
+import 'ngx-cookie';
