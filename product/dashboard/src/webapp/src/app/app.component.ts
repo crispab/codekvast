@@ -27,13 +27,10 @@ export class AppComponent implements OnInit {
 
     private readonly googleAnalyticsId = 'UA-97240168-3';
 
-    constructor(private api: DashboardApiService,
-                private configService: ConfigService,
-                private cookieService: CookieService,
-                private router: Router,
-                private stateService: StateService,
-                private titleCasePipe: TitleCasePipe,
-                private titleService: Title) {}
+    constructor(private api: DashboardApiService, private configService: ConfigService, private cookieService: CookieService,
+                private router: Router, private stateService: StateService, private titleCasePipe: TitleCasePipe,
+                private titleService: Title) {
+    }
 
     ngOnInit(): void {
         this.router.events
@@ -52,7 +49,7 @@ export class AppComponent implements OnInit {
         this.stateService.getAuthData()
             .subscribe(authData => {
                 this.loggedIn = !isNullOrUndefined(authData);
-                this.viewingCustomer = this.loggedIn ? 'Viewing data for ' + authData.customerName: '';
+                this.viewingCustomer = this.loggedIn ? 'Viewing data for ' + authData.customerName : '';
                 this.loggedInAs = this.loggedIn ? 'Logged in as ' + authData.email : 'Not logged in';
             });
 
