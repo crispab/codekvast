@@ -91,7 +91,6 @@ export class AppComponent implements OnInit {
             this.showHerokuIntegrationMenu = false;
             Boomerang.reset();
         }
-
     }
 
     getVersion(): String {

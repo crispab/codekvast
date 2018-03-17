@@ -23,7 +23,7 @@ export class HttpResponseInterceptor implements HttpInterceptor {
             }, err => {
                 if (err instanceof HttpErrorResponse) {
                     console.log('[ck dashboard] HttpErrorResponse=%o', err);
-                    if (err.status === 401) {
+                    if (err.status === 401 || err.status === 403) {
                         this.stateService.setLoggedOut();
 
                         // noinspection JSIgnoredPromiseFromCall

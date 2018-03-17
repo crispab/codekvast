@@ -43,14 +43,6 @@ export class StateService {
         return this.authData;
     }
 
-    isLoggedIn() {
-        let  result = this.cookieService.get('sessionToken');
-        if (!result) {
-            this.setLoggedOut()
-        }
-        return !!result;
-    }
-
     setLoggedInAs(customerName: string, email: string, source: string, sourceApp: string) {
         let authData = new AuthData(customerName, email, source, sourceApp);
         localStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));

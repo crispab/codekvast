@@ -1,19 +1,25 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnInit} from '@angular/core';
 import {CanActivate, Router} from '@angular/router';
 import {StateService} from '../services/state.service';
+import {isNullOrUndefined} from 'util';
 
 @Injectable()
-export class IsLoggedIn implements CanActivate {
+export class IsLoggedIn implements OnInit, CanActivate {
 
-    constructor(private stateService: StateService, private router: Router) {
+    private isLoggedIn = false;
+
+    constructor(private stateService: StateService, private router: Router) {}
+
+    ngOnInit(): void {
+        this.stateService.getAuthData().subscribe(authData => this.isLoggedIn = !isNullOrUndefined(authData));
     }
 
     canActivate() {
-        let result = this.stateService.isLoggedIn();
-        if (!result) {
+        if (!this.isLoggedIn) {
             // noinspection JSIgnoredPromiseFromCall
             this.router.navigateByUrl('not-logged-in');
         }
-        return result;
+        return this.isLoggedIn;
     }
+
 }
