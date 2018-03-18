@@ -14,14 +14,12 @@ import {HttpResponseInterceptor} from './services/httpResponse.interceptor';
 import {InvocationStatusPipe} from './pipes/invocation-status.pipe';
 import {IsLoggedIn} from './guards/is-logged-in';
 import {LOCALE_ID, NgModule} from '@angular/core';
-import {LoggedOutComponent} from './pages/auth/logged-out.component';
 import {MethodDetailComponent} from './pages/methods/method-detail.component';
 import {MethodsComponent} from './pages/methods/methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NotLoggedInComponent} from './pages/auth/not-logged-in.component'
 import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
 import {SettingsComponent} from './components/settings-editor.component';
-import {SsoComponent} from './pages/auth/sso.component';
 import {StateService} from './services/state.service';
 import {VoteComponent} from './components/vote.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
@@ -65,13 +63,11 @@ function selectBestLocale() {
         CollectionStatusComponent,
         HomeComponent,
         InvocationStatusPipe,
-        LoggedOutComponent,
         MethodDetailComponent,
         MethodsComponent,
         NotLoggedInComponent,
         ReportGeneratorComponent,
         SettingsComponent,
-        SsoComponent,
         VoteComponent,
         VoteResultComponent,
     ],

@@ -15,7 +15,7 @@
     <additionalParameters>
       <param>
         <option name="name" value="codekvast.dashboardJwtExpirationHours" />
-        <option name="value" value="-5" />
+        <option name="value" value="-1" />
       </param>
       <param>
         <option name="name" value="logging.level.org.springframework" />

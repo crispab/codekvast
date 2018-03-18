@@ -1,14 +1,12 @@
 import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {HomeComponent} from './pages/home/home.component';
 import {IsLoggedIn} from './guards/is-logged-in';
-import {LoggedOutComponent} from './pages/auth/logged-out.component';
 import {MethodDetailComponent} from './pages/methods/method-detail.component';
 import {MethodsComponent} from './pages/methods/methods.component';
 import {NgModule} from '@angular/core';
 import {NotLoggedInComponent} from './pages/auth/not-logged-in.component';
 import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
 import {RouterModule, Routes} from '@angular/router';
-import {SsoComponent} from './pages/auth/sso.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
 
 const routes: Routes = [
@@ -20,9 +18,6 @@ const routes: Routes = [
         path: 'home',
         component: HomeComponent
     }, {
-        path: 'logged-out',
-        component: LoggedOutComponent
-    }, {
         path: 'methods',
         component: MethodsComponent,
         canActivate: [IsLoggedIn]
@@ -33,9 +28,6 @@ const routes: Routes = [
     }, {
         path: 'not-logged-in',
         component: NotLoggedInComponent
-    }, {
-        path: 'sso/:code',
-        component: SsoComponent
     }, {
         path: 'status',
         component: CollectionStatusComponent,

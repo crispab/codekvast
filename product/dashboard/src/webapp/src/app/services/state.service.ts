@@ -1,10 +1,11 @@
 /**
  * Injectable holder for persistent state, such as form content, search results etc.
  */
+import {CookieService} from 'ngx-cookie';
 import {Injectable} from '@angular/core';
 import {isNullOrUndefined} from 'util';
-import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 export class AuthData {
     readonly customerName: string;
@@ -27,6 +28,9 @@ export class StateService {
     private authData = new Subject<AuthData>();
     private loggedIn = false;
 
+    constructor(private cookieService: CookieService) {
+    }
+
     getState<T>(key: string, initialState: () => T): T {
         if (isNullOrUndefined(this.state[key])) {
             this.state[key] = initialState();
@@ -47,9 +51,17 @@ export class StateService {
     setLoggedOut() {
         this.loggedIn = false;
         this.authData.next(null);
+        this.cookieService.remove('sessionToken');
+        this.cookieService.remove('navData');
     }
 
     isLoggedIn() {
+        if (isNullOrUndefined(this.cookieService.get('sessionToken'))) {
+            if (this.loggedIn) {
+                console.log('[ck dashboard] Detected that sessionToken cookie has disappeared')
+            }
+            this.setLoggedOut();
+        }
         return this.loggedIn;
     }
 }

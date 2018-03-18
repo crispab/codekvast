@@ -66,7 +66,9 @@ public class DashboardLaunchController {
 
     @RequestMapping(method = GET, path="/dashboard/loginUrl")
     public String getLoginUrl() {
-        return settings.getLoginBaseUrl();
+        String loginBaseUrl = settings.getLoginBaseUrl();
+        logger.debug("getLoginUrl() returns {}", loginBaseUrl);
+        return loginBaseUrl;
     }
 
     @SneakyThrows(UnsupportedEncodingException.class)

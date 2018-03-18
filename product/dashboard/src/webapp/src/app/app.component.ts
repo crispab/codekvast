@@ -56,13 +56,13 @@ export class AppComponent implements OnInit {
         if (parts.length >= 2) {
             // header = parts[0]
             let payload = JSON.parse(atob(parts[1]));
-            console.log('[ck dashboard] appComponent.setLoggedInState payload=%o', payload);
+            console.log('[ck dashboard] appComponent sessionToken payload=%o', payload);
             // signature = parts[2]
 
             let sourceApp = 'codekvast-login';
             if (payload.source === 'heroku' && navData && navData.length > 2) {
                 let args = JSON.parse(atob(navData));
-                console.log('[ck dashboard] navData=%o', args);
+                console.log('[ck dashboard] appComponent navData=%o', args);
                 sourceApp = args.app || args.appname;
                 this.showHerokuIntegrationMenu = true;
                 this.Boomerang.init({
@@ -73,9 +73,14 @@ export class AppComponent implements OnInit {
                 this.showHerokuIntegrationMenu = false;
                 this.Boomerang.reset();
             }
-            this.stateService.setLoggedInAs(payload.sub, payload.email, payload.source, sourceApp);
-            this.viewingCustomer = 'Viewing data for ' + payload.sub;
-            this.loggedInAs = 'Logged in as ' + payload.email;
+            if (Math.floor(Date.now() / 1000) > payload.exp) {
+                console.log('Invalid token, it expired at %o', new Date(payload.exp * 1000));
+                this.doLogout();
+            } else {
+                this.stateService.setLoggedInAs(payload.sub, payload.email, payload.source, sourceApp);
+                this.viewingCustomer = 'Viewing data for ' + payload.sub;
+                this.loggedInAs = 'Logged in as ' + payload.email;
+            }
         } else {
             this.doLogout();
         }
@@ -87,8 +92,6 @@ export class AppComponent implements OnInit {
         this.loggedInAs = 'Not logged in';
         this.showHerokuIntegrationMenu = false;
         this.Boomerang.reset();
-        this.cookieService.remove('sessionToken');
-        this.cookieService.remove('navData');
     }
 
     getVersion(): String {
