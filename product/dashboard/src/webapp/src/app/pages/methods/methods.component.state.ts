@@ -22,6 +22,7 @@ export class MethodsComponentState {
     sortAscending = true;
     selectedMethod: Method;
     detailsTableVisible = false;
+    searching = false;
 
     constructor(private api: DashboardApiService) {
     }
@@ -108,6 +109,7 @@ export class MethodsComponentState {
     }
 
     search() {
+        this.searching = true;
         this.api
             .getMethods({
                 signature: this.signature,
@@ -128,10 +130,12 @@ export class MethodsComponentState {
                 } else {
                     this.selectMethod(null);
                 }
+                this.searching = false;
             }, error => {
                 this.data = undefined;
                 this.errorMessage = error.statusText ? error.statusText : error;
                 this.selectMethod(null);
+                this.searching = false;
             });
     }
 

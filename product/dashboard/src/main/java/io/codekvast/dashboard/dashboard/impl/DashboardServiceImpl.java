@@ -360,6 +360,8 @@ public class DashboardServiceImpl implements DashboardService {
                 }
             }
 
+            logger.debug("Result size before limiting size: {}", result.size());
+
             // Sort with respect to lastInvokedAt ASC (so that we keep the oldest invocations)
             result.sort((md1, md2) -> (int) (md2.getLastInvokedAtMillis() - md1.getLastInvokedAtMillis()));
 

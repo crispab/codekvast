@@ -123,13 +123,19 @@
                         <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid">Search
                         </button>
 
-                        <div *ngIf="state.data">
+                        <div *ngIf="state.searching">
+                            <small class="ml-2 col-form-label form-text text-muted">
+                                <ngb-progressbar type="info" [value]="100" height="2em" [striped]="true" [animated]="true">&nbsp;Searching...&nbsp;</ngb-progressbar>
+                            </small>
+                        </div>
+
+                        <div *ngIf="!state.searching && state.data">
                             <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | ckAge:settings.dateFormat }}:
                                 Found {{ state.data.numMethods }} methods in {{ state.data.queryTimeMillis }} ms
                             </small>
                         </div>
 
-                        <div *ngIf="state.errorMessage">
+                        <div *ngIf="!state.searching && state.errorMessage">
                             <small class="ml-2 col-form-label form-text text-muted">{{ communicationFailure() }}</small>
                         </div>
                     </div>
