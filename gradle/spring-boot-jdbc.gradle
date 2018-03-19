@@ -30,9 +30,15 @@ task startMariadb {
             logger.lifecycle(command)
             assert command.execute().waitFor() == 0
 
+            def mysql_datadir = "${System.getenv('HOME')}/.codekvast_database"
+            command = "mkdir -p $mysql_datadir"
+            logger.lifecycle(command)
+            assert command.execute().waitFor() == 0
+
             command = 'docker run -d --restart=unless-stopped ' +
                 '--name codekvast_database ' +
                 '-p 3306:3306 ' +
+                "-v $mysql_datadir:/var/lib/mysql " +
                 '-e MYSQL_ROOT_PASSWORD=root ' +
                 '-e MYSQL_DATABASE=codekvast ' +
                 '-e MYSQL_USER=codekvast ' +
