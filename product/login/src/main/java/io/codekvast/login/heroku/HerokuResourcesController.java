@@ -97,8 +97,8 @@ public class HerokuResourcesController {
     private void validateBasicAuth(String authentication) throws BadCredentialsException {
         logger.debug("authentication={}", authentication);
 
-        // The password is defined in <rootDir>/provisioning/vars/secrets.yml, and it has been pushed to Heroku by means
-        // of <rootDir>/provisioning/push-addon-manifest-to-heroku.sh
+        // The password is defined in <rootDir>/deploy/vars/secrets.yml, and it has been pushed to Heroku by means
+        // of <rootDir>/deploy/push-addon-manifest-to-heroku.sh
 
         String credentials = "codekvast:" + settings.getHerokuApiPassword();
         String expected = "Basic " + DatatypeConverter.printBase64Binary(credentials.getBytes());

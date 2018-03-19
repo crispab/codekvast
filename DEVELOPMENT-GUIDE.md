@@ -31,9 +31,9 @@ Sample projects to use when testing Codekvast lives under `sample/`.
 
 Development tools live under `tools/`.
 
-Provisioning scripts live under `provisioning/`.
+Provisioning scripts live under `deploy/`.
 
-*NOTE: the provisioning/ tree is encrypted with git-crypt since it stores sensible data like cloud provider credentials!*
+*NOTE: the deploy/ tree is encrypted with git-crypt since it stores sensible data like cloud provider credentials!*
 
 Authorized developers are enabled to unlock the repo by adding their public GPG keys.
 See `man git-crypt`, `git-crypt help add-gpg-user` and `git-crypt help unlock`.
@@ -53,8 +53,8 @@ If you run some other OS or prefer to do it by hand, here are the requirements:
 
 ### git-crypt
 
-Some files in the `provisioning/` directory is encrypted with `git-crypt` and GPG public keys.
-Which files that are encrypted can be seen in `provisioning/.gitattributes`.
+Some files in the `deploy/` directory is encrypted with `git-crypt` and GPG public keys.
+Which files that are encrypted can be seen in `deploy/.gitattributes`.
 
 You must be added as trusted developer by `git-crypt add-gpg-user` to access the secrets.
 

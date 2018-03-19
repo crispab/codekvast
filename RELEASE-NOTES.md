@@ -5,6 +5,7 @@
 1. Upgraded to Gradle 4.6
 1. Upgraded dependencies
 1. Moved api.codekvast.io/heroku to login.codekvast.io/heroku (with an nginx rule to also accept the former)
+1. Renamed provisioning/ to deploy/
 
 ## 0.22.4
 1. Started implementing new login service.
