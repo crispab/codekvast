@@ -1,7 +1,7 @@
 <div class="container">
     <div *ngIf="user">
         <div class="alert alert-success">Welcome {{ user.email }}!</div>
-        <div *ngIf="user.customerData">
+        <div *ngIf="user.customerData && user.customerData.length > 0">
             <table class="table">
                 <thead class="thead-light">
                 <tr>
