@@ -74,7 +74,9 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerData> getCustomerDataByUserEmail(String email) {
         List<CustomerData> result = new ArrayList<>();
 
-        List<Long> customerIds = jdbcTemplate.queryForList("SELECT customerId FROM users WHERE email = ?", Long.class, email);
+        Set<Long> customerIds = new HashSet<>(jdbcTemplate.queryForList("SELECT id FROM customers WHERE contactEmail = ?", Long.class, email));
+        customerIds.addAll(jdbcTemplate.queryForList("SELECT customerId FROM users WHERE email = ?", Long.class, email));
+
         for (Long customerId : customerIds) {
             result.add(getCustomerDataByCustomerId(customerId));
         }
