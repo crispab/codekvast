@@ -4,6 +4,7 @@
 apply from: "$rootDir/gradle/java-8.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 apply plugin: 'org.unbroken-dome.test-sets'
 
@@ -18,6 +19,9 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
     compile 'org.springframework.boot:spring-boot-starter-logging'
     compile 'org.springframework.boot:spring-boot-devtools'
+
+    // TODO: remove after migration to Spring Boot 2 is done
+    runtime("org.springframework.boot:spring-boot-properties-migrator")
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
@@ -37,7 +41,7 @@ processResources {
 // Let spring-boot-configuration-processor do it's job before compiling...
 compileJava.dependsOn processResources
 
-bootRepackage {
+bootJar {
     // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
     classifier = 'all'
 }

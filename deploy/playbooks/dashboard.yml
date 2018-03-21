@@ -16,7 +16,7 @@
     server_type: application
     service_name: dashboard
     service_port: "{{ ports.dashboard.service }}"
-    management_port: "{{ ports.dashboard.management }}"
+    management_server_port: "{{ ports.dashboard.management }}"
 
     queuePath: "/var/codekvast/dashboard/queue"
     fileImportIntervalSeconds: 30

@@ -6,12 +6,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 version = '1.0.0'
 sourceCompatibility = 1.8
@@ -35,7 +36,7 @@ dependencies {
     codekvastagent project(path: ":product:java-agent", configuration: 'shadow')
 }
 
-build.dependsOn bootRepackage
+build.dependsOn bootJar
 
 task generateCodekvastConfig {
     group "Build"
@@ -68,8 +69,8 @@ httpProxyPort = 4711
 
 processResources.dependsOn generateCodekvastConfig
 
-task launchExecutableJar(type: Exec, dependsOn: [bootRepackage, generateCodekvastConfig, ":product:java-agent:shadowJar"] ) {
-    description "Launches the executable jar produced by bootRepackage"
+task launchExecutableJar(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:java-agent:shadowJar"] ) {
+    description "Launches the executable jar produced by bootJar"
     group "Application"
 
     executable "java"

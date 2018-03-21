@@ -23,8 +23,7 @@ package io.codekvast.login.bootstrap;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -39,10 +38,13 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticat
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
@@ -101,8 +103,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private Filter ssoFilter(ClientResources client, String path) {
         OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
 
-        UserInfoTokenServices tokenServices =
-            new UserInfoTokenServices(client.getResource().getUserInfoUri(), client.getClient().getClientId());
+        RemoteTokenServices tokenServices = new RemoteTokenServices();
+        tokenServices.setCheckTokenEndpointUrl(client.getProvider().getUserInfoUri());
+        tokenServices.setClientId(client.getClient().getClientId());
         tokenServices.setRestTemplate(template);
 
         OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
@@ -128,18 +131,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     @ConfigurationProperties("facebook")
+    @Validated
     public ClientResources facebook() {
         return new ClientResources();
     }
 
     @Bean
     @ConfigurationProperties("github")
+    @Validated
     public ClientResources github() {
         return new ClientResources();
     }
 
     @Bean
     @ConfigurationProperties("google")
+    @Validated
     public ClientResources google() {
         return new ClientResources();
     }
@@ -150,6 +156,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
 
         @NestedConfigurationProperty
-        private ResourceServerProperties resource = new ResourceServerProperties();
+        private OAuth2ClientProperties.Provider provider = new OAuth2ClientProperties.Provider();
     }
 }

@@ -15,7 +15,7 @@ dependencies {
     compile project(":product:common")
 
     compile 'org.springframework.boot:spring-boot-starter-security'
-    compile 'org.springframework.security.oauth:spring-security-oauth2'
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.3.0.RELEASE'
     compile "com.google.code.gson:gson:$gsonVersion"
 
     runtime project(':product:db-migration')
@@ -44,12 +44,12 @@ bootRun {
 }
 
 //--- Packaging ------------------------------------------------------------------------------------------------------------------
-springBoot {
-    executable = true
-    embeddedLaunchScriptProperties = [
-        'initInfoProvides'        : applicationName,
-        'initInfoShortDescription': 'Codekvast Login',
-        'initInfoDescription'     : 'Codekvast Login handles logins',
-    ]
-    excludeDevtools = true
+bootJar {
+    launchScript {
+        properties([
+            'initInfoProvides'        : applicationName,
+            'initInfoShortDescription': 'Codekvast Login',
+            'initInfoDescription'     : 'Codekvast Login handles logins',
+        ])
+    }
 }

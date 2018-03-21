@@ -66,9 +66,9 @@ private String startSystemTestEnvironment() {
     waitForDatabaseReady(jdbcUrl)
 
     command = "java " +
-        "-jar $bootRepackage.outputs.files.asPath " +
+        "-jar $bootJar.outputs.files.asPath " +
         "--server.port=$systemTestAppPort " +
-        "--management.port=$systemTestManagementPort " +
+        "--management.server.port=$systemTestManagementPort " +
         "--spring.datasource.url=$jdbcUrl " +
         "--codekvast.dashboardJwtSecret=secret "
 
@@ -151,7 +151,7 @@ task psSystemTestEnvironment {
 systemTest {
     description 'Runs end-to-end tests against Codekvast Dashboard with MariaDB in a Docker container'
     group 'System test'
-    dependsOn test, frontendTest, integrationTest, systemTestClasses, bootRepackage, ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
+    dependsOn test, frontendTest, integrationTest, systemTestClasses, bootJar, ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
 
     def foundChromeBinary = locateChromeBinary()
     assert !foundChromeBinary.isEmpty() : "Cannot find Chrome executable!"
@@ -159,7 +159,7 @@ systemTest {
     ext.gebEnv = project.findProperty("browser") ?: "chromeHeadless"
 
     inputs.dir file("src/systemTest")
-    inputs.files bootRepackage.outputs.files
+    inputs.files bootJar.outputs.files
     inputs.property "geb.env", gebEnv
 
     outputs.dir file("build/reports/systemTest")

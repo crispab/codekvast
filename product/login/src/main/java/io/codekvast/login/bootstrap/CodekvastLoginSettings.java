@@ -27,6 +27,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -38,6 +39,7 @@ import javax.annotation.PreDestroy;
  */
 @Component("codekvastSettings")
 @ConfigurationProperties(prefix = "codekvast")
+@Validated
 @Data
 @Slf4j
 @ToString(exclude = {"slackWebHookToken", "herokuApiPassword", "herokuApiSsoSalt", "dashboardJwtSecret"})

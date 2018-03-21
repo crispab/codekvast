@@ -5,7 +5,7 @@ ext {
     gsonVersion = '2.8.2'
     seleniumVersion = '3.11.0'
     springVersion = '4.3.14.RELEASE'
-    springBootVersion = '1.5.10.RELEASE'
+    springBootVersion = '2.0.0.RELEASE'
     springfoxVersion = '2.8.0'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"

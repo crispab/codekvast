@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.io.InputStream;
 
 import static io.codekvast.javaagent.model.Endpoints.Agent.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.*;
@@ -138,7 +138,7 @@ public class AgentControllerTest {
                                   APPLICATION_OCTET_STREAM_VALUE,
                                   ("PublicationContent-" + publicationType).getBytes());
 
-        mockMvc.perform(fileUpload(endpoint)
+        mockMvc.perform(multipart(endpoint)
                             .file(multipartFile)
                             .param(PARAM_LICENSE_KEY, licenseKey)
                             .param(PARAM_FINGERPRINT, fingerprint)

@@ -21,8 +21,9 @@
  */
 package io.codekvast.login.bootstrap;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.server.ConfigurableWebServerFactory;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -31,10 +32,10 @@ import org.springframework.http.HttpStatus;
  * @author olle.hallin@crisp.se
  */
 @Configuration
-public class ServletContainerCustomizer {
+public class WebServerConfig {
 
     @Bean
-    public EmbeddedServletContainerCustomizer customizer() {
+    public WebServerFactoryCustomizer<ConfigurableWebServerFactory> customizer() {
         return container -> container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/login"));
     }
 }

@@ -16,7 +16,7 @@
     server_type: application
     service_name: login
     service_port: "{{ ports.login.service }}"
-    management_port: "{{ ports.login.management }}"
+    management_server_port: "{{ ports.login.management }}"
 
   roles:
   - {role: codekvast.cloud-watch, tags: [cloud-watch, login]}

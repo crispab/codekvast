@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.sql.Timestamp;
 import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -22,9 +23,10 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class AgentServiceImplTest {
@@ -58,7 +60,7 @@ public class AgentServiceImplTest {
     @Test
     public void should_return_enabled_publishers_when_below_agent_limit_no_trial_period() {
         // given
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(1);
+        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), any(), anyString())).thenReturn(1);
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
@@ -76,7 +78,7 @@ public class AgentServiceImplTest {
         // given
         Instant now = Instant.now();
         setupCustomerData(now.minus(10, DAYS), now.plus(10, DAYS));
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(1);
+        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), anyObject(), anyString())).thenReturn(1);
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
@@ -94,7 +96,7 @@ public class AgentServiceImplTest {
         // given
         Instant now = Instant.now();
         setupCustomerData(now.minus(10, DAYS), now.minus(1, DAYS));
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(1);
+        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), any(), anyString())).thenReturn(1);
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
@@ -110,7 +112,7 @@ public class AgentServiceImplTest {
     @Test
     public void should_return_disabled_publishers_when_above_agent_limit_no_trial_period() {
         // given
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(10);
+        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), any(), anyString())).thenReturn(10);
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
