@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'com.ofg.uptodate'
 apply plugin: 'jacoco'
+apply from: "$rootDir/gradle/libs.gradle"
 
 uptodate {
     group "Backend Development"
@@ -22,6 +23,11 @@ jar {
                 "Implementation-Version": codekvastDisplayVersion
         )
     }
+}
+
+dependencies {
+    annotationProcessor lombok
+    compileOnly lombok
 }
 
 configurations.forEach { it ->

@@ -1,11 +1,8 @@
-plugins {
-    id "aspectj.gradle" version "0.1.6"
-}
+ext.aspectjVersion = '1.8.12'
+apply plugin: "aspectj.gradle"
 
 description = """A sample concretization of AbstractMethodExecutionAspect for use in compile-time weaving (CTW).
 The aspect is written in ajc style"""
-
-ext.aspectjVersion = '1.8.12'
 
 dependencies {
     compile project(":product:java-agent")

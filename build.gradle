@@ -17,8 +17,6 @@ idea.project.vcs = 'Git'
 subprojects {
     buildscript { repositories { jcenter() } }
 
-    apply from: "$rootDir/gradle/libs.gradle"
-
     apply plugin: 'eclipse'
     apply plugin: 'idea'
 

@@ -6,8 +6,6 @@ archivesBaseName = "codekvast-javaagent-model"
 version = codekvastVersion
 
 dependencies {
-    annotationProcessor lombok
-    compileOnly lombok
     compile 'javax.validation:validation-api:1.1.0.Final'
 
     testCompile testFrameworks

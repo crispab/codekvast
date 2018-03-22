@@ -1,5 +1,6 @@
 ext {
     aspectjVersion = '1.8.13'
+    flywayVersion = '4.2.0'
     jacksonVersion = '2.9.4'
     kotlinVersion = '1.2.21'
     gsonVersion = '2.8.2'

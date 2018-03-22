@@ -45,6 +45,17 @@ bootRun {
 
 //--- Packaging ------------------------------------------------------------------------------------------------------------------
 bootJar {
+    dependsOn frontendWebpack
+
+    // Output from frontendWebpack
+    into('static') {
+        from("$projectDir/src/webapp/dist") {
+            exclude '**/*.css.map'
+            exclude '**/*.js.map'
+            exclude '**/test/**'
+        }
+    }
+
     launchScript {
         properties([
             'initInfoProvides'        : applicationName,
