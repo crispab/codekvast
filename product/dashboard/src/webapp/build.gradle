@@ -111,18 +111,3 @@ task frontendClean(type: Exec) {
 }
 
 clean.dependsOn frontendClean
-
-jar {
-    dependsOn frontendWebpack
-
-    // Spring Boot automatically serves static content from static/**
-
-    // Output from frontendWebpack
-    into('static') {
-        from('src/webapp/dist') {
-            exclude '**/*.css.map'
-            exclude '**/*.js.map'
-            exclude '**/test/**'
-        }
-    }
-}

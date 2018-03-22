@@ -11,7 +11,6 @@ version = codekvastVersion
 group = 'crisp'
 mainClassName = 'io.codekvast.dashboard.CodekvastDashboardApplication'
 
-apply from: "$projectDir/src/main/build.gradle"
 apply from: "$projectDir/src/webapp/build.gradle"
 apply from: "$projectDir/src/integrationTest/build.gradle"
 apply from: "$projectDir/src/systemTest/build.gradle"
@@ -24,4 +23,51 @@ dependencies {
     compile 'io.jsonwebtoken:jjwt:0.9.0'
 
     runtime project(':product:db-migration')
+}
+
+bootJar {
+    dependsOn frontendWebpack
+
+    // Spring Boot automatically serves static content from static/**
+
+    // Output from frontendWebpack
+    into('static') {
+        from('src/webapp/dist') {
+            exclude '**/*.css.map'
+            exclude '**/*.js.map'
+            exclude '**/test/**'
+        }
+    }
+
+    launchScript {
+        properties([
+            'initInfoProvides'        : applicationName,
+            'initInfoShortDescription': 'Codekvast Dashboard',
+            'initInfoDescription'     : 'Codekvast Dashboard shows the collected data',
+        ])
+    }
+}
+
+run {
+    group "Backend Development"
+    // dependsOn startMariadb, ":product:dashboard:frontendWebpack", installDist, generateCodekvastConfig, ':product:java-agent:shadowJar'
+    dependsOn startMariadb, ":product:dashboard:frontendWebpack"
+
+    jvmArgs = [
+        '-ea',
+        // "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
+    ]
+
+    args = ["--logging.file=$buildDir/log/${applicationName}.log",
+            '--codekvast.fileImportIntervalSeconds=10',
+            '--codekvast.dashboardJwtExpirationHours=-5'
+    ]
+}
+
+bootRun {
+    group "Backend Development"
+    dependsOn startMariadb
+
+    jvmArgs = run.jvmArgs
+    args = run.args
 }
