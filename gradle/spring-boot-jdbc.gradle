@@ -60,5 +60,6 @@ flyway {
     password = 'codekvast'
     validateOnMigrate = false
     table = 'schema_version'
+    locations = "filesystem:$rootDir/product/db-migration/src/main/resources/db/migration/"
 }
 
