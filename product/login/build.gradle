@@ -2,7 +2,6 @@ apply from: "$rootDir/gradle/spring-boot-app.gradle"
 apply from: "$rootDir/gradle/spring-boot-jdbc.gradle"
 apply from: "$rootDir/gradle/spring-boot-web.gradle"
 apply from: "$projectDir/src/heroku/build.gradle"
-apply from: "$projectDir/src/webapp/build.gradle"
 
 description = 'The Codekvast Login server'
 applicationName = 'codekvast-login'
@@ -22,6 +21,7 @@ dependencies {
     compile "com.google.code.gson:gson:$gsonVersion"
 
     runtime project(':product:db-migration')
+    runtime 'org.codehaus.groovy:groovy-templates:2.4.14'
 }
 
 run {

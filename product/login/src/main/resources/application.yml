@@ -1,0 +1,66 @@
+#-------------------------------------------------------------------------------------------------------------------------------------------
+# This file contains all properties that are NOT injected by Gradle. These go into application.properties, since Gradle's expand()
+# does not play well with YAML.
+#
+# Spring Boot reads both application.properties and application.yml.
+#-------------------------------------------------------------------------------------------------------------------------------------------
+
+codekvast:
+    dashboardBaseUrl: http://localhost:8081
+    dashboardJwtExpirationHours: 168
+    dashboardJwtSecret: secret
+    dnsCname: localhost
+    herokuApiPassword: herokuApiPassword
+    herokuApiSsoSalt: herokuApiSsoSalt
+    herokuCodekvastUrl: http://localhost:8080
+    slackWebHookToken:
+    slackWebHookUrl: https://hooks.slack.com/services
+
+logging:
+    file: build/log/login.log
+    level:
+        io:
+            codekvast: DEBUG
+
+management:
+    endpoints:
+        jmx:
+            domain: CodekvastLogin
+    server:
+        port: 9080
+        servlet:
+            context-path: /management
+server:
+    port: 8080
+    servlet:
+        session:
+            cookie:
+                max-age: 300
+            persistent: false
+    undertow:
+        accesslog:
+            dir: build/log
+            enabled: true
+            pattern: combined
+            prefix: access.
+    use-forward-headers: true
+
+spring:
+    datasource:
+        hikari:
+            connection-test-query: SELECT 1 FROM DUAL
+        password: codekvast
+        url: jdbc:mariadb://localhost/codekvast
+        username: codekvast
+    flyway:
+        table: schema_version
+        validate-on-migrate: false
+    groovy:
+        template:
+            suffix: .tpl
+            configuration:
+              auto-new-line: true
+              auto-indent: true
+    output:
+        ansi:
+            enabled: detect

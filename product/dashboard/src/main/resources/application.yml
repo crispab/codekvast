@@ -1,0 +1,80 @@
+#-------------------------------------------------------------------------------------------------------------------------------------------
+# This file contains all properties that are NOT injected by Gradle. These go into application.properties, since Gradle's expand()
+# does not play well with YAML.
+#
+# Spring Boot reads both application.properties and application.yml.
+#-------------------------------------------------------------------------------------------------------------------------------------------
+
+codekvast:
+    dashboardBaseUrl: http://localhost:8081
+    dashboardJwtExpirationHours: 168
+    dashboardJwtSecret: secret
+    dataWeedingInitialDelaySeconds: 15
+    dataWeedingIntervalSeconds: 3600
+    deleteImportedFiles: true
+    dnsCname: localhost
+    fileImportInitialDelaySeconds: 5
+    fileImportIntervalSeconds: 60
+    herokuApiPassword: herokuApiPassword
+    herokuApiSsoSalt: herokuApiSsoSalt
+    herokuCodekvastUrl: http://localhost:8080
+    loginBaseUrl: http://localhost:8080
+    queuePath: /tmp/codekvast
+    slackWebHookToken: ''
+    slackWebHookUrl: https://hooks.slack.com/services
+
+logging:
+    file: build/log/dashboard.log
+    level:
+        io:
+            codekvast: DEBUG
+        springfox: WARN
+
+management:
+    endpoints:
+        jmx:
+            domain: CodekvastDashboard
+    server:
+        port: 9081
+        servlet:
+            context-path: /management
+server:
+    compression:
+        enabled: true
+        mime-types: application/json,application/javascript,text/html,text/xml,text/plain,text/css
+    port: 8081
+    undertow:
+        accesslog:
+            dir: build/log
+            enabled: true
+            pattern: combined
+            prefix: access.
+    use-forward-headers: true
+
+spring:
+    application:
+        name: Codekvast Dashboard
+    datasource:
+        hikari:
+            connection-test-query: SELECT 1 FROM DUAL
+        password: codekvast
+        url: jdbc:mariadb://localhost/codekvast
+        username: codekvast
+    flyway:
+        table: schema_version
+        validate-on-migrate: false
+    http:
+        converters:
+            preferred-json-mapper: gson
+    output:
+        ansi:
+            enabled: detect
+    servlet:
+        multipart:
+            max-file-size: 100MB
+            max-request-size: 100MB
+springfox:
+    documentation:
+        swagger:
+            v2:
+                path: /api-docs
