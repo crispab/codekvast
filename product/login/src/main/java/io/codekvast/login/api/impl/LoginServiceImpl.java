@@ -86,6 +86,7 @@ public class LoginServiceImpl implements LoginService {
     public User getUserFromAuthentication(OAuth2AuthenticationToken authentication) {
         //noinspection unchecked
         Map<String, Object> details = authentication.getPrincipal().getAttributes();
+        logger.debug("Details={}", details);
 
         String email = (String) details.get("email");
 

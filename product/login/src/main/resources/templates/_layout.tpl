@@ -34,6 +34,7 @@ html {
             main(class: 'container') {
                 bodyContents()
             }
+
             footer(class: "bg-info small") {
                 ul(class: "nav justify-content-end mr-1") {
                     li(class: "nav-item px-3") {
