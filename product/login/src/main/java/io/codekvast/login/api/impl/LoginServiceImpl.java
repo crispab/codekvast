@@ -30,9 +30,8 @@ import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,15 +79,15 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public User getUserFromSecurityContext() {
-        return getUserFromAuthentication(SecurityContextHolder.getContext().getAuthentication());
+        return getUserFromAuthentication((OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Override
-    public User getUserFromAuthentication(Authentication authentication) {
+    public User getUserFromAuthentication(OAuth2AuthenticationToken authentication) {
         //noinspection unchecked
-        Map<String, String> details = (Map<String, String>) ((OAuth2Authentication) authentication).getUserAuthentication().getDetails();
+        Map<String, Object> details = authentication.getPrincipal().getAttributes();
 
-        String email = details.get("email");
+        String email = (String) details.get("email");
 
         User user = User.builder()
                         .email(email)

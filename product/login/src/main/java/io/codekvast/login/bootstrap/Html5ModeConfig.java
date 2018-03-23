@@ -32,7 +32,7 @@ import java.util.Collections;
 /**
  * Redirects all 404s to index.html (since we run in HTML5 mode)
  */
-@Configuration
+//@Configuration
 public class Html5ModeConfig {
 
     @Bean

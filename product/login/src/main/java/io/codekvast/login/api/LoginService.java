@@ -23,6 +23,7 @@ package io.codekvast.login.api;
 
 import io.codekvast.login.model.User;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 import java.net.URI;
 
@@ -34,5 +35,5 @@ public interface LoginService {
 
     User getUserFromSecurityContext();
 
-    User getUserFromAuthentication(Authentication authentication);
+    User getUserFromAuthentication(OAuth2AuthenticationToken authentication);
 }

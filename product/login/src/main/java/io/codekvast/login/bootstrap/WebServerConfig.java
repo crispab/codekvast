@@ -31,7 +31,7 @@ import org.springframework.http.HttpStatus;
 /**
  * @author olle.hallin@crisp.se
  */
-@Configuration
+// @Configuration
 public class WebServerConfig {
 
     @Bean
