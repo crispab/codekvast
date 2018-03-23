@@ -1,0 +1,24 @@
+html,
+body {
+    height: 100%;
+}
+
+header {
+    margin-top: 38px;
+    margin-bottom: 2em;
+}
+
+div#app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+main {
+    height: 100%;
+    overflow: auto;
+}
+
+footer li {
+    border-left: 1px solid darkblue;
+}
