@@ -224,7 +224,7 @@ public class SecurityServiceImpl implements SecurityService {
 
         customerService.registerLogin(CustomerService.LoginRequest.builder()
                                                                   .customerId(customerData.getCustomerId())
-                                                                  .source(customerData.getSource())
+                                                                  .source(CustomerService.Source.HEROKU)
                                                                   .email(email)
                                                                   .build());
 
@@ -233,7 +233,7 @@ public class SecurityServiceImpl implements SecurityService {
             WebappCredentials.builder()
                              .customerName(customerData.getCustomerName())
                              .email(email)
-                             .source(customerData.getSource())
+                             .source(CustomerService.Source.HEROKU)
                              .build());
     }
 }
