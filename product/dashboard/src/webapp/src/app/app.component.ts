@@ -108,7 +108,7 @@ export class AppComponent implements OnInit {
 
     logout() {
         this.doLogout();
-        this.api.getLoginUrl().subscribe(url => window.location.href = url);
+        this.api.logout();
     }
 
     private updateGoogleAnalytics(url: string) {

@@ -19,11 +19,11 @@ export class GetMethodsRequest {
 @Injectable()
 export class DashboardApiService {
 
-    readonly LAUNCH_URL = '/dashboard/launch/';
     readonly METHOD_BY_ID_URL = '/dashboard/api/v1/method/detail/';
     readonly METHODS_URL = '/dashboard/api/v1/methods';
     readonly STATUS_URL = '/dashboard/api/v1/status';
-    readonly LOGIN_URL = '/dashboard/loginUrl'
+    readonly LOGIN_URL = '/dashboard/api/v1/loginUrl';
+    readonly LOGOUT_URL = '/dashboard/logout';
 
     constructor(private http: HttpClient, private configService: ConfigService) {
     }
@@ -82,12 +82,11 @@ export class DashboardApiService {
         return this.METHOD_BY_ID_URL + id;
     }
 
-    fetchAuthData(code: string): Observable<string> {
-        return this.http.post<string>(this.LAUNCH_URL + code, {})
+    logout() {
+        return this.http.post<any>(this.LOGOUT_URL, {}).subscribe( next => window.location.href = next);
     }
 
     getLoginUrl() {
         return this.http.get<string>(this.LOGIN_URL);
     }
-
 }

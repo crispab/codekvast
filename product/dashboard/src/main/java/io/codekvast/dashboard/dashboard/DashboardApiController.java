@@ -21,13 +21,13 @@
  */
 package io.codekvast.dashboard.dashboard;
 
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,20 +35,18 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.Optional;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-
 /**
  * The Webapp REST controller.
  *
  * @author olle.hallin@crisp.se
  */
 @RestController
-@RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class DashboardApiController {
 
     private final DashboardService dashboardService;
+    private final CodekvastDashboardSettings settings;
 
     @ExceptionHandler
     public ResponseEntity<String> onConstraintValidationException(ConstraintViolationException e) {
@@ -59,7 +57,12 @@ public class DashboardApiController {
         return ResponseEntity.badRequest().body(violations.toString());
     }
 
-    @RequestMapping(method = GET, path = "/dashboard/api/v1/methods")
+    @GetMapping("/dashboard/api/v1/loginUrl")
+    public String getLoginUrl() {
+        return settings.getLoginBaseUrl();
+    }
+
+    @GetMapping("/dashboard/api/v1/methods")
     public ResponseEntity<GetMethodsResponse> getMethods1(
         @RequestParam(value = "signature", defaultValue = "%") String signature,
         @RequestParam(value = "onlyInvokedBeforeMillis", defaultValue = DashboardService.DEFAULT_ONLY_INVOKED_BEFORE_MILLIS_STR) Long
@@ -83,7 +86,7 @@ public class DashboardApiController {
         return ResponseEntity.ok().body(doGetMethods(request));
     }
 
-    @RequestMapping(method = GET, path = "/dashboard/api/v1/method/detail/{id}")
+    @GetMapping("/dashboard/api/v1/method/detail/{id}")
     public ResponseEntity<MethodDescriptor> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
 
@@ -96,7 +99,7 @@ public class DashboardApiController {
                      .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @RequestMapping(method = GET, path = "/dashboard/api/v1/status")
+    @GetMapping("/dashboard/api/v1/status")
     public ResponseEntity<GetStatusResponse> getStatus1() {
         GetStatusResponse response = dashboardService.getStatus();
         logger.debug("Response: {}", response);

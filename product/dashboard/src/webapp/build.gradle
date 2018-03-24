@@ -70,7 +70,7 @@ task frontendLint(type: Exec) {
 check.dependsOn frontendLint
 
 task frontendStart(type: Exec) {
-    description 'Starts the webpack dev server on port 8088'
+    description 'Starts the webpack dev server on port 8089'
     group 'Frontend Development'
 
     dependsOn frontendInstall

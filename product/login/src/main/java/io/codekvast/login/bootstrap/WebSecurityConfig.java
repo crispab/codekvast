@@ -21,12 +21,26 @@
  */
 package io.codekvast.login.bootstrap;
 
+import io.codekvast.common.customer.CustomerData;
+import io.codekvast.common.customer.CustomerService;
+import io.codekvast.login.model.Roles;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
+import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
 
@@ -35,7 +49,13 @@ import static org.springframework.security.config.http.SessionCreationPolicy.IF_
  */
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private static final String LOGOUT_URL = "/logout";
+    private static final String LOGIN_URL = "/login";
+    private final CustomerService customerService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -43,23 +63,49 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers("/heroku/**")
+                .ignoringAntMatchers("/heroku/**", "/launch/**", LOGOUT_URL)
             .and()
                 .sessionManagement().sessionCreationPolicy(IF_REQUIRED)
             .and()
                 .logout()
-                    .logoutSuccessUrl("/login")
+                    .logoutUrl(LOGOUT_URL)
+                    .logoutSuccessUrl("/")
             .and()
                 .authorizeRequests()
                 // .antMatchers("/", "/home", "/login", "/api/isAuthenticated", "/api/dashboard/baseUrl", "/heroku/**").permitAll()
-                .antMatchers("favicon.ico", "robots.txt", "/assets/**", "/login", "/logout").permitAll()
-                .anyRequest().authenticated()
+                    .antMatchers("/favicon.ico", "/robots.txt", "/assets/**", LOGIN_URL).permitAll()
+                    .anyRequest().authenticated()
             .and()
                 .oauth2Login()
-                    .loginPage("/login")
-                    .authorizationEndpoint()
-                            .baseUri(OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
+                    .userInfoEndpoint().userAuthoritiesMapper(userAuthoritiesMapper())
+                .and()
+                    .loginPage(LOGIN_URL)
+                    .authorizationEndpoint().baseUri(OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
 
         //@formatter:on
+    }
+
+    private GrantedAuthoritiesMapper userAuthoritiesMapper() {
+        return (authorities) -> {
+            Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+
+            authorities.forEach(authority -> {
+                mappedAuthorities.add(authority);
+
+                Object email = null;
+                if (OidcUserAuthority.class.isInstance(authority)) {
+                    email = ((OidcUserAuthority)authority).getUserInfo().getClaims().get("email");
+                } else if (OAuth2UserAuthority.class.isInstance(authority)) {
+                    email = ((OAuth2UserAuthority)authority).getAttributes().get("email");
+                }
+                if (email != null) {
+                    List<CustomerData> customerData = customerService.getCustomerDataByUserEmail(email.toString());
+                    if (customerData != null && !customerData.isEmpty()) {
+                        mappedAuthorities.add(new SimpleGrantedAuthority(Roles.CUSTOMER));
+                    }
+                }
+            });
+            return mappedAuthorities;
+        };
     }
 }

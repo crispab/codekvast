@@ -28,7 +28,7 @@ module.exports = webpackMerge(commonConfig, {
         },
         stats: 'minimal',
         headers: {
-            'Access-Control-Allow-Origin': 'http://localhost:8088',
+            'Access-Control-Allow-Origin': 'http://localhost:8080',
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Credentials': true
         },

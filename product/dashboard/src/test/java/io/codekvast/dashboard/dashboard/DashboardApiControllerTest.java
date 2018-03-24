@@ -1,6 +1,7 @@
 package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.common.security.SecurityService;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.dashboard.model.methods.ApplicationDescriptor;
 import io.codekvast.dashboard.dashboard.model.methods.EnvironmentDescriptor;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
@@ -31,12 +32,14 @@ public class DashboardApiControllerTest {
     @Mock
     private DashboardService dashboardService;
 
+    private CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
+
     private MockMvc mockMvc;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        DashboardApiController dashboardApiController = new DashboardApiController(dashboardService);
+        DashboardApiController dashboardApiController = new DashboardApiController(dashboardService, settings);
         this.mockMvc = MockMvcBuilders.standaloneSetup(dashboardApiController)
                                       .setMessageConverters(new GsonHttpMessageConverter(), new StringHttpMessageConverter())
                                       .build();

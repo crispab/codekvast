@@ -21,8 +21,9 @@
  */
 package io.codekvast.login.api;
 
+import io.codekvast.login.model.Roles;
 import io.codekvast.login.model.User;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 import java.net.URI;
@@ -31,6 +32,7 @@ import java.net.URI;
  * @author olle.hallin@crisp.se
  */
 public interface LoginService {
+    @Secured(Roles.CUSTOMER)
     URI getDashboardLaunchURI(Long customerId);
 
     User getUserFromSecurityContext();

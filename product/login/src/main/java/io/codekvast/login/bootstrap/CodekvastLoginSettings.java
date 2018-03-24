@@ -92,11 +92,6 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
     private String slackWebHookToken;
 
     /**
-     * To where should Spring Security redirect after a successful login?
-     */
-    private String loginSuccessUrl;
-
-    /**
      * Which CODEKVAST_URL should be used by Heroku addons?
      */
     private String herokuCodekvastUrl;

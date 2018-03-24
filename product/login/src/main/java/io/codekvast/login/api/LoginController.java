@@ -25,14 +25,22 @@ import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URI;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * @author olle.hallin@crisp.se
@@ -40,7 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-public class MainController {
+public class LoginController {
 
     private final LoginService loginService;
     private final CodekvastLoginSettings settings;
@@ -67,6 +75,21 @@ public class MainController {
     public String index(HttpServletRequest request, Authentication authentication) {
         logger.debug("index(): Request.contextPath={}", request.getContextPath());
         return authentication == null ? "index" : "redirect:userinfo";
+    }
+
+    @RequestMapping(method = POST, path = "/launch/{customerId}")
+    public void launchDashboard(@PathVariable("customerId") Long customerId, HttpServletResponse response) {
+        User user = loginService.getUserFromSecurityContext();
+
+        URI uri = loginService.getDashboardLaunchURI(customerId);
+
+        if (uri == null) {
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+        } else {
+            logger.debug("Redirecting to {}", uri);
+            response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
+            response.setHeader(HttpHeaders.LOCATION, uri.toString());
+        }
     }
 
 }

@@ -78,7 +78,7 @@ public class AgentServiceImplTest {
         // given
         Instant now = Instant.now();
         setupCustomerData(now.minus(10, DAYS), now.plus(10, DAYS));
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), anyObject(), anyString())).thenReturn(1);
+        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), any(), anyString())).thenReturn(1);
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
