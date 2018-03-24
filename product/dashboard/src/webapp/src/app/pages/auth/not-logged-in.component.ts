@@ -1,23 +1,17 @@
-import {Component, OnInit} from '@angular/core';
-import {DashboardApiService} from '../../services/dashboard-api.service';
+import {Component} from '@angular/core';
+import {ConfigService} from '../../services/config.service';
 
 @Component({
     selector: 'ck-not-logged-in',
     template: require('./not-logged-in.component.html')
 })
-export class NotLoggedInComponent implements OnInit {
+export class NotLoggedInComponent {
 
-    private loginUrl: string;
-
-    constructor(private api: DashboardApiService) {
-    }
-
-    ngOnInit(): void {
-        this.api.getLoginUrl().subscribe(url => this.loginUrl = url);
+    constructor(private config: ConfigService) {
     }
 
     getLoginUrl() {
-        return this.loginUrl;
+        return this.config.getServerSettings().loginUrl;
     }
 
 }

@@ -1,18 +1,11 @@
-import {ConfigService} from './config.service';
 import {DashboardApiService, GetMethodsRequest} from './dashboard-api.service';
 
 let api: DashboardApiService;
 
-const configServiceMock: ConfigService = {
-    getVersion() {
-        return 'dev'
-    },
-} as ConfigService;
-
 describe('DashboardApiService', () => {
 
     beforeEach(() => {
-        api = new DashboardApiService(null, configServiceMock);
+        api = new DashboardApiService(null);
     });
 
     it('should construct a get methods url with signature containing wildcard', () => {

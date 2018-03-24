@@ -1,10 +1,10 @@
-import {ConfigService} from './config.service';
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {isNumber} from 'util';
 import {MethodData} from '../model/methods/MethodData';
 import {Method} from '../model/methods/Method';
 import {Observable} from 'rxjs/Observable';
+import {ServerSettings} from '../model/ServerSettings';
 import {StatusData} from '../model/status/StatusData';
 
 export class GetMethodsRequest {
@@ -21,15 +21,14 @@ export class DashboardApiService {
 
     readonly METHOD_BY_ID_URL = '/dashboard/api/v1/method/detail/';
     readonly METHODS_URL = '/dashboard/api/v1/methods';
+    readonly SERVER_SETTINGS_URL = '/dashboard/api/v1/serverSettings';
     readonly STATUS_URL = '/dashboard/api/v1/status';
-    readonly LOGIN_URL = '/dashboard/api/v1/loginUrl';
-    readonly LOGOUT_URL = '/dashboard/logout';
 
-    constructor(private http: HttpClient, private configService: ConfigService) {
+    constructor(private http: HttpClient) {
     }
 
     getMethods(req: GetMethodsRequest): Observable<MethodData> {
-        if (req.signature === '-----' && this.configService.getVersion() === 'dev') {
+        if (req.signature === '-----' && window['CODEKVAST_VERSION'] === 'dev') {
             console.log('[ck dashboard] Returning a canned response');
             return new Observable<MethodData>(subscriber => subscriber.next(require('../test/canned/v1/MethodData.json')));
         }
@@ -64,7 +63,7 @@ export class DashboardApiService {
         }
         if (isNumber(req.invokedBeforeMillis)) {
             result += `${delimiter}onlyInvokedBeforeMillis=${req.invokedBeforeMillis}`;
-            delimiter = '&';
+            // delimiter = '&';
         }
         return result;
     }
@@ -82,11 +81,7 @@ export class DashboardApiService {
         return this.METHOD_BY_ID_URL + id;
     }
 
-    logout() {
-        return this.http.post<any>(this.LOGOUT_URL, {}).subscribe( next => window.location.href = next);
-    }
-
-    getLoginUrl() {
-        return this.http.get<string>(this.LOGIN_URL);
+    getServerSettings() {
+        return this.http.get<ServerSettings>(this.SERVER_SETTINGS_URL);
     }
 }

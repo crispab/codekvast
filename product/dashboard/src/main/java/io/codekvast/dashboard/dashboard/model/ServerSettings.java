@@ -19,9 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.codekvast.dashboard.dashboard.model;
+
+import lombok.Builder;
+import lombok.Value;
+
 /**
- * Security-related stuff.
- *
  * @author olle.hallin@crisp.se
  */
-package io.codekvast.dashboard.security;
+@Value
+@Builder
+public class ServerSettings {
+    private final String loginUrl;
+    private final String logoutUrl;
+    private final String serverVersion;
+}

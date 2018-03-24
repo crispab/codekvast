@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.dashboard.model.ServerSettings;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
@@ -57,9 +58,18 @@ public class DashboardApiController {
         return ResponseEntity.badRequest().body(violations.toString());
     }
 
-    @GetMapping("/dashboard/api/v1/loginUrl")
-    public String getLoginUrl() {
-        return settings.getLoginBaseUrl();
+    @GetMapping("/dashboard/api/v1/serverSettings")
+    public ServerSettings getServerSettings() {
+        String displayVersion = this.settings.getDisplayVersion();
+
+        ServerSettings serverSettings = ServerSettings.builder()
+                                                      .loginUrl(this.settings.getLoginBaseUrl() + "/userinfo")
+                                                      .logoutUrl(this.settings.getLoginBaseUrl() + "/userinfo")
+                                                      .serverVersion(displayVersion.startsWith("<%=") ? "dev" : displayVersion)
+                                                      .build();
+
+        logger.debug("getServerSettings() returns {}", serverSettings);
+        return serverSettings;
     }
 
     @GetMapping("/dashboard/api/v1/methods")

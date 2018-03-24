@@ -22,7 +22,6 @@ export class AppComponent implements OnInit {
 
     loggedInAs = 'Not logged in';
     viewingCustomer = '';
-    loginUrl = '';
 
     private readonly googleAnalyticsId = 'UA-97240168-3';
 
@@ -45,7 +44,7 @@ export class AppComponent implements OnInit {
                 this.titleService.setTitle('Codekvast ' + feature);
             });
 
-        this.api.getLoginUrl().subscribe(url => this.loginUrl = url);
+        this.api.getServerSettings().subscribe(settings => this.configService.setServerSettings(settings));
     }
 
     private setLoggedInState() {
@@ -98,6 +97,10 @@ export class AppComponent implements OnInit {
         return this.configService.getVersion();
     }
 
+    getServerVersion(): String {
+        return this.configService.getServerSettings().serverVersion;
+    }
+
     topNavClasses() {
         return {
             'integration-menu-heroku': this.stateService.isLoggedIn() && this.showHerokuIntegrationMenu,
@@ -108,7 +111,7 @@ export class AppComponent implements OnInit {
 
     logout() {
         this.doLogout();
-        this.api.logout();
+        window.location.href = this.configService.getServerSettings().logoutUrl;
     }
 
     private updateGoogleAnalytics(url: string) {

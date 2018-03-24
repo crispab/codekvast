@@ -44,7 +44,8 @@ html {
             footer(class: 'bg-info small') {
                 ul(class: 'nav justify-content-end mr-1') {
                     li(class: 'nav-item px-3') {
-                        span(class: 'btn disabled', 'Codekvast Login version') {
+                        span(class: 'btn disabled') {
+                            yield 'Codekvast Login '
                             span(id: 'codekvastVersion', settings.displayVersion)
                         }
                     }
