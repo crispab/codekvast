@@ -1,0 +1,51 @@
+codekvast:
+    dashboardBaseUrl: https://{{ ec2_tag_LBCNAME0 }}
+    dashboardJwtExpirationHours: '{{ codekvast_dashboardJwtExpirationHours }}'
+    dashboardJwtSecret: '{{ codekvast_dashboardJwtSecret }}'
+    dnsCname: '{{ ec2_tag_CNAME1 }}'
+    herokuApiPassword: '{{ codekvast_herokuApiPassword }}'
+    herokuApiSsoSalt: '{{ codekvast_herokuApiSsoSalt }}'
+    herokuCodekvastUrl: http://{{ ec2_tag_LBCNAME }}
+    slackWebHookToken: '{{ codekvast_slackWebhookToken }}'
+logging:
+    file: /var/log/codekvast/application.log
+    level:
+        io:
+            codekvast: DEBUG
+    pattern:
+        level: '{{ ec2_tag_CNAME1.split(''.'', 1)[0] }} %5p'
+management:
+    server:
+        port: '{{ management_server_port }}'
+server:
+    port: '{{ service_port }}'
+    session:
+        cookie:
+            name: '{{ settings.session.cookie.name }}'
+    undertow:
+        accesslog:
+            dir: /var/log/codekvast/
+            prefix: access.
+spring:
+    datasource:
+        password: '{{ mysql_application_password }}'
+        url: jdbc:mariadb://{{ database_dns_names[0] }}/codekvast
+    security:
+        oauth2:
+          client:
+            registration:
+              facebook:
+                client-id: '{{ facebook.oauth[env].clientId }}'
+                client-secret: '{{ facebook.oauth[env].clientSecret }}'
+                client-scope: email
+              github:
+                client-id: '{{ github.oauth[env].clientId }}'
+                client-secret: '{{ github.oauth[env].clientSecret }}'
+                client-scope: email
+              google:
+                client-id: '{{ google.oauth[env].clientId }}'
+                client-secret: '{{ google.oauth[env].clientSecret }}'
+                client-scope: email
+            provider:
+              facebook:
+                user-info-uri: https://graph.facebook.com/me?fields=id,name,email

@@ -5,7 +5,7 @@ layout '_layout.tpl', true,
     bodyContents: contents {
         if (user.customerData) {
             div(class: 'alert alert-success', role = "alert", "$user.email has access to the following Codekvast projects:")
-            p(class: "small text-muted", "Click on the name to view the collected data")
+            p(class: "small text-muted", "Click on the project name to view the collected data")
             table(class: 'table table-striped table-hover table-sm') {
                 thead(class: 'thead-light') {
                     tr {

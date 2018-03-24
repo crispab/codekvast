@@ -1,0 +1,32 @@
+codekvast:
+    dashboardBaseUrl: https://{{ ec2_tag_LBCNAME0 }}
+    dashboardJwtExpirationHours: '{{ codekvast_dashboardJwtExpirationHours }}'
+    dashboardJwtSecret: '{{ codekvast_dashboardJwtSecret }}'
+    dnsCname: '{{ ec2_tag_CNAME0 }}'
+    fileImportIntervalSeconds: '{{ fileImportIntervalSeconds }}'
+    loginBaseUrl: https://{{ ec2_tag_LBCNAME1 }}
+    queuePath: '{{ queuePath }}'
+    slackWebHookToken: '{{ codekvast_slackWebhookToken }}'
+logging:
+    file: /var/log/codekvast/application.log
+    level:
+        io:
+            codekvast: DEBUG
+    pattern:
+        level: '{{ ec2_tag_CNAME0.split(''.'', 1)[0] }} %5p'
+management:
+    server:
+        port: '{{ management_server_port }}'
+server:
+    port: '{{ service_port }}'
+    session:
+        cookie:
+            name: '{{ settings.session.cookie.name }}'
+    undertow:
+        accesslog:
+            dir: /var/log/codekvast/
+            prefix: access.
+spring:
+    datasource:
+        password: '{{ mysql_application_password }}'
+        url: jdbc:mariadb://{{ database_dns_names[0] }}/codekvast

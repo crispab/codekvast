@@ -86,7 +86,7 @@ public class SecurityServiceImplTest {
         verify(customerService).registerLogin(CustomerService.LoginRequest.builder()
                                                                           .customerId(1L)
                                                                           .email("someEmail")
-                                                                          .source("someSource")
+                                                                          .source("heroku")
                                                                           .build());
     }
 

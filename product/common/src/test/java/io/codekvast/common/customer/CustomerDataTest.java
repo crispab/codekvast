@@ -46,18 +46,22 @@ public class CustomerDataTest {
         assertThat(customerData.toString(),
                    is("CustomerData(customerId=17, customerName=foo, source=bar, pricePlan=PricePlan(name=DEMO, overrideBy=null, " +
                           "note=null, maxMethods=25000, maxNumberOfAgents=1, publishIntervalSeconds=5, pollIntervalSeconds=5, " +
-                          "retryIntervalSeconds=5, maxCollectionPeriodDays=-1), collectionStartedAt=null, trialPeriodEndsAt=null)"));
+                          "retryIntervalSeconds=5, maxCollectionPeriodDays=-1), createdAt=null, collectionStartedAt=null, trialPeriodEndsAt=null)"));
     }
 
     @Test
     public void should_have_decent_toString_with_trialPeriod() throws Exception {
 
-        CustomerData cd = customerData.toBuilder().collectionStartedAt(COLLECTION_START).trialPeriodEndsAt(TRIAL_PERIOD_END).build();
+        CustomerData cd = customerData.toBuilder()
+                                      .createdAt(COLLECTION_START)
+                                      .collectionStartedAt(COLLECTION_START)
+                                      .trialPeriodEndsAt(TRIAL_PERIOD_END)
+                                      .build();
         assertThat(cd.toString(),
                    is("CustomerData(customerId=17, customerName=foo, source=bar, pricePlan=PricePlan(name=DEMO, overrideBy=null, " +
                           "note=null, maxMethods=25000, maxNumberOfAgents=1, publishIntervalSeconds=5, pollIntervalSeconds=5, " +
-                          "retryIntervalSeconds=5, maxCollectionPeriodDays=-1), collectionStartedAt=2017-08-21T16:21:19.695Z, " +
-                          "trialPeriodEndsAt=2017-09-20T16:21:19.695Z)"));
+                          "retryIntervalSeconds=5, maxCollectionPeriodDays=-1), createdAt=2017-08-21T16:21:19.695Z, " +
+                          "collectionStartedAt=2017-08-21T16:21:19.695Z, trialPeriodEndsAt=2017-09-20T16:21:19.695Z)"));
     }
 
 }

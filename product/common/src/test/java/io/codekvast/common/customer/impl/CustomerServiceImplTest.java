@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ public class CustomerServiceImplTest {
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", 1L);
+        map.put("createdAt", new Timestamp(System.currentTimeMillis()));
         map.put("name", "name");
         map.put("plan", "test");
         map.put("source", "source");
