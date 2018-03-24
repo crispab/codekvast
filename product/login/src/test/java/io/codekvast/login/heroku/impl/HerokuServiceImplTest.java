@@ -2,6 +2,7 @@ package io.codekvast.login.heroku.impl;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerService;
+import io.codekvast.login.heroku.HerokuException;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import lombok.Data;
 import org.junit.Before;
@@ -30,7 +31,7 @@ public class HerokuServiceImplTest {
     }
 
     @Test
-    public void should_delegate_provision_to_customerService_addCustomer() {
+    public void should_delegate_provision_to_customerService_addCustomer() throws HerokuException {
         // given
 
         // when
@@ -52,7 +53,7 @@ public class HerokuServiceImplTest {
     }
 
     @Test
-    public void should_delegate_deprovision_to_customerService_deleteCustomerByExternalId() {
+    public void should_delegate_deprovision_to_customerService_deleteCustomerByExternalId() throws HerokuException {
         // given
 
         // when

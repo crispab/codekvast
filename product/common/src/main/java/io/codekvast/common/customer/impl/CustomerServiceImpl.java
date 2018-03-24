@@ -272,7 +272,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private CustomerData getCustomerData(String where_clause, java.io.Serializable identifier) {
         Map<String, Object> result = jdbcTemplate.queryForMap("SELECT " +
-                                                                  " c.id, c.name, c.source, c.plan, c.collectionStartedAt, c" +
+                                                                  " c.id, c.name, c.source, c.plan, c.createdAt, c.collectionStartedAt, c" +
                                                                   ".trialPeriodEndsAt, " +
                                                                   " pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp" +
                                                                   ".publishIntervalSeconds, pp.pollIntervalSeconds, " +
@@ -282,6 +282,7 @@ public class CustomerServiceImpl implements CustomerService {
                                                                   "WHERE " + where_clause, identifier);
 
         String planName = (String) result.get("plan");
+        Timestamp createdAt = (Timestamp) result.get("createdAt");
         Timestamp collectionStartedAt = (Timestamp) result.get("collectionStartedAt");
         Timestamp trialPeriodEndsAt = (Timestamp) result.get("trialPeriodEndsAt");
         PricePlanDefaults ppd = PricePlanDefaults.fromDatabaseName(planName);
@@ -290,8 +291,9 @@ public class CustomerServiceImpl implements CustomerService {
                            .customerId((Long) result.get("id"))
                            .customerName((String) result.get("name"))
                            .source((String) result.get("source"))
-                           .collectionStartedAt(collectionStartedAt != null ? Instant.ofEpochMilli(collectionStartedAt.getTime()) : null)
-                           .trialPeriodEndsAt(trialPeriodEndsAt != null ? Instant.ofEpochMilli(trialPeriodEndsAt.getTime()) : null)
+                           .createdAt(createdAt.toInstant())
+                           .collectionStartedAt(collectionStartedAt != null ? collectionStartedAt.toInstant() : null)
+                           .trialPeriodEndsAt(trialPeriodEndsAt != null ? trialPeriodEndsAt.toInstant() : null)
                            .pricePlan(
                                PricePlan.builder()
                                         .name(ppd.name())

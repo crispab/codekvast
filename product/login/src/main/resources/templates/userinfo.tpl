@@ -1,18 +1,54 @@
+import java.time.Instant
+
 layout '_layout.tpl', true,
-    title: 'User',
+    title: 'Projects',
     bodyContents: contents {
         if (user.customerData) {
-            div(class: 'alert alert-success', role="alert", "You are logged in as $user.email")
-            table(class: 'table') {
-                tr {
-                    th("Select Codekvast project to view:")
-                }
-                for (c in user.customerData) {
+            div(class: 'alert alert-success', role = "alert", "You are logged in as $user.email")
+            p("You have access to the following Codekvast projects:")
+            table(class: 'table table-striped table-hover table-sm') {
+                thead(class: 'thead-light') {
                     tr {
-                        td {
-                            form(method: 'POST', action: "/launch/$c.customerId") {
-                                 button(type: 'submit', class: 'btn btn-link', c.customerName)
+                        th(scope: "col", "Project")
+                        th(scope: "col", "Created at")
+                        th(scope: "col", "Collected since")
+                        th(scope: "col", "Comments")
+                    }
+                }
+
+                tbody {
+                    def now = Instant.now()
+                    for (c in user.customerData) {
+
+                        def collectedSinceClass = c.collectionStartedAt == null ? "" : "table-success"
+                        def comment = ""
+                        def delimiter = ""
+                        def commentClass = ""
+                        if (c.collectionStartedAt == null) {
+                            comment = "No data has yet been collected."
+                            delimiter = "<br>"
+                            commentClass = "table-warning"
+                        }
+                        if (c.isTrialPeriodExpired(now)) {
+                            comment += delimiter + "Trial period ended at ${c.trialPeriodEndsAt}."
+                            delimiter = "<br>"
+                            commentClass = "table-danger"
+                        } else if (c.trialPeriodEndsAt != null) {
+                            comment += delimiter + "Trial period ends at ${c.trialPeriodEndsAt}."
+                            delimiter = "<br>"
+                            commentClass = "table-light"
+                        }
+
+                        tr {
+                            td {
+                                form(method: 'POST', action: "/launch/$c.customerId") {
+                                    button(type: 'submit', class: 'btn btn-link', c.customerName)
+                                }
                             }
+
+                            td(c.createdAt)
+                            td(class: collectedSinceClass, c.collectionStartedAt)
+                            td(class: commentClass, comment)
                         }
                     }
                 }

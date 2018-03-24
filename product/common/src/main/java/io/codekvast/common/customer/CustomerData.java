@@ -47,6 +47,8 @@ public class CustomerData {
     @NonNull
     private PricePlan pricePlan;
 
+    private Instant createdAt;
+
     private Instant collectionStartedAt;
 
     private Instant trialPeriodEndsAt;
