@@ -37,7 +37,7 @@ management:
     server:
         port: 9081
         servlet:
-            context-path: /management
+            context-path: /actuator
 server:
     compression:
         enabled: true

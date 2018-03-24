@@ -225,7 +225,7 @@
     health_check:
       ping_protocol: http
       ping_port: 9080
-      ping_path: /management/health
+      ping_path: /actuator/health
       response_timeout: 5
       interval: 15
       unhealthy_threshold: 2

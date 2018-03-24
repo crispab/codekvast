@@ -72,7 +72,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl("/")
             .and()
                 .authorizeRequests()
-                .antMatchers("/favicon.ico", "/robots.txt", "/assets/**", "/heroku/**", LOGIN_URL).permitAll()
+                .antMatchers("/favicon.ico", "/robots.txt", "/actuator/**", "/assets/**", "/heroku/**", LOGIN_URL).permitAll()
                 .anyRequest().authenticated()
             .and()
                 .oauth2Login()

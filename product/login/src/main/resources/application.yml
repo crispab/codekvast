@@ -26,16 +26,19 @@ management:
     endpoints:
         jmx:
             domain: CodekvastLogin
+        web:
+          base-path: /actuator
     server:
         port: 9080
         servlet:
-            context-path: /management
+            context-path: /
 server:
     port: 8080
     servlet:
+        context-path: /
         session:
             cookie:
-                max-age: 300
+                max-age: 10m
             persistent: false
     undertow:
         accesslog:

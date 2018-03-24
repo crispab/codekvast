@@ -6,7 +6,7 @@ fi
 
 declare ansibleVersion=$(ansible --version | awk '/^ansible/ {print $2}')
 case "$ansibleVersion" in
-    2.4*)
+    2.4*|2.5*)
         ;;
     *)
         echo "Ansible version 2.4+ is required. Installed version is $ansibleVersion"
