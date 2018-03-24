@@ -19,9 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.codekvast.login.heroku.model;
+
+import lombok.Builder;
+import lombok.Value;
+
+import java.util.Map;
+
 /**
- * Stuff related to the Heroku add-on implementation.
- *
  * @author olle.hallin@crisp.se
  */
-package io.codekvast.common.heroku;
+@Value
+@Builder
+public class HerokuProvisionResponse {
+
+    private final String id;
+
+    private final String message;
+
+    private final Map<String, String> config;
+}

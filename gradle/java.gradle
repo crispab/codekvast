@@ -28,6 +28,8 @@ jar {
 dependencies {
     annotationProcessor lombok
     compileOnly lombok
+
+    testCompileOnly lombok
 }
 
 configurations.forEach { it ->

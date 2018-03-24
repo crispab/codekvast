@@ -21,11 +21,10 @@
  */
 package io.codekvast.login.heroku;
 
-import io.codekvast.common.heroku.HerokuChangePlanRequest;
-import io.codekvast.common.heroku.HerokuProvisionRequest;
-import io.codekvast.common.heroku.HerokuProvisionResponse;
-import io.codekvast.common.heroku.HerokuService;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
+import io.codekvast.login.heroku.model.HerokuChangePlanRequest;
+import io.codekvast.login.heroku.model.HerokuProvisionRequest;
+import io.codekvast.login.heroku.model.HerokuProvisionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -59,9 +58,15 @@ public class HerokuResourcesController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @ExceptionHandler
+    public ResponseEntity<String> onHerokuException(HerokuException e) {
+        logger.warn("Bad request");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
     @RequestMapping(path = "/heroku/resources", method = POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<HerokuProvisionResponse> provision(@Valid @RequestBody HerokuProvisionRequest request,
-                                                             @RequestHeader(AUTHORIZATION) String authorization) {
+                                                             @RequestHeader(AUTHORIZATION) String authorization) throws HerokuException {
         logger.debug("request={}", request);
 
         validateBasicAuth(authorization);
@@ -72,19 +77,18 @@ public class HerokuResourcesController {
     @RequestMapping(path = "/heroku/resources/{id}", method = PUT)
     public ResponseEntity<String> changePlan(@PathVariable("id") String id,
                                              @Valid @RequestBody HerokuChangePlanRequest request,
-                                             @RequestHeader(AUTHORIZATION) String auth) {
+                                             @RequestHeader(AUTHORIZATION) String auth) throws HerokuException {
         logger.debug("id={}, request={}", id, request);
 
         validateBasicAuth(auth);
 
         herokuService.changePlan(id, request);
-
         return ResponseEntity.ok("{}");
     }
 
     @RequestMapping(path = "/heroku/resources/{id}", method = DELETE)
     public ResponseEntity<String> deprovision(@PathVariable("id") String id,
-                                              @RequestHeader(AUTHORIZATION) String auth) {
+                                              @RequestHeader(AUTHORIZATION) String auth) throws HerokuException {
         logger.debug("id={}", id);
 
         validateBasicAuth(auth);

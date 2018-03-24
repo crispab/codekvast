@@ -1,8 +1,8 @@
-package io.codekvast.common.heroku.impl;
+package io.codekvast.login.heroku.impl;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerService;
-import io.codekvast.common.heroku.HerokuProvisionRequest;
+import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;

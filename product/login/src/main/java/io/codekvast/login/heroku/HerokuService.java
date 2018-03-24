@@ -19,7 +19,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.heroku;
+package io.codekvast.login.heroku;
+
+import io.codekvast.login.heroku.model.HerokuChangePlanRequest;
+import io.codekvast.login.heroku.model.HerokuProvisionRequest;
+import io.codekvast.login.heroku.model.HerokuProvisionResponse;
 
 /**
  * Service for handling Heroku provisioning, deprovisioning and plan changes.
@@ -32,22 +36,25 @@ public interface HerokuService {
      *
      * @param request The provisioning request sent by Heroku.
      * @return The response that Heroku will forward to the app developer.
+     * @throws HerokuException should the request fail.
      */
-    HerokuProvisionResponse provision(HerokuProvisionRequest request);
+    HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException;
 
     /**
      * Request to change plan.
      *
      * @param externalId The value of {@link HerokuProvisionResponse#id}.
      * @param request    The change plan request.
+     * @throws HerokuException should the request fail.
      */
-    void changePlan(String externalId, HerokuChangePlanRequest request);
+    void changePlan(String externalId, HerokuChangePlanRequest request) throws HerokuException;
 
     /**
      * Deprovision Codekvast from one Heroku app.
      *
      * @param externalId The value of {@link HerokuProvisionResponse#id}.
+     * @throws HerokuException should the request fail.
      */
-    void deprovision(String externalId);
+    void deprovision(String externalId) throws HerokuException;
 
 }

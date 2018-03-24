@@ -19,18 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.heroku;
-
-import lombok.*;
+package io.codekvast.login.heroku;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@Builder(toBuilder = true)
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@ToString
-public class HerokuChangePlanRequest {
-    private final String heroku_id;
-    private final String plan;
+public class HerokuException extends Exception {
+
+    public HerokuException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
