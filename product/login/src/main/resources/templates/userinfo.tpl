@@ -4,8 +4,8 @@ layout '_layout.tpl', true,
     title: 'Projects',
     bodyContents: contents {
         if (user.customerData) {
-            div(class: 'alert alert-success', role = "alert", "You are logged in as $user.email")
-            p("You have access to the following Codekvast projects:")
+            div(class: 'alert alert-success', role = "alert", "$user.email has access to the following Codekvast projects:")
+            p(class: "small text-muted", "Click on the name to view the collected data")
             table(class: 'table table-striped table-hover table-sm') {
                 thead(class: 'thead-light') {
                     tr {

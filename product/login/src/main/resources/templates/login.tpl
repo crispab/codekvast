@@ -2,7 +2,7 @@ layout '_layout.tpl', true,
     title: 'Login',
     bodyContents: contents {
         h1 'Welcome!'
-        p('Log in with one account that has an email address associated with your Codekvast project:')
+        p('Log in with one account that has an email address associated with your Codekvast project(s):')
 
         ul(class: 'list-group') {
             li(class: 'list-group-item') {
