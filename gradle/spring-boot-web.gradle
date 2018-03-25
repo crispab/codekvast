@@ -5,14 +5,9 @@
 // We will never use embedded Tomcat...
 configurations.compile {
     exclude module: 'spring-boot-starter-tomcat'
-//    exclude module: 'tomcat-jdbc'
 }
 
 dependencies {
-//    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
-//    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
-//    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-//    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion"
     compile "io.springfox:springfox-swagger2:$springfoxVersion"
     compile 'org.springframework.boot:spring-boot-starter-undertow'
     compile 'org.springframework.boot:spring-boot-starter-web'

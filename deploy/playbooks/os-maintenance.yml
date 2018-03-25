@@ -9,7 +9,7 @@
 
   tasks:
   - name: Install swedish language pack
-    package: name=language-pack-sv state=installed
+    package: name=language-pack-sv state=present
 
   - name: Upgrade installed packages
     apt: update_cache=yes upgrade=safe autoremove=yes purge=yes

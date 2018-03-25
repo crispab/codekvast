@@ -6,7 +6,7 @@
   timezone: name=UTC
 
 - name: Install OpenJDK 8
-  package: name=openjdk-8-jdk-headless state=installed
+  package: name=openjdk-8-jdk-headless state=present
   notify: "restart codekvast service"
 
 - name: Create codekvast group

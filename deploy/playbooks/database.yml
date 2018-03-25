@@ -46,7 +46,7 @@
       s3_database_backup_bucket: "io.codekvast.{{ customer|lower }}.{{ env|lower }}.backup"
 
   - name: Install s3cmd
-    package: name=s3cmd state=installed
+    package: name=s3cmd state=present
 
   - name: Install backup scripts
     template: src=database/{{ item }}.j2 dest=/root/{{ item }} mode=755
