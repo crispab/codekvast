@@ -53,6 +53,7 @@ public class ImportDAOImpl implements ImportDAO {
     private static final String VISIBILITY_PACKAGE_PRIVATE = "package-private";
     private static final String PROTECTED = "protected";
     private static final String VISIBILITY_PUBLIC = "public";
+    private static final String DEFAULT_ENVIRONMENT_NAME = "<default>";
     private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
 
@@ -61,16 +62,16 @@ public class ImportDAOImpl implements ImportDAO {
         long customerId = data.getCustomerId();
         String name = data.getAppName();
         String version = data.getAppVersion();
-        Timestamp createAt = new Timestamp(data.getJvmStartedAtMillis());
+        Timestamp createdAt = new Timestamp(data.getJvmStartedAtMillis());
 
         int updated = jdbcTemplate.update("UPDATE applications SET createdAt = LEAST(createdAt, ?) " +
-                                              "WHERE customerId = ? AND name = ? AND version = ?", createAt, customerId, name, version);
+                                              "WHERE customerId = ? AND name = ? AND version = ?", createdAt, customerId, name, version);
         if (updated != 0) {
             logger.trace("Updated application {} {}", name, version);
         } else {
             jdbcTemplate.update("INSERT INTO applications(customerId, name, version, createdAt) VALUES (?, ?, ?, ?)",
-                                customerId, name, version, createAt);
-            logger.trace("Inserted application {} {} {} {}", customerId, name, version, createAt);
+                                customerId, name, version, createdAt);
+            logger.trace("Inserted application {} {} {} {}", customerId, name, version, createdAt);
         }
 
         Long result = jdbcTemplate
@@ -81,7 +82,31 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public long importJvm(CommonPublicationData2 data, long applicationId) {
+    public long importEnvironment(CommonPublicationData2 data) {
+        long customerId = data.getCustomerId();
+        String name = data.getEnvironment();
+        if (name.trim().isEmpty()) {
+            name = DEFAULT_ENVIRONMENT_NAME;
+        }
+        Timestamp createdAt = new Timestamp(data.getJvmStartedAtMillis());
+
+        int updated = jdbcTemplate.update("UPDATE environments SET createdAt = LEAST(createdAt, ?) " +
+                                              "WHERE customerId = ? AND name = ?", createdAt, customerId, name);
+        if (updated != 0) {
+            logger.trace("Updated environment {}", name);
+        } else {
+            jdbcTemplate.update("INSERT INTO environments(customerId, name, createdAt) VALUES (?, ?, ?)", customerId, name, createdAt);
+            logger.trace("Inserted environment {} {} {}", customerId, name, createdAt);
+        }
+
+        Long result = jdbcTemplate
+            .queryForObject("SELECT id FROM environments WHERE customerId = ? AND name = ?", Long.class, customerId, name);
+        logger.debug("environment {} {} has id {}", customerId, name, result);
+        return result;
+    }
+
+    @Override
+    public long importJvm(CommonPublicationData2 data, long applicationId, long environmentId) {
 
         long customerId = data.getCustomerId();
         Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
@@ -92,14 +117,12 @@ public class ImportDAOImpl implements ImportDAO {
             logger.trace("Updated JVM {}", data.getJvmUuid());
         } else {
             jdbcTemplate.update(
-                "INSERT INTO jvms(customerId, applicationId, uuid, startedAt, publishedAt, methodVisibility, packages, excludePackages, " +
-                    "environment, computerId, hostname, agentVersion, tags) " +
+                "INSERT INTO jvms(customerId, applicationId, environmentId, uuid, startedAt, publishedAt, methodVisibility, packages," +
+                    " excludePackages, computerId, hostname, agentVersion, tags) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                customerId, applicationId, data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt,
-                data.getMethodVisibility(),
-                data.getPackages().toString(), data.getExcludePackages().toString(), data.getEnvironment(), data.getComputerId(),
-                data.getHostname(),
-                data.getAgentVersion(), data.getTags());
+                customerId, applicationId, environmentId, data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt,
+                data.getMethodVisibility(), data.getPackages().toString(), data.getExcludePackages().toString(), data.getComputerId(),
+                data.getHostname(), data.getAgentVersion(), data.getTags());
             logger.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
                          Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }
@@ -111,7 +134,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public void importMethods(CommonPublicationData2 data, long customerId, long appId, long jvmId,
+    public void importMethods(CommonPublicationData2 data, long customerId, long appId, long environmentId, long jvmId,
                               long publishedAtMillis, Collection<CodeBaseEntry2> entries) {
         Map<String, Long> existingMethods = getExistingMethods(customerId);
         Set<String> incompleteMethods = getIncompleteMethods(customerId);
@@ -120,22 +143,22 @@ public class ImportDAOImpl implements ImportDAO {
 
         importNewMethods(customerId, publishedAtMillis, entries, existingMethods);
         updateIncompleteMethods(customerId, publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
-        ensureInitialInvocations(data, customerId, appId, jvmId, entries, existingMethods, existingInvocations);
+        ensureInitialInvocations(data, customerId, appId, environmentId, jvmId, entries, existingMethods, existingInvocations);
 
         customerService.assertDatabaseSize(customerId);
     }
 
     @Override
-    public void importInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invocations) {
+    public void importInvocations(long customerId, long appId, long environmentId, long jvmId, long invokedAtMillis, Set<String> invocations) {
         Map<String, Long> existingMethods = getExistingMethods(customerId);
         Set<Long> existingInvocations = getExistingInvocations(customerId, appId, jvmId);
 
-        doImportInvocations(customerId, appId, jvmId, invokedAtMillis, invocations, existingMethods, existingInvocations);
+        doImportInvocations(customerId, appId, environmentId, jvmId, invokedAtMillis, invocations, existingMethods, existingInvocations);
 
         customerService.assertDatabaseSize(customerId);
     }
 
-    private void doImportInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,
+    private void doImportInvocations(long customerId, long appId, long environmentId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,
                                      Map<String, Long> existingMethods, Set<Long> existingInvocations) {
         for (String signature : invokedSignatures) {
             Long methodId = existingMethods.get(signature);
@@ -150,7 +173,7 @@ public class ImportDAOImpl implements ImportDAO {
             } else {
                 logger.trace("Inserting invocation {}", signature);
                 jdbcTemplate
-                    .update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, SignatureStatus2.NOT_FOUND_IN_CODE_BASE,
+                    .update(new InsertInvocationStatement(customerId, appId, environmentId, jvmId, methodId, SignatureStatus2.NOT_FOUND_IN_CODE_BASE,
                                                           invokedAtMillis, 1L));
             }
         }
@@ -219,7 +242,7 @@ public class ImportDAOImpl implements ImportDAO {
         logger.debug("Updated {} incomplete methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private void ensureInitialInvocations(CommonPublicationData2 data, long customerId, long appId,
+    private void ensureInitialInvocations(CommonPublicationData2 data, long customerId, long appId, long environmentId,
                                           long jvmId, Collection<CodeBaseEntry2> entries,
                                           Map<String, Long> existingMethods, Set<Long> existingInvocations) {
         long startedAtMillis = System.currentTimeMillis();
@@ -229,7 +252,7 @@ public class ImportDAOImpl implements ImportDAO {
             long methodId = existingMethods.get(entry.getSignature());
             if (!existingInvocations.contains(methodId)) {
                 SignatureStatus2 initialStatus = calculateInitialStatus(data, entry);
-                jdbcTemplate.update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, initialStatus,
+                jdbcTemplate.update(new InsertInvocationStatement(customerId, appId, environmentId, jvmId, methodId, initialStatus,
                                                                   0L, 0L));
                 existingInvocations.add(methodId);
                 importCount += 1;
@@ -366,6 +389,7 @@ public class ImportDAOImpl implements ImportDAO {
     private class InsertInvocationStatement implements PreparedStatementCreator {
         private final long customerId;
         private final long appId;
+        private final long environmentId;
         private final long jvmId;
         private final long methodId;
         private final SignatureStatus2 status;
@@ -376,11 +400,12 @@ public class ImportDAOImpl implements ImportDAO {
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
                 con.prepareStatement(
-                    "INSERT INTO invocations(customerId, applicationId, jvmId, methodId, status, invokedAtMillis, invocationCount) " +
-                        "VALUES(?, ?, ?, ?, ?, ?, ?)");
+                    "INSERT INTO invocations(customerId, applicationId, environmentId, jvmId, methodId, status, invokedAtMillis, invocationCount) " +
+                        "VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
             int column = 0;
             ps.setLong(++column, customerId);
             ps.setLong(++column, appId);
+            ps.setLong(++column, environmentId);
             ps.setLong(++column, jvmId);
             ps.setLong(++column, methodId);
             ps.setString(++column, status.name());

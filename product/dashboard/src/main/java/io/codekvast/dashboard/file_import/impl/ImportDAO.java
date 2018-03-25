@@ -43,13 +43,22 @@ public interface ImportDAO {
     long importApplication(CommonPublicationData2 commonData);
 
     /**
+     * Inserts or updates a row in the environments table.
+     *
+     * @param commonData    The JVM data
+     * @return The primary key of the inserted or updated environments row.
+     */
+    long importEnvironment(CommonPublicationData2 commonData);
+
+    /**
      * Inserts or updates a row in the jvms table.
      *
      * @param commonData    The JVM data
      * @param applicationId The value returned from {@link #importApplication(CommonPublicationData2)}
+     * @param environmentId The value returned from {@link #importEnvironment(CommonPublicationData2)}
      * @return The primary key of the inserted or updated jvms row.
      */
-    long importJvm(CommonPublicationData2 commonData, long applicationId);
+    long importJvm(CommonPublicationData2 commonData, long applicationId, long environmentId);
 
     /**
      * Inserts missing rows into the database's methods and invocations tables. Does never update existing rows.
@@ -57,11 +66,12 @@ public interface ImportDAO {
      * @param data              The common publication data
      * @param customerId        The customer ID
      * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData2)}
+     * @param environmentId The value returned from {@link #importEnvironment(CommonPublicationData2)}
      * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData2, long)}
      * @param publishedAtMillis The timestamp the publication was published.
      * @param entries           The collection of code base entries to store.
      */
-    void importMethods(CommonPublicationData2 data, long customerId, long appId, long jvmId,
+    void importMethods(CommonPublicationData2 data, long customerId, long appId, long environmentId, long jvmId,
                        long publishedAtMillis, Collection<CodeBaseEntry2> entries);
 
     /**
@@ -69,9 +79,10 @@ public interface ImportDAO {
      *
      * @param customerId      The customer ID
      * @param appId           The application ID returned by {@link #importApplication(CommonPublicationData2)}
+     * @param environmentId The value returned from {@link #importEnvironment(CommonPublicationData2)}
      * @param jvmId           The JVM ID returned by {@link #importJvm(CommonPublicationData2, long)}
      * @param invokedAtMillis The start of the recording interval.
      * @param invocations     The set of signatures that were invoked in this recording interval.
      */
-    void importInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invocations);
+    void importInvocations(long customerId, long appId, long environmentId, long jvmId, long invokedAtMillis, Set<String> invocations);
 }
