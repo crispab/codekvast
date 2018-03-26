@@ -70,7 +70,8 @@ private String startSystemTestEnvironment() {
         "--server.port=$systemTestAppPort " +
         "--management.server.port=$systemTestManagementPort " +
         "--spring.datasource.url=$jdbcUrl " +
-        "--codekvast.dashboardJwtSecret=secret "
+        "--codekvast.dashboardJwtSecret=secret " +
+        "--logging.file=${buildDir}/log/system-test.log "
 
     launchAppAndWaitForReady(command)
     systemTestEndpointFile.text = getSystemTestEndpoint()
@@ -229,7 +230,11 @@ def launchAppAndWaitForReady(String command) {
             sleep 2000
             return
         } catch (e) {
-            logger.debug("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+            if (attempt < 15) {
+                logger.debug("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+            } else {
+                logger.lifecycle("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+            }
         }
         attempt += 1
         sleep(1000)

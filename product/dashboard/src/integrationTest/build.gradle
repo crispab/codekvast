@@ -4,10 +4,16 @@ testSets {
     integrationTest
 }
 
-integrationTest.mustRunAfter test
-check.dependsOn integrationTest
-
 dependencies {
     integrationTestCompile project(':product:testsupport')
     integrationTestCompileOnly lombok
 }
+
+integrationTest {
+    doFirst {
+        mkdir "$buildDir/log"
+    }
+}
+
+integrationTest.mustRunAfter test
+check.dependsOn integrationTest
