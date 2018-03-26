@@ -13,16 +13,16 @@ declare s3_bucket="s3://io.codekvast.default.prod.backup"
 declare tmp_dir=$(mktemp -t -d fetch-database.XXXXX)
 trap "rm -fr ${tmp_dir}" EXIT
 
-echo "Removing $mysql_datadir/*"
-sudo rm -fr ${mysql_datadir}/*
-
 s3cmd get ${s3_bucket}/${tarball} ${tmp_dir}
-
-echo "Unpacking ${tmp_dir}/${tarball} into ${mysql_datadir} ..."
-sudo tar xf ${tmp_dir}/${tarball} -C ${mysql_datadir}
 
 echo "docker stop codekvast_database"
 docker stop codekvast_database
+
+echo "Removing $mysql_datadir/*"
+sudo rm -fr ${mysql_datadir}/*
+
+echo "Unpacking ${tmp_dir}/${tarball} into ${mysql_datadir}/ ..."
+sudo tar xf ${tmp_dir}/${tarball} -C ${mysql_datadir}
 
 echo "Starting a temporary MariaDB container without grant tables..."
 declare container=$(docker run -d -v ${mysql_datadir}:/var/lib/mysql mariadb:10 --skip-grant-tables)
@@ -41,4 +41,5 @@ echo "Stopping and removing temporary container..."
 docker stop ${container}
 docker rm -v ${container}
 
-../gradlew :product:login:startMariadb
+cd ..
+./gradlew :product:login:startMariadb

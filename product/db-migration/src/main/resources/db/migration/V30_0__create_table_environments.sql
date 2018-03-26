@@ -35,7 +35,7 @@ UPDATE jvms SET environment = '<default>' WHERE environment = '';
 INSERT INTO environments (customerId, name) SELECT DISTINCT customerId, environment FROM jvms;
 
 ALTER TABLE jvms
-  ADD COLUMN environmentId BIGINT AFTER customerId,
+  ADD COLUMN environmentId BIGINT AFTER applicationId,
   ADD CONSTRAINT ix_jvm_environmentId FOREIGN KEY (environmentId) REFERENCES environments (id);
 
 UPDATE jvms j1
@@ -44,7 +44,8 @@ UPDATE jvms j1
 SET j1.environmentId = e.id;
 
 ALTER TABLE invocations
-  ADD COLUMN environmentId BIGINT AFTER customerId,
+  ADD COLUMN id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST,
+  ADD COLUMN environmentId BIGINT AFTER applicationId,
   ADD CONSTRAINT ix_invocation_environmentId FOREIGN KEY (environmentId) REFERENCES environments (id);
 
 UPDATE invocations i1
