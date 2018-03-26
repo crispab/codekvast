@@ -254,6 +254,7 @@ public class CustomerServiceImpl implements CustomerService {
         deleteFromTable("invocations", customerId);
         deleteFromTable("methods", customerId);
         deleteFromTable("jvms", customerId);
+        deleteFromTable("environments", customerId);
         deleteFromTable("applications", customerId);
         deleteFromTable("users", customerId);
         deleteFromTable("agent_state", customerId);

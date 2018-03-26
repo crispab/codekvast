@@ -158,8 +158,8 @@ public class MariadbIntegrationTest {
         int methodId = 0;
         for (SignatureStatus2 status : SignatureStatus2.values()) {
             methodId += 1;
-            jdbcTemplate.update("INSERT INTO invocations(customerId, applicationId, methodId, jvmId, invokedAtMillis, " +
-                                    "invocationCount, status) VALUES(1, 11, ?, 1, ?, 0, ?)",
+            jdbcTemplate.update("INSERT INTO invocations(customerId, applicationId, environmentId, methodId, jvmId, invokedAtMillis, " +
+                                    "invocationCount, status) VALUES(1, 1, 1, ?, 1, ?, 0, ?)",
                                 methodId, now, status.toString());
         }
 
