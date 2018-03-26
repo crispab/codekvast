@@ -32,29 +32,69 @@
                     <div class="form-group row">
                         <label class="col-2">Include:</label>
                         <div class="form-check ml-3">
-                            <label for="includeOnlyNeverInvokedMethods" class="form-check-label">
+                            <label for="includeOnlyNeverInvokedMethods" class="form-check-label"
+                                   [ngbPopover]="onlyNeverInvokedPopover"
+                                   popoverTitle="Only never invoked methods"
+                                   triggers="mouseenter:mouseleave"
+                                   placement="right"
+                                   container="body">
                                 <input class="form-check-input"
                                        id="includeOnlyNeverInvokedMethods"
                                        name="includeOnlyNeverInvokedMethods"
                                        [(ngModel)]="state.includeOnlyNeverInvokedMethods"
                                        type="checkbox"> Only never invoked methods</label>
                         </div>
+
+                        <ng-template #onlyNeverInvokedPopover>
+                            <p>Don't include methods that have been invoked at some time.</p>
+                            <p>Checking this disables Cutoff Date.</p>
+                        </ng-template>
+
                         <div class="form-check ml-3">
-                            <label for="includeSyntheticMethods" class="form-check-label">
+                            <label for="includeSyntheticMethods" class="form-check-label"
+                                   [ngbPopover]="syntheticPopover"
+                                   popoverTitle="Synthetic methods"
+                                   triggers="mouseenter:mouseleave"
+                                   placement="right"
+                                   container="body">
                                 <input class="form-check-input"
                                        id="includeSyntheticMethods"
                                        name="includeSyntheticMethods"
                                        [(ngModel)]="state.includeSyntheticMethods"
                                        type="checkbox"> Synthetic methods</label>
                         </div>
+
+                        <ng-template #syntheticPopover>
+                            <p>Also include methods that are not written by a human.
+                            Examples:</p>
+                            <ul>
+                                <li>Methods generated at compile time by a Scala or Kotlin compiler.</li>
+                                <li>Methods generated at compile time by an annotation processor.</li>
+                                <li>Methods generated in runtime by e.g., Guice or Spring AOP.</li>
+                            </ul>
+                        </ng-template>
+
                         <div class="form-check ml-3">
-                            <label for="includeUntrackedMethods" class="form-check-label">
+                            <label for="includeUntrackedMethods" class="form-check-label"
+                                   [ngbPopover]="untrackedPopover"
+                                   popoverTitle="Untracked methods"
+                                   triggers="mouseenter:mouseleave"
+                                   placement="right"
+                                   container="body">
                                 <input class="form-check-input"
                                        id="includeUntrackedMethods"
                                        name="includeUntrackedMethods"
                                        [(ngModel)]="state.includeUntrackedMethods"
-                                       type="checkbox"> Untracked methods</label>
+                                       type="checkbox">Untracked methods</label>
                         </div>
+                        <ng-template #untrackedPopover>
+                            <p>Also include methods that are <em>not</em> tracked by Codekvast, such as</p>
+                            <ul>
+                                <li>Trivial methods like <code>equals()</code> and <code>hashCode()</code></li>
+                                <li>Methods belonging to excluded packages.</li>
+                                <li>Methods with too low visibility.</li>
+                            </ul>
+                        </ng-template>
 
                     </div>
 

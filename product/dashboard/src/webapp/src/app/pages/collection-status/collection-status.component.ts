@@ -16,7 +16,7 @@ import {Settings} from '../../components/settings.model';
 export class CollectionStatusComponent implements OnInit, OnDestroy {
     settings: Settings;
     state: CollectionStatusComponentState;
-    agentsLabel = 'agents';
+    agentsLabel = 'applications';
 
     constructor(private stateService: StateService, private api: DashboardApiService, private agePipe: AgePipe) {
     }
@@ -27,7 +27,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
             () => new CollectionStatusComponentState(this.agePipe, this.api));
         this.state.init();
         this.stateService.getAuthData().subscribe((ad: AuthData) => {
-            this.agentsLabel = ad && ad.source === 'heroku' ? 'dynos' : 'agents';
+            this.agentsLabel = ad && ad.source === 'heroku' ? 'dynos' : 'applications';
         })
     }
 

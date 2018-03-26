@@ -38,12 +38,8 @@
         <li class="nav-item px-3"><a class="btn btn-info" id="api-docs" href='/swagger-ui.html' target="_new">API docs</a></li>
         <li class="nav-item px-3"><span class="btn disabled"
                                         container="body"
-                                        [ngbPopover]="serverVersion"
+                                        ngbPopover="Server version {{ getServerVersion() }}"
                                         triggers="mouseenter:mouseleave"
                                         placement="top">Codekvast Dashboard <span id="codekvastVersion">{{ getVersion() }}</span></span></li>
     </ul>
-
-    <ng-template #serverVersion>
-        <p>Server version {{ getServerVersion() }}</p>
-    </ng-template>
 </footer>

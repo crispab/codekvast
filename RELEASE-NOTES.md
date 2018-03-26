@@ -2,6 +2,7 @@
 
 ## 0.23.1
 1. Database schema changes: applications, environments, jvms, invocations.
+1. Added popovers.
 
 ## 0.23.0
 1. Upgraded to Spring Boot 2, Spring Framework 5, Spring Security 5, Flyway 4.2.0.

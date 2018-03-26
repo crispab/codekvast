@@ -42,7 +42,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean importPublication(CodeBasePublication2 publication) {
-        logger.debug("Importing {}", publication);
+        logger.info("Importing {}", publication);
 
         CommonPublicationData2 data = publication.getCommonData();
         long customerId = data.getCustomerId();

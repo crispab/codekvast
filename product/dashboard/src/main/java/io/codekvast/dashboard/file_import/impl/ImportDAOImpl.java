@@ -75,7 +75,7 @@ public class ImportDAOImpl implements ImportDAO {
 
         Long result = jdbcTemplate
             .queryForObject("SELECT id FROM applications WHERE customerId = ? AND name = ?", Long.class, customerId, name);
-        logger.debug("application {}:{} has id {}", customerId, name, result);
+        logger.debug("Application {}:{} has id {}", customerId, name, result);
         return result;
     }
 
@@ -99,7 +99,7 @@ public class ImportDAOImpl implements ImportDAO {
 
         Long result = jdbcTemplate
             .queryForObject("SELECT id FROM environments WHERE customerId = ? AND name = ?", Long.class, customerId, name);
-        logger.debug("environment {} {} has id {}", customerId, name, result);
+        logger.debug("Environment {}:{} has id {}", customerId, name, result);
         return result;
     }
 

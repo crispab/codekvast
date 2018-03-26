@@ -66,6 +66,8 @@ public class PublicationImporterImpl implements PublicationImporter {
 
     @Override
     public boolean importPublicationFile(File file) {
+        logger.info("Processing {}", file);
+
         try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 
             long startedAt = System.currentTimeMillis();

@@ -88,7 +88,7 @@ public class FileImportTask {
     private void deleteFile(File file) {
         boolean deleted = file.delete();
         if (deleted) {
-            logger.info("Deleted {}", file);
+            logger.debug("Deleted {}", file);
         } else {
             logger.warn("Could not delete {}", file);
         }

@@ -151,7 +151,7 @@ public class AgentServiceImpl implements AgentService {
         File result = File.createTempFile(publicationType + "-", ".ser", settings.getQueuePath());
         Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
-        logger.debug("Saved uploaded {} publication to {}", publicationType, result);
+        logger.info("Saved uploaded {} publication to {}", publicationType, result);
         return result;
     }
 

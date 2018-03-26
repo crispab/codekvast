@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Fetches yesterday's database backup from S3 to the Docker container codekvast_database
+# Fetches a database backup (default yesterday's) from S3 to the Docker container codekvast_database
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
@@ -10,7 +10,7 @@ declare tarball=mariadb-backup-${weekday}.tar.gz
 declare mysql_datadir=~/.codekvast_database
 declare s3_bucket="s3://io.codekvast.default.prod.backup"
 
-declare tmp_dir=$(mktemp -t -d fetch-database.XXXXX)
+declare tmp_dir=$(mktemp -t -d fetch-database.XXXXXXX)
 trap "rm -fr ${tmp_dir}" EXIT
 
 s3cmd get ${s3_bucket}/${tarball} ${tmp_dir}
