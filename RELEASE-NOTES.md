@@ -1,7 +1,10 @@
 # Codekvast Release Notes
 
+## 0.23.1
+1. Database schema changes: applications, environments, jvms, invocations.
+
 ## 0.23.0
-1. Upgraded to Spring Boot 2, Spring Framework 5, Spring Security 5, Flyway 4.2.0
+1. Upgraded to Spring Boot 2, Spring Framework 5, Spring Security 5, Flyway 4.2.0.
 
 ## 0.22.5
 1. Implemented login service.
