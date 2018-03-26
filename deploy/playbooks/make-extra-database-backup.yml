@@ -1,0 +1,13 @@
+---
+#-----------------------------------------------------------------------------------------------------------
+# Playbook that makes a extra backup of the production database to S3
+#-----------------------------------------------------------------------------------------------------------
+- name: Make extra production database backup
+  hosts: tag_Name_Codekvast_default_prod_database
+  user: ubuntu
+  become: yes
+
+  tasks:
+  - name: "Making an extra database backup of {{ ec2_tag_CNAME }}"
+    shell: /root/mariadb-backup extra
+
