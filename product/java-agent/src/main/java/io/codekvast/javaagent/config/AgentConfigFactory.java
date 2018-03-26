@@ -36,7 +36,7 @@ public class AgentConfigFactory {
 
     private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL = false;
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
-    private static final String DEFAULT_ENVIRONMENT = "";
+    private static final String DEFAULT_ENVIRONMENT = "<default>";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final String DEFAULT_SERVER_URL = "http://localhost:8081";
     private static final String DEFAULT_HTTP_PROXY_HOST = null;

@@ -61,8 +61,6 @@ import java.util.stream.Collectors;
 @Validated
 public class DashboardServiceImpl implements DashboardService {
 
-    private static final String UNKNOWN_ENVIRONMENT = "<unknown>";
-
     private final JdbcTemplate jdbcTemplate;
     private final CustomerIdProvider customerIdProvider;
     private final CustomerService customerService;
@@ -190,12 +188,13 @@ public class DashboardServiceImpl implements DashboardService {
         jdbcTemplate.query(
             "SELECT agent_state.enabled, agent_state.lastPolledAt, agent_state.nextPollExpectedAt, " +
                 "jvms.id AS jvmId, jvms.startedAt, jvms.publishedAt, jvms.methodVisibility, jvms.packages, jvms.excludePackages, " +
-                "jvms.agentVersion, jvms.environment, jvms.tags, " +
-                "applications.name AS appName, applications.version AS appVersion " +
-                "FROM agent_state, jvms, applications " +
+                "jvms.agentVersion, jvms.tags, jvms.applicationVersion AS appVersion, " +
+                "applications.name AS appName, environments.name AS envName " +
+                "FROM agent_state, jvms, applications, environments " +
                 "WHERE jvms.customerId = ? " +
                 "AND jvms.uuid = agent_state.jvmUuid " +
                 "AND jvms.applicationId = applications.id " +
+                "AND jvms.environmentId = environments.id " +
                 "ORDER BY jvms.id ",
 
             rs -> {
@@ -213,7 +212,7 @@ public class DashboardServiceImpl implements DashboardService {
                                    .agentVersion(rs.getString("agentVersion"))
                                    .appName(rs.getString("appName"))
                                    .appVersion(rs.getString("appVersion"))
-                                   .environment(getStringOrDefault(rs, "environment", UNKNOWN_ENVIRONMENT))
+                                   .environment(rs.getString("envName"))
                                    .excludePackages(rs.getString("excludePackages"))
                                    .id(rs.getLong("jvmId"))
                                    .methodVisibility(rs.getString("methodVisibility"))
@@ -252,14 +251,15 @@ public class DashboardServiceImpl implements DashboardService {
             // method ID.
             // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
 
-            return String.format("SELECT i.methodId, a.name AS appName, a.version AS appVersion,\n" +
-                                     "  i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.environment, j.hostname, j.tags,\n" +
+            return String.format("SELECT i.methodId, a.name AS appName, j.applicationVersion AS appVersion,\n" +
+                                     "  e.name AS envName, i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.hostname, j.tags,\n" +
                                      "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m.modifiers, m" +
                                      ".packageName\n" +
                                      "  FROM invocations i\n" +
-                                     "  JOIN applications a ON a.id = i.applicationId \n" +
-                                     "  JOIN methods m ON m.id = i.methodId\n" +
-                                     "  JOIN jvms j ON j.id = i.jvmId\n" +
+                                     "  INNER JOIN applications a ON a.id = i.applicationId \n" +
+                                     "  INNER JOIN environments e ON e.id = i.environmentId \n" +
+                                     "  INNER JOIN methods m ON m.id = i.methodId\n" +
+                                     "  INNER JOIN jvms j ON j.id = i.jvmId\n" +
                                      "  WHERE i.customerId = ? AND %s\n" +
                                      "  ORDER BY i.methodId ASC", whereClause);
         }
@@ -298,7 +298,7 @@ public class DashboardServiceImpl implements DashboardService {
                                            .build());
 
             queryState.saveEnvironment(EnvironmentDescriptor.builder()
-                                                            .name(getStringOrDefault(rs, "environment", UNKNOWN_ENVIRONMENT))
+                                                            .name(rs.getString("envName"))
                                                             .hostname(rs.getString("hostname"))
                                                             .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
                                                             .collectedSinceMillis(startedAt)

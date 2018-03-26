@@ -61,23 +61,21 @@ public class ImportDAOImpl implements ImportDAO {
     public long importApplication(CommonPublicationData2 data) {
         long customerId = data.getCustomerId();
         String name = data.getAppName();
-        String version = data.getAppVersion();
         Timestamp createdAt = new Timestamp(data.getJvmStartedAtMillis());
 
         int updated = jdbcTemplate.update("UPDATE applications SET createdAt = LEAST(createdAt, ?) " +
-                                              "WHERE customerId = ? AND name = ? AND version = ?", createdAt, customerId, name, version);
+                                              "WHERE customerId = ? AND name = ?", createdAt, customerId, name);
         if (updated != 0) {
-            logger.trace("Updated application {} {}", name, version);
+            logger.trace("Updated application {}", name);
         } else {
-            jdbcTemplate.update("INSERT INTO applications(customerId, name, version, createdAt) VALUES (?, ?, ?, ?)",
-                                customerId, name, version, createdAt);
-            logger.trace("Inserted application {} {} {} {}", customerId, name, version, createdAt);
+            jdbcTemplate.update("INSERT INTO applications(customerId, name, createdAt) VALUES (?, ?, ?)",
+                                customerId, name, createdAt);
+            logger.trace("Inserted application {} {} {}", customerId, name, createdAt);
         }
 
         Long result = jdbcTemplate
-            .queryForObject("SELECT id FROM applications WHERE customerId = ? AND name = ? AND version = ?", Long.class, customerId, name,
-                            version);
-        logger.debug("application {} {} {} has id {}", customerId, name, version, result);
+            .queryForObject("SELECT id FROM applications WHERE customerId = ? AND name = ?", Long.class, customerId, name);
+        logger.debug("application {}:{} has id {}", customerId, name, result);
         return result;
     }
 
@@ -117,10 +115,10 @@ public class ImportDAOImpl implements ImportDAO {
             logger.trace("Updated JVM {}", data.getJvmUuid());
         } else {
             jdbcTemplate.update(
-                "INSERT INTO jvms(customerId, applicationId, environmentId, uuid, startedAt, publishedAt, methodVisibility, packages," +
+                "INSERT INTO jvms(customerId, applicationId, applicationVersion, environmentId, uuid, startedAt, publishedAt, methodVisibility, packages," +
                     " excludePackages, computerId, hostname, agentVersion, tags) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                customerId, applicationId, environmentId, data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt,
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                customerId, applicationId, data.getAppVersion(), environmentId, data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt,
                 data.getMethodVisibility(), data.getPackages().toString(), data.getExcludePackages().toString(), data.getComputerId(),
                 data.getHostname(), data.getAgentVersion(), data.getTags());
             logger.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
@@ -173,7 +171,7 @@ public class ImportDAOImpl implements ImportDAO {
             } else {
                 logger.trace("Inserting invocation {}", signature);
                 jdbcTemplate
-                    .update(new InsertInvocationStatement(customerId, appId, environmentId, jvmId, methodId, SignatureStatus2.NOT_FOUND_IN_CODE_BASE,
+                    .update(new InsertInvocationStatement(customerId, appId, environmentId, jvmId, methodId, SignatureStatus2.INVOKED,
                                                           invokedAtMillis, 1L));
             }
         }
