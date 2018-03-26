@@ -40,7 +40,7 @@ dependencies {
     integrationTestCompile "com.github.tomakehurst:wiremock:2.15.0"
     integrationTestRuntime logback
 
-    jacocoagent 'org.jacoco:org.jacoco.agent:0.8.0:runtime@jar'
+    jacocoagent "org.jacoco:org.jacoco.agent:$jacocoVersion:runtime@jar"
 }
 
 jar {
