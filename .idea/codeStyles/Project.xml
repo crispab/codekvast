@@ -20,7 +20,10 @@
       <option name="KEEP_BLANK_LINES" value="true" />
     </Properties>
     <SqlCodeStyleSettings>
+      <option name="INDENT_SELECT_INTO_CLAUSE" value="true" />
+      <option name="NEW_LINE_AFTER_SELECT_ITEM" value="false" />
       <option name="QUOTE_IDENTIFIER" value="1" />
+      <option name="KEYWORD_CASE" value="0" />
     </SqlCodeStyleSettings>
     <TypeScriptCodeStyleSettings>
       <option name="USE_DOUBLE_QUOTES" value="false" />
