@@ -50,7 +50,11 @@ public class AgentDescriptor {
 
     private final String excludePackages;
 
+    @NonNull
     private final String environment;
+
+    @NonNull
+    private final String hostname;
 
     @NonNull
     private final String tags;

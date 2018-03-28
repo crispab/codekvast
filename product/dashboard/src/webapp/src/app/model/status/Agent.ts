@@ -6,6 +6,7 @@ export class Agent {
     packages: string;
     excludePackages: string;
     environment: string;
+    hostname: string;
     tags: string;
     methodVisibility: string;
     startedAtMillis: number;

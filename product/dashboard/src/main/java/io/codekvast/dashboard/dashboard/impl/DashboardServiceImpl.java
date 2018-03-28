@@ -188,7 +188,7 @@ public class DashboardServiceImpl implements DashboardService {
         jdbcTemplate.query(
             "SELECT agent_state.enabled, agent_state.lastPolledAt, agent_state.nextPollExpectedAt, " +
                 "jvms.id AS jvmId, jvms.startedAt, jvms.publishedAt, jvms.methodVisibility, jvms.packages, jvms.excludePackages, " +
-                "jvms.agentVersion, jvms.tags, jvms.applicationVersion AS appVersion, " +
+                "jvms.hostname, jvms.agentVersion, jvms.tags, jvms.applicationVersion AS appVersion, " +
                 "applications.name AS appName, environments.name AS envName " +
                 "FROM agent_state, jvms, applications, environments " +
                 "WHERE jvms.customerId = ? " +
@@ -215,6 +215,7 @@ public class DashboardServiceImpl implements DashboardService {
                                    .environment(rs.getString("envName"))
                                    .excludePackages(rs.getString("excludePackages"))
                                    .id(rs.getLong("jvmId"))
+                                   .hostname(rs.getString("hostname"))
                                    .methodVisibility(rs.getString("methodVisibility"))
                                    .nextPublicationExpectedAtMillis(nextPublicationExpectedAt.toEpochMilli())
                                    .nextPollExpectedAtMillis(nextPollExpectedAt.getTime())

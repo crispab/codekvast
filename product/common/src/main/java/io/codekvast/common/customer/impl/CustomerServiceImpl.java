@@ -74,7 +74,8 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerData> getCustomerDataByUserEmail(String email) {
         List<CustomerData> result = new ArrayList<>();
 
-        Set<Long> customerIds = new HashSet<>(jdbcTemplate.queryForList("SELECT id FROM customers WHERE contactEmail = ?", Long.class, email));
+        Set<Long> customerIds =
+            new HashSet<>(jdbcTemplate.queryForList("SELECT id FROM customers WHERE contactEmail = ?", Long.class, email));
         customerIds.addAll(jdbcTemplate.queryForList("SELECT customerId FROM users WHERE email = ?", Long.class, email));
 
         for (Long customerId : customerIds) {
@@ -152,7 +153,6 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             slackService.sendNotification(
                 String.format("Trial period started for `%s`, ends at %s", result, result.getTrialPeriodEndsAt()),
-
                 SlackService.Channel.BUSINESS_EVENTS);
             logger.info("Started trial period for {}", result);
         }
@@ -171,6 +171,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (updated <= 0) {
             logger.warn("Failed to record collection started for {}", result);
         } else {
+            slackService.sendNotification(String.format("Collection started for `%s`", result), SlackService.Channel.BUSINESS_EVENTS);
             logger.info("Collection started for {}", result);
         }
         return result;
@@ -277,7 +278,7 @@ public class CustomerServiceImpl implements CustomerService {
                                                                   ".trialPeriodEndsAt, " +
                                                                   " pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp" +
                                                                   ".publishIntervalSeconds, pp.pollIntervalSeconds, " +
-                                                                  " pp.retryIntervalSeconds " +
+                                                                  " pp.retryIntervalSeconds, pp.maxCollectionPeriodDays " +
                                                                   "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = " +
                                                                   "c.id " +
                                                                   "WHERE " + where_clause, identifier);
@@ -306,7 +307,8 @@ public class CustomerServiceImpl implements CustomerService {
                                         .publishIntervalSeconds(
                                             getOrDefault(result, "publishIntervalSeconds", ppd.getPublishIntervalSeconds()))
                                         .retryIntervalSeconds(getOrDefault(result, "retryIntervalSeconds", ppd.getRetryIntervalSeconds()))
-                                        .maxCollectionPeriodDays(ppd.getMaxCollectionPeriodDays())
+                                        .maxCollectionPeriodDays(
+                                            getOrDefault(result, "maxCollectionPeriodDays", ppd.getMaxCollectionPeriodDays()))
                                         .build())
                            .build();
     }
