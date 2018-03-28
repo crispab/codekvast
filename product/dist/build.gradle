@@ -1,8 +1,5 @@
 apply plugin: 'distribution'
-apply plugin: 'com.github.mgk.gradle.s3'
 apply plugin: 'org.kordamp.markdown.convert'
-
-import com.github.mgk.gradle.*
 
 description = 'Package codekvast-agent.zip and uploads it to http://download.codekvast.io'
 
@@ -25,20 +22,6 @@ distributions {
             }
         }
     }
-
-}
-
-s3 {
-    profile = 'codekvast'
-    bucket = codekvastDownloadPrefix - 'http://' - 'https://'
-}
-
-task uploadJavaAgentDistZip(type: S3Upload, dependsOn: agentDistZip) {
-    description "Uploads codekvast-agent-${codekvastVersion}.zip to $codekvastDownloadPrefix"
-    group "publish"
-
-    file agentDistZip.outputs.files.asPath
-    key "codekvast-agent-${codekvastVersion}.zip"
 }
 
 task fetchReleaseNotesMd(type: Sync) {
@@ -56,15 +39,6 @@ markdownToHtml {
     outputEncoding 'UTF-8'
 }
 
-task uploadReleaseNotes(type: S3Upload, dependsOn: markdownToHtml) {
-    description "Uploads RELEASE-NOTES.html to $codekvastDownloadPrefix"
-    group "publish"
-
-    file "$buildDir/gen-html/RELEASE-NOTES.html"
-    key 'RELEASE-NOTES.html'
-    overwrite true
-}
-
 task createIndexHtml(type: Copy) {
     description "Creates index.html"
     group "publish"
@@ -74,24 +48,25 @@ task createIndexHtml(type: Copy) {
     expand(project.properties)
 }
 
-task uploadIndexHtml(type: S3Upload, dependsOn: createIndexHtml) {
-    description "Uploads index.html to $codekvastDownloadPrefix"
-    group "publish"
-
-    file "$buildDir/gen-html/index.html"
-    key 'index.html'
-    overwrite true
-}
-
-task uploadLogo(type: S3Upload) {
-    description "Uploads the logo to $codekvastDownloadPrefix"
-    group "publish"
-
-    file "$rootDir/product/graphics/logo-feathers-60x104.png"
-    key 'assets/logo-feathers-60x104.png'
-    overwrite true
-}
-
 task uploadToS3 {
-    dependsOn uploadLogo, uploadReleaseNotes, uploadIndexHtml, uploadJavaAgentDistZip
+    description "Uploads everything to $codekvastDownloadPrefix"
+    group "publish"
+
+    dependsOn agentDistZip, tasks.getByPath(':product:java-agent:javaagents'), markdownToHtml, createIndexHtml
+
+    doLast {
+        putToS3 "$rootDir/product/graphics/logo-feathers-60x104.png", 'assets/logo-feathers-60x104.png'
+        putToS3 "$buildDir/distributions/codekvast-agent-${codekvastVersion}.zip", "codekvast-agent-${codekvastVersion}.zip"
+        putToS3 "$rootDir/product/java-agent/build/javaagents/codekvast-javaagent-${codekvastVersion}.jar", "codekvast-agent-${codekvastVersion}.jar"
+        putToS3 "$buildDir/gen-html/RELEASE-NOTES.html", 'RELEASE-NOTES.html'
+        putToS3 "$buildDir/gen-html/index.html", 'index.html'
+    }
+}
+
+def putToS3(src, dest) {
+    def bucket = codekvastDownloadPrefix - 'http://' - 'https://'
+    def command = "s3cmd --reduced-redundancy --force put ${src} s3://${bucket}/${dest}"
+    logger.lifecycle(command)
+    def result = command.execute().waitFor()
+    assert result == 0: "Failed to execute $command";
 }
