@@ -34,7 +34,7 @@ task fetchReleaseNotesMd(type: Sync) {
 markdownToHtml {
     dependsOn fetchReleaseNotesMd
     sourceDir file("$buildDir/markdown")
-    outputDir file("$buildDir/gen-html")
+    outputDir file("$buildDir/staging")
     inputEncoding 'UTF-8'
     outputEncoding 'UTF-8'
 }
@@ -44,29 +44,32 @@ task createIndexHtml(type: Copy) {
     group "publish"
 
     from file('src/html/index.html')
-    into "$buildDir/gen-html"
+    into "$buildDir/staging"
     expand(project.properties)
+}
+
+task stageForUpload(type: Copy) {
+    dependsOn agentDistZip, tasks.getByPath(':product:java-agent:javaagents'), markdownToHtml, createIndexHtml
+
+    into "$buildDir/staging"
+    from("$rootDir/product/graphics/logo-feathers-60x104.png") {
+        into "assets"
+    }
+    from "$buildDir/distributions/codekvast-agent-${codekvastVersion}.zip"
+    from "$rootDir/product/java-agent/build/javaagents/codekvast-javaagent-${codekvastVersion}.jar"
 }
 
 task uploadToS3 {
     description "Uploads everything to $codekvastDownloadPrefix"
     group "publish"
 
-    dependsOn agentDistZip, tasks.getByPath(':product:java-agent:javaagents'), markdownToHtml, createIndexHtml
+    dependsOn stageForUpload
 
     doLast {
-        putToS3 "$rootDir/product/graphics/logo-feathers-60x104.png", 'assets/logo-feathers-60x104.png'
-        putToS3 "$buildDir/distributions/codekvast-agent-${codekvastVersion}.zip", "codekvast-agent-${codekvastVersion}.zip"
-        putToS3 "$rootDir/product/java-agent/build/javaagents/codekvast-javaagent-${codekvastVersion}.jar", "codekvast-agent-${codekvastVersion}.jar"
-        putToS3 "$buildDir/gen-html/RELEASE-NOTES.html", 'RELEASE-NOTES.html'
-        putToS3 "$buildDir/gen-html/index.html", 'index.html'
+        def bucket = codekvastDownloadPrefix - 'http://' - 'https://'
+        def command = "s3cmd --reduced-redundancy --progress --recursive --force put ${buildDir}/staging s3://${bucket}"
+        logger.lifecycle(command)
+        def result = command.execute().waitFor()
+        assert result == 0: "Failed to execute $command"
     }
-}
-
-def putToS3(src, dest) {
-    def bucket = codekvastDownloadPrefix - 'http://' - 'https://'
-    def command = "s3cmd --reduced-redundancy --force put ${src} s3://${bucket}/${dest}"
-    logger.lifecycle(command)
-    def result = command.execute().waitFor()
-    assert result == 0: "Failed to execute $command";
 }
