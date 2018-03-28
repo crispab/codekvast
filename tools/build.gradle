@@ -36,11 +36,11 @@ private GString buildChromeDriverName() {
 }
 
 task downloadChromeDriver {
-    description = "Downloads Chromedriver from Bintray to be used by web driver tests in other modules"
+    description = "Downloads Chromedriver from downloads.codekvast.io to be used by web driver tests in other modules"
     group "Test support"
 
     def downloadDir = file("$rootDir/.tmp/download")
-    def chromeDriverDownloadUrl = "https://dl.bintray.com/crisp/codekvast/${chromeDriver}"
+    def chromeDriverDownloadUrl = "http://downloads.codekvast.io/${chromeDriver}"
     def dest = file("$downloadDir/$chromeDriver")
 
     inputs.property "chromeDriver", chromeDriver
@@ -60,11 +60,11 @@ task downloadChromeDriver {
 }
 
 task downloadGeckoDriver {
-    description = "Downloads Geckodriver from Bintray to be used by web driver tests in other modules"
+    description = "Downloads Geckodriver from downloads.codekvast.io to be used by web driver tests in other modules"
     group "Test support"
 
     def downloadDir = file("$rootDir/.tmp/download")
-    def geckoDriverDownloadUrl = "https://dl.bintray.com/crisp/codekvast/${geckoDriver}"
+    def geckoDriverDownloadUrl = "http://downloads.codekvast.io/${geckoDriver}"
     def dest = file("$downloadDir/$geckoDriver")
 
     inputs.property "geckoDriver", geckoDriver

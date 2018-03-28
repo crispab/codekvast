@@ -12,13 +12,13 @@ dependencies {
 
 defaultTasks 'run'
 
-ext.tomcatDownloadUrl = "https://dl.bintray.com/crisp/codekvast/apache-tomcat-${tomcatVersion}.zip"
+ext.tomcatDownloadUrl = "http://downloads.codekvast.io/apache-tomcat-${tomcatVersion}.zip"
 ext.tomcatDir = file("$buildDir/tomcat")
 ext.catalinaBase = new File(tomcatDir, "apache-tomcat-${tomcatVersion}")
 ext.catalinaEndorsed = new File(catalinaBase, "endorsed")
 ext.catalinaWebapps = new File(catalinaBase, "webapps")
 
-ext.jenkinsDownloadUrl = "https://dl.bintray.com/crisp/codekvast/jenkins-${jenkinsVersion}.war"
+ext.jenkinsDownloadUrl = "http://downloads.codekvast.io/jenkins-${jenkinsVersion}.war"
 
 task installJenkinsInTomcat7 {
     def downloadDir = file("$rootDir/.tmp/download")
