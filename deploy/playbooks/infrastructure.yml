@@ -26,6 +26,7 @@
       profile: codekvast
       region: "{{ item.region }}"
       name: "{{ item.name }}"
+      policy: "{{ lookup('file', 's3-public-web-site.json') | replace('#bucket-name#', item.name) }}"
       tags:
         Owner: Codekvast
     with_items: "{{ static_web_sites }}"
@@ -40,6 +41,7 @@
       profile: codekvast
       region: "{{ item.region }}"
       name: "{{ item.name }}"
+      suffix: index.html
       state: present
     with_items: "{{ static_web_sites }}"
     loop_control:

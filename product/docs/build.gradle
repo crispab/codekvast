@@ -33,7 +33,7 @@ asciidoctor {
             'aspectjVersion': aspectjVersion,
             'gitTime': project.parent.gitVersionTokens['git.time'],
             'gitId': gitId,
-            'bintrayDownloadPrefix': "$bintrayDownloadPrefix/$codekvastVersion"
+            'codekvastDownloadPrefix': codekvastDownloadPrefix
     ]
 }
 

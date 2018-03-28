@@ -1,6 +1,10 @@
 apply plugin: 'distribution'
-apply plugin: 'com.jfrog.bintray'
-description = 'Packaging Codekvast for distribution'
+apply plugin: 'com.github.mgk.gradle.s3'
+apply plugin: 'org.kordamp.markdown.convert'
+
+import com.github.mgk.gradle.*
+
+description = 'Package codekvast-agent.zip and uploads it to http://download.codekvast.io'
 
 distributions {
 
@@ -24,73 +28,70 @@ distributions {
 
 }
 
-ext.stageDir = file("$buildDir/bintrayStage")
-
-task bintrayStage(type: Sync) {
-    from agentDistZip
-    into stageDir
+s3 {
+    profile = 'codekvast'
+    bucket = codekvastDownloadPrefix - 'http://' - 'https://'
 }
 
-bintrayUpload.dependsOn bintrayStage
+task uploadJavaAgentDistZip(type: S3Upload, dependsOn: agentDistZip) {
+    description "Uploads codekvast-agent-${codekvastVersion}.zip to $codekvastDownloadPrefix"
+    group "publish"
 
-bintray {
-    // These are supposed to be defined in $HOME/.gradle/gradle.properties
-    user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
-    key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
-
-    filesSpec {
-        from stageDir
-        into "/"
-    }
-
-    dryRun = false
-    publish = true
-
-    pkg {
-        userOrg = bintrayUserOrg
-        repo = 'codekvast'
-        name = 'distributions'
-        desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a certain period of time.'
-        websiteUrl = 'http://www.codekvast.io'
-        vcsUrl = 'https://github.com/crispab/codekvast.git'
-        issueTrackerUrl = 'https://github.com/crispab/codekvast/issues'
-        licenses = ['MIT']
-        labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
-        githubRepo = 'crispab/codekvast'
-        githubReleaseNotesFile = 'RELEASE-NOTES.md'
-        publicDownloadNumbers = true
-
-        version {
-            name = project.codekvastVersion
-            vcsTag = project.gitIdFull
-            released = project.gitTimeIso
-        }
-    }
+    file agentDistZip.outputs.files.asPath
+    key "codekvast-agent-${codekvastVersion}.zip"
 }
 
-task bintrayUploadContent(type: Exec, dependsOn: bintrayUpload) {
-    group "Publishing"
-    description "Work-around for bug in gradle-bintray-plugin"
-
-    inputs.dir stageDir
-
-    workingDir "$buildDir/bintrayStage"
-    executable "curl"
-    args argsList()
+task fetchReleaseNotesMd(type: Sync) {
+    from(rootDir) {
+        include "RELEASE-NOTES.md"
+    }
+    into "$buildDir/markdown"
 }
 
-def argsList() {
-    def result = []
+markdownToHtml {
+    dependsOn fetchReleaseNotesMd
+    sourceDir file("$buildDir/markdown")
+    outputDir file("$buildDir/gen-html")
+    inputEncoding 'UTF-8'
+    outputEncoding 'UTF-8'
+}
 
-    def user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
-    def key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
-    def baseUrl = "https://api.bintray.com/content/$bintrayUserOrg/codekvast/distributions/$codekvastVersion/$codekvastVersion"
-    result = ['--user', "$user:$key", '--progress-bar', '--fail']
+task uploadReleaseNotes(type: S3Upload, dependsOn: markdownToHtml) {
+    description "Uploads RELEASE-NOTES.html to $codekvastDownloadPrefix"
+    group "publish"
 
-    if (stageDir.exists()) {
-        stageDir.eachFile {
-            result << baseUrl + "/" + it.name + "?publish=1" << '--upload-file' << it.name
-        }
-    }
-    return result
+    file "$buildDir/gen-html/RELEASE-NOTES.html"
+    key 'RELEASE-NOTES.html'
+    overwrite true
+}
+
+task createIndexHtml(type: Copy) {
+    description "Creates index.html"
+    group "publish"
+
+    from file('src/html/index.html')
+    into "$buildDir/gen-html"
+    expand(project.properties)
+}
+
+task uploadIndexHtml(type: S3Upload, dependsOn: createIndexHtml) {
+    description "Uploads index.html to $codekvastDownloadPrefix"
+    group "publish"
+
+    file "$buildDir/gen-html/index.html"
+    key 'index.html'
+    overwrite true
+}
+
+task uploadLogo(type: S3Upload) {
+    description "Uploads the logo to $codekvastDownloadPrefix"
+    group "publish"
+
+    file "$rootDir/product/graphics/logo-feathers-60x104.png"
+    key 'assets/logo-feathers-60x104.png'
+    overwrite true
+}
+
+task uploadToS3 {
+    dependsOn uploadLogo, uploadReleaseNotes, uploadIndexHtml, uploadJavaAgentDistZip
 }

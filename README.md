@@ -32,13 +32,15 @@ Codekvast is released under the MIT license.
 
 ### Pre-built binaries
 
-Pre-built binaries, and the User Manual are available for download from [Codekvast at Bintray](https://bintray.com/crisp/codekvast/distributions/view#files)
+Pre-built binaries, and the User Manual are available for download from [downloads.codekvast.io](http://downloads.codekvast.io).
 
-* codekvast-agent-x.x.x.zip contains the *Codekvast Agent*.
+* codekvast-agent-x.x.x.zip contains the *Codekvast Agent* as well as a sample `codekvast.conf`.
 
-* CodekvastUserManual.html is a complete User Manual for all three components. It contains installation and configuration guides.
+* CodekvastUserManual.html is a complete User Manual. It contains installation and configuration guides.
 
 * RELEASE-NOTES.md contains release notes.
+
+`codekvast-agent-x.x.x.jar` is also available as a Maven artifact at [jcenter](https://jcenter.bintray.com/io/codekvast/codekvast-agent)
 
 ## Development Guide
 

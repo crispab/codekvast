@@ -65,8 +65,8 @@ git push --force --tags
 # Continue after errors
 set +e
 
-echo "Uploading distributions to Bintray..."
-${GRADLEW} --console=plain :product:dist:bintrayUploadContent
+echo "Uploading to downloads.codekvast.io ..."
+${GRADLEW} --console=plain :product:dist:uploadToS3
 
-echo "Uploading codekvast-agent-${CODEKVAST_VERSION}.jar to jcenter..."
+echo "Uploading codekvast-agent-${CODEKVAST_VERSION}.jar to jcenter ..."
 ${GRADLEW} --console=plain :product:java-agent:bintrayUpload
