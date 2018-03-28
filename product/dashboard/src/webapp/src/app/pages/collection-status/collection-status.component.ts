@@ -16,7 +16,7 @@ import {Settings} from '../../components/settings.model';
 export class CollectionStatusComponent implements OnInit, OnDestroy {
     settings: Settings;
     state: CollectionStatusComponentState;
-    agentsLabel = 'applications';
+    agentsLabel = 'agents';
 
     constructor(private stateService: StateService, private api: DashboardApiService, private agePipe: AgePipe) {
     }
