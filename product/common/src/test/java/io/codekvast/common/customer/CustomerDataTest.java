@@ -25,32 +25,32 @@ public class CustomerDataTest {
                                                           .build();
 
     @Test
-    public void should_not_be_expired_when_no_trial_period() throws Exception {
+    public void should_not_be_expired_when_no_trial_period() {
         assertThat(customerData.isTrialPeriodExpired(now), is(false));
     }
 
     @Test
-    public void should_be_expired_when_after_trialPeriodEndsAt() throws Exception {
+    public void should_be_expired_when_after_trialPeriodEndsAt() {
         CustomerData cd = customerData.toBuilder().trialPeriodEndsAt(now.minusSeconds(1)).build();
         assertThat(cd.isTrialPeriodExpired(now), is(true));
     }
 
     @Test
-    public void should_not_be_expired_when_before_trialPeriodEndsAt() throws Exception {
+    public void should_not_be_expired_when_before_trialPeriodEndsAt() {
         CustomerData cd = customerData.toBuilder().trialPeriodEndsAt(now.plusSeconds(1)).build();
         assertThat(cd.isTrialPeriodExpired(now), is(false));
     }
 
     @Test
-    public void should_have_decent_toString_without_trialPeriod() throws Exception {
+    public void should_have_decent_toString_without_trialPeriod() {
         assertThat(customerData.toString(),
-                   is("CustomerData(customerId=17, customerName=foo, source=bar, pricePlan=PricePlan(name=DEMO, overrideBy=null, " +
+                   is("CustomerData(customerId=17, customerName=foo, source=bar, customerNotes=null, pricePlan=PricePlan(name=DEMO, overrideBy=null, " +
                           "note=null, maxMethods=25000, maxNumberOfAgents=1, publishIntervalSeconds=5, pollIntervalSeconds=5, " +
                           "retryIntervalSeconds=5, maxCollectionPeriodDays=-1), createdAt=null, collectionStartedAt=null, trialPeriodEndsAt=null)"));
     }
 
     @Test
-    public void should_have_decent_toString_with_trialPeriod() throws Exception {
+    public void should_have_decent_toString_with_trialPeriod() {
 
         CustomerData cd = customerData.toBuilder()
                                       .createdAt(COLLECTION_START)
@@ -58,7 +58,7 @@ public class CustomerDataTest {
                                       .trialPeriodEndsAt(TRIAL_PERIOD_END)
                                       .build();
         assertThat(cd.toString(),
-                   is("CustomerData(customerId=17, customerName=foo, source=bar, pricePlan=PricePlan(name=DEMO, overrideBy=null, " +
+                   is("CustomerData(customerId=17, customerName=foo, source=bar, customerNotes=null, pricePlan=PricePlan(name=DEMO, overrideBy=null, " +
                           "note=null, maxMethods=25000, maxNumberOfAgents=1, publishIntervalSeconds=5, pollIntervalSeconds=5, " +
                           "retryIntervalSeconds=5, maxCollectionPeriodDays=-1), createdAt=2017-08-21T16:21:19.695Z, " +
                           "collectionStartedAt=2017-08-21T16:21:19.695Z, trialPeriodEndsAt=2017-09-20T16:21:19.695Z)"));

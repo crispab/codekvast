@@ -13,13 +13,14 @@
                                    [(ngModel)]="state.signature"
                                    type="text"
                                    placeholder="Search method signature">
-
-                            <span class="input-group-addon font-italic"
-                                  container="body"
-                                  [ngbPopover]="signatureHints"
-                                  popoverTitle="IDE hints"
-                                  triggers="mouseenter:mouseleave"
-                                  placement="right">hints</span>
+                            <div class="input-group-append">
+                                <span class="input-group-text font-italic"
+                                      container="body"
+                                      [ngbPopover]="signatureHints"
+                                      popoverTitle="IDE hints"
+                                      triggers="mouseenter:mouseleave"
+                                      placement="right">hints</span>
+                            </div>
 
                             <ng-template #signatureHints>
                                 <p><b>IDEA:</b> Edit-&gt;Copy Reference</p>
@@ -47,7 +48,7 @@
 
                         <ng-template #onlyNeverInvokedPopover>
                             <p>Don't include methods that have been invoked at some time.</p>
-                            <p>Checking this disables Cutoff Date.</p>
+                            <p>Checking 'Only never invoked methods' disables 'Cutoff Date'.</p>
                         </ng-template>
 
                         <div class="form-check ml-3">
@@ -68,7 +69,7 @@
                             <p>Also include methods that are not written by a human.
                             Examples:</p>
                             <ul>
-                                <li>Methods generated at compile time by a Scala or Kotlin compiler.</li>
+                                <li>Methods generated at compile time by e.g., a Scala or Kotlin compiler.</li>
                                 <li>Methods generated at compile time by an annotation processor.</li>
                                 <li>Methods generated in runtime by e.g., Guice or Spring AOP.</li>
                             </ul>
@@ -92,7 +93,7 @@
                             <ul>
                                 <li>Trivial methods like <code>equals()</code> and <code>hashCode()</code></li>
                                 <li>Methods belonging to excluded packages.</li>
-                                <li>Methods with too low visibility.</li>
+                                <li>Methods with a visibility lower than what the agent has been configured to track.</li>
                             </ul>
                         </ng-template>
 
@@ -113,7 +114,9 @@
                                    min="0"
                                    max="3650"
                                    type="number">
-                            <span class="input-group-addon font-italic">days</span>
+                            <div class="input-group-append">
+                                <span class="input-group-text font-italic">days</span>
+                            </div>
                         </div>
 
                         <ng-template #collectedDaysPopover>
@@ -137,14 +140,16 @@
                                    max="3650"
                                    type="number"
                                    [disabled]="state.includeOnlyNeverInvokedMethods">
-                            <span class="input-group-addon font-italic" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">days ago</span>
+                            <div class="input-group-append">
+                                <span class="input-group-text font-italic" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">days ago</span>
+                            </div>
                         </div>
 
                         <ng-template #cutoffDatePopover>
                             <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
-                                been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
+                                have been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
                             </p>
-                            <p>Cutoff Date has no effect if <em>Only never invoked methods</em> is checked</p>
+                            <p>'Cutoff Date' has no effect if 'Only never invoked methods' is checked.</p>
                         </ng-template>
 
                     </div>

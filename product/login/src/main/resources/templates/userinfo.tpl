@@ -42,7 +42,7 @@ layout '_layout.tpl', true,
                         tr {
                             td {
                                 form(method: 'POST', action: "/launch/$c.customerId") {
-                                    button(type: 'submit', class: 'btn btn-link', c.customerName)
+                                    button(type: 'submit', class: 'btn btn-link', c.displayName)
                                 }
                             }
 

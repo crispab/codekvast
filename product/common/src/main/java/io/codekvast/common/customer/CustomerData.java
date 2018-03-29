@@ -44,6 +44,8 @@ public class CustomerData {
     @NonNull
     private String source;
 
+    private String customerNotes;
+
     @NonNull
     private PricePlan pricePlan;
 
@@ -55,5 +57,9 @@ public class CustomerData {
 
     public boolean isTrialPeriodExpired(Instant now) {
         return trialPeriodEndsAt != null && trialPeriodEndsAt.isBefore(now);
+    }
+
+    public String getDisplayName() {
+        return customerNotes != null ? customerNotes : customerName;
     }
 }

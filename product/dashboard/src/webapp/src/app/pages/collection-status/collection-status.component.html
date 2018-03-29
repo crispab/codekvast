@@ -48,7 +48,9 @@
         <div class="d-flex flex-column">
             <ck-settings-editor></ck-settings-editor>
             <div class="input-group">
-                <span class="input-group-addon">Auto-refresh every</span>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Auto-refresh every</span>
+                </div>
                 <input class="form-control"
                        id="refreshInterval"
                        type="number"
@@ -56,16 +58,18 @@
                        max="3600"
                        [(ngModel)]="state.refreshIntervalSeconds"
                        (change)="state.updateRefreshTimer()"/>
-                <span class="input-group-addon">s</span>
-                <span class="input-group-btn">
-                    <button class="btn" (click)="state.toggleAutoRefresh()" title="{{state.autoRefreshButtonText()}}">
-                        <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>
-                    </button>
-                </span>
+                <div class="input-group-append">
+                    <span class="input-group-text">s</span>
+                    <span class="input-group-btn">
+                        <button class="btn" (click)="state.toggleAutoRefresh()" title="{{state.autoRefreshButtonText()}}">
+                            <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </div>
             </div>
             <div *ngIf="state.data">
                 <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | ckAge:settings.dateFormat }} Refreshed
-                                                                        status in {{ state.data.queryTimeMillis }} ms
+                    status in {{ state.data.queryTimeMillis }} ms
                 </small>
             </div>
 
