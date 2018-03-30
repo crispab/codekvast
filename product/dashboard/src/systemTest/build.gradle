@@ -71,7 +71,7 @@ private String startSystemTestEnvironment() {
         "--management.server.port=$systemTestManagementPort " +
         "--spring.datasource.url=$jdbcUrl " +
         "--codekvast.dashboardJwtSecret=secret " +
-        "--logging.file=${buildDir}/log/system-test.log "
+        "--logging.file=${buildDir}/log/systemTest.log "
 
     launchAppAndWaitForReady(command)
     systemTestEndpointFile.text = getSystemTestEndpoint()
