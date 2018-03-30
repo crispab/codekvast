@@ -21,7 +21,7 @@ dependencies {
     compile "com.google.code.gson:gson:$gsonVersion"
 
     runtime project(':product:db-migration')
-    runtime 'org.codehaus.groovy:groovy-templates:2.4.14'
+    runtime 'org.codehaus.groovy:groovy-templates:2.4.15'
 }
 
 run {

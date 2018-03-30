@@ -12,7 +12,7 @@ dependencies {
     classpath 'gradle.plugin.aspectj:gradle-aspectj:0.1.6'
     classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
     classpath 'org.ajoberstar:grgit:1.8.0'
-    classpath 'org.flywaydb:flyway-gradle-plugin:4.2.0'
+    classpath 'org.flywaydb:flyway-gradle-plugin:5.0.7'
     classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.21'
     classpath 'org.kordamp:markdown-gradle-plugin:1.1.0'
     classpath 'org.mariadb.jdbc:mariadb-java-client:2.2.1'
