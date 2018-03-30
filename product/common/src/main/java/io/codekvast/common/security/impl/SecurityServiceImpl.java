@@ -30,8 +30,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -77,9 +79,8 @@ public class SecurityServiceImpl implements SecurityService {
     private final CustomerService customerService;
     private final JdbcTemplate jdbcTemplate;
 
-    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
+    private TokenFactory tokenFactory;
     private byte[] jwtSecret;
-
 
     @PostConstruct
     public void postConstruct() throws UnsupportedEncodingException {
@@ -87,6 +88,11 @@ public class SecurityServiceImpl implements SecurityService {
         if (secret == null) {
             secret = "";
         }
+
+        this.tokenFactory = TokenFactory.builder()
+                                        .jwtExpirationHours(settings.getDashboardJwtExpirationHours())
+                                        .jwtSecret(secret)
+                                        .build();
         this.jwtSecret = secret.getBytes("UTF-8");
     }
 
@@ -109,22 +115,13 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String createCodeForWebappToken(Long customerId, WebappCredentials credentials) {
-        String token = Jwts.builder()
-                           .setId(Long.toString(customerId))
-                           .setSubject(credentials.getCustomerName())
-                           .setIssuedAt(new Date())
-                           .setExpiration(calculateExpirationDate())
-                           .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
-                           .claim(JWT_CLAIM_SOURCE, credentials.getSource())
-                           .signWith(signatureAlgorithm, jwtSecret)
-                           .compact();
-
+        String token = tokenFactory.createWebappToken(customerId, credentials);
         String code = UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
         int updated = jdbcTemplate.update("INSERT INTO tokens(code, token, expiresAtSeconds) VALUES(?, ?, ?)", code, token,
                                           Instant.now().plusSeconds(300).getEpochSecond());
         if (updated <= 0) {
-            logger.warn("Could not INSERT INTO tokens");
+            logger.error("Could not INSERT INTO tokens");
         } else {
             logger.info("Inserted token with code '{}' into database", code);
         }
@@ -159,13 +156,6 @@ public class SecurityServiceImpl implements SecurityService {
         if (expired > 0) {
             logger.info("Deleted {} expired token codes", expired);
         }
-    }
-
-    private Date calculateExpirationDate() {
-        Long hours = settings.getDashboardJwtExpirationHours();
-        Duration duration = hours <= 0L ? Duration.ofMinutes(-hours) : Duration.ofHours(hours);
-        logger.debug("The session token will live for {}", duration);
-        return Date.from(Instant.now().plus(duration));
     }
 
     private Authentication toAuthentication(String token) throws AuthenticationException {
@@ -235,5 +225,35 @@ public class SecurityServiceImpl implements SecurityService {
                              .email(email)
                              .source(CustomerService.Source.HEROKU)
                              .build());
+    }
+
+    @Value
+    @Builder
+    public static class TokenFactory {
+        private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
+        private final long jwtExpirationHours;
+        private final String jwtSecret;
+
+        private Date calculateExpirationDate() {
+            Long hours = jwtExpirationHours;
+            Duration duration = hours <= 0L ? Duration.ofMinutes(-hours) : Duration.ofHours(hours);
+            logger.debug("The session token will live for {}", duration);
+            return Date.from(Instant.now().plus(duration));
+        }
+
+        @SneakyThrows(UnsupportedEncodingException.class)
+        public String createWebappToken(Long customerId, WebappCredentials credentials) {
+            return Jwts.builder()
+                       .setId(Long.toString(customerId))
+                       .setSubject(credentials.getCustomerName())
+                       .setIssuedAt(new Date())
+                       .setExpiration(calculateExpirationDate())
+                       .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
+                       .claim(JWT_CLAIM_SOURCE, credentials.getSource())
+                       .signWith(signatureAlgorithm, jwtSecret.getBytes("UTF-8"))
+                       .compact();
+        }
+
+
     }
 }
