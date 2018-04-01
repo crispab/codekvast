@@ -9,7 +9,7 @@ import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.dashboard.DashboardService;
-import io.codekvast.dashboard.dashboard.model.FilterData;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
@@ -416,14 +416,6 @@ public class MariadbIntegrationTest {
         invocationDataImporter.importPublication(publication);
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void should_throw_when_querying_signature_with_too_short_signature() {
-        // given
-
-        // when query with too short signature
-        dashboardService.getMethods(GetMethodsRequest.defaults().toBuilder().signature("").build());
-    }
-
     @Test
     public void should_query_unknown_signature_correctly() {
         // given
@@ -579,11 +571,11 @@ public class MariadbIntegrationTest {
         setSecurityContextCustomerId(1L);
 
         // when
-        FilterData filterData = dashboardService.getFilterData();
+        GetMethodsFormData getMethodsFormData = dashboardService.getMethodsFormData();
 
         // then
-        assertThat(filterData.getApplications(), contains("app1", "app2", "app3", "app4"));
-        assertThat(filterData.getEnvironments(), contains("env1", "env2", "env3", "env4"));
+        assertThat(getMethodsFormData.getApplications(), contains("app1", "app2", "app3", "app4"));
+        assertThat(getMethodsFormData.getEnvironments(), contains("env1", "env2", "env3", "env4"));
     }
 
     @Test
@@ -593,10 +585,10 @@ public class MariadbIntegrationTest {
         setSecurityContextCustomerId(17L);
 
         // when
-        FilterData filterData = dashboardService.getFilterData();
+        GetMethodsFormData formData = dashboardService.getMethodsFormData();
 
         // then
-        assertThat(filterData, is(FilterData.builder().build()));
+        assertThat(formData, is(GetMethodsFormData.builder().build()));
     }
 
     private void assertAgentEnabled(String jvmUuid, Boolean expectedEnabled) {

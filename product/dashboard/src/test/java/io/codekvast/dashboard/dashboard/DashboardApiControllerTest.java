@@ -1,10 +1,8 @@
 package io.codekvast.dashboard.dashboard;
 
+import com.google.gson.Gson;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.dashboard.model.FilterData;
-import io.codekvast.dashboard.dashboard.model.methods.ApplicationDescriptor;
-import io.codekvast.dashboard.dashboard.model.methods.EnvironmentDescriptor;
-import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
+import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,10 +17,12 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -36,6 +36,8 @@ public class DashboardApiControllerTest {
 
     private MockMvc mockMvc;
 
+    private final Gson gson = new Gson();
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -43,6 +45,27 @@ public class DashboardApiControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(dashboardApiController)
                                       .setMessageConverters(new GsonHttpMessageConverter(), new StringHttpMessageConverter())
                                       .build();
+    }
+
+    @Test
+    public void should_getMethods() throws Exception {
+        // given
+        GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
+                                                     .signature("some signature").build();
+        when(dashboardService.getMethods(request)).thenReturn(GetMethodsResponse
+                                                                  .builder()
+                                                                  .methods(emptyList())
+                                                                  .build());
+
+        // when
+        mockMvc.perform(post("/dashboard/api/v1/methods")
+                            .accept(APPLICATION_JSON_UTF8)
+                            .contentType(APPLICATION_JSON_UTF8)
+                            .content(gson.toJson(request)))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+               .andExpect(jsonPath("$.methods").isArray());
+
     }
 
     @Test
@@ -93,9 +116,9 @@ public class DashboardApiControllerTest {
     @Test
     public void should_get_filterData() throws Exception {
         // given
-        when(dashboardService.getFilterData()).thenReturn(FilterData.sample());
+        when(dashboardService.getMethodsFormData()).thenReturn(GetMethodsFormData.sample());
 
-        mockMvc.perform(get("/dashboard/api/v1/filterData"))
+        mockMvc.perform(get("/dashboard/api/v1/methodsFormData"))
                .andExpect(status().isOk())
                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                .andExpect(jsonPath("$.applications").isArray())

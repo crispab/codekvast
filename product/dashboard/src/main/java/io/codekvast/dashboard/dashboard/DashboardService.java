@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.dashboard;
 
-import io.codekvast.dashboard.dashboard.model.FilterData;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
@@ -37,19 +37,6 @@ import java.util.Optional;
  * @author olle.hallin@crisp.se
  */
 public interface DashboardService {
-
-    int DEFAULT_MAX_RESULTS = 100;
-    String DEFAULT_MAX_RESULTS_STR = "" + DEFAULT_MAX_RESULTS;
-    boolean DEFAULT_NORMALIZE_SIGNATURE = true;
-    boolean DEFAULT_SUPPRESS_SYNTHETIC_METHODS = true;
-    String DEFAULT_SUPPRESS_SYNTHETIC_METHODS_STR = "" + DEFAULT_SUPPRESS_SYNTHETIC_METHODS;
-    long DEFAULT_ONLY_INVOKED_BEFORE_MILLIS = Long.MAX_VALUE;
-    String DEFAULT_ONLY_INVOKED_BEFORE_MILLIS_STR = "" + DEFAULT_ONLY_INVOKED_BEFORE_MILLIS;
-    long DEFAULT_ONLY_INVOKED_AFTER_MILLIS = 0L;
-    boolean DEFAULT_SUPPRESS_UNTRACKED_METHODS = true;
-    String DEFAULT_SUPPRESS_UNTRACKED_METHODS_STR = "" + DEFAULT_SUPPRESS_UNTRACKED_METHODS;
-    int DEFAULT_MIN_COLLECTED_DAYS = 14;
-    String DEFAULT_MIN_COLLECTED_DAYS_STR = "" + DEFAULT_MIN_COLLECTED_DAYS;
 
     /**
      * Retrieve information about a set of methods.
@@ -80,10 +67,10 @@ public interface DashboardService {
     GetStatusResponse getStatus();
 
     /**
-     * Get data to use for filtering methods.
+     * Get data to use in the search methods form.
      *
-     * @return A FilterData object.
+     * @return A GetMethodsFormData object.
      */
     @NotNull
-    FilterData getFilterData();
+    GetMethodsFormData getMethodsFormData();
 }

@@ -4,18 +4,21 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Router} from '@angular/router';
 import {StateService} from './state.service';
+import {CookieService} from 'ngx-cookie';
 
 @Injectable()
 export class HttpResponseInterceptor implements HttpInterceptor {
 
-    readonly HEADERS = new HttpHeaders().set('Content-type', 'application/json; charset=utf-8');
-
-    constructor(private stateService: StateService, private router: Router) {
+    constructor(private stateService: StateService, private router: Router, private cookieService: CookieService) {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next
-            .handle(req.clone({headers: this.HEADERS}))
+            .handle(req.clone({
+                headers: new HttpHeaders()
+                    .set('Content-type', 'application/json; charset=utf-8')
+                    .set('X-XSRF-TOKEN', this.cookieService.get('XSRF-TOKEN'))
+            }))
             .do(event => {
                 if (event instanceof HttpResponse) {
                     console.log('[ck dashboard] HttpResponse=%o', event);

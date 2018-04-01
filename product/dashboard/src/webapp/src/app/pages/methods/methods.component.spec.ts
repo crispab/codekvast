@@ -8,6 +8,8 @@ import {MethodData} from '../../model/methods/MethodData';
 import {MethodsComponent} from './methods.component';
 import {Method} from '../../model/methods/Method';
 import {StateService} from '../../services/state.service';
+import {MethodsFormData} from '../../model/methods/MethodsFormData';
+import {Subject} from 'rxjs/Subject';
 
 let component: MethodsComponent;
 let fixture: ComponentFixture<MethodsComponent>;
@@ -29,7 +31,11 @@ const mockData: MethodData = {
 describe('MethodsComponent', () => {
     beforeEach(() => {
 
-        let dashboardServiceStub = {};
+        let dashboardApiStub = {
+            getMethodsFormData() {
+                return new Subject<MethodsFormData>();
+            }
+        };
 
         TestBed.configureTestingModule({
             imports: [AppModule],
@@ -40,7 +46,7 @@ describe('MethodsComponent', () => {
                 },
                 {
                     provide: DashboardApiService,
-                    useValue: dashboardServiceStub
+                    useValue: dashboardApiStub
                 },
                 StateService
             ]
@@ -61,7 +67,7 @@ describe('MethodsComponent', () => {
     });
 
     xit('should display a different signature', () => {
-        component.state.signature = 'New Signature';
+        component.state.req.signature = 'New Signature';
         fixture.detectChanges();
         expect(signatureElement.textContent).toBe('New Signature');
     });

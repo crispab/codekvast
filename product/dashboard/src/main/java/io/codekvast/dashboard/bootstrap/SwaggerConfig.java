@@ -62,7 +62,7 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket webappDocket(CodekvastDashboardSettings settings) {
+    public Docket dashboardDocket(CodekvastDashboardSettings settings) {
         return new Docket(DocumentationType.SWAGGER_2)
             .apiInfo(getApiInfo(settings, "Endpoints used by the dashboard web app"))
             .groupName("Dashboard endpoints")

@@ -10,7 +10,7 @@
                             <input class="form-control"
                                    id="signature"
                                    name="signature"
-                                   [(ngModel)]="state.signature"
+                                   [(ngModel)]="state.req.signature"
                                    type="text"
                                    placeholder="Search method signature">
                             <div class="input-group-append">
@@ -110,7 +110,7 @@
                             <input class="form-control"
                                    id="collectedDays"
                                    name="collectedDays"
-                                   [(ngModel)]="state.collectedDays"
+                                   [(ngModel)]="state.req.minCollectedDays"
                                    min="0"
                                    max="3650"
                                    type="number">
@@ -121,7 +121,7 @@
 
                         <ng-template #collectedDaysPopover>
                             <p>Only include methods in the search results that have been tracked by Codekvast for
-                                <b>at least {{ state.collectedDays }} days</b>.</p>
+                                <b>at least {{ state.req.minCollectedDays }} days</b>.</p>
                         </ng-template>
 
                         <label class="ml-2 col-form-label" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">Cutoff
@@ -160,7 +160,7 @@
                             <input class="form-control"
                                    id="maxResults"
                                    name="maxResults"
-                                   [(ngModel)]="state.maxResults"
+                                   [(ngModel)]="state.req.maxResults"
                                    type="number"
                                    min="1"
                                    max="10000">

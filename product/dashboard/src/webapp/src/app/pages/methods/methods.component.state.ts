@@ -1,21 +1,20 @@
 /**
  * The state for MethodsComponent.
  */
-import {DashboardApiService, GetMethodsRequest} from '../../services/dashboard-api.service';
+import {DashboardApiService} from '../../services/dashboard-api.service';
 import {MethodData} from '../../model/methods/MethodData';
 import {MethodsComponent} from './methods.component';
 import {Method} from '../../model/methods/Method';
+import {GetMethodsRequest} from '../../model/methods/GetMethodsRequest';
 
 export class MethodsComponentState {
     static KEY = 'methods';
 
-    signature: string;
+    req = new GetMethodsRequest();
     includeIfNotInvokedInDays = 30;
-    includeSyntheticMethods: false;
-    includeUntrackedMethods: false;
-    includeOnlyNeverInvokedMethods: true;
-    maxResults = 100;
-    collectedDays = 14;
+    includeSyntheticMethods = false;
+    includeUntrackedMethods = false;
+    includeOnlyNeverInvokedMethods = false;
     data: MethodData;
     errorMessage: string;
     sortColumn = MethodsComponent.SIGNATURE_COLUMN;
@@ -25,6 +24,13 @@ export class MethodsComponentState {
     searching = false;
 
     constructor(private api: DashboardApiService) {
+    }
+
+    initialize() {
+        this.api.getMethodsFormData().subscribe(data => {
+            console.log('[ck dashboard] methodsFormData=%o', data);
+            // this.req = data.defaultGetMethodsRequest;
+        });
     }
 
     private sortBy(column: string) {
@@ -110,15 +116,11 @@ export class MethodsComponentState {
 
     search() {
         this.searching = true;
+        this.req.suppressSyntheticMethods = !this.includeSyntheticMethods;
+        this.req.suppressUntrackedMethods = !this.includeUntrackedMethods;
+        this.req.onlyInvokedBeforeMillis = this.getCutoffTimeMillis();
         this.api
-            .getMethods({
-                signature: this.signature,
-                maxResults: this.maxResults,
-                collectedDays: this.collectedDays,
-                suppressSyntheticMethods: !this.includeSyntheticMethods,
-                suppressUntrackedMethods: !this.includeUntrackedMethods,
-                invokedBeforeMillis: this.getCutoffTimeMillis()
-            } as GetMethodsRequest)
+            .getMethods(this.req)
             .subscribe(data => {
                 this.data = data;
                 this.errorMessage = undefined;

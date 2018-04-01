@@ -22,8 +22,8 @@
 package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.dashboard.model.FilterData;
 import io.codekvast.dashboard.dashboard.model.ServerSettings;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import java.util.Optional;
 
 /**
@@ -73,28 +74,12 @@ public class DashboardApiController {
         return serverSettings;
     }
 
-    @GetMapping("/dashboard/api/v1/methods")
-    public GetMethodsResponse getMethods1(
-        @RequestParam(value = "signature", defaultValue = "%") String signature,
-        @RequestParam(value = "onlyInvokedBeforeMillis", defaultValue = DashboardService.DEFAULT_ONLY_INVOKED_BEFORE_MILLIS_STR) Long
-            onlyInvokedBeforeMillis,
-        @RequestParam(value = "suppressSyntheticMethods", defaultValue = DashboardService.DEFAULT_SUPPRESS_SYNTHETIC_METHODS_STR) Boolean
-            suppressSyntheticMethods,
-        @RequestParam(value = "suppressUntrackedMethods", defaultValue = DashboardService.DEFAULT_SUPPRESS_UNTRACKED_METHODS_STR) Boolean
-            suppressUntrackedMethods,
-        @RequestParam(name = "minCollectedDays", defaultValue = DashboardService.DEFAULT_MIN_COLLECTED_DAYS_STR) Integer minCollectedDays,
-        @RequestParam(name = "maxResults", defaultValue = DashboardService.DEFAULT_MAX_RESULTS_STR) Integer maxResults) {
-
-        GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
-                                                     .signature(signature)
-                                                     .onlyInvokedBeforeMillis(onlyInvokedBeforeMillis)
-                                                     .suppressUntrackedMethods(suppressUntrackedMethods)
-                                                     .suppressSyntheticMethods(suppressSyntheticMethods)
-                                                     .minCollectedDays(minCollectedDays)
-                                                     .maxResults(maxResults)
-                                                     .build();
-
-        return doGetMethods(request);
+    @PostMapping("/dashboard/api/v1/methods")
+    public GetMethodsResponse getMethods1(@Valid @RequestBody GetMethodsRequest request) {
+        logger.debug("Request: {}", request);
+        GetMethodsResponse response = dashboardService.getMethods(request);
+        logger.debug("Response: {}", response);
+        return response;
     }
 
     @GetMapping("/dashboard/api/v1/method/detail/{id}")
@@ -117,18 +102,11 @@ public class DashboardApiController {
         return status;
     }
 
-    @GetMapping("/dashboard/api/v1/filterData")
-    public FilterData getFilterData() {
-        FilterData filterData = dashboardService.getFilterData();
-        logger.debug("{}", filterData);
-        return filterData;
-    }
-
-    private GetMethodsResponse doGetMethods(GetMethodsRequest request) {
-        logger.debug("Request: {}", request);
-        GetMethodsResponse response = dashboardService.getMethods(request);
-        logger.debug("Response: {}", response);
-        return response;
+    @GetMapping("/dashboard/api/v1/methodsFormData")
+    public GetMethodsFormData getMethodsFormData() {
+        GetMethodsFormData data = dashboardService.getMethodsFormData();
+        logger.debug("{}", data);
+        return data;
     }
 
 }

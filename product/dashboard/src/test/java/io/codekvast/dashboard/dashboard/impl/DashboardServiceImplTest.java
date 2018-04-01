@@ -5,7 +5,7 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.common.security.CustomerIdProvider;
-import io.codekvast.dashboard.dashboard.model.FilterData;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.util.TimeService;
 import org.junit.Before;
@@ -175,16 +175,16 @@ public class DashboardServiceImplTest {
             .thenReturn(asList("app2", "app1", "app3"), asList("env2", "env1", "env3"));
 
         // when
-        FilterData filterData = dashboardService.getFilterData();
+        GetMethodsFormData formData = dashboardService.getMethodsFormData();
 
         // then
-        assertThat(filterData, is(FilterData.builder()
-                                            .application("app1")
-                                            .application("app2")
-                                            .application("app3")
-                                            .environment("env1")
-                                            .environment("env2")
-                                            .environment("env3")
-                                            .build()));
+        assertThat(formData, is(GetMethodsFormData.builder()
+                                                  .application("app1")
+                                                  .application("app2")
+                                                  .application("app3")
+                                                  .environment("env1")
+                                                  .environment("env2")
+                                                  .environment("env3")
+                                                  .build()));
     }
 }

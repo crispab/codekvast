@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.dashboard.model;
+package io.codekvast.dashboard.dashboard.model.methods;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -33,7 +33,8 @@ import java.util.SortedSet;
  */
 @Value
 @Builder
-public class FilterData {
+public class GetMethodsFormData {
+
     @NonNull
     @Singular
     private final SortedSet<String> applications;
@@ -42,12 +43,13 @@ public class FilterData {
     @Singular
     private final SortedSet<String> environments;
 
-    public static FilterData sample() {
-        return FilterData.builder()
-                         .application("app2")
-                         .application("app1")
-                         .environment("env2")
-                         .environment("env1")
-                         .build();
+    public static GetMethodsFormData sample() {
+        return GetMethodsFormData.builder()
+                                 .application("app2")
+                                 .application("app1")
+                                 .environment("env2")
+                                 .environment("env1")
+                                 .build();
     }
+
 }

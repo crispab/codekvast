@@ -22,30 +22,28 @@
 package io.codekvast.dashboard.dashboard.model.methods;
 
 import io.codekvast.dashboard.dashboard.DashboardService;
-import lombok.*;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
+import java.util.List;
 
 /**
  * A validated parameters object for {@link DashboardService#getMethods(GetMethodsRequest)}
  *
  * @author olle.hallin@crisp.se
  */
+@Value
 @Builder(toBuilder = true)
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@ToString
 @Slf4j
 public class GetMethodsRequest {
-
     /**
      * The signature to search for.
      */
     @NonNull
-    @Size(min = 1, message = "signature must be at least 1 characters")
     private final String signature;
 
     /**
@@ -89,6 +87,10 @@ public class GetMethodsRequest {
     @Min(value = 0, message = "minCollectedDays must be >= 0")
     private final int minCollectedDays;
 
+    private final List<String> applications;
+
+    private final List<String> environments;
+
     public String getNormalizedSignature() {
         String result;
         if (!normalizeSignature) {
@@ -106,13 +108,13 @@ public class GetMethodsRequest {
 
     public static GetMethodsRequest defaults() {
         return builder()
-            .onlyInvokedBeforeMillis(DashboardService.DEFAULT_ONLY_INVOKED_BEFORE_MILLIS)
-            .onlyInvokedAfterMillis(DashboardService.DEFAULT_ONLY_INVOKED_AFTER_MILLIS)
-            .suppressUntrackedMethods(DashboardService.DEFAULT_SUPPRESS_UNTRACKED_METHODS)
-            .suppressSyntheticMethods(DashboardService.DEFAULT_SUPPRESS_SYNTHETIC_METHODS)
-            .maxResults(DashboardService.DEFAULT_MAX_RESULTS)
-            .minCollectedDays(DashboardService.DEFAULT_MIN_COLLECTED_DAYS)
-            .normalizeSignature(DashboardService.DEFAULT_NORMALIZE_SIGNATURE)
+            .onlyInvokedBeforeMillis(Long.MAX_VALUE)
+            .onlyInvokedAfterMillis(0L)
+            .suppressUntrackedMethods(true)
+            .suppressSyntheticMethods(true)
+            .maxResults(100)
+            .minCollectedDays(14)
+            .normalizeSignature(true)
             .signature("")
             .build();
     }

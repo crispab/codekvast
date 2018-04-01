@@ -28,6 +28,7 @@ export class MethodsComponent implements OnInit {
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
         this.state = this.stateService.getState(MethodsComponentState.KEY, () => new MethodsComponentState(this.api));
+        this.state.initialize();
     }
 
     communicationFailure() {
