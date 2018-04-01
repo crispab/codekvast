@@ -1,26 +1,26 @@
 package systemTest.dashboard
 
-import geb.spock.GebSpec
-import io.codekvast.common.security.WebappCredentials
-import io.codekvast.common.security.impl.SecurityServiceImpl
-import org.openqa.selenium.Cookie
-
-class MethodsSpec extends GebSpec {
+class MethodsSpec extends BaseSpec {
     def 'Methods page should render correctly when authenticated'() {
-        when:
-        driver.manage().addCookie(
-            new Cookie('sessionToken',
-                SecurityServiceImpl.TokenFactory.builder()
-                    .jwtExpirationHours(1)
-                    .jwtSecret("secret")
-                    .build()
-                    .createWebappToken(1L, WebappCredentials.sample()),
-                "/"))
+        given:
+        addSessionTokenCookie()
 
+        when:
         to MethodsPage
-        report 'methods'
 
         then:
         signatureField.text() == ''
     }
+
+    def 'Methods page should redirect to NotLoggedInPage when unauthenticated'() {
+        given:
+        deleteAllCookies()
+
+        when:
+        to MethodsPage
+
+        then:
+        at NotLoggedInPage
+    }
+
 }
