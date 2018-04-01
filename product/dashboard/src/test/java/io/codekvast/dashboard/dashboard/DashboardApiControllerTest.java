@@ -1,7 +1,7 @@
 package io.codekvast.dashboard.dashboard;
 
-import io.codekvast.common.security.SecurityService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.dashboard.model.FilterData;
 import io.codekvast.dashboard.dashboard.model.methods.ApplicationDescriptor;
 import io.codekvast.dashboard.dashboard.model.methods.EnvironmentDescriptor;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
@@ -88,5 +88,17 @@ public class DashboardApiControllerTest {
                .andExpect(jsonPath("$.collectedDays").value(16));
 
         verify(dashboardService).getMethodById(17L);
+    }
+
+    @Test
+    public void should_get_filterData() throws Exception {
+        // given
+        when(dashboardService.getFilterData()).thenReturn(FilterData.sample());
+
+        mockMvc.perform(get("/dashboard/api/v1/filterData"))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+               .andExpect(jsonPath("$.applications").isArray())
+               .andExpect(jsonPath("$.environments").isArray());
     }
 }

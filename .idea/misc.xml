@@ -7,7 +7,7 @@
     <entry_points version="2.0">
       <entry_point TYPE="method" FQNAME="se.crisp.codekvast.agent.collector.CodekvastCollector void premain(java.lang.String args, java.lang.instrument.Instrumentation inst)" />
     </entry_points>
-    <list size="16">
+    <list size="17">
       <item index="0" class="java.lang.String" itemvalue="com.google.common.annotations.VisibleForTesting" />
       <item index="1" class="java.lang.String" itemvalue="com.google.common.eventbus.Subscribe" />
       <item index="2" class="java.lang.String" itemvalue="javax.annotation.PostConstruct" />
@@ -20,10 +20,11 @@
       <item index="9" class="java.lang.String" itemvalue="org.springframework.stereotype.Controller" />
       <item index="10" class="java.lang.String" itemvalue="org.springframework.stereotype.Service" />
       <item index="11" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ExceptionHandler" />
-      <item index="12" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.InitBinder" />
-      <item index="13" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ModelAttribute" />
-      <item index="14" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
-      <item index="15" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
+      <item index="12" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.GetMapping" />
+      <item index="13" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.InitBinder" />
+      <item index="14" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ModelAttribute" />
+      <item index="15" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
+      <item index="16" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
     </list>
     <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="methodExecution" />
     <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="trivialMethodExecution" />

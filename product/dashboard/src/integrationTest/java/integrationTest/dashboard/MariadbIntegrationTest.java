@@ -9,6 +9,7 @@ import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.dashboard.DashboardService;
+import io.codekvast.dashboard.dashboard.model.FilterData;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
@@ -569,6 +570,33 @@ public class MariadbIntegrationTest {
         assertThat(status.getCollectedDays(), is(nullValue()));
 
         assertThat(status.getUsers(), hasSize(2));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_getFilterData_for_known_customerId() {
+        // given
+        setSecurityContextCustomerId(1L);
+
+        // when
+        FilterData filterData = dashboardService.getFilterData();
+
+        // then
+        assertThat(filterData.getApplications(), contains("app1", "app2", "app3", "app4"));
+        assertThat(filterData.getEnvironments(), contains("env1", "env2", "env3", "env4"));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_getFilterData_for_unknown_customerId() {
+        // given
+        setSecurityContextCustomerId(17L);
+
+        // when
+        FilterData filterData = dashboardService.getFilterData();
+
+        // then
+        assertThat(filterData, is(FilterData.builder().build()));
     }
 
     private void assertAgentEnabled(String jvmUuid, Boolean expectedEnabled) {

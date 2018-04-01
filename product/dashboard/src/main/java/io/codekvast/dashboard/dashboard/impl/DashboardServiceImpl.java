@@ -26,6 +26,7 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.security.CustomerIdProvider;
 import io.codekvast.dashboard.dashboard.DashboardService;
+import io.codekvast.dashboard.dashboard.model.FilterData;
 import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
@@ -160,6 +161,19 @@ public class DashboardServiceImpl implements DashboardService {
                                 .agents(agents)
                                 .users(users)
                                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public @NotNull FilterData getFilterData() {
+        FilterData.FilterDataBuilder result = FilterData.builder();
+        result.applications(
+            jdbcTemplate
+                .queryForList("SELECT name FROM applications WHERE customerId = ? ", String.class, customerIdProvider.getCustomerId()));
+        result.environments(
+            jdbcTemplate
+                .queryForList("SELECT name FROM environments WHERE customerId = ? ", String.class, customerIdProvider.getCustomerId()));
+        return result.build();
     }
 
     private List<UserDescriptor> getUsers(Long customerId) {

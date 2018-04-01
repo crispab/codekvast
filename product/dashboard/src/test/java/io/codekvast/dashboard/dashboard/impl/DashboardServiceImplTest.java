@@ -5,6 +5,7 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.common.security.CustomerIdProvider;
+import io.codekvast.dashboard.dashboard.model.FilterData;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.util.TimeService;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
@@ -43,12 +45,12 @@ public class DashboardServiceImplTest {
 
     private Instant now = Instant.now();
 
-    private DashboardServiceImpl webappService;
+    private DashboardServiceImpl dashboardService;
 
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        webappService = new DashboardServiceImpl(jdbcTemplate, customerIdProvider, customerService, timeService);
+        dashboardService = new DashboardServiceImpl(jdbcTemplate, customerIdProvider, customerService, timeService);
         when(timeService.now()).thenReturn(now);
         when(timeService.currentTimeMillis()).thenReturn(now.toEpochMilli());
     }
@@ -73,7 +75,7 @@ public class DashboardServiceImplTest {
         when(customerService.countMethods(eq(1L))).thenReturn(1000);
 
         // when
-        GetStatusResponse status = webappService.getStatus();
+        GetStatusResponse status = dashboardService.getStatus();
 
         // then
         assertNotNull(status);
@@ -116,7 +118,7 @@ public class DashboardServiceImplTest {
         when(customerService.countMethods(eq(1L))).thenReturn(1000);
 
         // when
-        GetStatusResponse status = webappService.getStatus();
+        GetStatusResponse status = dashboardService.getStatus();
 
         // then
         assertNotNull(status);
@@ -144,7 +146,7 @@ public class DashboardServiceImplTest {
         when(customerService.countMethods(eq(1L))).thenReturn(1000);
 
         // when
-        GetStatusResponse status = webappService.getStatus();
+        GetStatusResponse status = dashboardService.getStatus();
 
         // then
         assertNotNull(status);
@@ -156,11 +158,33 @@ public class DashboardServiceImplTest {
 
     @Test
     public void should_detect_synthetic_method_containing_dot_dot() {
-        assertThat(webappService.isSyntheticMethod("foo..bar"), is(true));
+        assertThat(dashboardService.isSyntheticMethod("foo..bar"), is(true));
     }
 
     @Test
     public void should_not_detect_synthetic_method_not_containing_dot_dot() {
-        assertThat(webappService.isSyntheticMethod("foo.bar"), is(false));
+        assertThat(dashboardService.isSyntheticMethod("foo.bar"), is(false));
+    }
+
+    @Test
+    public void should_getFilterData() {
+        // given
+        when(customerIdProvider.getCustomerId()).thenReturn(4711L);
+        //noinspection unchecked
+        when(jdbcTemplate.queryForList(anyString(), eq(String.class), eq(4711L)))
+            .thenReturn(asList("app2", "app1", "app3"), asList("env2", "env1", "env3"));
+
+        // when
+        FilterData filterData = dashboardService.getFilterData();
+
+        // then
+        assertThat(filterData, is(FilterData.builder()
+                                            .application("app1")
+                                            .application("app2")
+                                            .application("app3")
+                                            .environment("env1")
+                                            .environment("env2")
+                                            .environment("env3")
+                                            .build()));
     }
 }

@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.dashboard.model.FilterData;
 import io.codekvast.dashboard.dashboard.model.ServerSettings;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
@@ -73,7 +74,7 @@ public class DashboardApiController {
     }
 
     @GetMapping("/dashboard/api/v1/methods")
-    public ResponseEntity<GetMethodsResponse> getMethods1(
+    public GetMethodsResponse getMethods1(
         @RequestParam(value = "signature", defaultValue = "%") String signature,
         @RequestParam(value = "onlyInvokedBeforeMillis", defaultValue = DashboardService.DEFAULT_ONLY_INVOKED_BEFORE_MILLIS_STR) Long
             onlyInvokedBeforeMillis,
@@ -93,7 +94,7 @@ public class DashboardApiController {
                                                      .maxResults(maxResults)
                                                      .build();
 
-        return ResponseEntity.ok().body(doGetMethods(request));
+        return doGetMethods(request);
     }
 
     @GetMapping("/dashboard/api/v1/method/detail/{id}")
@@ -110,10 +111,17 @@ public class DashboardApiController {
     }
 
     @GetMapping("/dashboard/api/v1/status")
-    public ResponseEntity<GetStatusResponse> getStatus1() {
-        GetStatusResponse response = dashboardService.getStatus();
-        logger.debug("Response: {}", response);
-        return ResponseEntity.ok().body(response);
+    public GetStatusResponse getStatus1() {
+        GetStatusResponse status = dashboardService.getStatus();
+        logger.debug("{}", status);
+        return status;
+    }
+
+    @GetMapping("/dashboard/api/v1/filterData")
+    public FilterData getFilterData() {
+        FilterData filterData = dashboardService.getFilterData();
+        logger.debug("{}", filterData);
+        return filterData;
     }
 
     private GetMethodsResponse doGetMethods(GetMethodsRequest request) {

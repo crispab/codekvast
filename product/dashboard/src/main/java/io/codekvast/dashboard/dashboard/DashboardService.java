@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.dashboard;
 
+import io.codekvast.dashboard.dashboard.model.FilterData;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
@@ -77,4 +78,12 @@ public interface DashboardService {
      */
     @NotNull
     GetStatusResponse getStatus();
+
+    /**
+     * Get data to use for filtering methods.
+     *
+     * @return A FilterData object.
+     */
+    @NotNull
+    FilterData getFilterData();
 }
