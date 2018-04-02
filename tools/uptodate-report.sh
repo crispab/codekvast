@@ -12,7 +12,3 @@ cd $(dirname $0)/../product
 echo -e "\nDashboard JavaScript:" | tee -a ${REPORT_FILE}
 cd $(dirname $0)/../product/dashboard/src/webapp
 npm outdated --depth=0 | tee -a ${REPORT_FILE}
-
-echo -e "\nLogin JavaScript:" | tee -a ${REPORT_FILE}
-cd $(dirname $0)/../product/login/src/webapp
-npm outdated --depth=0 | tee -a ${REPORT_FILE}
