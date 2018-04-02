@@ -1,11 +1,11 @@
 <div class="wrapper d-flex flex-column h-100 mx-2">
-    <div id="search-form" class="container mt-5">
-        <div class="d-flex flex-row">
-            <div class="w-75">
+    <div id="search-form" class="ml-4 mt-1">
+        <div class="d-flex flex-row justify-content-between">
+            <div style="width: 84%">
                 <h4>Search Method</h4>
                 <form (ngSubmit)="state.search()" #searchForm="ngForm">
-                    <div class="form-group row">
-                        <label for="signature" class="col-2 col-form-label">Signature:</label>
+                    <div class="form-inline">
+                        <label for="signature" class="col-form-label mr-4">Signature:</label>
                         <div class="col-8 input-group">
                             <input class="form-control"
                                    id="signature"
@@ -19,7 +19,7 @@
                                       [ngbPopover]="signatureHints"
                                       popoverTitle="IDE hints"
                                       triggers="mouseenter:mouseleave"
-                                      placement="right">hints</span>
+                                      placement="right">IDE hints</span>
                             </div>
 
                             <ng-template #signatureHints>
@@ -30,8 +30,23 @@
                             </ng-template>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-2">Include:</label>
+
+                    <div class="form-inline mt-1">
+                        <label class="col-form-label">In applications:</label>
+                        <div class="form-check ml-3" *ngFor="let a of state.applications" >
+                            <label class="form-check-label">
+                                <input class="form-check-input"
+                                       id="includeApplication-{{ a.name }}"
+                                       name="includeApplication-{{ a.name }}"
+                                       type="checkbox"
+                                       [(ngModel)]="a.selected">
+                                {{ a.name }}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-inline">
+                        <label class="col-form-label">Include:</label>
                         <div class="form-check ml-3">
                             <label for="includeOnlyNeverInvokedMethods" class="form-check-label"
                                    [ngbPopover]="onlyNeverInvokedPopover"
@@ -42,8 +57,10 @@
                                 <input class="form-check-input"
                                        id="includeOnlyNeverInvokedMethods"
                                        name="includeOnlyNeverInvokedMethods"
-                                       [(ngModel)]="state.includeOnlyNeverInvokedMethods"
-                                       type="checkbox"> Only never invoked methods</label>
+                                       type="checkbox"
+                                       [(ngModel)]="state.includeOnlyNeverInvokedMethods">
+                                Only never invoked methods
+                            </label>
                         </div>
 
                         <ng-template #onlyNeverInvokedPopover>
@@ -61,8 +78,10 @@
                                 <input class="form-check-input"
                                        id="includeSyntheticMethods"
                                        name="includeSyntheticMethods"
-                                       [(ngModel)]="state.includeSyntheticMethods"
-                                       type="checkbox"> Synthetic methods</label>
+                                       type="checkbox"
+                                       [(ngModel)]="state.includeSyntheticMethods">
+                                Synthetic methods
+                            </label>
                         </div>
 
                         <ng-template #syntheticPopover>
@@ -99,15 +118,15 @@
 
                     </div>
 
-                    <div class="form-group row">
-                        <label class="col-2 col-form-label">Tracked For:</label>
-                        <div class="col-3 input-group"
+                    <div class="form-inline mt-1">
+                        <label for="collectedDays" class="col-form-label mr-1">Tracked For:</label>
+                        <div class="input-group"
                              [ngbPopover]="collectedDaysPopover"
                              popoverTitle="Tracked For Days"
                              triggers="mouseenter:mouseleave"
                              placement="right">
 
-                            <input class="form-control"
+                            <input class="form-control col-auto"
                                    id="collectedDays"
                                    name="collectedDays"
                                    [(ngModel)]="state.req.minCollectedDays"
@@ -124,15 +143,15 @@
                                 <b>at least {{ state.req.minCollectedDays }} days</b>.</p>
                         </ng-template>
 
-                        <label class="ml-2 col-form-label" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">Cutoff
-                            Date:</label>
-                        <div class="col-3 input-group"
+                        <label for="includeIfNotInvokedInDays" class="ml-1 col-auto" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">
+                            Cutoff Date:</label>
+                        <div class="input-group"
                              [ngbPopover]="cutoffDatePopover"
                              popoverTitle="Cutoff Date"
                              triggers="mouseenter:mouseleave"
                              placement="right">
 
-                            <input class="form-control"
+                            <input class="form-control col-auto"
                                    id="includeIfNotInvokedInDays"
                                    name="includeIfNotInvokedInDays"
                                    [(ngModel)]="state.includeIfNotInvokedInDays"
@@ -152,11 +171,8 @@
                             <p>'Cutoff Date' has no effect if 'Only never invoked methods' is checked.</p>
                         </ng-template>
 
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results:</label>
-                        <div class="col-2">
+                        <label for="maxResults" class="col-auto">Max&nbsp;Results:</label>
+                        <div class="col-auto">
                             <input class="form-control"
                                    id="maxResults"
                                    name="maxResults"
@@ -186,11 +202,11 @@
                     </div>
                 </form>
             </div>
-            <ck-settings-editor class="w-25"></ck-settings-editor>
+            <ck-settings-editor style="width: 16%" class="ml-auto"></ck-settings-editor>
         </div>
     </div>
 
-    <div class="d-flex flex-row h-100 content mx-4">
+    <div class="d-flex flex-row h-100 content mx-4 mt-3">
         <div id="methods-table" [ngClass]="state.detailsTableClasses()">
             <h5 class="text-center">Search Results</h5>
             <table class="table table-striped table-bordered table-hover table-sm">

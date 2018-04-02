@@ -7,6 +7,11 @@ import {MethodsComponent} from './methods.component';
 import {Method} from '../../model/methods/Method';
 import {GetMethodsRequest} from '../../model/methods/GetMethodsRequest';
 
+export class CheckboxState {
+    constructor(public name: string, public selected: boolean) {
+    }
+}
+
 export class MethodsComponentState {
     static KEY = 'methods';
 
@@ -23,14 +28,28 @@ export class MethodsComponentState {
     detailsTableVisible = false;
     searching = false;
 
+    applications: CheckboxState[] = [];
+    environments: CheckboxState[] = [];
+
     constructor(private api: DashboardApiService) {
     }
 
     initialize() {
         this.api.getMethodsFormData().subscribe(data => {
             console.log('[ck dashboard] methodsFormData=%o', data);
-            // this.req = data.defaultGetMethodsRequest;
+            this.applications = [];
+            data.applications.forEach(a => this.applications.push(new CheckboxState(a, true)));
+            this.environments = [];
+            data.environments.forEach(e => this.environments.push(new CheckboxState(e, true)));
         });
+    }
+
+    checkboxButtonClasses(s: CheckboxState) {
+        return {
+            'btn-primary': s.selected,
+            'btn-outline-primary': !s.selected,
+            'btn-sm': true
+        }
     }
 
     private sortBy(column: string) {
