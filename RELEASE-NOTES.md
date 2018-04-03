@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.23.2
+1. Dashboard: Added ability to filter on applications and environments in Search Methods.
+
 ## 0.23.1
 1. Database schema changes: applications, environments, jvms, invocations.
 1. Added popovers.

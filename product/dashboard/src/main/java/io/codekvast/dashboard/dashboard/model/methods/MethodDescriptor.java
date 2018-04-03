@@ -71,11 +71,11 @@ public class MethodDescriptor {
     private final SortedSet<EnvironmentDescriptor> collectedInEnvironments;
 
     // Computed fields, to make it work with Gson. Gson does not serialize using getters.
-    private long collectedSinceMillis;
-    private long collectedToMillis;
-    private long lastInvokedAtMillis;
-    private int collectedDays;
-    private int trackedPercent;
+    private Long collectedSinceMillis;
+    private Long collectedToMillis;
+    private Long lastInvokedAtMillis;
+    private Integer collectedDays;
+    private Integer trackedPercent;
     private Set<SignatureStatus2> statuses;
     private Set<String> tags;
 

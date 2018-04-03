@@ -80,13 +80,20 @@ public class DashboardServiceImpl implements DashboardService {
     @Transactional(readOnly = true)
     public GetMethodsResponse getMethods(@Valid GetMethodsRequest request) {
         long startedAt = timeService.currentTimeMillis();
-        translateNamesToIds("applications", request.getApplications());
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("customerId", customerIdProvider.getCustomerId());
+        params.addValue("applicationIds", translateNamesToIds("applications", request.getApplications()));
+        params.addValue("environmentIds", translateNamesToIds("environments", request.getEnvironments()));
+        params.addValue("signature", request.getNormalizedSignature());
 
         MethodDescriptorRowCallbackHandler rowCallbackHandler =
-            new MethodDescriptorRowCallbackHandler("m.signature LIKE ?");
+            new MethodDescriptorRowCallbackHandler("i.applicationId IN (:applicationIds) " +
+                                                       "AND i.environmentId IN (:environmentIds) " +
+                                                       "AND m.signature LIKE :signature ");
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(),
-                           request.getNormalizedSignature());
+
+        namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
 
         List<MethodDescriptor> methods = rowCallbackHandler.getResult(request);
 
@@ -108,7 +115,8 @@ public class DashboardServiceImpl implements DashboardService {
         params.addValue("customerId", customerIdProvider.getCustomerId());
         params.addValue("names", names);
 
-        List<Long> ids = namedParameterJdbcTemplate.queryForList("SELECT id FROM " + tableName + " WHERE customerId = :customerId AND name IN (:names)", params, Long.class);
+        List<Long> ids = namedParameterJdbcTemplate
+            .queryForList("SELECT id FROM " + tableName + " WHERE customerId = :customerId AND name IN (:names)", params, Long.class);
         logger.debug("Mapped {} {} to {} for customer {}", tableName, names, ids, customerIdProvider.getCustomerId());
         return ids;
     }
@@ -122,9 +130,14 @@ public class DashboardServiceImpl implements DashboardService {
                                                      .suppressSyntheticMethods(false)
                                                      .minCollectedDays(0)
                                                      .build();
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?");
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(), methodId);
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("customerId", customerIdProvider.getCustomerId());
+        params.addValue("methodId", methodId);
+
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = :methodId");
+
+        namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
 
         return rowCallbackHandler.getResult(request).stream().findFirst();
     }
@@ -296,7 +309,7 @@ public class DashboardServiceImpl implements DashboardService {
                                      "  INNER JOIN environments e ON e.id = i.environmentId \n" +
                                      "  INNER JOIN methods m ON m.id = i.methodId\n" +
                                      "  INNER JOIN jvms j ON j.id = i.jvmId\n" +
-                                     "  WHERE i.customerId = ? AND %s\n" +
+                                     "  WHERE i.customerId = :customerId AND %s\n" +
                                      "  ORDER BY i.methodId ASC", whereClause);
         }
 
@@ -362,6 +375,7 @@ public class DashboardServiceImpl implements DashboardService {
             // Get rid of unwanted result
             for (Iterator<MethodDescriptor> iterator = result.iterator(); iterator.hasNext(); ) {
                 MethodDescriptor md = iterator.next();
+
                 boolean keep = true;
 
                 if (request.isSuppressSyntheticMethods() && (md.getBridge() || md.getSynthetic() || isSyntheticMethod(md.getSignature()))) {
@@ -378,14 +392,11 @@ public class DashboardServiceImpl implements DashboardService {
                     keep = false;
                 }
 
-                // only calculate once (if needed)
-                Long lastInvokedAtMillis = keep ? md.getLastInvokedAtMillis() : 0L;
-
-                if (keep && request.getOnlyInvokedAfterMillis() > lastInvokedAtMillis) {
+                if (keep && request.getOnlyInvokedAfterMillis() > md.getLastInvokedAtMillis()) {
                     logger.trace("Throwing away too old method: {}", md);
                     keep = false;
                 }
-                if (keep && request.getOnlyInvokedBeforeMillis() < lastInvokedAtMillis) {
+                if (keep && request.getOnlyInvokedBeforeMillis() < md.getLastInvokedAtMillis()) {
                     logger.trace("Throwing away too new method: {}", md);
                     keep = false;
                 }
@@ -399,17 +410,12 @@ public class DashboardServiceImpl implements DashboardService {
             logger.debug("Result size before limiting size: {}", result.size());
 
             // Sort with respect to lastInvokedAt ASC (so that we keep the oldest invocations)
-            result.sort((md1, md2) -> (int) (md2.getLastInvokedAtMillis() - md1.getLastInvokedAtMillis()));
+            result.sort(Comparator.comparing(MethodDescriptor::getLastInvokedAtMillis));
 
             // Limit the result
             return result.stream().limit(request.getMaxResults()).collect(Collectors.toList());
         }
 
-    }
-
-    private String getStringOrDefault(ResultSet rs, String columnLabel, String defaultValue) throws SQLException {
-        String value = rs.getString(columnLabel);
-        return value == null || value.isEmpty() ? defaultValue : value;
     }
 
     boolean isSyntheticMethod(String signature) {
