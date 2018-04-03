@@ -42,7 +42,6 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
@@ -560,8 +559,6 @@ public class MariadbIntegrationTest {
 
         assertThat(status.getCollectedSinceMillis(), is(nullValue()));
         assertThat(status.getCollectedDays(), is(nullValue()));
-
-        assertThat(status.getUsers(), hasSize(2));
     }
 
     @Test

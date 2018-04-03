@@ -133,9 +133,4 @@ public class GetStatusResponse {
      * The agents (JVMs) reporting to this customer account.
      */
     private final List<AgentDescriptor> agents;
-
-    /**
-     * The interactive users that have logged in to this customer.
-     */
-    private final List<UserDescriptor> users;
 }

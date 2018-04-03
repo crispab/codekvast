@@ -29,7 +29,6 @@ import io.codekvast.dashboard.dashboard.DashboardService;
 import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
-import io.codekvast.dashboard.dashboard.model.status.UserDescriptor;
 import io.codekvast.dashboard.util.TimeService;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import lombok.Getter;
@@ -44,7 +43,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
@@ -65,16 +63,10 @@ import java.util.stream.Collectors;
 public class DashboardServiceImpl implements DashboardService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final CustomerIdProvider customerIdProvider;
     private final CustomerService customerService;
     private final TimeService timeService;
-
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    @PostConstruct
-    public void postConstruct() {
-        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -116,7 +108,7 @@ public class DashboardServiceImpl implements DashboardService {
                                  .build();
     }
 
-    Collection<Long> translateNamesToIds(final String tableName, Collection<String> names) {
+    private Collection<Long> translateNamesToIds(final String tableName, Collection<String> names) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("customerId", customerIdProvider.getCustomerId());
         params.addValue("names", names);
@@ -158,7 +150,6 @@ public class DashboardServiceImpl implements DashboardService {
 
         PricePlan pp = customerData.getPricePlan();
         List<AgentDescriptor> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
-        List<UserDescriptor> users = getUsers(customerId);
 
         Instant now = timeService.now();
         Instant collectionStartedAt = customerData.getCollectionStartedAt();
@@ -198,7 +189,6 @@ public class DashboardServiceImpl implements DashboardService {
 
                                 // details
                                 .agents(agents)
-                                .users(users)
                                 .build();
     }
 
@@ -214,26 +204,6 @@ public class DashboardServiceImpl implements DashboardService {
                 jdbcTemplate.queryForList("SELECT name FROM environments WHERE customerId = ? ", String.class,
                                           customerIdProvider.getCustomerId()))
             .build();
-    }
-
-    private List<UserDescriptor> getUsers(Long customerId) {
-        List<UserDescriptor> result = new ArrayList<>();
-
-        jdbcTemplate.query(
-            "SELECT email, firstLoginAt, lastLoginAt, lastActivityAt, numberOfLogins, lastLoginSource " +
-                "FROM users WHERE customerId = ? ORDER BY email ",
-            rs -> {
-                result.add(
-                    UserDescriptor.builder()
-                                  .email(rs.getString("email"))
-                                  .firstLoginAtMillis(rs.getTimestamp("firstLoginAt").getTime())
-                                  .lastLoginAtMillis(rs.getTimestamp("lastLoginAt").getTime())
-                                  .lastActivityAtMillis(rs.getTimestamp("lastActivityAt").getTime())
-                                  .numberOfLogins(rs.getInt("numberOfLogins"))
-                                  .lastLoginSource(rs.getString("lastLoginSource"))
-                                  .build());
-            }, customerId);
-        return result;
     }
 
     private List<AgentDescriptor> getAgents(Long customerId, int publishIntervalSeconds) {
@@ -313,9 +283,9 @@ public class DashboardServiceImpl implements DashboardService {
                                      "  FROM invocations i\n" +
                                      "  INNER JOIN applications a ON a.id = i.applicationId \n" +
                                      "  INNER JOIN environments e ON e.id = i.environmentId \n" +
-                                     "  INNER JOIN methods m ON m.id = i.methodId\n" +
-                                     "  INNER JOIN jvms j ON j.id = i.jvmId\n" +
-                                     "  WHERE i.customerId = :customerId AND %s\n" +
+                                     "  INNER JOIN methods m ON m.id = i.methodId \n" +
+                                     "  INNER JOIN jvms j ON j.id = i.jvmId \n" +
+                                     "  WHERE i.customerId = :customerId AND %s \n" +
                                      "  ORDER BY i.methodId ASC", whereClause);
         }
 

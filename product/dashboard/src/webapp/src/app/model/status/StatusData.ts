@@ -1,5 +1,4 @@
 import {Agent} from './Agent';
-import {User} from './User';
 
 export class StatusData {
     // query stuff
@@ -26,5 +25,4 @@ export class StatusData {
 
     // details
     agents: Agent[];
-    users: User[];
 }

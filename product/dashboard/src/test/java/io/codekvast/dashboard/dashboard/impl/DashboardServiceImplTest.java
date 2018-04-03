@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.time.Instant;
 
@@ -35,6 +36,9 @@ public class DashboardServiceImplTest {
     private JdbcTemplate jdbcTemplate;
 
     @Mock
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Mock
     private CustomerService customerService;
 
     @Mock
@@ -50,7 +54,7 @@ public class DashboardServiceImplTest {
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        dashboardService = new DashboardServiceImpl(jdbcTemplate, customerIdProvider, customerService, timeService);
+        dashboardService = new DashboardServiceImpl(jdbcTemplate, namedParameterJdbcTemplate, customerIdProvider, customerService, timeService);
         when(timeService.now()).thenReturn(now);
         when(timeService.currentTimeMillis()).thenReturn(now.toEpochMilli());
     }
