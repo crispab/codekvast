@@ -77,7 +77,8 @@ public interface DashboardService {
     /**
      * Deletes an agent and all associated data (from jvms, invocations, methods, applications, environments).
      *
-     * @param agentId The value of agent_data.id for.
+     * @param agentId The value of agent_data.id
+     * @param jvmId The value of jvms.id
      */
-    void deleteAgent(Long agentId);
+    void deleteAgent(Long agentId, Long jvmId);
 }

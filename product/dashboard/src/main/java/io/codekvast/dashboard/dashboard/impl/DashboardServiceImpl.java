@@ -207,9 +207,25 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public void deleteAgent(Long agentId) {
-        logger.info("Deleting agent {}:{}", customerIdProvider.getCustomerId(), agentId);
-        // TODO Implement deleteAgent(Long agentId)
+    public void deleteAgent(Long agentId, Long jvmId) {
+        Long customerId = customerIdProvider.getCustomerId();
+
+        logger.info("Deleting agent {}:{}:{}", customerId, agentId, jvmId);
+        Instant startedAt = Instant.now();
+
+        int deleted = jdbcTemplate.update("DELETE FROM invocations WHERE customerId = ? AND jvmId = ?",
+                                          customerId, jvmId);
+        logger.debug("Deleted {} invocations rows", deleted);
+
+        deleted = jdbcTemplate.update("DELETE FROM jvms WHERE customerId = ? AND id = ?", customerId, jvmId);
+        logger.debug("Deleted {} rows from jvms", deleted);
+
+        deleted = jdbcTemplate.update("DELETE FROM agent_state WHERE customerId = ? AND id = ?", customerId, agentId);
+        logger.debug("Deleted {} rows from agent_state", deleted);
+
+        logger.info("Deleted agent {}:{}:{} in {}", customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
+
+        // TODO: delete orphan methods, applications, environments
     }
 
     private List<AgentDescriptor> getAgents(Long customerId, int publishIntervalSeconds) {

@@ -122,8 +122,8 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         if (!this.isAgentDeletable(agent)) {
             return;
         }
-        console.log(`[ck dashboard] Deleting agent ${agent.agentId}`)
+        console.log(`[ck dashboard] Deleting agent ${agent.agentId}:${agent.jvmId}`);
         agent.deletionState = 1;
-        this.api.deleteAgent(agent.agentId).subscribe(() => agent.deletionState = 2);
+        this.api.deleteAgent(agent.agentId, agent.jvmId).subscribe(() => agent.deletionState = 2);
     }
 }

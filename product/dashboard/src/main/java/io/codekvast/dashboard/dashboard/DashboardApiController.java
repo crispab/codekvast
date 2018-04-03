@@ -109,10 +109,10 @@ public class DashboardApiController {
         return data;
     }
 
-    @DeleteMapping("/dashboard/api/v1/agent/{id}")
-    public void deleteAgent(@PathVariable(value = "id") Long id) {
-        logger.debug("Deleting agent {}", id);
-        dashboardService.deleteAgent(id);
-        logger.info("Deleted agent {}", id);
+    @DeleteMapping("/dashboard/api/v1/agent/{agentId}/{jvmId}")
+    public void deleteAgent(@PathVariable(value = "agentId") Long agentId, @PathVariable(value = "jvmId") Long jvmId) {
+        logger.debug("Deleting agent {}:{}", agentId, jvmId);
+        dashboardService.deleteAgent(agentId, jvmId);
+        logger.info("Deleted agent {}:{}", agentId, jvmId);
     }
 }

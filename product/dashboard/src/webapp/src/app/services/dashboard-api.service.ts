@@ -11,7 +11,7 @@ import {StatusData} from '../model/status/StatusData';
 @Injectable()
 export class DashboardApiService {
 
-    readonly DELETE_AGENT_URL = '/dashboard/api/v1/agent/';
+    readonly DELETE_AGENT_URL = '/dashboard/api/v1/agent';
     readonly METHOD_BY_ID_URL = '/dashboard/api/v1/method/detail/';
     readonly METHODS_FORM_DATA_URL = '/dashboard/api/v1/methodsFormData';
     readonly METHODS_URL = '/dashboard/api/v1/methods';
@@ -51,7 +51,7 @@ export class DashboardApiService {
         return this.http.get<ServerSettings>(this.SERVER_SETTINGS_URL);
     }
 
-    deleteAgent(agentId: number) {
-        return this.http.delete(this.DELETE_AGENT_URL + agentId);
+    deleteAgent(agentId: number, jvmId: number) {
+        return this.http.delete(`${this.DELETE_AGENT_URL}/${agentId}/${jvmId}`);
     }
 }
