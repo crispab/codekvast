@@ -534,6 +534,7 @@ public class MariadbIntegrationTest {
         assertThat(status.getNumLiveEnabledAgents(), is(1));
 
         assertThat(status.getAgents().get(0), is(AgentDescriptor.builder()
+                                                                .agentId(1L)
                                                                 .agentAlive(true)
                                                                 .agentLiveAndEnabled(true)
                                                                 .agentVersion("agentVersion1")
@@ -542,7 +543,7 @@ public class MariadbIntegrationTest {
                                                                 .environment("env1")
                                                                 .excludePackages("com.foobar.excluded1")
                                                                 .hostname("hostname1")
-                                                                .id(1L)
+                                                                .jvmId(1L)
                                                                 .methodVisibility("public")
                                                                 .nextPollExpectedAtMillis(cutMillis(timestamps.plusOneMinute))
                                                                 .nextPublicationExpectedAtMillis(cutMillis(
@@ -586,6 +587,32 @@ public class MariadbIntegrationTest {
 
         // then
         assertThat(formData, is(GetMethodsFormData.builder().build()));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_delete_agent_when_valid_parameters() {
+        // given
+        setSecurityContextCustomerId(1L);
+        assertThat(countRowsInTable("agent_state"), is(4));
+        assertThat(countRowsInTable("jvms"), is(4));
+
+        // when
+        dashboardService.deleteAgent(1L, 1L);
+
+        // then
+        assertThat(countRowsInTable("agent_state"), is(3));
+        assertThat(countRowsInTable("jvms"), is(3));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_fail_to_delete_agent_when_invalid_customerId() {
+        // given
+        setSecurityContextCustomerId(4711L);
+
+        // when
+        dashboardService.deleteAgent(1L, 1L);
     }
 
     private void assertAgentEnabled(String jvmUuid, Boolean expectedEnabled) {

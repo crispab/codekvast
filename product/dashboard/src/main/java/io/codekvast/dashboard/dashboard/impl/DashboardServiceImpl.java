@@ -207,23 +207,27 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteAgent(Long agentId, Long jvmId) {
         Long customerId = customerIdProvider.getCustomerId();
 
         logger.info("Deleting agent {}:{}:{}", customerId, agentId, jvmId);
         Instant startedAt = Instant.now();
 
-        int deleted = jdbcTemplate.update("DELETE FROM invocations WHERE customerId = ? AND jvmId = ?",
-                                          customerId, jvmId);
-        logger.debug("Deleted {} invocations rows", deleted);
+        int deletedInvocations = jdbcTemplate.update("DELETE FROM invocations WHERE customerId = ? AND jvmId = ?",
+                                                     customerId, jvmId);
 
-        deleted = jdbcTemplate.update("DELETE FROM jvms WHERE customerId = ? AND id = ?", customerId, jvmId);
-        logger.debug("Deleted {} rows from jvms", deleted);
+        int deletedJvms = jdbcTemplate.update("DELETE FROM jvms WHERE customerId = ? AND id = ?", customerId, jvmId);
 
-        deleted = jdbcTemplate.update("DELETE FROM agent_state WHERE customerId = ? AND id = ?", customerId, agentId);
-        logger.debug("Deleted {} rows from agent_state", deleted);
+        int deletedAgentState = jdbcTemplate.update("DELETE FROM agent_state WHERE customerId = ? AND id = ?", customerId, agentId);
 
-        logger.info("Deleted agent {}:{}:{} in {}", customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
+        if (deletedInvocations + deletedJvms + deletedAgentState == 0) {
+            throw new IllegalArgumentException(
+                String.format("No such agent: agentId=%d, jvmId=%d for customerId=%d", agentId, jvmId, customerId));
+        }
+
+        logger.info("Deleted {} invocations rows, {} jvms rows and {} agent_state rows for agent {}:{}:{} in {}", deletedInvocations, deletedJvms,
+                    deletedAgentState, customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
 
         // TODO: delete orphan methods, applications, environments
     }

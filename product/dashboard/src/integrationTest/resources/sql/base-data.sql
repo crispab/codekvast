@@ -49,15 +49,15 @@ VALUES
   (3, 1, 3, 'v3', 3, 'uuid3', 'package-private', 'com.foobar3', 'com.foobar.excluded3', 'computerId3', 'hostname3', 'agentVersion3', 'tag1=t1,tag2=t2'),
   (4, 1, 4, 'v4', 4, 'uuid4', 'private', 'com.foobar4', NULL, 'computerId4', 'hostname4', 'agentVersion4', 'tag1=t1,tag2=t2');
 
-INSERT INTO agent_state (customerId, jvmUuid, enabled)
+INSERT INTO agent_state (id, customerId, jvmUuid, enabled)
 VALUES
-  (1, 'uuid1', TRUE),
-  (1, 'uuid2', FALSE),
-  (1, 'uuid3', TRUE),
-  (1, 'uuid4', FALSE);
+  (1, 1, 'uuid1', TRUE),
+  (2, 1, 'uuid2', FALSE),
+  (3, 1, 'uuid3', TRUE),
+  (4, 1, 'uuid4', FALSE);
 
-INSERT INTO users (customerId, email, lastLoginSource, numberOfLogins, firstLoginAt, lastLoginAt, lastActivityAt)
+INSERT INTO users (id, customerId, email, lastLoginSource, numberOfLogins, firstLoginAt, lastLoginAt, lastActivityAt)
 VALUES
-  (1, 'email1', 'source1', 1, NOW(), NOW(), NOW()),
-  (1, 'email2', 'source2', 2, NOW(), NOW(), NOW());
+  (1, 1, 'email1', 'source1', 1, NOW(), NOW(), NOW()),
+  (2, 1, 'email2', 'source2', 2, NOW(), NOW(), NOW());
 
