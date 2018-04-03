@@ -81,9 +81,25 @@
         </div>
     </div>
 
+    <ng-template #deleteModalTemplate let-c="close" let-d="dismiss">
+        <div class="modal-header">
+            <h4 class="modal-title">Delete Terminated Agents</h4>
+            <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Delete all data collected by {{ state.numSelectedTerminatedAgents() }} terminated agents?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark" (click)="d('cancel')">Cancel</button>
+            <button type="button" class="btn btn-danger" (click)="c('delete')">Delete</button>
+        </div>
+    </ng-template>
+
     <div *ngIf="state.data">
         <h4 class="text-capitalize">{{ getAgentsLabel() }}</h4>
-        <div class="form-inline" [class.invisible]="state.numTerminatedAgents() === 0">
+        <div class="form-inline mb-2" [class.invisible]="state.numTerminatedAgents() === 0">
             <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents">
             <label class="ml-1" for="showTerminatedAgents">Show {{ state.numTerminatedAgents() }} terminated {{ getAgentsLabel() }}</label>
             <div class="input-group col-auto">
@@ -99,15 +115,13 @@
                        [(ngModel)]="state.selectTerminatedAgentsOlderThanDays"/>
                 <div class="input-group-append">
                     <span class="input-group-text">days</span>
-                    <span class="input-group-btn">
-                        <button class="btn" (click)="state.selectOldTerminatedAgents()">
-                            Select
-                        </button>
-                    </span>
                 </div>
+                <button class="ml-3 btn btn-outline-secondary btn-sm" (click)="state.selectOldTerminatedAgents()">
+                    Select
+                </button>
             </div>
-            <button class="ml-5 btn btn-outline-secondary btn-sm" [disabled]="state.numSelectedTerminatedAgents() === 0"
-                    (click)="state.deleteSelectedAgents()">Delete {{ state.numSelectedTerminatedAgents() }} selected terminated agents
+            <button class="ml-3 btn btn-outline-secondary btn-sm" [disabled]="state.numSelectedTerminatedAgents() === 0"
+                    (click)="state.openDeleteModal(deleteModalTemplate)">Delete {{ state.numSelectedTerminatedAgents() }} selected terminated agents...
             </button>
         </div>
         <table class="table table-striped table-bordered">

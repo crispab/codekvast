@@ -5,6 +5,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {TimerObservable} from 'rxjs/observable/TimerObservable';
 import {Agent} from '../../model/status/Agent';
 import {isNullOrUndefined} from 'util';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 export class CollectionStatusComponentState {
     static KEY = 'collection-status';
@@ -19,7 +20,7 @@ export class CollectionStatusComponentState {
 
     private timerSubscription: Subscription;
 
-    constructor(private agePipe: AgePipe, private api: DashboardApiService) {
+    constructor(private agePipe: AgePipe, private api: DashboardApiService, private modalService: NgbModal) {
     }
 
     init() {
@@ -140,6 +141,14 @@ export class CollectionStatusComponentState {
             this.data.agents.filter(a => !a.agentAlive && a.publishedAtMillis < this.getTerminatedBefore().getTime())
                 .forEach(a => a.selected = true);
         }
+    }
+
+    openDeleteModal(content: any) {
+        this.modalService.open(content).result.then(() => {
+            this.deleteSelectedAgents();
+        }, () => {
+
+        });
     }
 
     deleteSelectedAgents() {

@@ -7,6 +7,7 @@ import {DashboardApiService} from '../../services/dashboard-api.service';
 import {DatePipe} from '@angular/common';
 import {Settings} from '../../components/settings.model';
 import {isNullOrUndefined} from 'util';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'ck-collection-status',
@@ -19,13 +20,14 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
     state: CollectionStatusComponentState;
     agentsLabel = 'agents';
 
-    constructor(private stateService: StateService, private api: DashboardApiService, private agePipe: AgePipe) {
+    constructor(private stateService: StateService, private api: DashboardApiService, private agePipe: AgePipe,
+                private modalService: NgbModal) {
     }
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
         this.state = this.stateService.getState(CollectionStatusComponentState.KEY,
-            () => new CollectionStatusComponentState(this.agePipe, this.api));
+            () => new CollectionStatusComponentState(this.agePipe, this.api, this.modalService));
         this.state.init();
         this.stateService.getAuthData().subscribe((ad: AuthData) => {
             this.agentsLabel = ad && ad.source === 'heroku' ? 'dynos' : 'agents';
