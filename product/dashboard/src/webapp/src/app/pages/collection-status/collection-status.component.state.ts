@@ -3,6 +3,8 @@ import {DashboardApiService} from '../../services/dashboard-api.service';
 import {StatusData} from '../../model/status/StatusData';
 import {Subscription} from 'rxjs/Subscription';
 import {TimerObservable} from 'rxjs/observable/TimerObservable';
+import {Agent} from '../../model/status/Agent';
+import {isNullOrUndefined} from 'util';
 
 export class CollectionStatusComponentState {
     static KEY = 'collection-status';
@@ -12,6 +14,7 @@ export class CollectionStatusComponentState {
     autoRefresh = true;
     showTerminatedAgents = false;
     refreshIntervalSeconds = 60;
+    selectAllTerminatedAgents = false;
     private timerSubscription: Subscription;
 
     constructor(private agePipe: AgePipe, private api: DashboardApiService) {
@@ -77,10 +80,11 @@ export class CollectionStatusComponentState {
             .subscribe(data => {
                 this.data = data;
                 this.errorMessage = undefined;
-
+                this.selectAllTerminatedAgents = false;
             }, error => {
                 this.data = undefined;
                 this.errorMessage = error.statusText ? error.statusText : error;
+                this.selectAllTerminatedAgents = false;
             });
     }
 
@@ -96,4 +100,41 @@ export class CollectionStatusComponentState {
         return null;
     }
 
+    numTerminatedAgents() {
+        if (this.data.agents) {
+            return this.data.agents.filter(a => !a.agentAlive).length
+        }
+        return null;
+    }
+
+    numSelectedTerminatedAgents() {
+        if (this.data.agents) {
+            return this.data.agents.filter(a => a.selected).length
+        }
+        return null;
+    }
+
+    selectOrUnselectAllAgents() {
+        if (this.data.agents) {
+            if (this.autoRefresh) {
+                this.toggleAutoRefresh();
+            }
+            this.data.agents.forEach(
+                a => a.selected = this.selectAllTerminatedAgents && !a.agentAlive && isNullOrUndefined(a.deletionState))
+        }
+    }
+
+    deleteSelectedAgents() {
+        if (this.data.agents) {
+            this.data.agents.filter(a => a.selected && !a.agentAlive).forEach(a => this.deleteAgent(a))
+        }
+    }
+
+    private deleteAgent(agent: Agent) {
+        agent.deletionState = 1;
+        this.api.deleteAgent(agent.agentId, agent.jvmId).subscribe(() => {
+            agent.deletionState = 2;
+            agent.selected = false;
+        });
+    }
 }

@@ -54,6 +54,7 @@
                 <input class="form-control"
                        id="refreshInterval"
                        type="number"
+                       required
                        min="10"
                        max="3600"
                        [(ngModel)]="state.refreshIntervalSeconds"
@@ -83,7 +84,8 @@
     <div *ngIf="state.data">
         <h4 class="text-capitalize">{{ getAgentsLabel() }}</h4>
         <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents">
-        <label class="ml-1" for="showTerminatedAgents">Show terminated {{ getAgentsLabel() }}</label>
+        <label class="ml-1" for="showTerminatedAgents">Show {{ state.numTerminatedAgents() }} terminated {{ getAgentsLabel() }}</label>
+        <button class="btn btn-outline-secondary btn-sm" [disabled]="state.numSelectedTerminatedAgents() === 0" (click)="state.deleteSelectedAgents()">Delete {{ state.numSelectedTerminatedAgents() }} selected terminated agents</button>
         <table class="table table-striped table-bordered">
             <tr>
                 <th>Application</th>
@@ -93,6 +95,7 @@
                 <th>Data received at</th>
                 <th>Next expected at</th>
                 <th>Comments</th>
+                <th><input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents" (change)="state.selectOrUnselectAllAgents()"/> </th>
             </tr>
             <tr *ngFor="let agent of state.getFilteredAgents()">
                 <td ngbPopover="{{ agent.agentVersion }}"
@@ -109,9 +112,8 @@
                 <td>
                     <span [ngClass]="agentUploadExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
                 </td>
-                <td>{{ getComments(agent) }} <i [ngClass]="commentClasses(agent)"></i>
-                    <a *ngIf="isAgentDeletable(agent)" class="ml-1" (click)="deleteAgent(agent)"><i class="far fa-trash-alt"></i></a>
-                </td>
+                <td>{{ getComments(agent) }} <i [ngClass]="commentClasses(agent)"></i></td>
+                <td><input [disabled]="agent.deletionState" type="checkbox" [(ngModel)]="agent.selected"></td>
             </tr>
         </table>
     </div>

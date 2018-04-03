@@ -18,4 +18,5 @@ export class Agent {
     agentAlive: boolean;
     agentLiveAndEnabled: boolean;
     deletionState: number;
+    selected: boolean;
 }
