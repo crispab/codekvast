@@ -83,9 +83,33 @@
 
     <div *ngIf="state.data">
         <h4 class="text-capitalize">{{ getAgentsLabel() }}</h4>
-        <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents">
-        <label class="ml-1" for="showTerminatedAgents">Show {{ state.numTerminatedAgents() }} terminated {{ getAgentsLabel() }}</label>
-        <button class="btn btn-outline-secondary btn-sm" [disabled]="state.numSelectedTerminatedAgents() === 0" (click)="state.deleteSelectedAgents()">Delete {{ state.numSelectedTerminatedAgents() }} selected terminated agents</button>
+        <div class="form-inline" [class.invisible]="state.numTerminatedAgents() === 0">
+            <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents">
+            <label class="ml-1" for="showTerminatedAgents">Show {{ state.numTerminatedAgents() }} terminated {{ getAgentsLabel() }}</label>
+            <div class="input-group col-auto">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Select terminated agents older than</span>
+                </div>
+                <input class="form-control"
+                       id="terminatedDays"
+                       type="number"
+                       required
+                       min="0"
+                       max="3650"
+                       [(ngModel)]="state.selectTerminatedAgentsOlderThanDays"/>
+                <div class="input-group-append">
+                    <span class="input-group-text">days</span>
+                    <span class="input-group-btn">
+                        <button class="btn" (click)="state.selectOldTerminatedAgents()">
+                            Select
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <button class="ml-5 btn btn-outline-secondary btn-sm" [disabled]="state.numSelectedTerminatedAgents() === 0"
+                    (click)="state.deleteSelectedAgents()">Delete {{ state.numSelectedTerminatedAgents() }} selected terminated agents
+            </button>
+        </div>
         <table class="table table-striped table-bordered">
             <tr>
                 <th>Application</th>
@@ -95,7 +119,7 @@
                 <th>Data received at</th>
                 <th>Next expected at</th>
                 <th>Comments</th>
-                <th><input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents" (change)="state.selectOrUnselectAllAgents()"/> </th>
+                <th><input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents" (change)="state.selectOrUnselectAllAgents()"/></th>
             </tr>
             <tr *ngFor="let agent of state.getFilteredAgents()">
                 <td ngbPopover="{{ agent.agentVersion }}"

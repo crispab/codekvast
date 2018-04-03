@@ -15,6 +15,8 @@ export class CollectionStatusComponentState {
     showTerminatedAgents = false;
     refreshIntervalSeconds = 60;
     selectAllTerminatedAgents = false;
+    selectTerminatedAgentsOlderThanDays = 30;
+
     private timerSubscription: Subscription;
 
     constructor(private agePipe: AgePipe, private api: DashboardApiService) {
@@ -121,6 +123,22 @@ export class CollectionStatusComponentState {
             }
             this.data.agents.forEach(
                 a => a.selected = this.selectAllTerminatedAgents && !a.agentAlive && isNullOrUndefined(a.deletionState))
+        }
+    }
+
+    getTerminatedBefore(): Date {
+        let d = new Date();
+        d.setDate(d.getDate() - this.selectTerminatedAgentsOlderThanDays);
+        return d;
+    }
+
+    selectOldTerminatedAgents() {
+        if (this.data.agents) {
+            if (this.autoRefresh) {
+                this.toggleAutoRefresh();
+            }
+            this.data.agents.filter(a => !a.agentAlive && a.publishedAtMillis < this.getTerminatedBefore().getTime())
+                .forEach(a => a.selected = true);
         }
     }
 
