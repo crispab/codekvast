@@ -2,6 +2,7 @@
 
 ## 0.23.2
 1. Dashboard: Added ability to filter on applications and environments in Search Methods.
+1. Dashboard: Added ability to delete terminated agents.
 
 ## 0.23.1
 1. Database schema changes: applications, environments, jvms, invocations.
