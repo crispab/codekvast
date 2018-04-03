@@ -38,10 +38,13 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
@@ -66,10 +69,18 @@ public class DashboardServiceImpl implements DashboardService {
     private final CustomerService customerService;
     private final TimeService timeService;
 
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @PostConstruct
+    public void postConstruct() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
+    }
+
     @Override
     @Transactional(readOnly = true)
     public GetMethodsResponse getMethods(@Valid GetMethodsRequest request) {
         long startedAt = timeService.currentTimeMillis();
+        translateNamesToIds("applications", request.getApplications());
 
         MethodDescriptorRowCallbackHandler rowCallbackHandler =
             new MethodDescriptorRowCallbackHandler("m.signature LIKE ?");
@@ -90,6 +101,16 @@ public class DashboardServiceImpl implements DashboardService {
                                  .methods(methods)
                                  .queryTimeMillis(queryTimeMillis)
                                  .build();
+    }
+
+    Collection<Long> translateNamesToIds(final String tableName, Collection<String> names) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("customerId", customerIdProvider.getCustomerId());
+        params.addValue("names", names);
+
+        List<Long> ids = namedParameterJdbcTemplate.queryForList("SELECT id FROM " + tableName + " WHERE customerId = :customerId AND name IN (:names)", params, Long.class);
+        logger.debug("Mapped {} {} to {} for customer {}", tableName, names, ids, customerIdProvider.getCustomerId());
+        return ids;
     }
 
     @Override

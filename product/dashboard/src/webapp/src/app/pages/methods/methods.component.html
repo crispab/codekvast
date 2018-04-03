@@ -203,24 +203,24 @@
                                    min="1"
                                    max="10000">
                         </div>
-                        <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid || !state.anyApplicationSelected() || !state.anyEnvironmentSelected()">Search
+
+                        <button *ngIf="!state.searching" type="submit" class="btn btn-primary btn-sm"
+                                [disabled]="!searchForm.form.valid || !state.anyApplicationSelected() || !state.anyEnvironmentSelected() || state.searching">
+                            Search
                         </button>
 
-                        <div *ngIf="state.searching">
-                            <small class="ml-2 col-form-label form-text text-muted">
-                                <ngb-progressbar type="info" [value]="100" height="2em" [striped]="true" [animated]="true">&nbsp;Searching...&nbsp;</ngb-progressbar>
-                            </small>
-                        </div>
+                        <small *ngIf="state.searching" class="ml-2 form-text text-muted">
+                            <ngb-progressbar type="info" [value]="100" height="2em" [striped]="true" [animated]="true">&nbsp;Searching...&nbsp;</ngb-progressbar>
+                        </small>
 
-                        <div *ngIf="!state.searching && state.data">
-                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | ckAge:settings.dateFormat }}:
-                                Found {{ state.data.numMethods }} methods in {{ state.data.queryTimeMillis }} ms
-                            </small>
-                        </div>
-
-                        <div *ngIf="!state.searching && state.errorMessage">
-                            <small class="ml-2 col-form-label form-text text-muted">{{ communicationFailure() }}</small>
-                        </div>
+                    </div>
+                    <div class="form-inline mt-1">
+                        <label class="col-form-label mr-3">&nbsp;</label>
+                        <small class="form-text text-muted">
+                            <span *ngIf="state.data">{{ state.data.timestamp | ckAge:settings.dateFormat }}:
+                                    Found {{ state.data.numMethods }} methods in {{ state.data.queryTimeMillis }} ms</span>
+                            <span *ngIf="state.errorMessage">{{ communicationFailure() }}</span>
+                        </small>
                     </div>
                 </form>
             </div>
