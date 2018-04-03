@@ -29,11 +29,11 @@ export class CollectionStatusComponentState {
         this.stopAutoRefresh();
     }
 
-    toggleAutoRefreshButtonClasses() {
+    autoRefreshButtonClasses() {
         return {
-            'fa': true,
+            'fas': true,
             'fa-pause': this.autoRefresh,
-            'fa-play': !this.autoRefresh,
+            'fa-play': !this.autoRefresh
         }
     }
 
@@ -95,6 +95,5 @@ export class CollectionStatusComponentState {
         }
         return null;
     }
-
 
 }

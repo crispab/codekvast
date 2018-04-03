@@ -64,8 +64,7 @@ module.exports = {
             title: 'Codekvast',
             links: [
                 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css',
-                'https://use.fontawesome.com/releases/v5.0.8/css/solid.css',
-                'https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css'
+                'https://use.fontawesome.com/releases/v5.0.9/css/all.css'
             ],
             scripts: [
                 'https://s3.amazonaws.com/assets.heroku.com/boomerang/boomerang.js',

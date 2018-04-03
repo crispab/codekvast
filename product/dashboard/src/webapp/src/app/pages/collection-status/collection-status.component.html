@@ -62,7 +62,7 @@
                     <span class="input-group-text">s</span>
                     <span class="input-group-btn">
                         <button class="btn" (click)="state.toggleAutoRefresh()" title="{{state.autoRefreshButtonText()}}">
-                            <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>
+                            <i [ngClass]="state.autoRefreshButtonClasses()" aria-hidden="true"></i>
                         </button>
                     </span>
                 </div>
@@ -109,7 +109,9 @@
                 <td>
                     <span [ngClass]="agentUploadExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
                 </td>
-                <td>{{ getComments(agent) }}</td>
+                <td>{{ getComments(agent) }} <i [ngClass]="commentClasses(agent)"></i>
+                    <a *ngIf="isAgentDeletable(agent)" class="ml-1" (click)="deleteAgent(agent)"><i class="far fa-trash-alt"></i></a>
+                </td>
             </tr>
         </table>
     </div>

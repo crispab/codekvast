@@ -6,6 +6,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DashboardApiService} from '../../services/dashboard-api.service';
 import {DatePipe} from '@angular/common';
 import {Settings} from '../../components/settings.model';
+import {isNullOrUndefined} from 'util';
 
 @Component({
     selector: 'ck-collection-status',
@@ -82,17 +83,47 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
     }
 
     getComments(agent: Agent) {
+        if (agent.deletionState === 1) {
+            return 'Deleting...';
+        }
+
+        if (agent.deletionState === 2) {
+            return 'Deleted';
+        }
+
         if (!agent.agentAlive) {
-            return 'terminated';
+            return 'Terminated';
         }
 
         if (!agent.agentLiveAndEnabled) {
-            return 'suspended';
+            return 'Suspended';
         }
         return '';
     }
 
+    commentClasses(agent: Agent) {
+        return {
+            'invisible': agent.deletionState !== 1,
+            'far': agent.deletionState === 1,
+            'fa-clock': agent.deletionState === 1
+        }
+    }
+
     getAgentsLabel() {
         return this.agentsLabel;
+    }
+
+    isAgentDeletable(agent: Agent) {
+        console.log('[ck dashboard] isDeletable(%o)', agent);
+        return !agent.agentAlive && isNullOrUndefined(agent.deletionState);
+    }
+
+    deleteAgent(agent: Agent) {
+        if (!this.isAgentDeletable(agent)) {
+            return;
+        }
+        console.log(`[ck dashboard] Deleting agent ${agent.agentId}`)
+        agent.deletionState = 1;
+        this.api.deleteAgent(agent.agentId).subscribe(() => agent.deletionState = 2);
     }
 }

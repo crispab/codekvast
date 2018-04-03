@@ -206,11 +206,17 @@ public class DashboardServiceImpl implements DashboardService {
             .build();
     }
 
+    @Override
+    public void deleteAgent(Long agentId) {
+        logger.info("Deleting agent {}:{}", customerIdProvider.getCustomerId(), agentId);
+        // TODO Implement deleteAgent(Long agentId)
+    }
+
     private List<AgentDescriptor> getAgents(Long customerId, int publishIntervalSeconds) {
         List<AgentDescriptor> result = new ArrayList<>();
 
         jdbcTemplate.query(
-            "SELECT agent_state.enabled, agent_state.lastPolledAt, agent_state.nextPollExpectedAt, " +
+            "SELECT agent_state.id AS agentId, agent_state.enabled, agent_state.lastPolledAt, agent_state.nextPollExpectedAt, " +
                 "jvms.id AS jvmId, jvms.startedAt, jvms.publishedAt, jvms.methodVisibility, jvms.packages, jvms.excludePackages, " +
                 "jvms.hostname, jvms.agentVersion, jvms.tags, jvms.applicationVersion AS appVersion, " +
                 "applications.name AS appName, environments.name AS envName " +
@@ -231,6 +237,7 @@ public class DashboardServiceImpl implements DashboardService {
 
                 result.add(
                     AgentDescriptor.builder()
+                                   .agentId(rs.getLong("agentId"))
                                    .agentAlive(isAlive)
                                    .agentLiveAndEnabled(isAlive && rs.getBoolean("enabled"))
                                    .agentVersion(rs.getString("agentVersion"))
@@ -238,7 +245,7 @@ public class DashboardServiceImpl implements DashboardService {
                                    .appVersion(rs.getString("appVersion"))
                                    .environment(rs.getString("envName"))
                                    .excludePackages(rs.getString("excludePackages"))
-                                   .id(rs.getLong("jvmId"))
+                                   .jvmId(rs.getLong("jvmId"))
                                    .hostname(rs.getString("hostname"))
                                    .methodVisibility(rs.getString("methodVisibility"))
                                    .nextPublicationExpectedAtMillis(nextPublicationExpectedAt.toEpochMilli())

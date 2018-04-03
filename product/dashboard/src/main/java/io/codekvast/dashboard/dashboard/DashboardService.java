@@ -73,4 +73,11 @@ public interface DashboardService {
      */
     @NotNull
     GetMethodsFormData getMethodsFormData();
+
+    /**
+     * Deletes an agent and all associated data (from jvms, invocations, methods, applications, environments).
+     *
+     * @param agentId The value of agent_data.id for.
+     */
+    void deleteAgent(Long agentId);
 }

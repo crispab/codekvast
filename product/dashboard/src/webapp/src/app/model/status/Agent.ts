@@ -1,5 +1,6 @@
 export class Agent {
-    id: number;
+    agentId: number;
+    jvmId: number;
     appName: string;
     appVersion: string;
     agentVersion: string;
@@ -16,4 +17,5 @@ export class Agent {
     nextPublicationExpectedAtMillis: number;
     agentAlive: boolean;
     agentLiveAndEnabled: boolean;
+    deletionState: number;
 }
