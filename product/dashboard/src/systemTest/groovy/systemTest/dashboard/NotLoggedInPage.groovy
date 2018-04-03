@@ -9,6 +9,6 @@ class NotLoggedInPage extends Page {
     static url = '/not-logged-in'
 
     static at = {
-        $("#header").text() == "Not logged in."
+        title == "Codekvast Not-Logged-In"
     }
 }

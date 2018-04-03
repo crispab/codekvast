@@ -3,13 +3,14 @@ package systemTest.dashboard
 class StatusSpec extends BaseSpec {
     def 'Status page should render correctly when authenticated'() {
         given:
+        to HomePage
         addSessionTokenCookie()
 
         when:
         to StatusPage
 
         then:
-        header == 'Status'
+        at StatusPage
     }
 
     def 'Methods page should redirect to NotLoggedInPage when unauthenticated'() {
@@ -17,7 +18,7 @@ class StatusSpec extends BaseSpec {
         deleteAllCookies()
 
         when:
-        to StatusPage
+        via StatusPage
 
         then:
         at NotLoggedInPage

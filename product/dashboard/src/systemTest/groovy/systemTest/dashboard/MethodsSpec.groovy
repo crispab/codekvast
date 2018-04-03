@@ -3,13 +3,14 @@ package systemTest.dashboard
 class MethodsSpec extends BaseSpec {
     def 'Methods page should render correctly when authenticated'() {
         given:
+        to HomePage
         addSessionTokenCookie()
 
         when:
         to MethodsPage
 
         then:
-        signatureField.text() == ''
+        at MethodsPage
     }
 
     def 'Methods page should redirect to NotLoggedInPage when unauthenticated'() {
@@ -17,7 +18,7 @@ class MethodsSpec extends BaseSpec {
         deleteAllCookies()
 
         when:
-        to MethodsPage
+        via MethodsPage
 
         then:
         at NotLoggedInPage

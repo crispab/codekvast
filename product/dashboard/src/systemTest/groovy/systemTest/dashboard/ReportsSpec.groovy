@@ -6,6 +6,6 @@ class ReportsSpec extends BaseSpec {
         to ReportsPage
 
         then:
-        header == 'Reports'
+        at ReportsPage
     }
 }
