@@ -83,14 +83,20 @@ public class DashboardServiceImpl implements DashboardService {
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("customerId", customerIdProvider.getCustomerId());
-        params.addValue("applicationIds", translateNamesToIds("applications", request.getApplications()));
-        params.addValue("environmentIds", translateNamesToIds("environments", request.getEnvironments()));
-        params.addValue("signature", request.getNormalizedSignature());
 
-        MethodDescriptorRowCallbackHandler rowCallbackHandler =
-            new MethodDescriptorRowCallbackHandler("i.applicationId IN (:applicationIds) " +
-                                                       "AND i.environmentId IN (:environmentIds) " +
-                                                       "AND m.signature LIKE :signature ");
+        String whereClause = "";
+        if (request.getApplications() != null && !request.getApplications().isEmpty()) {
+            params.addValue("applicationIds", translateNamesToIds("applications", request.getApplications()));
+            whereClause = "i.applicationId IN (:applicationIds) AND ";
+        }
+        if (request.getEnvironments() != null && !request.getEnvironments().isEmpty()) {
+            params.addValue("environmentIds", translateNamesToIds("environments", request.getEnvironments()));
+            whereClause += "i.environmentId IN (:environmentIds) AND ";
+        }
+        params.addValue("signature", request.getNormalizedSignature());
+        whereClause += "m.signature LIKE :signature ";
+
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(whereClause);
 
 
         namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
