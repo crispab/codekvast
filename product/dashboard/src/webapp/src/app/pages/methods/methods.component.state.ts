@@ -44,12 +44,12 @@ export class MethodsComponentState {
         });
     }
 
-    checkboxButtonClasses(s: CheckboxState) {
-        return {
-            'btn-primary': s.selected,
-            'btn-outline-primary': !s.selected,
-            'btn-sm': true
-        }
+    anyApplicationSelected() {
+        return this.applications.some(s => s.selected === true);
+    }
+
+    anyEnvironmentSelected() {
+        return this.environments.some(s => s.selected === true);
     }
 
     private sortBy(column: string) {

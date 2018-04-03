@@ -1,12 +1,12 @@
 <div class="wrapper d-flex flex-column h-100 mx-2">
     <div id="search-form" class="ml-4 mt-1">
-        <div class="d-flex flex-row justify-content-between">
-            <div style="width: 84%">
+        <div class="d-flex flex-row">
+            <div class="w-80">
                 <h4>Search Method</h4>
                 <form (ngSubmit)="state.search()" #searchForm="ngForm">
                     <div class="form-inline">
-                        <label for="signature" class="col-form-label mr-4">Signature:</label>
-                        <div class="col-8 input-group">
+                        <label for="signature" class="col-form-label">Signature:</label>
+                        <div class="col-10 input-group">
                             <input class="form-control"
                                    id="signature"
                                    name="signature"
@@ -33,7 +33,7 @@
 
                     <div class="form-inline mt-1">
                         <label class="col-form-label">In applications:</label>
-                        <div class="form-check ml-3" *ngFor="let a of state.applications" >
+                        <div class="form-check ml-3" *ngFor="let a of state.applications">
                             <label class="form-check-label">
                                 <input class="form-check-input"
                                        id="includeApplication-{{ a.name }}"
@@ -41,6 +41,20 @@
                                        type="checkbox"
                                        [(ngModel)]="a.selected">
                                 {{ a.name }}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-inline mt-1">
+                        <label class="col-form-label">In environments:</label>
+                        <div class="form-check ml-3" *ngFor="let e of state.environments">
+                            <label class="form-check-label">
+                                <input class="form-check-input"
+                                       id="includeEnvironment-{{ e.name }}"
+                                       name="includeEnvironment-{{ e.name }}"
+                                       type="checkbox"
+                                       [(ngModel)]="e.selected">
+                                {{ e.name }}
                             </label>
                         </div>
                     </div>
@@ -86,7 +100,7 @@
 
                         <ng-template #syntheticPopover>
                             <p>Also include methods that are not written by a human.
-                            Examples:</p>
+                                Examples:</p>
                             <ul>
                                 <li>Methods generated at compile time by e.g., a Scala or Kotlin compiler.</li>
                                 <li>Methods generated at compile time by an annotation processor.</li>
@@ -119,8 +133,8 @@
                     </div>
 
                     <div class="form-inline mt-1">
-                        <label for="collectedDays" class="col-form-label mr-1">Tracked For:</label>
-                        <div class="input-group"
+                        <label for="collectedDays" class="col-form-label">Tracked For:</label>
+                        <div class="input-group ml-3"
                              [ngbPopover]="collectedDaysPopover"
                              popoverTitle="Tracked For Days"
                              triggers="mouseenter:mouseleave"
@@ -130,20 +144,22 @@
                                    id="collectedDays"
                                    name="collectedDays"
                                    [(ngModel)]="state.req.minCollectedDays"
+                                   required
                                    min="0"
                                    max="3650"
                                    type="number">
                             <div class="input-group-append">
                                 <span class="input-group-text font-italic">days</span>
                             </div>
+
+                            <ng-template #collectedDaysPopover>
+                                <p>Only include methods in the search results that have been tracked by Codekvast for
+                                    <b>at least {{ state.req.minCollectedDays }} days</b>.</p>
+                            </ng-template>
                         </div>
 
-                        <ng-template #collectedDaysPopover>
-                            <p>Only include methods in the search results that have been tracked by Codekvast for
-                                <b>at least {{ state.req.minCollectedDays }} days</b>.</p>
-                        </ng-template>
-
-                        <label for="includeIfNotInvokedInDays" class="ml-1 col-auto" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">
+                        <label for="includeIfNotInvokedInDays" class="ml-1 col-auto"
+                               [class.text-secondary]="state.includeOnlyNeverInvokedMethods">
                             Cutoff Date:</label>
                         <div class="input-group"
                              [ngbPopover]="cutoffDatePopover"
@@ -155,6 +171,7 @@
                                    id="includeIfNotInvokedInDays"
                                    name="includeIfNotInvokedInDays"
                                    [(ngModel)]="state.includeIfNotInvokedInDays"
+                                   required
                                    min="0"
                                    max="3650"
                                    type="number"
@@ -162,26 +179,31 @@
                             <div class="input-group-append">
                                 <span class="input-group-text font-italic" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">days ago</span>
                             </div>
+
+                            <ng-template #cutoffDatePopover>
+                                <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
+                                    have been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
+                                </p>
+                                <p>'Cutoff Date' has no effect if 'Only never invoked methods' is checked.</p>
+                            </ng-template>
                         </div>
 
-                        <ng-template #cutoffDatePopover>
-                            <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
-                                have been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
-                            </p>
-                            <p>'Cutoff Date' has no effect if 'Only never invoked methods' is checked.</p>
-                        </ng-template>
-
                         <label for="maxResults" class="col-auto">Max&nbsp;Results:</label>
-                        <div class="col-auto">
+                        <div class="col-auto"
+                             ngbPopover="Limit the search results to {{ state.req.maxResults}} methods, order from oldest to newest."
+                             popoverTitle="Max Results"
+                             triggers="mouseenter:mouseleave"
+                             placement="right">
                             <input class="form-control"
                                    id="maxResults"
                                    name="maxResults"
                                    [(ngModel)]="state.req.maxResults"
                                    type="number"
+                                   required
                                    min="1"
                                    max="10000">
                         </div>
-                        <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid">Search
+                        <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid || !state.anyApplicationSelected() || !state.anyEnvironmentSelected()">Search
                         </button>
 
                         <div *ngIf="state.searching">
@@ -202,7 +224,7 @@
                     </div>
                 </form>
             </div>
-            <ck-settings-editor style="width: 16%" class="ml-auto"></ck-settings-editor>
+            <ck-settings-editor class="w-20"></ck-settings-editor>
         </div>
     </div>
 

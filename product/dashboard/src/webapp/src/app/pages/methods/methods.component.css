@@ -67,3 +67,16 @@ div.wrapper {
     height: 6em;
     width: 100%;
 }
+
+.w-80 {
+    width: 80%!important;
+}
+
+.w-20 {
+    width: 20%!important;
+}
+
+.form-inline .col-form-label {
+    width: 7.5em;
+    display: inline;
+}
