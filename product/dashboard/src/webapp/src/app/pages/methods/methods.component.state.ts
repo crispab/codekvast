@@ -138,6 +138,9 @@ export class MethodsComponentState {
         this.req.suppressSyntheticMethods = !this.includeSyntheticMethods;
         this.req.suppressUntrackedMethods = !this.includeUntrackedMethods;
         this.req.onlyInvokedBeforeMillis = this.getCutoffTimeMillis();
+        this.req.applications = this.applications.filter(s => s.selected).map(s => s.name);
+        this.req.environments = this.environments.filter(s => s.selected).map(s => s.name);
+
         this.api
             .getMethods(this.req)
             .subscribe(data => {
