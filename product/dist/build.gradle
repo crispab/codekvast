@@ -56,7 +56,11 @@ task stageForUpload(type: Copy) {
         into "assets"
     }
     from "$buildDir/distributions/codekvast-agent-${codekvastVersion}.zip"
-    from "$rootDir/product/java-agent/build/javaagents/codekvast-javaagent-${codekvastVersion}.jar"
+    from("$rootDir/product/java-agent/build/javaagents/codekvast-javaagent-${codekvastVersion}.jar") {
+        rename {
+            "codekvast-agent-${codekvastVersion}.jar"
+        }
+    }
 }
 
 task uploadToS3 {
@@ -67,7 +71,7 @@ task uploadToS3 {
 
     doLast {
         def bucket = codekvastDownloadPrefix - 'http://' - 'https://'
-        def command = "s3cmd --reduced-redundancy --progress --recursive --force put ${buildDir}/staging s3://${bucket}"
+        def command = "s3cmd --reduced-redundancy --progress --recursive --force put ${buildDir}/staging/ s3://${bucket}"
         logger.lifecycle(command)
         def result = command.execute().waitFor()
         assert result == 0: "Failed to execute $command"
