@@ -62,10 +62,10 @@ public class WeedingServiceImpl implements WeedingService {
                                                        "  WHERE i.environmentId IS NULL;\n");
 
         if (methodCount + applicationCount + environmentCount > 0) {
-            logger.info("Data Weeding: {} invocation-less methods, {} empty environments and {} empty applications deleted in {}.",
+            logger.info("Data weeding: {} unreferenced methods, {} empty environments and {} empty applications deleted in {}.",
                         methodCount, environmentCount, applicationCount, Duration.between(startedAt, Instant.now()));
         } else {
-            logger.debug("Data Weeding: Found nothing to delete");
+            logger.debug("Data weeding: Found nothing to delete");
         }
     }
 
