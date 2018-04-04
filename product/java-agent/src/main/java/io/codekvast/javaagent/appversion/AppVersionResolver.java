@@ -42,6 +42,7 @@ public class AppVersionResolver {
         this.appVersionStrategies.add(new LiteralAppVersionStrategy());
         this.appVersionStrategies.add(new ManifestAppVersionStrategy());
         this.appVersionStrategies.add(new FilenameAppVersionStrategy());
+        this.appVersionStrategies.add(new PropertiesAppVersionStrategy());
     }
 
     public String resolveAppVersion() {

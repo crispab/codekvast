@@ -2,7 +2,8 @@
 
 ## 0.23.2
 1. Dashboard: Added ability to filter on applications and environments in Search Methods.
-1. Dashboard: Added ability to delete terminated agents.
+2. Dashboard: Added ability to delete terminated agents.
+3. Agent: codekvast.conf: Added support for appVersion strategy "properties /path/to/file prop1,prop2"
 
 ## 0.23.1
 1. Database schema changes: applications, environments, jvms, invocations.
