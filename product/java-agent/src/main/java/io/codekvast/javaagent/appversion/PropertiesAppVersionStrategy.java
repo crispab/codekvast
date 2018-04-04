@@ -119,11 +119,22 @@ public class PropertiesAppVersionStrategy extends AbstractAppVersionStrategy {
             if (value == null) {
                 logger.warning("Cannot find " + key + " in " + file.getAbsolutePath());
             } else {
-                sb.append(delimiter).append(value);
+                sb.append(delimiter).append(removeQuotes(value).trim());
                 delimiter = "-";
             }
         }
         return sb.toString();
+    }
+
+    private String removeQuotes(String value) {
+        int len = value.length();
+        if (value.startsWith("\"") && value.endsWith("\"")) {
+            return value.substring(1, len - 1);
+        }
+        if (value.startsWith("'") && value.endsWith("'")) {
+            return value.substring(1, len - 1);
+        }
+        return value;
     }
 
     private String join(String args[]) {

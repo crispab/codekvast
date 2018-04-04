@@ -42,6 +42,13 @@ public class PropertiesAppVersionStrategyTest {
     }
 
     @Test
+    public void should_resolve_when_valid_absolute_path_and_valid_triple_properties() {
+        String args[] = {"properties", VALID_ABSOLUTE_PATH, "version", "build", "qualifier"};
+
+        assertThat(strategy.resolveAppVersion(VALID_URIS, args), is("1.2.3-4711-all"));
+    }
+
+    @Test
     public void should_not_resolve_when_invalidBaseName() {
         String args[] = {"properties", INVALID_FILE, "version", "build"};
 
