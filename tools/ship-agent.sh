@@ -66,7 +66,7 @@ git push --force --tags
 set +e
 
 echo "Uploading to downloads.codekvast.io ..."
-${GRADLEW} --console=plain :product:dist:uploadToS3
+${GRADLEW} :product:dist:uploadToS3 --console=plain
 
 echo "Uploading codekvast-agent-${CODEKVAST_VERSION}.jar to jcenter ..."
-${GRADLEW} --console=plain :product:java-agent:bintrayUpload
+${GRADLEW} :product:java-agent:bintrayUpload --console=plain
