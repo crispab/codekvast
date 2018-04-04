@@ -113,6 +113,6 @@ public class DashboardApiController {
     public void deleteAgent(@PathVariable(value = "agentId") Long agentId, @PathVariable(value = "jvmId") Long jvmId) {
         logger.debug("Deleting agent {}:{}", agentId, jvmId);
         dashboardService.deleteAgent(agentId, jvmId);
-        logger.info("Deleted agent {}:{}", agentId, jvmId);
+        logger.debug("Deleted agent {}:{}", agentId, jvmId);
     }
 }

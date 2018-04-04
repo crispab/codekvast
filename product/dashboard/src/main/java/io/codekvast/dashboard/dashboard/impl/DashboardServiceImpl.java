@@ -211,7 +211,7 @@ public class DashboardServiceImpl implements DashboardService {
     public void deleteAgent(Long agentId, Long jvmId) {
         Long customerId = customerIdProvider.getCustomerId();
 
-        logger.info("Deleting agent {}:{}:{}", customerId, agentId, jvmId);
+        logger.debug("Deleting agent {}:{}:{}", customerId, agentId, jvmId);
         Instant startedAt = Instant.now();
 
         int deletedInvocations = jdbcTemplate.update("DELETE FROM invocations WHERE customerId = ? AND jvmId = ?",
@@ -229,7 +229,7 @@ public class DashboardServiceImpl implements DashboardService {
         logger.info("Deleted {} invocations rows, {} jvms rows and {} agent_state rows for agent {}:{}:{} in {}", deletedInvocations, deletedJvms,
                     deletedAgentState, customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
 
-        // TODO: delete orphan methods, applications, environments
+        // child-less methods, environments and applications are deleted by the WeedingService.
     }
 
     private List<AgentDescriptor> getAgents(Long customerId, int publishIntervalSeconds) {

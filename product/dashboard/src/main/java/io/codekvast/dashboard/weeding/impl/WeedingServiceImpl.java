@@ -22,7 +22,9 @@
 package io.codekvast.dashboard.weeding.impl;
 
 import io.codekvast.dashboard.weeding.WeedingService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,21 +32,41 @@ import java.time.Duration;
 import java.time.Instant;
 
 /**
+ * Service that keeps the database tidy by removing child-less rows in methods, applications and environments.
+ *
  * @author olle.hallin@crisp.se
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class WeedingServiceImpl implements WeedingService {
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void performDataWeeding() {
         Instant startedAt = Instant.now();
         logger.debug("Performing data weeding");
 
-        // TODO: implement performDataWeeding()
+        int methodCount = jdbcTemplate.update("DELETE m FROM methods AS m\n" +
+                                                  "  LEFT JOIN invocations AS i ON m.id = i.methodId\n" +
+                                                  "  WHERE i.methodId IS NULL;\n");
 
-        logger.info("Data weeding done in {}", Duration.between(startedAt, Instant.now()));
+        int applicationCount = jdbcTemplate.update("DELETE a FROM applications AS a\n" +
+                                                       "  LEFT JOIN invocations AS i ON a.id = i.applicationId\n" +
+                                                       "  WHERE i.applicationId IS NULL;\n");
+
+        int environmentCount = jdbcTemplate.update("DELETE e FROM environments AS e\n" +
+                                                       "  LEFT JOIN invocations AS i ON e.id = i.environmentId\n" +
+                                                       "  WHERE i.environmentId IS NULL;\n");
+
+        if (methodCount + applicationCount + environmentCount > 0) {
+            logger.info("Data Weeding: {} invocation-less methods, {} empty environments and {} empty applications deleted in {}.",
+                        methodCount, environmentCount, applicationCount, Duration.between(startedAt, Instant.now()));
+        } else {
+            logger.debug("Data Weeding: Found nothing to delete");
+        }
     }
 
 }

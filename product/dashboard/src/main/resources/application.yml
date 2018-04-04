@@ -10,7 +10,7 @@ codekvast:
     dashboardJwtExpirationHours: 168
     dashboardJwtSecret: secret
     dataWeedingInitialDelaySeconds: 15
-    dataWeedingIntervalSeconds: 3600
+    dataWeedingIntervalSeconds: 600
     deleteImportedFiles: true
     dnsCname: localhost
     fileImportInitialDelaySeconds: 5
