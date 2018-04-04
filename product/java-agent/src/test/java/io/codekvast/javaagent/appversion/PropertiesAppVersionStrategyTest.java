@@ -3,6 +3,7 @@ package io.codekvast.javaagent.appversion;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -11,48 +12,52 @@ import static org.junit.Assert.assertThat;
 
 public class PropertiesAppVersionStrategyTest {
 
-    private final Collection<File> VALID_URIS = Collections.emptyList();
-    private final String VALID_FILE;
-    private final String INVALID_FILE;
+    private final Collection<File> VALID_URIS = Arrays.asList(new File(System.getProperty("user.dir") + File.separator + "src/test/resources"));
+
+    private final String VALID_ABSOLUTE_PATH = getClass().getResource("/PropertiesAppVersionStrategyTest.conf").getPath();
+    private final String VALID_RELATIVE_PATH = "PropertiesAppVersionStrategyTest.conf";
+    private final String INVALID_FILE = "NON-EXISTING-FILE";
 
     private final AppVersionStrategy strategy = new PropertiesAppVersionStrategy();
 
-    public PropertiesAppVersionStrategyTest() {
-        VALID_FILE = getClass().getResource("/PropertiesAppVersionStrategyTest.conf").getPath();
-        INVALID_FILE = "NOT_FOUND";
-    }
-
     @Test
-    public void testResolveWhen_validSingleProperty() {
-        String args[] = {"properties", VALID_FILE, "version"};
+    public void should_resolve_when_valid_absolute_path_and_valid_single_property() {
+        String args[] = {"properties", VALID_ABSOLUTE_PATH, "version"};
 
         assertThat(strategy.resolveAppVersion(VALID_URIS, args), is("1.2.3"));
     }
 
     @Test
-    public void testResolveWhen_validDualProperties() {
-        String args[] = {"properties", VALID_FILE, "version", "build"};
+    public void should_resolve_when_valid_relative_path_and_valid_single_property() {
+        String args[] = {"properties", VALID_RELATIVE_PATH, "version"};
+
+        assertThat(strategy.resolveAppVersion(VALID_URIS, args), is("1.2.3"));
+    }
+
+    @Test
+    public void should_resolve_when_valid_absolute_path_and_valid_dual_properties() {
+        String args[] = {"properties", VALID_ABSOLUTE_PATH, "version", "build"};
 
         assertThat(strategy.resolveAppVersion(VALID_URIS, args), is("1.2.3-4711"));
     }
 
     @Test
-    public void testResolveWhen_invalidFileName() {
+    public void should_not_resolve_when_invalidBaseName() {
         String args[] = {"properties", INVALID_FILE, "version", "build"};
 
         assertThat(strategy.resolveAppVersion(VALID_URIS, args), is("<unknown>"));
     }
 
     @Test
-    public void testResolveWhen_validFirstProperty_and_invalidSecondProperty() {
-        String args[] = {"properties", VALID_FILE, "version", "foobar"};
+    public void should_resolve_when_validFirstProperty_and_invalidSecondProperty() {
+        String args[] = {"properties", VALID_ABSOLUTE_PATH, "version", "foobar"};
 
         assertThat(strategy.resolveAppVersion(VALID_URIS, args), is("1.2.3"));
     }
 
     @Test
-    public void testResolveWhen_invalidFirstProperty_and_validSecondProperty() {
-        String args[] = {"properties", VALID_FILE, "foobar", "version"};
+    public void should_resolve_when_invalidFirstProperty_and_validSecondProperty() {
+        String args[] = {"properties", VALID_ABSOLUTE_PATH, "foobar", "version"};
 
         assertThat(strategy.resolveAppVersion(VALID_URIS, args), is("1.2.3"));
     }

@@ -52,12 +52,55 @@ public class PropertiesAppVersionStrategy extends AbstractAppVersionStrategy {
             return UNKNOWN_VERSION;
         }
 
+        // Try to read directly from the file
         File file = new File(args[1]);
-        if (!file.canRead()) {
-            logger.severe(String.format("Cannot resolve '%s': file not found: %s", join(args), file));
-            return UNKNOWN_VERSION;
+        if (file.canRead()) {
+            return getVersionFrom(file, args);
         }
 
+        // Else locate it within codeBases
+        String baseName = args[1];
+        for (File codeBaseFile : codeBases) {
+            String version = search(codeBaseFile, baseName, args);
+            if (version != null) {
+                return version;
+            }
+        }
+        logger.severe(String.format("Cannot resolve '%s': file not found", join(args)));
+        return UNKNOWN_VERSION;
+    }
+
+    private String search(File dir, String baseName, String[] args) {
+        if (!dir.isDirectory()) {
+            logger.warning(dir + " is not a directory");
+            return null;
+        }
+
+        File[] files = dir.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    if (file.getName().equals(baseName)) {
+                        String version = getVersionFrom(file, args);
+                        logger.fine(String.format("Found version '%s' in %s", version, file));
+                        return version;
+                    }
+                }
+            }
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    String version = search(file, baseName, args);
+                    if (version != null) {
+                        return version;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    String getVersionFrom(File file, String[] args) {
         Properties props = new Properties();
 
         try(BufferedInputStream is = new BufferedInputStream(new FileInputStream(file))) {
