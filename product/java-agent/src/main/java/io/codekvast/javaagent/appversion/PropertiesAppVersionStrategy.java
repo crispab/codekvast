@@ -46,11 +46,12 @@ public class PropertiesAppVersionStrategy extends AbstractAppVersionStrategy {
     }
 
     @Override
+    public boolean canHandle(String[] args) {
+        return args != null && args.length >= 3 && recognizes(args[0]);
+    }
+
+    @Override
     public String resolveAppVersion(Collection<File> codeBases, String[] args) {
-        if (args == null || args.length < 3) {
-            logger.severe(String.format("Cannot resolve '%s': missing args", join(args)));
-            return UNKNOWN_VERSION;
-        }
 
         // Try to read directly from the file
         File file = new File(args[1]);
