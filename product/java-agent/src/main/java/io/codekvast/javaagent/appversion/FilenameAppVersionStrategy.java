@@ -91,4 +91,8 @@ public class FilenameAppVersionStrategy extends AbstractAppVersionStrategy {
         return null;
     }
 
+    @Override
+    public boolean canHandle(String[] args) {
+        return args != null && args.length == 2 && recognizes(args[0]);
+    }
 }

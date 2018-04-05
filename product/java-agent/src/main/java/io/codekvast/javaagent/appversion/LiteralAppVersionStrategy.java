@@ -34,12 +34,17 @@ import java.util.Collection;
 @Log
 public class LiteralAppVersionStrategy extends AbstractAppVersionStrategy {
 
-    public LiteralAppVersionStrategy() {
+    LiteralAppVersionStrategy() {
         super("constant", "literal");
     }
 
     @Override
     public String resolveAppVersion(Collection<File> codeBases, String[] args) {
         return args[1].trim();
+    }
+
+    @Override
+    public boolean canHandle(String[] args) {
+        return args != null && args.length == 2 && recognizes(args[0]);
     }
 }
