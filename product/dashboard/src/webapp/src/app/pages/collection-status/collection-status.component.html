@@ -89,11 +89,29 @@
             </button>
         </div>
         <div class="modal-body">
-            <p>Delete all data collected by {{ state.numSelectedTerminatedAgents() }} terminated agents?</p>
+            <div class="card mb-2">
+                <div class="card-body">
+                    <p>Codekvast is about collecting historic usage data for your applications to assist decision making,
+                        so <em>deleting historic data can make Codekvast less valuable</em>.</p>
+                    Don't delete terminated agents unless there is a good reason!
+                </div>
+            </div>
+            <p>Examples of when it can be okay to delete terminated {{ getAgentsLabel() }}:</p>
+            <ul>
+                <li>You have made refactorings that make historic data useless or misleading.</li>
+                <li>You have made changes to <code>codekvast.conf</code>, specifically changed <code>appName</code>, <code>appVersion</code> or <code>environment</code>.</li>
+                <li>You have used Codekvast for longer time than your application's usage cycle.</li>
+                <li>You have retired an application or environment.</li>
+            </ul>
+            <hr>
+            <div class="alert alert-danger" role="alert">
+                Delete all data collected by {{ state.numSelectedTerminatedAgents() }} terminated {{ getAgentsLabel() }}?<br>
+                There is no way to restore once deleted data.
+            </div>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-outline-dark" (click)="d('cancel')">Cancel</button>
-            <button type="button" class="btn btn-danger" (click)="c('delete')">Delete</button>
+            <button type="button" class="btn btn-danger" (click)="c('delete')">Yes, delete!</button>
         </div>
     </ng-template>
 
