@@ -13,14 +13,16 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class DashboardServiceSyntheticMethodTest {
+public class DashboardServiceImplSyntheticSignatureTest {
 
     @Parameterized.Parameters(name = "{index}: isSynthetic(\"{1}\")={0}")
     public static Object[][] data() {
+        // @formatter:off
         return new Object[][]{
             {false, "foo.bar()"},
-            {false, "foo.bar$1()"},
-            {true, "foo..bar()"},
+            {false, "foo.bar$1()"}, // Anonymous inner class
+            {false, "foo.()"}, // Constructor of Scala companion object
+            {false, "foo..bar()"}, // Method in Scala companion object
             {true, "foo$$bar()"},
             {true, "controllers.Assets.play$api$http$HeaderNames$_setter_$LOCATION_$eq(java.lang.String)"},
             {true, "controllers.AssetsBuilder.play$api$mvc$Results$_setter_$FailedDependency_$eq(play.api.mvc.Results.Status)"},
@@ -40,7 +42,6 @@ public class DashboardServiceSyntheticMethodTest {
             {true, "controllers.customer1.application.SmpFeed.play$api$http$Status$_setter_$FAILED_DEPENDENCY_$eq(int)"},
             {true, "controllers.customer1.application.SmpFeed.play$api$mvc$Results$_setter_$MethodNotAllowed_$eq(play.api.mvc.Results.Status)"},
             {true, "controllers.customer1.application.Admin.CONTENT_MD5()"},
-            {true, "controllers.customer1.application.XxxYyy.()"},
             {true, "controllers.customer1.application.XxxYyy.$amp()"},
             {true, "customer2.controllers.Events..se$crisp$signup4$controllers$Events$$allGuests(se.crisp.signup4.models.Event)"},
             {true, "customer2.controllers.Events..se$crisp$signup4$controllers$Events$$allMembers(se.crisp.signup4.models.Event)"},
@@ -72,10 +73,11 @@ public class DashboardServiceSyntheticMethodTest {
             {true, "views.html.defaultpages.devError.copy$default$1()"},
             {true, "views.html.customer1.application.export.header.copy$default$1()"},
             };
+        // @formatter:on
     }
 
     private final boolean expected;
-    
+
     private final String signature;
 
     @Test

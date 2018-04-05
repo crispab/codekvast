@@ -76,7 +76,7 @@ public class DashboardServiceImpl implements DashboardService {
         // ends with dollar and one or more lower case characters
 
         SYNTHETIC_SIGNATURE_PATTERN = Pattern.compile(
-            ".*(\\.\\..*|\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\.\\(\\)$|\\$[a-z]+\\(\\)$)");
+            ".*(\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\$[a-z]+\\(\\)$)");
     }
 
     private final JdbcTemplate jdbcTemplate;

@@ -48,6 +48,8 @@ import java.net.URLEncoder;
 @Slf4j
 public class DashboardLaunchController {
 
+    private static final String UTF_8 = "UTF-8";
+
     private final SecurityService securityService;
     private final CodekvastDashboardSettings settings;
 
@@ -63,9 +65,7 @@ public class DashboardLaunchController {
     }
 
     @PostMapping("/dashboard/heroku/sso/{code}/{navData}")
-    public String launchHeroku(@PathVariable("code") String code,
-                               @PathVariable(name = "navData") String navData,
-                               HttpServletResponse response) {
+    public String launchHeroku(@PathVariable("code") String code, @PathVariable("navData") String navData, HttpServletResponse response) {
         logger.debug("Handling Heroku SSO request, code={}, navData={}", code, navData);
 
         String sessionToken = securityService.tradeCodeToWebappToken(code);
@@ -88,8 +88,8 @@ public class DashboardLaunchController {
     }
 
     @SneakyThrows(UnsupportedEncodingException.class)
-    Cookie createCookie(String name, String value) {
-        Cookie cookie = new Cookie(name, value == null || value.isEmpty() ? "" : URLEncoder.encode(value, "UTF-8"));
+    private Cookie createCookie(String name, String value) {
+        Cookie cookie = new Cookie(name, value == null || value.isEmpty() ? "" : URLEncoder.encode(value, UTF_8));
         cookie.setPath("/");
         cookie.setMaxAge(value == null ? 0 : -1);
         return cookie;
