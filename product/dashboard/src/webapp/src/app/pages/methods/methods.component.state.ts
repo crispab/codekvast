@@ -62,9 +62,9 @@ export class MethodsComponentState {
 
     private getHeaderIconClassesFor(column: string) {
         return {
-            'fa': true,
-            'fa-sort-asc': this.sortAscending,
-            'fa-sort-desc': !this.sortAscending,
+            'fas': true,
+            'fa-sort-down': this.sortAscending,
+            'fa-sort-up': !this.sortAscending,
             'invisible': column !== this.sortColumn // avoid column width fluctuations
         };
     }
@@ -84,7 +84,7 @@ export class MethodsComponentState {
     rowIconClasses(id: number) {
         let visible = this.selectedMethod && this.selectedMethod.id === id;
         return {
-            'fa': visible,
+            'fas': visible,
             'fa-ellipsis-h': visible
         }
     }
@@ -184,8 +184,8 @@ export class MethodsComponentState {
 
     detailsTableToggleClasses() {
         return {
-            'fa': true,
             'text-center': true,
+            'fas': true,
             'fa-angle-double-right': this.detailsTableVisible,
             'fa-angle-double-left': !this.detailsTableVisible
         };

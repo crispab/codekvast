@@ -22,6 +22,7 @@ div.wrapper {
     flex: 1;
     padding-top: .5em;
     padding-left: 2px;
+    padding-right: 5px;
     background-color: lightgrey;
 }
 

@@ -2,7 +2,7 @@
     <h2>Method Details</h2>
     <div *ngIf="method">
         <div class="d-flex flex-row align-items-end justify-content-between">
-            <button (click)="goBack()"><i class="fa fa-chevron-left mr-2" aria-hidden="true"></i>Back</button>
+            <button (click)="goBack()"><i class="fas fa-chevron-left mr-2" aria-hidden="true"></i>Back</button>
             <ck-settings-editor class="w-25"></ck-settings-editor>
         </div>
 
@@ -123,12 +123,12 @@
             </tbody>
         </table>
 
-        <button (click)="goBack()"><i class="fa fa-chevron-left mr-2" aria-hidden="true"></i>Back</button>
+        <button (click)="goBack()"><i class="fas fa-chevron-left mr-2" aria-hidden="true"></i>Back</button>
     </div>
 
     <div *ngIf="errorMessage">
         <small class="ml-2 col-form-label form-text text-muted" title="{{ errorMessage }}">{{ communicationFailure() }}
         </small>
-        <button (click)="goBack()"><i class="fa fa-chevron-left mr-2" aria-hidden="true"></i>Back</button>
+        <button (click)="goBack()"><i class="fas fa-chevron-left mr-2" aria-hidden="true"></i>Back</button>
     </div>
 </div>

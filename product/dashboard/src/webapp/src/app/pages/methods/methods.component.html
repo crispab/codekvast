@@ -246,7 +246,7 @@
                     <th (click)="state.sortByAge()" class="age-column">
                         Last Invoked <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i>
                     </th>
-                    <td class="row-icon-column"><i class="fa fa-ellipsis-h invisible" aria-hidden="true"></i></td>
+                    <td class="row-icon-column"><i class="fas fa-ellipsis-h invisible" aria-hidden="true"></i></td>
                 </tr>
                 </thead>
 
@@ -268,11 +268,6 @@
                 </tr>
                 </tbody>
             </table>
-        </div>
-        <div id="details-table-toggle" [ngClass]="state.detailsTableClasses()" (click)="state.toggleDetailsTable()"
-             ngbTooltip="Click to {{ state.detailsTableVisible ? 'hide' : 'show'}} method details"
-             placement="{{ state.detailsTableVisible ? 'right' : 'left'}}">
-            <i [ngClass]="state.detailsTableToggleClasses()" aria-hidden="true"></i>
         </div>
         <div id="details-table" [ngClass]="state.detailsTableClasses()">
             <h5 class="text-center">Method Details</h5>
@@ -322,6 +317,10 @@
                     <td class="date-column">{{ app.startedAtMillis | ckAge:settings.dateFormat }}</td>
                 </tr>
             </table>
+        </div>
+        <div id="details-table-toggle" [ngClass]="state.detailsTableClasses()" (click)="state.toggleDetailsTable()"
+             ngbTooltip="Click to toggle method details" placement="left">
+            <i [ngClass]="state.detailsTableToggleClasses()" aria-hidden="true"></i>
         </div>
     </div>
 </div>
