@@ -1,8 +1,8 @@
 codekvast:
-    dashboardBaseUrl: "https://{{ ec2_tag_LBCNAME0 }}"
+    dashboardBaseUrl: "https://{{ ec2_tag_LBCNAME2 }}"
     dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
     dashboardJwtSecret: "{{ codekvast_dashboardJwtSecret }}"
-    dnsCname: "{{ ec2_tag_CNAME0 }}"
+    dnsCname: "{{ ec2_tag_CNAME2 }}"
     fileImportIntervalSeconds: "{{ fileImportIntervalSeconds }}"
     loginBaseUrl: "https://{{ ec2_tag_LBCNAME1 }}"
     queuePath: "{{ queuePath }}"

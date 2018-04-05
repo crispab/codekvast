@@ -59,7 +59,7 @@ public class DashboardLaunchController {
 
         response.addCookie(createCookie(CookieNames.SESSION_TOKEN, sessionToken));
         response.addCookie(createCookie(CookieNames.NAV_DATA, null));
-        return String.format("redirect:%s/%s", settings.getDashboardBaseUrl(), sessionToken == null ? "not-logged-in" : "home");
+        return getRedirectUrl(sessionToken);
     }
 
     @PostMapping("/dashboard/heroku/sso/{code}/{navData}")
@@ -72,7 +72,7 @@ public class DashboardLaunchController {
 
         response.addCookie(createCookie(CookieNames.SESSION_TOKEN, sessionToken));
         response.addCookie(createCookie(CookieNames.NAV_DATA, navData));
-        return String.format("redirect:%s%s", settings.getDashboardBaseUrl(), sessionToken == null ? "/not-logged-in" : "/home");
+        return getRedirectUrl(sessionToken);
     }
 
     @PostMapping("/dashboard/logout")
@@ -81,6 +81,10 @@ public class DashboardLaunchController {
         response.addCookie(createCookie(CookieNames.SESSION_TOKEN, null));
         response.addCookie(createCookie(CookieNames.NAV_DATA, null));
         return String.format("%s%s", settings.getLoginBaseUrl(), "/logout");
+    }
+
+    private String getRedirectUrl(String sessionToken) {
+        return String.format("redirect:%s/%s", settings.getDashboardBaseUrl(), sessionToken == null ? "not-logged-in" : "home");
     }
 
     @SneakyThrows(UnsupportedEncodingException.class)
