@@ -183,9 +183,9 @@ public class CustomerServiceImpl implements CustomerService {
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
         int updated = jdbcTemplate
-            .update("UPDATE users SET lastLoginAt = ?, lastActivityAt = ?, lastLoginSource = ?, numberOfLogins = numberOfLogins + 1 " +
+            .update("UPDATE users SET lastLoginAt = ?, lastLoginSource = ?, numberOfLogins = numberOfLogins + 1 " +
                         "WHERE customerId = ? AND email = ?",
-                    now, now, request.getSource(), request.getCustomerId(), request.getEmail());
+                    now, request.getSource(), request.getCustomerId(), request.getEmail());
         if (updated > 0) {
             logger.debug("Updated user {}", request);
             updated = jdbcTemplate
@@ -196,9 +196,9 @@ public class CustomerServiceImpl implements CustomerService {
             }
         } else {
             jdbcTemplate.update(
-                "INSERT INTO users(customerId, email, firstLoginAt, lastLoginAt, lastActivityAt, lastLoginSource, numberOfLogins) " +
-                    "VALUES(?, ?, ?, ?, ?, ?, ?)",
-                request.getCustomerId(), request.getEmail(), now, now, now, request.getSource(), 1);
+                "INSERT INTO users(customerId, email, firstLoginAt, lastLoginAt, lastLoginSource, numberOfLogins) " +
+                    "VALUES(?, ?, ?, ?, ?, ?)",
+                request.getCustomerId(), request.getEmail(), now, now, request.getSource(), 1);
             logger.debug("Added user {}", request);
         }
         logger.info("Logged in {}", request);

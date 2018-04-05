@@ -56,8 +56,8 @@ VALUES
   (3, 1, 'uuid3', TRUE),
   (4, 1, 'uuid4', FALSE);
 
-INSERT INTO users (id, customerId, email, lastLoginSource, numberOfLogins, firstLoginAt, lastLoginAt, lastActivityAt)
+INSERT INTO users (id, customerId, email, lastLoginSource, numberOfLogins, firstLoginAt, lastLoginAt)
 VALUES
-  (1, 1, 'email1', 'source1', 1, NOW(), NOW(), NOW()),
-  (2, 1, 'email2', 'source2', 2, NOW(), NOW(), NOW());
+  (1, 1, 'email1', 'source1', 1, NOW(), NOW()),
+  (2, 1, 'email2', 'source2', 2, NOW(), NOW());
 
