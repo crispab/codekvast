@@ -161,16 +161,6 @@ public class DashboardServiceImplTest {
     }
 
     @Test
-    public void should_detect_synthetic_method_containing_dot_dot() {
-        assertThat(dashboardService.isSyntheticMethod("foo..bar"), is(true));
-    }
-
-    @Test
-    public void should_not_detect_synthetic_method_not_containing_dot_dot() {
-        assertThat(dashboardService.isSyntheticMethod("foo.bar"), is(false));
-    }
-
-    @Test
     public void should_getFilterData() {
         // given
         when(customerIdProvider.getCustomerId()).thenReturn(4711L);

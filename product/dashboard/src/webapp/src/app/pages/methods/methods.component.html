@@ -216,11 +216,13 @@
                     </div>
                     <div class="form-inline mt-1">
                         <label class="col-form-label mr-3">&nbsp;</label>
-                        <small class="form-text text-muted">
-                            <span *ngIf="state.data">{{ state.data.timestamp | ckAge:settings.dateFormat }}:
-                                    Found {{ state.data.numMethods }} methods in {{ state.data.queryTimeMillis }} ms</span>
-                            <span *ngIf="state.errorMessage">{{ communicationFailure() }}</span>
+                        <small *ngIf="state.data" class="form-text text-muted">
+                            {{ state.data.timestamp | ckAge:settings.dateFormat }}:
+                            Found {{ state.data.numMethods }} methods in {{ state.data.queryTimeMillis }} ms
                         </small>
+                        <div *ngIf="state.errorMessage" class="alert alert-danger" role="alert">
+                            {{ communicationFailure() }}
+                        </div>
                     </div>
                 </form>
             </div>

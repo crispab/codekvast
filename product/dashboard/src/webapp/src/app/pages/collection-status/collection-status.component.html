@@ -74,9 +74,8 @@
                 </small>
             </div>
 
-            <div *ngIf="state.errorMessage">
-                <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ state.communicationFailure() }}
-                </small>
+            <div *ngIf="state.errorMessage" class="alert alert-danger" role="alert" title="{{ state.errorMessage }}">
+                {{ state.communicationFailure() }}
             </div>
         </div>
     </div>

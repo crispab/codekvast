@@ -51,6 +51,7 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +62,22 @@ import java.util.stream.Collectors;
 @Slf4j
 @Validated
 public class DashboardServiceImpl implements DashboardService {
+
+    private static final Pattern SYNTHETIC_SIGNATURE_PATTERN;
+
+    static {
+        // Signatures that
+        //
+        // Contains two consecutive dots
+        // Contains two consecutive dollar signs
+        // Contains two dollar signs separated by one or more word characters
+        // ends with a method name in only upper case letters
+        // ends with ".()"
+        // ends with dollar and one or more lower case characters
+
+        SYNTHETIC_SIGNATURE_PATTERN = Pattern.compile(
+            ".*(\\.\\..*|\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\.\\(\\)$|\\$[a-z]+\\(\\)$)");
+    }
 
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -421,9 +438,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     }
 
-    boolean isSyntheticMethod(String signature) {
-        return signature.contains("..");
-        // Are there any other strange patterns not containing ".." ?
+    static boolean isSyntheticMethod(String signature) {
+        return SYNTHETIC_SIGNATURE_PATTERN.matcher(signature).matches();
     }
 
     @RequiredArgsConstructor
