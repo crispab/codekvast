@@ -2,6 +2,8 @@
     <h2>Status</h2>
     <div class="d-flex flex-row align-items-start justify-content-between">
 
+        <h5 *ngIf="!state.data" class="text-secondary text-muted">Waiting for status data...</h5>
+
         <div *ngIf="state.data">
             <h4>Plan {{ state.data.pricePlan }} Limits</h4>
             <table class="table table-striped table-bordered">
@@ -98,7 +100,9 @@
             <p>Examples of when it can be okay to delete terminated {{ getAgentsLabel() }}:</p>
             <ul>
                 <li>You have made refactorings that make historic data useless or misleading.</li>
-                <li>You have made changes to <code>codekvast.conf</code>, specifically changed <code>appName</code>, <code>appVersion</code> or <code>environment</code>.</li>
+                <li>You have made changes to <code>codekvast.conf</code>, specifically changed <code>appName</code>, <code>appVersion</code>
+                    or <code>environment</code>.
+                </li>
                 <li>You have used Codekvast for longer time than your application's usage cycle.</li>
                 <li>You have retired an application or environment.</li>
             </ul>
@@ -138,20 +142,38 @@
                 </button>
             </div>
             <button class="ml-3 btn btn-outline-secondary btn-sm" [disabled]="state.numSelectedTerminatedAgents() === 0"
-                    (click)="state.openDeleteModal(deleteModalTemplate)">Delete {{ state.numSelectedTerminatedAgents() }} selected terminated agents...
+                    (click)="state.openDeleteModal(deleteModalTemplate)">Delete {{ state.numSelectedTerminatedAgents() }} selected
+                terminated agents...
             </button>
         </div>
         <table class="table table-striped table-bordered">
+            <thead>
             <tr>
-                <th>Application</th>
-                <th>Environment</th>
-                <th>Host</th>
-                <th>Started at</th>
-                <th>Data received at</th>
-                <th>Next expected at</th>
-                <th>Comments</th>
-                <th><input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents" (change)="state.selectOrUnselectAllAgents()"/></th>
+                <th class="align-top">
+                    Application<br>
+                    <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.applicationFilter"
+                           placeholder="Filter by app">
+                </th>
+                <th class="align-top">
+                    Environment<br>
+                    <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.environmentFilter"
+                           placeholder="Filter by env">
+                </th>
+                <th class="align-top">
+                    Host<br>
+                    <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.hostnameFilter"
+                           placeholder="Filter by host">
+                </th>
+                <th class="align-top">Started at</th>
+                <th class="align-top">Data received at</th>
+                <th class="align-top">Next expected at</th>
+                <th class="align-top">Comments</th>
+                <th class="align-top">
+                    <input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents" (change)="state.selectOrUnselectAllAgents()"/>
+                </th>
             </tr>
+            </thead>
+            <tbody>
             <tr *ngFor="let agent of state.getFilteredAgents()">
                 <td ngbPopover="{{ agent.agentVersion }}"
                     popoverTitle="Agent Version"
@@ -168,8 +190,9 @@
                     <span [ngClass]="agentUploadExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
                 </td>
                 <td>{{ getComments(agent) }} <i [ngClass]="commentClasses(agent)"></i></td>
-                <td><input [disabled]="agent.deletionState" type="checkbox" [(ngModel)]="agent.selected"></td>
+                <td><input [disabled]="!isAgentDeletable(agent)" type="checkbox" [(ngModel)]="agent.selected"></td>
             </tr>
+            </tbody>
         </table>
     </div>
 </div>

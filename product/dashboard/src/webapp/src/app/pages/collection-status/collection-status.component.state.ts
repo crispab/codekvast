@@ -18,6 +18,10 @@ export class CollectionStatusComponentState {
     selectAllTerminatedAgents = false;
     selectTerminatedAgentsOlderThanDays = 30;
 
+    applicationFilter = '';
+    environmentFilter = '';
+    hostnameFilter = '';
+
     private timerSubscription: Subscription;
 
     constructor(private agePipe: AgePipe, private api: DashboardApiService, private modalService: NgbModal) {
@@ -98,7 +102,10 @@ export class CollectionStatusComponentState {
 
     getFilteredAgents() {
         if (this.data.agents) {
-            return this.data.agents.filter(a => this.showTerminatedAgents || a.agentAlive);
+            return this.data.agents.filter(a => (this.showTerminatedAgents || a.agentAlive)
+                && `${a.appName} ${a.appVersion}`.toLowerCase().indexOf(this.applicationFilter.toLowerCase()) >= 0
+                && a.environment.toLowerCase().indexOf(this.environmentFilter.toLowerCase()) >= 0
+                && a.hostname.toLowerCase().indexOf(this.hostnameFilter.toLowerCase()) >= 0);
         }
         return null;
     }
