@@ -16,6 +16,6 @@ dependencies {
     classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.21'
     classpath 'org.kordamp:markdown-gradle-plugin:1.1.0'
     classpath 'org.mariadb.jdbc:mariadb-java-client:2.2.1'
-    classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE'
+    classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.1.RELEASE'
     classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:1.4.1'
 }

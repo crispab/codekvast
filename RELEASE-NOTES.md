@@ -5,6 +5,7 @@
 2. Dashboard: Added ability to delete terminated agents.
 3. Agent: codekvast.conf: Added support for appVersion strategy "properties /path/to/file prop1,prop2"
 4. Drop database column users.lastActivityAt
+5. Upgraded to spring Boot 2.0.1
 
 ## 0.23.1
 1. Database schema changes: applications, environments, jvms, invocations.

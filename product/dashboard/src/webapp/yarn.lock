@@ -54,9 +54,9 @@
   dependencies:
     tslib "^1.7.1"
 
-"@ng-bootstrap/ng-bootstrap@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-1.1.0.tgz#75db728d168aeb0d1e0f4ecf17fcaec180dac0d3"
+"@ng-bootstrap/ng-bootstrap@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-1.1.1.tgz#f9e63cab2fec61374a21c0e39b28d91f93f49cb6"
 
 "@types/google.analytics@0.0.39":
   version "0.0.39"
@@ -3145,9 +3145,9 @@ html-minifier@^3.5.8:
     relateurl "0.2.x"
     uglify-js "3.3.x"
 
-html-webpack-plugin@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/html-webpack-plugin/-/html-webpack-plugin-3.1.0.tgz#6e02baaedb1e906310917f03239c793a75af2885"
+html-webpack-plugin@3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/html-webpack-plugin/-/html-webpack-plugin-3.2.0.tgz#b01abbd723acaaa7b37b6af4492ebda03d9dd37b"
   dependencies:
     html-minifier "^3.2.3"
     loader-utils "^0.2.16"
@@ -7751,6 +7751,6 @@ zip-object@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/zip-object/-/zip-object-0.1.0.tgz#c1a0da04c88c837756e248680a03ff902ec3f53a"
 
-zone.js@0.8.23:
-  version "0.8.23"
-  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.8.23.tgz#7ab0bc9bedb4b9197864563841b4b478dd9bfce7"
+zone.js@0.8.25:
+  version "0.8.25"
+  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.8.25.tgz#e20e5e85b881e2e66352612b5f238e8309e5badd"
