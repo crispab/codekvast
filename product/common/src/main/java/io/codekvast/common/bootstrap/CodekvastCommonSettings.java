@@ -36,13 +36,6 @@ public interface CodekvastCommonSettings {
 
     String getSlackWebHookUrl();
 
-    String getHerokuCodekvastUrl();
-
-    String getHerokuApiPassword();
-
-
-    String getHerokuApiSsoSalt();
-
     String getDashboardJwtSecret();
 
     Long getDashboardJwtExpirationHours();

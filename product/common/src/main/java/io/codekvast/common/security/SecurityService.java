@@ -74,8 +74,9 @@ public interface SecurityService extends CustomerIdProvider {
      * @param externalId       The external (Heroku) id of the customer inside the token
      * @param email            The email inside the token
      * @param timestampSeconds The timestamp inside the token
+     * @param salt             The salt used by Heroku when hashing the presented token. Is shared between Heroku and Codekvast.
      * @return A one-time code that can be used by {@link #tradeCodeToWebappToken(String)}
      */
-    String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds);
+    String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds, String salt);
 
 }

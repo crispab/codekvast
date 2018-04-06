@@ -42,7 +42,7 @@ import javax.annotation.PreDestroy;
 @Validated
 @Data
 @Slf4j
-@ToString(exclude = {"slackWebHookToken", "herokuApiPassword", "herokuApiSsoSalt", "dashboardJwtSecret"})
+@ToString(exclude = {"dashboardJwtSecret", "herokuApiPassword", "herokuApiSsoSalt", "slackWebHookToken"})
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
 public class CodekvastLoginSettings implements CodekvastCommonSettings {
 
@@ -105,6 +105,16 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
      * Which salt does Heroku use when creating SSO tokens?
      */
     private String herokuApiSsoSalt;
+
+    /**
+     * What OAuth client ID should we use when invoking the Heroku API?
+     */
+    private String herokuOAuthClientId;
+
+    /**
+     * What OAuth client secret should we use when invoking the Heroku API?
+     */
+    private String herokuOAuthClientSecret;
 
     /**
      * Which secret should be used when creating a webapp JWT?

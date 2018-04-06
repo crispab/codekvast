@@ -12,6 +12,8 @@ codekvast:
     dnsCname: localhost
     herokuApiPassword: herokuApiPassword
     herokuApiSsoSalt: herokuApiSsoSalt
+    herokuOAuthClientId: codekvast
+    herokuOAuthClientSecret: herokuOAuthClientSecret
     herokuCodekvastUrl: http://localhost:8080
     slackWebHookToken:
     slackWebHookUrl: https://hooks.slack.com/services

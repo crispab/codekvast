@@ -27,7 +27,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -44,7 +43,7 @@ import java.io.File;
 // @Validated
 @Data
 @Slf4j
-@ToString(exclude = {"herokuApiPassword", "herokuApiSsoSalt", "dashboardJwtSecret", "slackWebHookToken"})
+@ToString(exclude = {"dashboardJwtSecret", "slackWebHookToken"})
 public class CodekvastDashboardSettings implements CodekvastCommonSettings {
 
     /**
@@ -86,21 +85,6 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
      * Should imported files be deleted after successful import?
      */
     private boolean deleteImportedFiles = true;
-
-    /**
-     * What password will Heroku use when contacting us?
-     */
-    private String herokuApiPassword;
-
-    /**
-     * What SSO salt value will Heroku use when launching the dashboard webapp via SSO?
-     */
-    private String herokuApiSsoSalt;
-
-    /**
-     * Which value should the Heroku add-on provide as CODEKVAST_URL?
-     */
-    private String herokuCodekvastUrl;
 
     /**
      * What secret should be used for signing JWT tokens?

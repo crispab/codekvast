@@ -1,10 +1,9 @@
 package io.codekvast.login.heroku.impl;
 
-import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerService;
+import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.heroku.HerokuException;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
-import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -17,7 +16,7 @@ import static org.mockito.Mockito.verify;
  */
 public class HerokuServiceImplTest {
 
-    private CodekvastCommonSettings settings = new CodekvastCommonSettingsForTest();
+    private CodekvastLoginSettings settings = new CodekvastLoginSettings();
 
     @Mock
     private CustomerService customerService;
@@ -61,19 +60,5 @@ public class HerokuServiceImplTest {
 
         // then
         verify(customerService).deleteCustomerByExternalId("externalId");
-    }
-
-    @Data
-    private static class CodekvastCommonSettingsForTest implements CodekvastCommonSettings {
-        private String applicationName;
-        private String displayVersion;
-        private String dnsCname;
-        private String herokuApiPassword;
-        private String herokuApiSsoSalt;
-        private String herokuCodekvastUrl;
-        private String slackWebHookToken;
-        private String slackWebHookUrl;
-        private String dashboardJwtSecret;
-        private Long dashboardJwtExpirationHours;
     }
 }

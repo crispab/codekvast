@@ -56,7 +56,7 @@ public class SecurityServiceImplTest {
         int timestamp = 1267597772;
 
         // when
-        String token = securityService.makeHerokuSsoToken(id, timestamp);
+        String token = securityService.makeHerokuSsoToken(id, timestamp, "2f97bfa52ca102f8874716e2eb1d3b4920ad0be4");
 
         // then
         assertThat(token, is("bb466eb1d6bc345d11072c3cd25c311f21be130d"));
@@ -66,7 +66,7 @@ public class SecurityServiceImplTest {
     public void should_do_Heroku_SSO_when_valid_token_and_timestamp() {
         // given
         Long timestampSeconds = Instant.now().getEpochSecond();
-        String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds);
+        String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
         CustomerData customerData = CustomerData.builder()
                                                 .customerId(1L)
@@ -78,7 +78,7 @@ public class SecurityServiceImplTest {
         when(customerService.getCustomerDataByExternalId("externalId")).thenReturn(customerData);
 
         // when
-        String jwt = securityService.doHerokuSingleSignOn(token, "externalId", "someEmail", timestampSeconds);
+        String jwt = securityService.doHerokuSingleSignOn(token, "externalId", "someEmail", timestampSeconds, "salt");
 
         // then
         assertThat(jwt, not(nullValue()));
@@ -94,10 +94,10 @@ public class SecurityServiceImplTest {
     public void should_reject_Heroku_SSO_when_invalid_token() {
         // given
         Long timestampSeconds = Instant.now().getEpochSecond();
-        String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds);
+        String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
         // when
-        securityService.doHerokuSingleSignOn(token + "X", "externalId", "someEmail", timestampSeconds);
+        securityService.doHerokuSingleSignOn(token + "X", "externalId", "someEmail", timestampSeconds, "salt");
 
         // then
         // Kaboom!
@@ -107,10 +107,10 @@ public class SecurityServiceImplTest {
     public void should_reject_Heroku_SSO_when_valid_token_too_old_timestamp() {
         // given
         Long timestampSeconds = Instant.now().getEpochSecond();
-        String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds);
+        String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
         // when
-        securityService.doHerokuSingleSignOn(token, "externalId", "someEmail", timestampSeconds - 5 * 60 - 1);
+        securityService.doHerokuSingleSignOn(token, "externalId", "someEmail", timestampSeconds - 5 * 60 - 1, "salt");
 
         // then
         // Kaboom!
@@ -120,10 +120,10 @@ public class SecurityServiceImplTest {
     public void should_reject_Heroku_SSO_when_valid_token_too_new_timestamp() {
         // given
         Long timestampSeconds = Instant.now().getEpochSecond();
-        String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds);
+        String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
         // when
-        securityService.doHerokuSingleSignOn(token, "externalId", "someEmail", timestampSeconds + 60 + 1);
+        securityService.doHerokuSingleSignOn(token, "externalId", "someEmail", timestampSeconds + 60 + 1, "salt");
 
         // then
         // Kaboom!
@@ -143,7 +143,6 @@ public class SecurityServiceImplTest {
     private static class CodekvastCommonSettingsForTestImpl implements CodekvastCommonSettings {
 
         // Example data from https://devcenter.heroku.com/articles/add-on-single-sign-on
-        private String herokuApiSsoSalt = "2f97bfa52ca102f8874716e2eb1d3b4920ad0be4";
         private String dashboardJwtSecret = "secret";
         private Long dashboardJwtExpirationHours = 1L;
 
@@ -151,8 +150,6 @@ public class SecurityServiceImplTest {
         private String applicationName = null;
         private String displayVersion = null;
         private String dnsCname = null;
-        private String herokuApiPassword = null;
-        private String herokuCodekvastUrl = null;
         private String slackWebHookToken = null;
         private String slackWebHookUrl = null;
     }

@@ -69,7 +69,7 @@ public class HerokuSsoController {
 
         logger.debug("externalId={}, nav-data={}", externalId, navData);
 
-        String code = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds);
+        String code = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds, settings.getHerokuApiSsoSalt());
 
         response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
         response

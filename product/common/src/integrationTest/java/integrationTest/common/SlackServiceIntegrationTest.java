@@ -55,9 +55,6 @@ public class SlackServiceIntegrationTest {
         private String applicationName;
         private String displayVersion;
         private String dnsCname;
-        private String herokuApiPassword;
-        private String herokuApiSsoSalt;
-        private String herokuCodekvastUrl;
         private String slackWebHookToken;
         private String slackWebHookUrl;
         private String dashboardJwtSecret;

@@ -21,13 +21,13 @@
  */
 package io.codekvast.login.heroku.impl;
 
-import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerService;
+import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.heroku.HerokuException;
+import io.codekvast.login.heroku.HerokuService;
 import io.codekvast.login.heroku.model.HerokuChangePlanRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionResponse;
-import io.codekvast.login.heroku.HerokuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class HerokuServiceImpl implements HerokuService {
 
-    private final CodekvastCommonSettings settings;
+    private final CodekvastLoginSettings settings;
     private final CustomerService customerService;
 
     @Override

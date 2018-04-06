@@ -179,18 +179,18 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @SneakyThrows(NoSuchAlgorithmException.class)
-    String makeHerokuSsoToken(String externalId, long timestampSeconds) {
+    String makeHerokuSsoToken(String externalId, long timestampSeconds, String salt) {
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
 
         return printHexBinary(
-            sha1.digest(String.format("%s:%s:%d", externalId, settings.getHerokuApiSsoSalt(), timestampSeconds).getBytes())).toLowerCase();
+            sha1.digest(String.format("%s:%s:%d", externalId, salt, timestampSeconds).getBytes())).toLowerCase();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds)
+    public String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds, String salt)
         throws AuthenticationException {
-        String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds);
+        String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds, salt);
         logger.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, maskSecondHalf(token), timestampSeconds,
                      maskSecondHalf(expectedToken));
 

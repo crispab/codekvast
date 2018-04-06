@@ -5,6 +5,7 @@ codekvast:
     dnsCname: "{{ ec2_tag_CNAME1 }}"
     herokuApiPassword: "{{ codekvast_herokuApiPassword }}"
     herokuApiSsoSalt: "{{ codekvast_herokuApiSsoSalt }}"
+    herokuOAuthClientSecret: "{{ codekvast_herokuOAuthClientSecret }}"
     herokuCodekvastUrl: "http://{{ ec2_tag_LBCNAME2 }}"
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
 logging:

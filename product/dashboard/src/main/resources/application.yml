@@ -15,9 +15,6 @@ codekvast:
     dnsCname: localhost
     fileImportInitialDelaySeconds: 5
     fileImportIntervalSeconds: 60
-    herokuApiPassword: herokuApiPassword
-    herokuApiSsoSalt: herokuApiSsoSalt
-    herokuCodekvastUrl: http://localhost:8080
     loginBaseUrl: http://localhost:8080
     queuePath: /tmp/codekvast
     slackWebHookToken: ''
