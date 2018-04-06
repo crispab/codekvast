@@ -21,7 +21,6 @@
  */
 package io.codekvast.common.security;
 
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
 import javax.crypto.Cipher;
@@ -52,7 +51,7 @@ public class CipherUtils {
     public static String encrypt(String plainText, String key) throws CipherException {
         try {
             Cipher cipher = Cipher.getInstance(CIPHER_INSTANCE);
-            cipher.init(Cipher.ENCRYPT_MODE, keyOf(key));
+            cipher.init(Cipher.ENCRYPT_MODE, stringToKey(key));
             byte[] encrypted = Base64.getEncoder().encode(cipher.doFinal(plainText.getBytes(UTF_8)));
             return new String(encrypted, UTF_8);
         } catch (Exception e) {
@@ -70,7 +69,7 @@ public class CipherUtils {
     public static String decrypt(String cipherText, String key) throws CipherException {
         try {
             Cipher cipher = Cipher.getInstance(CIPHER_INSTANCE);
-            cipher.init(Cipher.DECRYPT_MODE, keyOf(key));
+            cipher.init(Cipher.DECRYPT_MODE, stringToKey(key));
             byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
             return new String(decrypted, UTF_8);
         } catch (Exception e) {
@@ -78,8 +77,7 @@ public class CipherUtils {
         }
     }
 
-    @SneakyThrows(UnsupportedEncodingException.class)
-    private static Key keyOf(String key) {
+    private static Key stringToKey(String key) throws UnsupportedEncodingException {
         return new SecretKeySpec(key.getBytes(UTF_8), "AES");
     }
 
