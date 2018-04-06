@@ -1,13 +1,16 @@
 codekvast:
+    cipherSecret: "{{ codekvast_cipherSecret }}"
     dashboardBaseUrl: "https://{{ ec2_tag_LBCNAME2 }}"
     dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
     dashboardJwtSecret: "{{ codekvast_dashboardJwtSecret }}"
     dnsCname: "{{ ec2_tag_CNAME1 }}"
     herokuApiPassword: "{{ codekvast_herokuApiPassword }}"
     herokuApiSsoSalt: "{{ codekvast_herokuApiSsoSalt }}"
-    herokuOAuthClientSecret: "{{ codekvast_herokuOAuthClientSecret }}"
     herokuCodekvastUrl: "http://{{ ec2_tag_LBCNAME0 }}"
+    herokuOAuthClientId: "{{ codekvast_herokuOAuthClientId }}"
+    herokuOAuthClientSecret: "{{ codekvast_herokuOAuthClientSecret }}"
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
+
 logging:
     file: /var/log/codekvast/application.log
     level:

@@ -22,6 +22,8 @@
 package io.codekvast.login.bootstrap;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import io.codekvast.common.security.CipherException;
+import io.codekvast.common.security.CipherUtils;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,8 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Wrapper for environment properties codekvast.*
@@ -42,9 +46,14 @@ import javax.annotation.PreDestroy;
 @Validated
 @Data
 @Slf4j
-@ToString(exclude = {"dashboardJwtSecret", "herokuApiPassword", "herokuApiSsoSalt", "slackWebHookToken"})
+@ToString(exclude = {"cipherSecret", "dashboardJwtSecret", "herokuApiPassword", "herokuApiSsoSalt", "slackWebHookToken"})
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
 public class CodekvastLoginSettings implements CodekvastCommonSettings {
+
+    /**
+     * Which is the key used for encrypting Heroku OAuth tokens in the database?
+     */
+    private String cipherSecret;
 
     /**
      * The name of the application, injected from the build system.
@@ -125,6 +134,15 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
      * How many hours shall a JWT be valid?
      */
     private Long dashboardJwtExpirationHours;
+
+    @PostConstruct
+    public void validateCipherSecret() throws CipherException {
+        String plainText = "The quick brown fox jumps over the lazy dog";
+        String encrypted = CipherUtils.encrypt(plainText, cipherSecret);
+        String decrypted = CipherUtils.decrypt(encrypted, cipherSecret);
+
+        checkState(decrypted.equals(plainText), "Invalid cipherSecret");
+    }
 
     @PostConstruct
     public void logStartup() {

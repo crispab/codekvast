@@ -6,15 +6,16 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 codekvast:
+    cipherSecret: someCipherSecret
     dashboardBaseUrl: http://localhost:8081
     dashboardJwtExpirationHours: 168
     dashboardJwtSecret: secret
     dnsCname: localhost
     herokuApiPassword: herokuApiPassword
     herokuApiSsoSalt: herokuApiSsoSalt
-    herokuOAuthClientId: codekvast
-    herokuOAuthClientSecret: herokuOAuthClientSecret
     herokuCodekvastUrl: http://localhost:8080
+    herokuOAuthClientId: herokuOAuthClientId
+    herokuOAuthClientSecret: herokuOAuthClientSecret
     slackWebHookToken:
     slackWebHookUrl: https://hooks.slack.com/services
 
