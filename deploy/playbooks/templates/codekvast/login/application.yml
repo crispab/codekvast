@@ -6,7 +6,7 @@ codekvast:
     herokuApiPassword: "{{ codekvast_herokuApiPassword }}"
     herokuApiSsoSalt: "{{ codekvast_herokuApiSsoSalt }}"
     herokuOAuthClientSecret: "{{ codekvast_herokuOAuthClientSecret }}"
-    herokuCodekvastUrl: "http://{{ ec2_tag_LBCNAME2 }}"
+    herokuCodekvastUrl: "http://{{ ec2_tag_LBCNAME0 }}"
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
 logging:
     file: /var/log/codekvast/application.log

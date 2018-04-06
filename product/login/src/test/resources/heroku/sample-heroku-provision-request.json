@@ -1,0 +1,14 @@
+{
+  "callback_url": "https://api.heroku.com/vendor/apps/74cc95c3-ad12-4c77-a81c-9ba1c286f9f1",
+  "heroku_id": "app74196858@heroku.com",
+  "plan": "test",
+  "region": "amazon-web-services::us-east-1",
+  "oauth_grant": {
+    "code": "cc54cdb1-71f9-4098-9a87-3a5abe7d4811",
+    "expires_at": "2018-04-06T02:31:24.18-07:00",
+    "type": "authorization_code"
+  },
+  "logplex_token": "t.285c845e-c6fd-4ab2-b036-4eea67d00713",
+  "uuid": "74cc95c3-ad12-4c77-a81c-9ba1c286f9f1",
+  "options": {}
+}
