@@ -21,7 +21,8 @@
  */
 package io.codekvast.login.heroku.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class HerokuProvisionRequest {
 
     @Value
     @Builder
-    static class OAuthGrant {
+    public static class OAuthGrant {
         private final String code;
         private final String type;
         private final String expires_at;
