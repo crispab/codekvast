@@ -118,13 +118,9 @@ public class SecurityServiceImpl implements SecurityService {
         String token = tokenFactory.createWebappToken(customerId, credentials);
         String code = UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
-        int updated = jdbcTemplate.update("INSERT INTO tokens(code, token, expiresAtSeconds) VALUES(?, ?, ?)", code, token,
-                                          Instant.now().plusSeconds(300).getEpochSecond());
-        if (updated <= 0) {
-            logger.error("Could not INSERT INTO tokens");
-        } else {
-            logger.info("Inserted token with code '{}' into database", code);
-        }
+        jdbcTemplate.update("INSERT INTO tokens(code, token, expiresAtSeconds) VALUES(?, ?, ?)", code, token,
+                            Instant.now().plusSeconds(300).getEpochSecond());
+        logger.info("Inserted token with code '{}' into database", maskSecondHalf(code));
         return code;
     }
 
@@ -137,14 +133,14 @@ public class SecurityServiceImpl implements SecurityService {
                 "SELECT token FROM tokens WHERE code = ? AND expiresAtSeconds > ? FOR UPDATE ", String.class,
                 code, Instant.now().getEpochSecond());
         } catch (IncorrectResultSizeDataAccessException e) {
-            logger.warn("Invalid token code: {}", code);
+            logger.warn("Invalid token code: {}", maskSecondHalf(code));
             return null;
         }
         int deleted = jdbcTemplate.update("DELETE FROM tokens WHERE code = ? ", code);
         if (deleted > 0) {
-            logger.info("Deleted token with code '{}' from database", code);
+            logger.info("Deleted token with code '{}' from database", maskSecondHalf(code));
         } else {
-            logger.warn("Could node delete token with code '{}' from database", code);
+            logger.error("Could node delete token with code '{}' from database", maskSecondHalf(code));
         }
         return token;
     }
@@ -195,7 +191,8 @@ public class SecurityServiceImpl implements SecurityService {
     public String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds)
         throws AuthenticationException {
         String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds);
-        logger.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, token, timestampSeconds, expectedToken);
+        logger.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, maskSecondHalf(token), timestampSeconds,
+                     maskSecondHalf(expectedToken));
 
         long nowSeconds = Instant.now().getEpochSecond();
         if (timestampSeconds > nowSeconds + 60) {
@@ -253,7 +250,14 @@ public class SecurityServiceImpl implements SecurityService {
                        .signWith(signatureAlgorithm, jwtSecret.getBytes("UTF-8"))
                        .compact();
         }
+    }
 
-
+    static String maskSecondHalf(String s) {
+        int pos = s.length() / 2;
+        StringBuilder sb = new StringBuilder(s.substring(0, pos));
+        while (sb.length() < s.length()) {
+            sb.append('X');
+        }
+        return sb.toString();
     }
 }

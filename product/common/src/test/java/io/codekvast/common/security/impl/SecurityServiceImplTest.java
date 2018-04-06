@@ -129,6 +129,16 @@ public class SecurityServiceImplTest {
         // Kaboom!
     }
 
+    @Test
+    public void should_mask_string_with_event_length() {
+        assertThat(SecurityServiceImpl.maskSecondHalf("12345678901234567890"), is("1234567890XXXXXXXXXX"));
+    }
+
+    @Test
+    public void should_mask_string_with_odd_length() {
+        assertThat(SecurityServiceImpl.maskSecondHalf("123456789012345678901"), is("1234567890XXXXXXXXXXX"));
+    }
+
     @Getter
     private static class CodekvastCommonSettingsForTestImpl implements CodekvastCommonSettings {
 

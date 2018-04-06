@@ -32,9 +32,19 @@ import java.util.Map;
 @Builder
 public class HerokuProvisionRequest {
     private final String heroku_id;
+    private final String name;
     private final String plan;
     private final String region;
     private final String callback_url;
     private final Map<String, String> options;
     private final String uuid;
+    private final OAuthGrant oauth_grant;
+
+    @Value
+    @Builder
+    static class OAuthGrant {
+        private final String code;
+        private final String type;
+        private final String expires_at;
+    }
 }

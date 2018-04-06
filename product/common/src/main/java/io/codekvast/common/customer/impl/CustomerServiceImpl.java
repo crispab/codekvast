@@ -27,6 +27,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
@@ -207,12 +208,28 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String addCustomer(AddCustomerRequest request) {
-        String licenseKey = UUID.randomUUID().toString().replaceAll("[-_]", "").toUpperCase();
+        String licenseKey = null;
 
-        jdbcTemplate.update("INSERT INTO customers(source, externalId, name, licenseKey, plan) VALUES(?, ?, ?, ?, ?)",
-                            request.getSource(), request.getExternalId(), request.getName(), licenseKey, request.getPlan());
-        logger.info("Created {} with licenseKey {}", request, licenseKey);
-        slackService.sendNotification(String.format("Handled `%s`", request), SlackService.Channel.BUSINESS_EVENTS);
+        if (Source.HEROKU.equals(request.getSource())) {
+            logger.debug("Attempt to retry Heroku request {}", request);
+            try {
+                licenseKey = jdbcTemplate
+                    .queryForObject("SELECT licenseKey FROM customers WHERE externalId = ? ", String.class, request.getExternalId());
+                logger.info("Found existing licenseKey {}", licenseKey);
+            } catch (IncorrectResultSizeDataAccessException e) {
+                logger.debug("Heroku request was not a retry");
+            }
+        }
+
+        if (licenseKey == null) {
+            licenseKey = UUID.randomUUID().toString().replaceAll("[-_]", "").toUpperCase();
+
+            jdbcTemplate.update("INSERT INTO customers(source, externalId, name, licenseKey, plan) VALUES(?, ?, ?, ?, ?)",
+                                request.getSource(), request.getExternalId(), request.getName(), licenseKey, request.getPlan());
+            logger.info("{} resulted in licenseKey {}", request, licenseKey);
+            slackService.sendNotification(String.format("Handled `%s`", request), SlackService.Channel.BUSINESS_EVENTS);
+        }
+
         return licenseKey;
     }
 
