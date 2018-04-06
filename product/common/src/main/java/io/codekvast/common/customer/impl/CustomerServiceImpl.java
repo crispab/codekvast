@@ -277,6 +277,7 @@ public class CustomerServiceImpl implements CustomerService {
         deleteFromTable("users", customerId);
         deleteFromTable("agent_state", customerId);
         deleteFromTable("price_plan_overrides", customerId);
+        deleteFromTable("heroku_details", customerId);
         deleteFromTable("customers", customerId);
 
         logger.info("Deleted customer {}", customerData);

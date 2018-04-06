@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -29,6 +31,12 @@ public class HerokuServiceImplTest {
     @Mock
     private CustomerService customerService;
 
+    @Mock
+    private JdbcTemplate jdbcTemplate;
+
+    @Mock
+    private RestTemplateBuilder restTemplateBuilder;
+
     private final Gson gson = new Gson();
 
     private HerokuServiceImpl service;
@@ -36,7 +44,7 @@ public class HerokuServiceImplTest {
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        service = new HerokuServiceImpl(settings, customerService);
+        service = new HerokuServiceImpl(settings, customerService, jdbcTemplate, restTemplateBuilder);
     }
 
     @Test
