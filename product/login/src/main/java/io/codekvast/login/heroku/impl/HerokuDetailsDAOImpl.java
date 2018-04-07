@@ -28,8 +28,10 @@ import io.codekvast.login.heroku.HerokuDetailsDAO;
 import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -46,6 +48,7 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
     private final CodekvastLoginSettings settings;
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsRow(String licenseKey) {
         return jdbcTemplate.queryForObject("SELECT COUNT(1)\n" +
                                                "FROM customers c INNER JOIN heroku_details hd ON c.id = hd.customerId\n" +
@@ -53,6 +56,7 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveTokens(HerokuOAuthTokenResponse tokenResponse, String callbackUrl, String licenseKey) throws CipherException {
         Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE licenseKey = ?", Long.class, licenseKey);
 
@@ -73,4 +77,47 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
             logger.debug("The access token expires at {}", expiresAt);
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getAccessToken(Long customerId) throws CipherException {
+        try {
+            String encryptedToken = jdbcTemplate.queryForObject("SELECT accessToken FROM heroku_details WHERE customerId = ? " +
+                                                                    "AND expiresAt > ? ",
+                                                                String.class, customerId, Timestamp.from(Instant.now()));
+            logger.debug("Retrieved the access token for customer {}", customerId);
+            return CipherUtils.decrypt(encryptedToken, settings.getCipherSecret());
+        } catch (IncorrectResultSizeDataAccessException e) {
+            logger.debug("Found no valid access token for customer {}", customerId);
+            return null;
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getRefreshToken(Long customerId) throws CipherException {
+        try {
+            String encryptedToken = jdbcTemplate.queryForObject("SELECT refreshToken FROM heroku_details WHERE customerId = ? ",
+                                                                String.class, customerId);
+            logger.debug("Retrieved the refresh token for customer {}", customerId);
+            return CipherUtils.decrypt(encryptedToken, settings.getCipherSecret());
+        } catch (IncorrectResultSizeDataAccessException e) {
+            logger.debug("Found no refresh token for customer {}", customerId);
+            return null;
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateAccessToken(Long customerId, String accessToken, Instant expiresAt) throws CipherException {
+        int updated = jdbcTemplate.update("UPDATE heroku_details SET accessToken = ? AND expiresAt = ? WHERE customerId = ?",
+                                          CipherUtils.encrypt(accessToken, settings.getCipherSecret()),
+                                          Timestamp.from(expiresAt), customerId);
+        if (updated == 0) {
+            logger.warn("Could not update access token for customer {}", customerId);
+        } else {
+            logger.debug("Saved a new access token for customer {}, expires at {}", customerId, expiresAt);
+        }
+    }
+
 }

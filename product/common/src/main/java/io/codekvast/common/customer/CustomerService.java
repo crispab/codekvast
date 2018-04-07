@@ -148,6 +148,11 @@ public interface CustomerService {
     List<String> getRoleNamesByUserEmail(String email);
 
     /**
+     * Get a list of all CustomerData.
+     */
+    List<CustomerData> getCustomerData();
+
+    /**
      * Parameter object for {@link #addCustomer(AddCustomerRequest)}
      */
     @Value

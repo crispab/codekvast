@@ -21,6 +21,7 @@
  */
 package io.codekvast.login.heroku;
 
+import io.codekvast.common.security.CipherException;
 import io.codekvast.login.heroku.model.HerokuChangePlanRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionResponse;
@@ -57,4 +58,11 @@ public interface HerokuService {
      */
     void deprovision(String externalId) throws HerokuException;
 
+    /**
+     * Get a valid access token for a certain customer.
+     *
+     * @param customerId The customerId
+     * @return A valid access token
+     */
+    String getAccessTokenFor(Long customerId) throws CipherException;
 }

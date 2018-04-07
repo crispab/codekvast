@@ -25,6 +25,8 @@ import io.codekvast.common.security.CipherException;
 import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 
+import java.time.Instant;
+
 /**
  * DAO for the heroku_details table.
  *
@@ -50,4 +52,10 @@ public interface HerokuDetailsDAO {
      * @throws CipherException If the encrypting of the tokens failed.
      */
     void saveTokens(HerokuOAuthTokenResponse tokenResponse, String callbackUrl, String licenseKey) throws CipherException;
+
+    String getAccessToken(Long customerId) throws CipherException;
+
+    String getRefreshToken(Long customerId) throws CipherException;
+
+    void updateAccessToken(Long customerId, String accessToken, Instant expiresAt) throws CipherException;
 }

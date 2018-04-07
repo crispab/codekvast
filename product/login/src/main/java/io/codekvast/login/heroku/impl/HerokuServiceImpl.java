@@ -32,11 +32,14 @@ import io.codekvast.login.heroku.model.HerokuChangePlanRequest;
 import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionResponse;
+import io.codekvast.login.model.Roles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,6 +128,24 @@ public class HerokuServiceImpl implements HerokuService {
         } catch (Exception e) {
             throw new HerokuException("Could not deprovision externalId '" + externalId + "'", e);
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @Secured(Roles.ADMIN)
+    public String getAccessTokenFor(Long customerId) throws CipherException {
+        String accessToken = herokuDetailsDAO.getAccessToken(customerId);
+        if (accessToken == null) {
+            String refreshToken = herokuDetailsDAO.getRefreshToken(customerId);
+            if (refreshToken != null) {
+                HerokuOAuthTokenResponse response =
+                    herokuApiWrapper.refreshAccessToken(refreshToken);
+                accessToken = response.getAccess_token();
+                Instant expiresAt = Instant.now().plusSeconds(response.getExpires_in());
+                herokuDetailsDAO.updateAccessToken(customerId, accessToken, expiresAt);
+            }
+        }
+        return accessToken;
     }
 
 }

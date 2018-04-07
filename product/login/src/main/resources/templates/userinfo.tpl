@@ -60,4 +60,12 @@ layout '_layout.tpl', true,
         form(class: "form", method: "POST", action: "/logout") {
             button("Log in as another user")
         }
+
+        if (roles.contains("ROLE_ADMIN")) {
+            hr()
+
+            p {
+                a(href: '/tokens', "Show Heroku access tokens")
+            }
+        }
     }

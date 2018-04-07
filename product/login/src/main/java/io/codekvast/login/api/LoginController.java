@@ -21,13 +21,17 @@
  */
 package io.codekvast.login.api;
 
+import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.security.CipherException;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
+import io.codekvast.login.heroku.HerokuService;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
+import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -51,7 +56,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class LoginController {
 
     private final LoginService loginService;
+    private final CustomerService customerService;
     private final CodekvastLoginSettings settings;
+    private final HerokuService herokuService;
 
     @ModelAttribute("settings")
     public CodekvastLoginSettings getCodekvastSettings() {
@@ -63,12 +70,35 @@ public class LoginController {
         User user = loginService.getUserFromAuthentication(authentication);
         logger.info("User = {}", user);
         model.addAttribute("user", user);
+        model.addAttribute("roles",
+                           authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
         return "userinfo";
     }
 
     @GetMapping("/login")
     public String login() {
         return "login";
+    }
+
+    @GetMapping("/tokens")
+    public String tokens(OAuth2AuthenticationToken authentication, Model model) {
+
+        User user = loginService.getUserFromAuthentication(authentication);
+        logger.info("User = {}", user);
+        model.addAttribute("user", user);
+        model.addAttribute("customers", customerService.getCustomerData());
+        return "tokens";
+    }
+
+    @GetMapping("/tokens/accessToken/{customerId}")
+    public String getAccessTokenFor(OAuth2AuthenticationToken authentication, Model model, @PathVariable("customerId") Long customerId)
+        throws CipherException {
+        User user = loginService.getUserFromAuthentication(authentication);
+        logger.info("User = {}", user);
+        model.addAttribute("user", user);
+        model.addAttribute("customerData", customerService.getCustomerDataByCustomerId(customerId));
+        model.addAttribute("accessToken", herokuService.getAccessTokenFor(customerId));
+        return "tokens";
     }
 
     @GetMapping({"/", "/index", "/home"})

@@ -73,6 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .authorizeRequests()
                 .antMatchers("/favicon.ico", "/robots.txt", "/actuator/**", "/assets/**", "/heroku/**", LOGIN_URL).permitAll()
+                .antMatchers("/tokens**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             .and()
                 .oauth2Login()

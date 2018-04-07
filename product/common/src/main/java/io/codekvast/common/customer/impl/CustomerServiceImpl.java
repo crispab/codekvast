@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -285,9 +286,27 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getRoleNamesByUserEmail(String email) {
         logger.debug("Getting role names for {}", email);
         return jdbcTemplate.queryForList("SELECT roleName FROM roles WHERE email = ? ", String.class, email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Secured("ROLES_ADMIN")
+    public List<CustomerData> getCustomerData() {
+        List<CustomerData> result = new ArrayList<>();
+
+        Set<Long> customerIds = new HashSet<>(jdbcTemplate.queryForList("SELECT id FROM customers", Long.class));
+
+        for (Long customerId : customerIds) {
+            result.add(getCustomerDataByCustomerId(customerId));
+        }
+
+        logger.debug("Found {} customers", result.size());
+        result.sort(Comparator.comparing(CustomerData::getCustomerName));
+        return result;
     }
 
     private void deleteFromTable(final String table, long customerId) {
