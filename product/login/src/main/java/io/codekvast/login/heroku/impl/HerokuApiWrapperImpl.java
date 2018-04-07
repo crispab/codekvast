@@ -61,17 +61,38 @@ public class HerokuApiWrapperImpl implements HerokuApiWrapper {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("grant_type", grant.getType());
+        form.add("grant_type", "authorization_code");
         form.add("code", grant.getCode());
         form.add("client_secret", settings.getHerokuOAuthClientSecret());
 
         ResponseEntity<HerokuOAuthTokenResponse> responseEntity =
-            restTemplate.postForEntity(
-                String.format("%s/oauth/token", settings.getHerokuOAuthBaseUrl()),
-                new HttpEntity<>(form, headers),
-                HerokuOAuthTokenResponse.class);
+            restTemplate.postForEntity(getOAuthTokenUrl(), new HttpEntity<>(form, headers), HerokuOAuthTokenResponse.class);
         HerokuOAuthTokenResponse response = responseEntity.getBody();
         logger.info("Received {}", response);
         return response;
     }
+
+    @Override
+    public HerokuOAuthTokenResponse refreshAccessToken(String refreshToken) {
+        logger.debug("Refreshing an access token");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("grant_type", "refresh_token");
+        form.add("refresh_token", refreshToken);
+        form.add("client_secret", settings.getHerokuOAuthClientSecret());
+
+        ResponseEntity<HerokuOAuthTokenResponse> responseEntity =
+            restTemplate.postForEntity(getOAuthTokenUrl(), new HttpEntity<>(form, headers), HerokuOAuthTokenResponse.class);
+        HerokuOAuthTokenResponse response = responseEntity.getBody();
+        logger.info("Received {}", response);
+        return response;
+    }
+
+    private String getOAuthTokenUrl() {
+        return String.format("%s/oauth/token", settings.getHerokuOAuthBaseUrl());
+    }
+
 }

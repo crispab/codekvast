@@ -284,6 +284,12 @@ public class CustomerServiceImpl implements CustomerService {
         slackService.sendNotification("Deleted `" + customerData + "`", SlackService.Channel.BUSINESS_EVENTS);
     }
 
+    @Override
+    public List<String> getRoleNamesByUserEmail(String email) {
+        logger.debug("Getting role names for {}", email);
+        return jdbcTemplate.queryForList("SELECT roleName FROM roles WHERE email = ? ", String.class, email);
+    }
+
     private void deleteFromTable(final String table, long customerId) {
         String column = table.equals("customers") ? "id" : "customerId";
         int count = jdbcTemplate.update("DELETE FROM " + table + " WHERE " + column + " = ?", customerId);

@@ -79,4 +79,19 @@ public class HerokuApiWrapperImplTest {
         assertThat(tokenResponse.getAccess_token(), is("2af695e0-93e3-4821-ac2e-95f68435f128"));
     }
 
+    @Test
+    public void should_refresh_token() throws IOException {
+        // given
+        String response =
+            new String(Files.readAllBytes(Paths.get(getClass().getResource("/heroku/sample-exchange-grant-code-response.json").getPath())), "UTF-8");
+
+        givenThat(post("/oauth/token").willReturn(okJson(response)));
+
+        // when
+        HerokuOAuthTokenResponse tokenResponse = herokuApiWrapper.refreshAccessToken("refreshToken");
+
+        // then
+        assertThat(tokenResponse.getAccess_token(), is("2af695e0-93e3-4821-ac2e-95f68435f128"));
+    }
+
 }

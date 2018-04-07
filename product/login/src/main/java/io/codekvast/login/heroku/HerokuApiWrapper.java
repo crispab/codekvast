@@ -38,4 +38,13 @@ public interface HerokuApiWrapper {
      * @return A HerokuOAuthTokenResponse object.
      */
     HerokuOAuthTokenResponse exchangeGrantCode(HerokuProvisionRequest.OAuthGrant grant);
+
+    /**
+     * Refresh the access token by presenting the refreshToken.
+     *
+     * @param refreshToken The permanent refresh token.
+     *
+     * @return A HerokuOAuthTokenResponse object.
+     */
+    HerokuOAuthTokenResponse refreshAccessToken(String refreshToken);
 }

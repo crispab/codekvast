@@ -86,10 +86,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private GrantedAuthoritiesMapper userAuthoritiesMapper() {
         return (authorities) -> {
-            Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+            Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
             authorities.forEach(authority -> {
-                mappedAuthorities.add(authority);
+                grantedAuthorities.add(authority);
 
                 Object email = null;
                 if (OidcUserAuthority.class.isInstance(authority)) {
@@ -99,12 +99,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 }
                 if (email != null) {
                     List<CustomerData> customerData = customerService.getCustomerDataByUserEmail(email.toString());
-                    if (customerData != null && !customerData.isEmpty()) {
-                        mappedAuthorities.add(new SimpleGrantedAuthority(Roles.CUSTOMER));
+                    if (!customerData.isEmpty()) {
+                        grantedAuthorities.add(new SimpleGrantedAuthority(Roles.CUSTOMER));
+                    }
+
+                    List<String> roleNames = customerService.getRoleNamesByUserEmail(email.toString());
+                    for (String roleName : roleNames) {
+                        grantedAuthorities.add(new SimpleGrantedAuthority(roleName));
                     }
                 }
             });
-            return mappedAuthorities;
+            return grantedAuthorities;
         };
     }
 }

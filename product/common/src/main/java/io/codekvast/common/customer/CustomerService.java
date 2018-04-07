@@ -140,6 +140,14 @@ public interface CustomerService {
     void deleteCustomerByExternalId(String externalId);
 
     /**
+     * Get a user's authorized roles.
+     *
+     * @param email The user's email address.
+     * @return A list of role names. Does never return null.
+     */
+    List<String> getRoleNamesByUserEmail(String email);
+
+    /**
      * Parameter object for {@link #addCustomer(AddCustomerRequest)}
      */
     @Value
