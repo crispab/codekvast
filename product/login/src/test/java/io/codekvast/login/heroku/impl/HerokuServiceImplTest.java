@@ -3,14 +3,14 @@ package io.codekvast.login.heroku.impl;
 import com.google.gson.Gson;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
+import io.codekvast.login.heroku.HerokuApiWrapper;
+import io.codekvast.login.heroku.HerokuDetailsDAO;
 import io.codekvast.login.heroku.HerokuException;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -29,13 +29,13 @@ public class HerokuServiceImplTest {
     private CodekvastLoginSettings settings = new CodekvastLoginSettings();
 
     @Mock
+    private HerokuApiWrapper herokuApiWrapper;
+
+    @Mock
+    private HerokuDetailsDAO herokuDetailsDAO;
+
+    @Mock
     private CustomerService customerService;
-
-    @Mock
-    private JdbcTemplate jdbcTemplate;
-
-    @Mock
-    private RestTemplateBuilder restTemplateBuilder;
 
     private final Gson gson = new Gson();
 
@@ -44,7 +44,7 @@ public class HerokuServiceImplTest {
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        service = new HerokuServiceImpl(settings, customerService, jdbcTemplate, restTemplateBuilder);
+        service = new HerokuServiceImpl(settings, customerService, herokuApiWrapper, herokuDetailsDAO);
     }
 
     @Test
@@ -84,10 +84,10 @@ public class HerokuServiceImplTest {
     public void should_deserialize_sample_real_provisioning_request() {
         // given
         HerokuProvisionRequest.OAuthGrant givenOAuthGrant = HerokuProvisionRequest.OAuthGrant.builder()
-                                                                                        .code("cc54cdb1-71f9-4098-9a87-3a5abe7d4811")
-                                                                                        .expires_at("2018-04-06T02:31:24.18-07:00")
-                                                                                        .type("authorization_code")
-                                                                                        .build();
+                                                                                             .code("cc54cdb1-71f9-4098-9a87-3a5abe7d4811")
+                                                                                             .expires_at("2018-04-06T02:31:24.18-07:00")
+                                                                                             .type("authorization_code")
+                                                                                             .build();
         BufferedReader reader =
             new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/heroku/sample-heroku-provision-request.json")));
 

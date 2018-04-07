@@ -22,7 +22,7 @@
 
 CREATE TABLE heroku_details (
   id           BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-  customerId   BIGINT                NOT NULL,
+  customerId   BIGINT                NOT NULL UNIQUE,
 
   callbackUrl  VARCHAR(500)          NOT NULL
   COMMENT 'This is the URL to use for accessing the Heroku Partner API for the associated customer',

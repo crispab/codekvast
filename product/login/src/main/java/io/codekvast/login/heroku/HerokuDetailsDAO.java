@@ -19,19 +19,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.heroku.model;
+package io.codekvast.login.heroku;
 
-import lombok.Builder;
-import lombok.Value;
+import io.codekvast.common.security.CipherException;
+import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
+import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 
 /**
+ * DAO for the heroku_details table.
+ *
  * @author olle.hallin@crisp.se
  */
-@Value
-@Builder
-public class HerokuOauthTokenResponse {
-  String access_token;
-  String refresh_token;
-  Integer expires_in;
-  String token_type;
+public interface HerokuDetailsDAO {
+
+    /**
+     * Is there already a row in heroku_details for the customer?
+     *
+     * @param licenseKey The license key for the customer.
+     * @return true if there is a existing row in heroku_details.
+     */
+    boolean existsRow(String licenseKey);
+
+    /**
+     * Saves a token response in heroku_details.
+     * The tokens are encrypted before written to the database.
+     *
+     * @param tokenResponse The token response to save.
+     * @param callbackUrl   The callback URL received in the {@link HerokuProvisionRequest}.
+     * @param licenseKey    The licenseKey for the customer.
+     * @throws CipherException If the encrypting of the tokens failed.
+     */
+    void saveTokens(HerokuOAuthTokenResponse tokenResponse, String callbackUrl, String licenseKey) throws CipherException;
 }

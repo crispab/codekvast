@@ -65,7 +65,7 @@ import static org.junit.Assume.assumeTrue;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationTest")
 @Transactional(rollbackFor = Exception.class)
-public class MariadbIntegrationTest {
+public class DashboardIntegrationTest {
 
     private final long now = System.currentTimeMillis();
 
@@ -108,7 +108,6 @@ public class MariadbIntegrationTest {
 
     @Inject
     private Flyway flyway;
-
 
     @Inject
     private CustomerService customerService;
