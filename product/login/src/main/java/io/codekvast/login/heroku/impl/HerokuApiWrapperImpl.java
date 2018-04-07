@@ -21,19 +21,19 @@
  */
 package io.codekvast.login.heroku.impl;
 
+import com.jayway.jsonpath.JsonPath;
+import io.codekvast.common.customer.CustomerData;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.heroku.HerokuApiWrapper;
+import io.codekvast.login.heroku.model.HerokuAppDetails;
 import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.*;
 import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -51,6 +51,7 @@ public class HerokuApiWrapperImpl implements HerokuApiWrapper {
     private final CodekvastLoginSettings settings;
     private final RestTemplate restTemplate = new RestTemplateBuilder()
         .messageConverters(new FormHttpMessageConverter(),
+                           new StringHttpMessageConverter(),
                            new GsonHttpMessageConverter()).build();
 
     @Override
@@ -89,6 +90,26 @@ public class HerokuApiWrapperImpl implements HerokuApiWrapper {
         HerokuOAuthTokenResponse response = responseEntity.getBody();
         logger.info("Received {}", response);
         return response;
+    }
+
+    @Override
+    public HerokuAppDetails getAppDetails(CustomerData customerData, String accessToken) {
+        logger.debug("Getting Heroku app details for {}", customerData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "application/vnd.heroku+json; version=3");
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        String url = String.format("%s/addons/%s", settings.getHerokuApiBaseUrl(), customerData.getExternalId());
+        ResponseEntity<String> json = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null, headers), String.class);
+        String appName = JsonPath.read(json.getBody(), "$.app.name");
+
+        // TODO get email
+        String contactEmail = "contactEmail";
+
+        return HerokuAppDetails.builder()
+                               .appName(appName)
+                               .contactEmail(contactEmail)
+                               .build();
     }
 
     private String getOAuthTokenUrl() {

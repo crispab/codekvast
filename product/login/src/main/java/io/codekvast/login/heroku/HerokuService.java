@@ -62,7 +62,23 @@ public interface HerokuService {
      * Get a valid access token for a certain customer.
      *
      * @param customerId The customerId
-     * @return A valid access token
+     * @return A valid access token. Returns null if not possible to refresh an expired access token.
      */
     String getAccessTokenFor(Long customerId) throws CipherException;
+
+    /**
+     * Get the callback URL for a certain customer.
+     *
+     * @param customerId The customerId
+     * @return The callback URL.
+     */
+    String getCallbackUrlFor(Long customerId);
+
+    /**
+     * Fetch and store application details (name and contact email).
+     *
+     * @param customerId
+     * @throws CipherException
+     */
+    void fetchAppDetails(Long customerId) throws CipherException;
 }

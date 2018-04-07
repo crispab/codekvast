@@ -97,6 +97,7 @@ public class LoginController {
         logger.info("User = {}", user);
         model.addAttribute("user", user);
         model.addAttribute("customerData", customerService.getCustomerDataByCustomerId(customerId));
+        model.addAttribute("callbackUrl", herokuService.getCallbackUrlFor(customerId));
         model.addAttribute("accessToken", herokuService.getAccessTokenFor(customerId));
         return "tokens";
     }

@@ -1,0 +1,31 @@
+{
+  "actions":[],
+  "config_vars":[
+    "CODEKVAST_LICENSE_KEY",
+    "CODEKVAST_URL"
+  ],
+  "created_at":"2018-04-07T14:25:45Z",
+  "id":"5694320c-b99f-4361-874b-ebc112c5cf25",
+  "name":"codekvast-infinite-47799",
+  "addon_service":{
+    "id":"8851761c-4784-44c3-9091-cdc39bdb1399",
+    "name":"codekvast"
+  },
+  "plan":{
+    "id":"76dae299-8175-4f04-a18d-496348ec137d",
+    "name":"codekvast:test"
+  },
+  "app":{
+    "id":"6d175f06-195a-453e-83d6-66934a32ca71",
+    "name":"codekvast-demo1"
+  },
+  "provider_id":"5694320c-b99f-4361-874b-ebc112c5cf25",
+  "state":"provisioned",
+  "updated_at":"2018-04-07T14:25:46Z",
+  "web_url":"https://addons-sso.heroku.com/apps/6d175f06-195a-453e-83d6-66934a32ca71/addons/5694320c-b99f-4361-874b-ebc112c5cf25",
+  "billed_price":{
+    "cents":0,
+    "unit":"month"
+  }
+}
+

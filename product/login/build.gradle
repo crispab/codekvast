@@ -19,6 +19,7 @@ dependencies {
     compile 'org.springframework.security:spring-security-oauth2-client'
     compile 'org.springframework.security:spring-security-oauth2-jose'
     compile "com.google.code.gson:gson:$gsonVersion"
+    compile 'com.jayway.jsonpath:json-path:2.3.0'
 
     runtime project(':product:db-migration')
     runtime 'org.codehaus.groovy:groovy-templates:2.4.15'

@@ -317,7 +317,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private CustomerData getCustomerData(String where_clause, java.io.Serializable identifier) {
         Map<String, Object> result = jdbcTemplate.queryForMap("SELECT " +
-                                                                  " c.id, c.name, c.source, c.plan, c.createdAt, c.collectionStartedAt, " +
+                                                                  " c.id, c.externalId, c.name, c.source, c.plan, c.createdAt, c.collectionStartedAt, " +
                                                                   "c.trialPeriodEndsAt, c.notes AS customerNotes, " +
                                                                   " pp.createdBy, pp.note AS pricePlanNote, pp.maxMethods, pp.maxNumberOfAgents, pp" +
                                                                   ".publishIntervalSeconds, pp.pollIntervalSeconds, " +
@@ -334,6 +334,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         return CustomerData.builder()
                            .customerId((Long) result.get("id"))
+                           .externalId((String) result.get("externalId"))
                            .customerName((String) result.get("name"))
                            .source((String) result.get("source"))
                            .createdAt(createdAt.toInstant())

@@ -21,6 +21,8 @@
  */
 package io.codekvast.login.heroku;
 
+import io.codekvast.common.customer.CustomerData;
+import io.codekvast.login.heroku.model.HerokuAppDetails;
 import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 
@@ -47,4 +49,12 @@ public interface HerokuApiWrapper {
      * @return A HerokuOAuthTokenResponse object.
      */
     HerokuOAuthTokenResponse refreshAccessToken(String refreshToken);
+
+    /**
+     * Retrieve Heroku app details for a certain app.
+     * @param customerData The customer data.
+     * @param accessToken The OAuth bearer token.
+     * @return A HerokuAppDetails object.
+     */
+    HerokuAppDetails getAppDetails(CustomerData customerData, String accessToken);
 }

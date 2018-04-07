@@ -21,6 +21,7 @@
  */
 package io.codekvast.login.heroku.impl;
 
+import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.CipherException;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
@@ -148,4 +149,19 @@ public class HerokuServiceImpl implements HerokuService {
         return accessToken;
     }
 
+    @Override
+    public String getCallbackUrlFor(Long customerId) {
+        return herokuDetailsDAO.getCallbackUrl(customerId);
+    }
+
+    @Override
+    public void fetchAppNameAndContactEmail(Long customerId) throws CipherException {
+        String accessToken = getAccessTokenFor(customerId);
+        if (accessToken == null) {
+            logger.info("Cannot get data for customer {} from Heroku, no access key", customerId);
+            return;
+        }
+
+        herokuApiWrapper.getAppDetails(customerService.getCustomerDataByCustomerId(customerId), accessToken);
+    }
 }

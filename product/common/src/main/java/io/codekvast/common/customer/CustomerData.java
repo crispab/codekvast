@@ -44,6 +44,8 @@ public class CustomerData {
     @NonNull
     private String source;
 
+    private String externalId;
+
     private String customerNotes;
 
     @NonNull

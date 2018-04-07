@@ -111,6 +111,11 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
     private String herokuOAuthBaseUrl;
 
     /**
+     * What is the base URL for the Heroku API?
+     */
+    private String herokuApiBaseUrl;
+
+    /**
      * Which password is Heroku using when invoking us?
      */
     private String herokuApiPassword;

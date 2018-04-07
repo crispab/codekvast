@@ -1,8 +1,13 @@
 package io.codekvast.login.heroku.impl;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.gson.Gson;
+import io.codekvast.common.customer.CustomerData;
+import io.codekvast.common.customer.PricePlan;
+import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
+import io.codekvast.login.heroku.model.HerokuAppDetails;
 import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import org.junit.Before;
@@ -36,6 +41,7 @@ public class HerokuApiWrapperImplTest {
 
     @Before
     public void beforeTest() {
+        settings.setHerokuApiBaseUrl("http://localhost:" + wireMockRule.port());
         settings.setHerokuOAuthBaseUrl("http://localhost:" + wireMockRule.port());
         settings.setHerokuOAuthClientSecret("clientSecret");
 
@@ -61,7 +67,8 @@ public class HerokuApiWrapperImplTest {
     public void should_exchange_authorization_code_grant() throws IOException {
         // given
         String response =
-            new String(Files.readAllBytes(Paths.get(getClass().getResource("/heroku/sample-exchange-grant-code-response.json").getPath())), "UTF-8");
+            new String(Files.readAllBytes(Paths.get(getClass().getResource("/heroku/sample-exchange-grant-code-response.json").getPath())),
+                       "UTF-8");
 
         HerokuProvisionRequest.OAuthGrant grant = HerokuProvisionRequest.OAuthGrant
             .builder()
@@ -83,7 +90,8 @@ public class HerokuApiWrapperImplTest {
     public void should_refresh_token() throws IOException {
         // given
         String response =
-            new String(Files.readAllBytes(Paths.get(getClass().getResource("/heroku/sample-exchange-grant-code-response.json").getPath())), "UTF-8");
+            new String(Files.readAllBytes(Paths.get(getClass().getResource("/heroku/sample-exchange-grant-code-response.json").getPath())),
+                       "UTF-8");
 
         givenThat(post("/oauth/token").willReturn(okJson(response)));
 
@@ -94,4 +102,30 @@ public class HerokuApiWrapperImplTest {
         assertThat(tokenResponse.getAccess_token(), is("2af695e0-93e3-4821-ac2e-95f68435f128"));
     }
 
+    @Test
+    public void should_get_app_details() throws IOException {
+        // given
+        String response =
+            new String(Files.readAllBytes(Paths.get(getClass().getResource("/heroku/sample-heroku-addons-response.json").getPath())),
+                       "UTF-8");
+
+        givenThat(get("/addons/some-external-id")
+                      .withHeader("Authorization", new EqualToPattern("Bearer some-access-token"))
+                      .withHeader("Accept", new EqualToPattern("application/vnd.heroku+json; version=3"))
+                      .willReturn(okJson(response)));
+
+        CustomerData customerData = CustomerData.builder()
+                                                .customerId(1L)
+                                                .customerName("some-name")
+                                                .source("heroku")
+                                                .externalId("some-external-id")
+                                                .pricePlan(PricePlan.of(PricePlanDefaults.DEMO))
+                                                .build();
+
+        // when
+        HerokuAppDetails appDetails = herokuApiWrapper.getAppDetails(customerData, "some-access-token");
+
+        // then
+        assertThat(appDetails, is(HerokuAppDetails.builder().appName("codekvast-demo1").contactEmail("contactEmail").build()));
+    }
 }

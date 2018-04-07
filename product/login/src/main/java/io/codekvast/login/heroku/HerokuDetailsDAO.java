@@ -57,5 +57,7 @@ public interface HerokuDetailsDAO {
 
     String getRefreshToken(Long customerId) throws CipherException;
 
+    String getCallbackUrl(Long customerId);
+
     void updateAccessToken(Long customerId, String accessToken, Instant expiresAt) throws CipherException;
 }

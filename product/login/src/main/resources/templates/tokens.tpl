@@ -6,9 +6,14 @@ layout '_layout.tpl', true,
         h1("$user.email")
 
         if (customerData) {
+            p("${customerData.customerName} has Heroku API details:")
             p {
-                yield "${customerData.customerName} has access token "
-                code(class: 'ml-2', "-H 'Authorization: Bearer $accessToken'")
+                yield "Callback URL:"
+                code(class: 'ml-3', callbackUrl)
+            }
+            p {
+                yield "Access token:"
+                code(class: 'ml-3', "-H 'Authorization: Bearer $accessToken'")
             }
             p {
                 a(href: 'javascript:window.history.back()', "Back")

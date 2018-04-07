@@ -108,6 +108,20 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public String getCallbackUrl(Long customerId) {
+        try {
+            String url = jdbcTemplate.queryForObject("SELECT callbackUrl FROM heroku_details WHERE customerId = ? ",
+                                                                String.class, customerId);
+            logger.debug("Retrieved the callback URl for customer {}", customerId);
+            return url;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            logger.debug("Found no callback URL for customer {}", customerId);
+            return null;
+        }
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateAccessToken(Long customerId, String accessToken, Instant expiresAt) throws CipherException {
         int updated = jdbcTemplate.update("UPDATE heroku_details SET accessToken = ? AND expiresAt = ? WHERE customerId = ?",
