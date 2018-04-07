@@ -93,23 +93,23 @@ public class HerokuApiWrapperImpl implements HerokuApiWrapper {
     }
 
     @Override
-    public HerokuAppDetails getAppDetails(CustomerData customerData, String accessToken) {
-        logger.debug("Getting Heroku app details for {}", customerData);
+    public HerokuAppDetails getAppDetails(String externalId, String accessToken) {
+        logger.debug("Getting Heroku app details for {}", externalId);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/vnd.heroku+json; version=3");
         headers.set("Authorization", "Bearer " + accessToken);
 
-        String url = String.format("%s/addons/%s", settings.getHerokuApiBaseUrl(), customerData.getExternalId());
+        String url = String.format("%s/addons/%s", settings.getHerokuApiBaseUrl(), externalId);
         ResponseEntity<String> json = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null, headers), String.class);
+        String appId = JsonPath.read(json.getBody(), "$.app.id");
         String appName = JsonPath.read(json.getBody(), "$.app.name");
 
-        // TODO get email
-        String contactEmail = "contactEmail";
+        url = String.format("%s/apps/%s", settings.getHerokuApiBaseUrl(), appId);
+        json = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null, headers), String.class);
 
-        return HerokuAppDetails.builder()
-                               .appName(appName)
-                               .contactEmail(contactEmail)
-                               .build();
+        String ownerEmail = JsonPath.read(json.getBody(), "$.owner.email");
+
+        return HerokuAppDetails.builder().appName(appName).ownerEmail(ownerEmail).build();
     }
 
     private String getOAuthTokenUrl() {

@@ -153,6 +153,15 @@ public interface CustomerService {
     List<CustomerData> getCustomerData();
 
     /**
+     * Update the app name and the contact email.
+     *
+     * @param appName      The new app name
+     * @param contactEmail the new contact email
+     * @param licenseKey   Identifies the customer
+     */
+    void updateAppDetails(String appName, String contactEmail, String licenseKey);
+
+    /**
      * Parameter object for {@link #addCustomer(AddCustomerRequest)}
      */
     @Value

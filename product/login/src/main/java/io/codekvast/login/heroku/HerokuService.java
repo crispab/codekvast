@@ -73,12 +73,4 @@ public interface HerokuService {
      * @return The callback URL.
      */
     String getCallbackUrlFor(Long customerId);
-
-    /**
-     * Fetch and store application details (name and contact email).
-     *
-     * @param customerId
-     * @throws CipherException
-     */
-    void fetchAppDetails(Long customerId) throws CipherException;
 }

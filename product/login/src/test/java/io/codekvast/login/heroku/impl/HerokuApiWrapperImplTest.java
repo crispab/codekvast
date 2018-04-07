@@ -66,9 +66,7 @@ public class HerokuApiWrapperImplTest {
     @Test
     public void should_exchange_authorization_code_grant() throws IOException {
         // given
-        String response =
-            new String(Files.readAllBytes(Paths.get(getClass().getResource("/heroku/sample-exchange-grant-code-response.json").getPath())),
-                       "UTF-8");
+        String response = readResource("/heroku/sample-exchange-grant-code-response.json");
 
         HerokuProvisionRequest.OAuthGrant grant = HerokuProvisionRequest.OAuthGrant
             .builder()
@@ -89,9 +87,7 @@ public class HerokuApiWrapperImplTest {
     @Test
     public void should_refresh_token() throws IOException {
         // given
-        String response =
-            new String(Files.readAllBytes(Paths.get(getClass().getResource("/heroku/sample-exchange-grant-code-response.json").getPath())),
-                       "UTF-8");
+        String response = readResource("/heroku/sample-exchange-grant-code-response.json");
 
         givenThat(post("/oauth/token").willReturn(okJson(response)));
 
@@ -105,27 +101,26 @@ public class HerokuApiWrapperImplTest {
     @Test
     public void should_get_app_details() throws IOException {
         // given
-        String response =
-            new String(Files.readAllBytes(Paths.get(getClass().getResource("/heroku/sample-heroku-addons-response.json").getPath())),
-                       "UTF-8");
-
         givenThat(get("/addons/some-external-id")
                       .withHeader("Authorization", new EqualToPattern("Bearer some-access-token"))
                       .withHeader("Accept", new EqualToPattern("application/vnd.heroku+json; version=3"))
-                      .willReturn(okJson(response)));
+                      .willReturn(okJson(readResource("/heroku/sample-heroku-addons-response.json"))));
 
-        CustomerData customerData = CustomerData.builder()
-                                                .customerId(1L)
-                                                .customerName("some-name")
-                                                .source("heroku")
-                                                .externalId("some-external-id")
-                                                .pricePlan(PricePlan.of(PricePlanDefaults.DEMO))
-                                                .build();
+        givenThat(get("/apps/some-app-id")
+                      .withHeader("Authorization", new EqualToPattern("Bearer some-access-token"))
+                      .withHeader("Accept", new EqualToPattern("application/vnd.heroku+json; version=3"))
+                      .willReturn(okJson(readResource("/heroku/sample-heroku-apps-response.json"))));
+
 
         // when
-        HerokuAppDetails appDetails = herokuApiWrapper.getAppDetails(customerData, "some-access-token");
+        HerokuAppDetails appDetails = herokuApiWrapper.getAppDetails("some-external-id", "some-access-token");
 
         // then
-        assertThat(appDetails, is(HerokuAppDetails.builder().appName("codekvast-demo1").contactEmail("contactEmail").build()));
+        assertThat(appDetails, is(HerokuAppDetails.builder().appName("some-app-name").ownerEmail("some-owner-email").build()));
+    }
+
+    private String readResource(String s) throws IOException {
+        return new String(Files.readAllBytes(Paths.get(getClass().getResource(s).getPath())),
+                          "UTF-8");
     }
 }

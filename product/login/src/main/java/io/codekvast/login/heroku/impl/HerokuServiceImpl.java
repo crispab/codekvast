@@ -21,7 +21,6 @@
  */
 package io.codekvast.login.heroku.impl;
 
-import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.CipherException;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
@@ -29,10 +28,7 @@ import io.codekvast.login.heroku.HerokuApiWrapper;
 import io.codekvast.login.heroku.HerokuDetailsDAO;
 import io.codekvast.login.heroku.HerokuException;
 import io.codekvast.login.heroku.HerokuService;
-import io.codekvast.login.heroku.model.HerokuChangePlanRequest;
-import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
-import io.codekvast.login.heroku.model.HerokuProvisionRequest;
-import io.codekvast.login.heroku.model.HerokuProvisionResponse;
+import io.codekvast.login.heroku.model.*;
 import io.codekvast.login.model.Roles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,10 +68,7 @@ public class HerokuServiceImpl implements HerokuService {
 
             String accessToken = exchangeOAuthGrant(request, licenseKey);
 
-            if (accessToken != null) {
-                // TODO: Fetch and store the Heroku application name
-                // TODO: Fetch and store the Heroku contact email
-            }
+            fetchAppDetails(request.getUuid(), accessToken, licenseKey);
 
             Map<String, String> config = new HashMap<>();
             config.put("CODEKVAST_URL", settings.getHerokuCodekvastUrl());
@@ -154,14 +147,13 @@ public class HerokuServiceImpl implements HerokuService {
         return herokuDetailsDAO.getCallbackUrl(customerId);
     }
 
-    @Override
-    public void fetchAppNameAndContactEmail(Long customerId) throws CipherException {
-        String accessToken = getAccessTokenFor(customerId);
+    private void fetchAppDetails(String externalId, String accessToken, String licenseKey) {
         if (accessToken == null) {
-            logger.info("Cannot get data for customer {} from Heroku, no access key", customerId);
+            logger.info("Cannot get application details for licenseKey {}", licenseKey);
             return;
         }
 
-        herokuApiWrapper.getAppDetails(customerService.getCustomerDataByCustomerId(customerId), accessToken);
+        HerokuAppDetails appDetails = herokuApiWrapper.getAppDetails(externalId, accessToken);
+        customerService.updateAppDetails(appDetails.getAppName(), appDetails.getOwnerEmail(), licenseKey);
     }
 }

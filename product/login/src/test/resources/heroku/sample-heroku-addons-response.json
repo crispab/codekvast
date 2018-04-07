@@ -16,8 +16,8 @@
     "name":"codekvast:test"
   },
   "app":{
-    "id":"6d175f06-195a-453e-83d6-66934a32ca71",
-    "name":"codekvast-demo1"
+    "id":"some-app-id",
+    "name":"some-app-name"
   },
   "provider_id":"5694320c-b99f-4361-874b-ebc112c5cf25",
   "state":"provisioned",

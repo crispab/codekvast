@@ -21,13 +21,13 @@
  */
 package io.codekvast.login.heroku;
 
-import io.codekvast.common.customer.CustomerData;
 import io.codekvast.login.heroku.model.HerokuAppDetails;
 import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 
 /**
  * Wrapper for the REST interface towards the Heroku Partner API.
+ *
  * @author olle.hallin@crisp.se
  */
 public interface HerokuApiWrapper {
@@ -36,7 +36,6 @@ public interface HerokuApiWrapper {
      * Exchange an authorization_code grant to an access token and refresh token.
      *
      * @param grant Is received in the Heroku provisioning request.
-     *
      * @return A HerokuOAuthTokenResponse object.
      */
     HerokuOAuthTokenResponse exchangeGrantCode(HerokuProvisionRequest.OAuthGrant grant);
@@ -45,16 +44,16 @@ public interface HerokuApiWrapper {
      * Refresh the access token by presenting the refreshToken.
      *
      * @param refreshToken The permanent refresh token.
-     *
      * @return A HerokuOAuthTokenResponse object.
      */
     HerokuOAuthTokenResponse refreshAccessToken(String refreshToken);
 
     /**
      * Retrieve Heroku app details for a certain app.
-     * @param customerData The customer data.
+     *
+     * @param externalId  The Heroku identity of a particular Codekvast addon
      * @param accessToken The OAuth bearer token.
      * @return A HerokuAppDetails object.
      */
-    HerokuAppDetails getAppDetails(CustomerData customerData, String accessToken);
+    HerokuAppDetails getAppDetails(String externalId, String accessToken);
 }

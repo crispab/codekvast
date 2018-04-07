@@ -309,6 +309,18 @@ public class CustomerServiceImpl implements CustomerService {
         return result;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateAppDetails(String appName, String contactEmail, String licenseKey) {
+        int count = jdbcTemplate.update("UPDATE customers SET name = ?, contactEmail = ? WHERE licenseKey = ? ",
+                            appName, contactEmail, licenseKey);
+        if (count > 0) {
+            logger.debug("Assigned appName='{}' for licenseKey {}", appName, licenseKey);
+        } else {
+            logger.warn("Could not assign appName='{}' for license key {}", appName, licenseKey);
+        }
+    }
+
     private void deleteFromTable(final String table, long customerId) {
         String column = table.equals("customers") ? "id" : "customerId";
         int count = jdbcTemplate.update("DELETE FROM " + table + " WHERE " + column + " = ?", customerId);
@@ -317,7 +329,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private CustomerData getCustomerData(String where_clause, java.io.Serializable identifier) {
         Map<String, Object> result = jdbcTemplate.queryForMap("SELECT " +
-                                                                  " c.id, c.externalId, c.name, c.source, c.plan, c.createdAt, c.collectionStartedAt, " +
+                                                                  " c.id, c.name, c.source, c.plan, c.createdAt, c.collectionStartedAt, " +
                                                                   "c.trialPeriodEndsAt, c.notes AS customerNotes, " +
                                                                   " pp.createdBy, pp.note AS pricePlanNote, pp.maxMethods, pp.maxNumberOfAgents, pp" +
                                                                   ".publishIntervalSeconds, pp.pollIntervalSeconds, " +
@@ -334,7 +346,6 @@ public class CustomerServiceImpl implements CustomerService {
 
         return CustomerData.builder()
                            .customerId((Long) result.get("id"))
-                           .externalId((String) result.get("externalId"))
                            .customerName((String) result.get("name"))
                            .source((String) result.get("source"))
                            .createdAt(createdAt.toInstant())
