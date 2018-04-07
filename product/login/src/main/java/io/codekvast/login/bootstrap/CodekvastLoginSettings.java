@@ -106,6 +106,11 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
     private String herokuCodekvastUrl;
 
     /**
+     * Where is the Heroku OAuth base URL?
+     */
+    private String herokuOAuthBaseUrl;
+
+    /**
      * Which password is Heroku using when invoking us?
      */
     private String herokuApiPassword;

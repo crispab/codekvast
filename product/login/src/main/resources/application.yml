@@ -11,6 +11,7 @@ codekvast:
     dashboardJwtExpirationHours: 168
     dashboardJwtSecret: secret
     dnsCname: localhost
+    herokuOAuthBaseUrl: https://id.heroku.com
     herokuApiPassword: herokuApiPassword
     herokuApiSsoSalt: herokuApiSsoSalt
     herokuCodekvastUrl: http://localhost:8080

@@ -33,7 +33,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author olle.hallin@crisp.se
@@ -44,7 +49,9 @@ import org.springframework.stereotype.Component;
 public class HerokuApiWrapperImpl implements HerokuApiWrapper {
 
     private final CodekvastLoginSettings settings;
-    private final RestTemplateBuilder restTemplateBuilder;
+    private final RestTemplate restTemplate = new RestTemplateBuilder()
+        .messageConverters(new FormHttpMessageConverter(),
+                           new GsonHttpMessageConverter()).build();
 
     @Override
     public HerokuOAuthTokenResponse exchangeGrantCode(HerokuProvisionRequest.OAuthGrant grant) {
@@ -53,15 +60,16 @@ public class HerokuApiWrapperImpl implements HerokuApiWrapper {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
-        bodyBuilder.part("grant_type", grant.getType());
-        bodyBuilder.part("code", grant.getCode());
-        bodyBuilder.part("client_secret", settings.getHerokuOAuthClientSecret());
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("grant_type", grant.getType());
+        form.add("code", grant.getCode());
+        form.add("client_secret", settings.getHerokuOAuthClientSecret());
 
         ResponseEntity<HerokuOAuthTokenResponse> responseEntity =
-            restTemplateBuilder.build().postForEntity("https://id.heroku.com/oauth/token",
-                                                      new HttpEntity<>(bodyBuilder.build(), headers),
-                                                      HerokuOAuthTokenResponse.class);
+            restTemplate.postForEntity(
+                String.format("%s/oauth/token", settings.getHerokuOAuthBaseUrl()),
+                new HttpEntity<>(form, headers),
+                HerokuOAuthTokenResponse.class);
         HerokuOAuthTokenResponse response = responseEntity.getBody();
         logger.info("Received {}", response);
         return response;

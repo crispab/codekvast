@@ -22,6 +22,8 @@ dependencies {
 
     runtime project(':product:db-migration')
     runtime 'org.codehaus.groovy:groovy-templates:2.4.15'
+
+    testCompile "com.github.tomakehurst:wiremock:2.16.0"
 }
 
 run {
