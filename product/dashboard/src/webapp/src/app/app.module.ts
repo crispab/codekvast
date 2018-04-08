@@ -17,7 +17,7 @@ import {LOCALE_ID, NgModule} from '@angular/core';
 import {MethodDetailComponent} from './pages/methods/method-detail.component';
 import {MethodsComponent} from './pages/methods/methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {NotLoggedInComponent} from './pages/auth/not-logged-in.component'
+import {NotLoggedInComponent} from './pages/auth/not-logged-in.component';
 import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
 import {SettingsComponent} from './components/settings-editor.component';
 import {StateService} from './services/state.service';

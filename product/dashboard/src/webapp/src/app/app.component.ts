@@ -106,7 +106,7 @@ export class AppComponent implements OnInit {
             'integration-menu-heroku': this.stateService.isLoggedIn() && this.showHerokuIntegrationMenu,
             'native-login-menu': this.stateService.isLoggedIn() && !this.showHerokuIntegrationMenu,
             container: true
-        }
+        };
     }
 
     logout() {
