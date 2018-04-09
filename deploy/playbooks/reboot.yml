@@ -6,6 +6,7 @@
   hosts: all
   user: ubuntu
   become: yes
+  gather_facts: no
 
   tasks:
   - name: Check confirmation
