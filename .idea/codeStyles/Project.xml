@@ -27,6 +27,7 @@
     </SqlCodeStyleSettings>
     <TypeScriptCodeStyleSettings>
       <option name="USE_DOUBLE_QUOTES" value="false" />
+      <option name="FORCE_QUOTE_STYlE" value="true" />
       <option name="OBJECT_LITERAL_WRAP" value="2" />
       <option name="USE_CHAINED_CALLS_GROUP_INDENTS" value="true" />
     </TypeScriptCodeStyleSettings>
@@ -323,6 +324,7 @@
       <option name="ALIGN_GROUP_FIELD_DECLARATIONS" value="true" />
     </codeStyleSettings>
     <codeStyleSettings language="TypeScript">
+      <option name="RIGHT_MARGIN" value="140" />
       <option name="KEEP_LINE_BREAKS" value="false" />
       <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
       <option name="ALIGN_MULTILINE_EXTENDS_LIST" value="true" />
