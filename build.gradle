@@ -38,7 +38,10 @@ subprojects {
     ext.gitTimeIso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date(gitHead.time * 1000L))
     ext.codekvastDisplayVersion = "${codekvastVersion}-${gitId}".toString()
 
-    repositories { jcenter() }
+    repositories {
+        jcenter()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    }
 
     tasks.withType(JavaCompile) {
         options.incremental = true

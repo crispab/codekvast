@@ -54,6 +54,12 @@ server:
     use-forward-headers: true
 
 spring:
+    boot:
+        admin:
+            client:
+                url: http://localhost:8083
+                instance:
+                  name: codekvast-login
     datasource:
         hikari:
             connection-test-query: SELECT 1 FROM DUAL

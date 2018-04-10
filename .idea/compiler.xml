@@ -5,6 +5,8 @@
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="admin_main" target="1.8" />
+      <module name="admin_test" target="1.8" />
       <module name="agent-model_main" target="1.7" />
       <module name="agent-model_test" target="1.7" />
       <module name="common_integrationTest" target="1.8" />
