@@ -78,7 +78,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
                     return resolvedVersion;
                 }
             } catch (Exception e) {
-                logger.severe("Cannot open " + jarUri + ": " + e);
+                logger.info("Cannot open " + jarUri + ": " + e);
             } finally {
                 if (jarFile != null) {
                     try {
@@ -88,7 +88,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
                 }
             }
         }
-        logger.severe(String.format("Cannot resolve %s!/META-INF/MANIFEST.MF:%s", jarUri, manifestAttribute));
+        logger.info(String.format("Cannot resolve %s!/META-INF/MANIFEST.MF:%s", jarUri, manifestAttribute));
         return UNKNOWN_VERSION;
     }
 
@@ -124,7 +124,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
 
     private URL search(File dir, String regex) throws MalformedURLException {
         if (!dir.isDirectory()) {
-            logger.warning(dir + " is not a directory");
+            logger.info(dir + " is not a directory");
             return null;
         }
 

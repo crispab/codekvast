@@ -133,7 +133,7 @@ public class CodekvastAgent {
         Runtime.getRuntime().addShutdownHook(new MyShutdownHook());
 
         logger.info(String.format("%s is ready to detect used code in %s %s within %s.", NAME, config.getAppName(),
-                               config.getResolvedAppVersion(), getPrettyPackages(config)));
+                                  config.getResolvedAppVersion(), getPrettyPackages(config)));
     }
 
     private static String getPrettyPackages(AgentConfig config) {

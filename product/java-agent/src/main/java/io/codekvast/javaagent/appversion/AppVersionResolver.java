@@ -56,8 +56,11 @@ public class AppVersionResolver {
             }
         }
 
-        logger.info(String.format("Cannot resolve appVersion '%s', using it as-is", version));
+        logger.info(String.format("Don't know how to resolve appVersion '%s', using it as-is", version));
         return version;
     }
 
+    public static boolean isUnresolved(String appVersion) {
+        return appVersion == null || appVersion.equals(AppVersionStrategy.UNKNOWN_VERSION);
+    }
 }

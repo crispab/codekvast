@@ -23,6 +23,7 @@ package io.codekvast.javaagent.scheduler;
 
 import io.codekvast.javaagent.CodekvastThreadFactory;
 import io.codekvast.javaagent.InvocationRegistry;
+import io.codekvast.javaagent.appversion.AppVersionResolver;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
@@ -34,6 +35,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
+import java.io.File;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -56,6 +58,8 @@ public class Scheduler implements Runnable {
     private final SystemClock systemClock;
 
     // Mutable state
+    long stopWaitingForResolvedAppVersionAtMillis;
+
     private GetConfigResponse1 dynamicConfig;
     private final SchedulerState pollState;
 
@@ -99,6 +103,8 @@ public class Scheduler implements Runnable {
      * @return this
      */
     public Scheduler start() {
+        stopWaitingForResolvedAppVersionAtMillis = System.currentTimeMillis() + 120_000L;
+
         executor
             .scheduleAtFixedRate(this, config.getSchedulerInitialDelayMillis(), config.getSchedulerIntervalMillis(), TimeUnit.MILLISECONDS);
         logger.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
@@ -141,6 +147,19 @@ public class Scheduler implements Runnable {
                 return;
             }
 
+            if (!resolvedAndReady()) {
+                if (System.currentTimeMillis() < stopWaitingForResolvedAppVersionAtMillis) {
+                    return;
+                }
+
+                if (stopWaitingForResolvedAppVersionAtMillis > 0L) {
+                    logger.warning(String.format("Codekvast is not ready, check codeBase='%s' and appVersion='%s' in %s.",
+                                                 config.getCodeBase(), config.getAppVersion(), "codekvast.conf"));
+                    // log warning only once
+                    stopWaitingForResolvedAppVersionAtMillis = -1L;
+                }
+            }
+
             try {
                 pollDynamicConfigIfNeeded();
                 publishCodeBaseIfNeeded();
@@ -150,6 +169,22 @@ public class Scheduler implements Runnable {
                 System.err.println("Codekvast scheduler failure: " + t);
             }
         }
+    }
+
+    private boolean resolvedAndReady() {
+        for (File file : config.getCodeBaseFiles()) {
+            if (!file.exists()) {
+                logger.fine("Codebase file " + file + " does not exist");
+                return false;
+            }
+        }
+
+        if (AppVersionResolver.isUnresolved(config.getResolvedAppVersion())) {
+            logger.fine(String.format("appVersion='%s' has not resolved", config.getAppVersion()));
+            return false;
+        }
+
+        return true;
     }
 
     private void pollDynamicConfigIfNeeded() {

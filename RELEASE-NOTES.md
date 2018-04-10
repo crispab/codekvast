@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.23.3
+1. codekvast-agent.jar now waits for a war to be exploded before trying to resolve the app version
+
 ## 0.23.2
 1. Dashboard: Added ability to filter on applications and environments in Search Methods.
 2. Dashboard: Added ability to delete terminated agents.
