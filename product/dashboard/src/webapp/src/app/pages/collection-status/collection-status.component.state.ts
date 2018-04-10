@@ -124,13 +124,13 @@ export class CollectionStatusComponentState {
         return null;
     }
 
-    selectOrUnselectAllAgents() {
-        if (this.data.agents) {
+    selectOrUnselectAllFilteredTerminatedAgents() {
+        if (this.getFilteredAgents()) {
             if (this.autoRefresh) {
                 this.toggleAutoRefresh();
             }
-            this.data.agents.forEach(
-                a => a.selected = this.selectAllTerminatedAgents && !a.agentAlive && isNullOrUndefined(a.deletionState))
+            this.getFilteredAgents()
+                .forEach(a => a.selected = this.selectAllTerminatedAgents && !a.agentAlive && isNullOrUndefined(a.deletionState));
         }
     }
 
