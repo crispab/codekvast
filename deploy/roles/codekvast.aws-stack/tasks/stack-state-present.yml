@@ -85,6 +85,10 @@
     - proto: tcp
       from_port: 9080
       to_port: 9080
+      group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
+    - proto: tcp
+      from_port: 9080
+      to_port: 9080
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
     - proto: tcp
       from_port: 9081
