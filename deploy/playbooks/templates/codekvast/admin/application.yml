@@ -15,3 +15,4 @@ spring.mail:
     username: "{{ spring.mail.username }}"
     password: "{{ spring.mail.password }}"
     test-connection: true
+spring.boot.admin.notify.mail.from: "Codekvast Admin [{{ env }}] <noreply@localhost>"
