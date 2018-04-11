@@ -13,51 +13,40 @@ codekvast:
 
 logging:
     file: /var/log/codekvast/application.log
-    level:
-        io:
-            codekvast: DEBUG
-    pattern:
-        level: "{{ ec2_tag_CNAME1.split('.', 1)[0] }} %5p"
+    level.io.codekvast: DEBUG
+    pattern.level: "{{ ec2_tag_CNAME1.split('.', 1)[0] }} %5p"
 
-management:
-    server:
-        port: "{{ management_port }}"
+management.server.port: "{{ management_port }}"
 
 server:
     port: "{{ service_port }}"
-    servlet:
-        session:
-            cookie:
-                name: "{{ settings.session.cookie.name }}"
-    undertow:
-        accesslog:
-            dir: /var/log/codekvast/
-            prefix: access.
+    servlet.session.cookie.name: "{{ settings.session.cookie.name }}"
+    undertow.accesslog:
+        dir: /var/log/codekvast/
+        prefix: access.
 spring:
     boot.admin.client:
         url: "http://{{ database_dns_names[0] }}:8080"
         instance:
-            management-base-url: "http://{{ ec2_tag_CNAME }}:{{ management_port }}"
+#            management-base-url: "http://{{ ec2_tag_CNAME }}:{{ management_port }}"
             service-base-url: "http://{{ ec2_tag_CNAME }}:{{ service_port }}"
     datasource:
         password: "{{ mysql_application_password }}"
         url: "jdbc:mariadb://{{ database_dns_names[0] }}/codekvast"
-    security:
-        oauth2:
-          client:
-            registration:
-              facebook:
+    security.oauth2.client:
+        registration:
+            facebook:
                 client-id: "{{ facebook.oauth[env].clientId }}"
                 client-secret: "{{ facebook.oauth[env].clientSecret }}"
                 client-scope: email
-              github:
+            github:
                 client-id: "{{ github.oauth[env].clientId }}"
                 client-secret: "{{ github.oauth[env].clientSecret }}"
                 client-scope: email
-              google:
+            google:
                 client-id: "{{ google.oauth[env].clientId }}"
                 client-secret: "{{ google.oauth[env].clientSecret }}"
                 client-scope: email
-            provider:
-              facebook:
+        provider:
+            facebook:
                 user-info-uri: https://graph.facebook.com/me?fields=id,name,email
