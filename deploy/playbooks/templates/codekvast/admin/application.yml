@@ -1,0 +1,27 @@
+logging:
+    file: /var/log/codekvast/application.log
+    level:
+        io:
+            codekvast: DEBUG
+    pattern:
+        level: "admin %5p"
+
+management:
+    server:
+        port: "{{ management_port }}"
+
+server:
+    port: "{{ service_port }}"
+    servlet:
+        session:
+            cookie:
+                name: "{{ settings.session.cookie.name }}"
+    undertow:
+        accesslog:
+            dir: /var/log/codekvast/
+            prefix: access.
+spring:
+    mail:
+        username: "{{ spring.mail.username }}"
+        password: "{{ spring.mail.password }}"
+        test-connection: true

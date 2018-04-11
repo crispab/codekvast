@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers("/heroku/**", "/launch/**", LOGOUT_URL)
+                .ignoringAntMatchers("/heroku/**", "/management/**", "/launch/**", LOGOUT_URL)
             .and()
                 .sessionManagement().sessionCreationPolicy(IF_REQUIRED)
             .and()
@@ -72,7 +72,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl("/")
             .and()
                 .authorizeRequests()
-                .antMatchers("/favicon.ico", "/robots.txt", "/actuator/**", "/assets/**", "/heroku/**", LOGIN_URL).permitAll()
+                .antMatchers("/favicon.ico", "/robots.txt", "/management/**", "/assets/**", "/heroku/**", LOGIN_URL).permitAll()
                 .antMatchers("/tokens**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             .and()

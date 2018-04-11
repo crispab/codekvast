@@ -1,2 +1,33 @@
 server:
-    port: 8083
+    port: 8082
+
+management:
+    endpoints:
+        jmx.domain: CodekvastAdmin
+        web.base-path: /management
+    server:
+        port: 9082
+        servlet.context-path: /
+spring:
+    mail:
+        host: smtp.gmail.com
+        port: 465
+        username: some-username
+        password: some-password
+        test-connection: false
+        properties.mail.smtp:
+            auth: true
+            starttls:
+                enable: true
+                required: true
+            ssl.enable: true
+
+spring.boot.admin.notify:
+    mail:
+        to: 'codekvast-support@hit.se'
+        from: "Codekvast Admin <noreply@localhost>"
+    slack:
+        enabled: true
+        webhook-url: 'https://hooks.slack.com/services/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'
+        channel: alarms
+

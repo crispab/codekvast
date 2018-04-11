@@ -24,19 +24,16 @@ codekvast:
 logging:
     file: build/log/login.log
     level:
-        io:
-            codekvast: DEBUG
+        io.codekvast: DEBUG
 
 management:
     endpoints:
-        jmx:
-            domain: CodekvastLogin
-        web:
-          base-path: /actuator
+        jmx.domain: CodekvastLogin
+        web.base-path: /management
     server:
         port: 9080
-        servlet:
-            context-path: /
+        servlet.context-path: /
+
 server:
     port: 8080
     servlet:
@@ -54,12 +51,11 @@ server:
     use-forward-headers: true
 
 spring:
-    boot:
-        admin:
-            client:
-                url: http://localhost:8083
-                instance:
-                  name: codekvast-login
+    application.name: Codekvast Login
+    boot.admin.client:
+        url: http://localhost:8082
+        auto-registration: true
+        auto-deregistration: false
     datasource:
         hikari:
             connection-test-query: SELECT 1 FROM DUAL
@@ -69,15 +65,10 @@ spring:
     flyway:
         table: schema_version
         validate-on-migrate: false
-    groovy:
-        template:
-            suffix: .tpl
-            configuration:
-              auto-new-line: true
-              auto-indent: true
-    http:
-        converters:
-            preferred-json-mapper: gson
-    output:
-        ansi:
-            enabled: detect
+    groovy.template:
+        suffix: .tpl
+        configuration:
+            auto-new-line: true
+            auto-indent: true
+    http.converters.preferred-json-mapper: gson
+    output.ansi.enabled: detect

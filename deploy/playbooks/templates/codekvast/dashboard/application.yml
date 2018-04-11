@@ -16,7 +16,7 @@ logging:
         level: "{{ ec2_tag_CNAME0.split('.', 1)[0] }} %5p"
 management:
     server:
-        port: "{{ management_server_port }}"
+        port: "{{ management_port }}"
 server:
     port: "{{ service_port }}"
     servlet:
@@ -28,6 +28,11 @@ server:
             dir: /var/log/codekvast/
             prefix: access.
 spring:
+    boot.admin.client:
+        url: "http://{{ database_dns_names[0] }}:8080"
+        instance:
+            management-base-url: "http://{{ ec2_tag_CNAME }}:{{ management_port }}"
+            service-base-url: "http://{{ ec2_tag_CNAME }}:{{ service_port }}"
     datasource:
         password: "{{ mysql_application_password }}"
         url: "jdbc:mariadb://{{ database_dns_names[0] }}/codekvast"

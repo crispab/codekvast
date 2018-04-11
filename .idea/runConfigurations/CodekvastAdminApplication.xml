@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CodekvastAdminApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="admin_main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.admin.CodekvastAdminApplication" />
+    <option name="ACTIVE_PROFILES" value="dev-secrets" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method />
+  </configuration>
+</component>

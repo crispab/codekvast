@@ -7,10 +7,13 @@ aws_stacks:
 - {customer: default, env: staging, cidr_base: "10.1", state: present, app_cnames: ['api-staging', 'login-staging', 'dashboard-staging'], db_cname: 'db-staging', backend_count: 2}
 
 ports:
+  login:
+    service: 8080
+    management: 9080
   dashboard:
     service: 8081
     management: 9081
-  login:
+  admin:
     service: 8080
     management: 9080
 
