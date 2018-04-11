@@ -15,4 +15,8 @@ spring.mail:
     username: "{{ spring.mail.username }}"
     password: "{{ spring.mail.password }}"
     test-connection: true
-spring.boot.admin.notify.mail.from: "Codekvast Admin [{{ env }}] <noreply@localhost>"
+spring.boot.admin.notify:
+    mail:
+        from: "Codekvast Admin [{{ env }}] <noreply@localhost>"
+        subject: "[{{ env }}] #{application.name} (#{application.id}) is #{to.status}"
+    slack.message: "[{{ env }}] *#{application.name}* (#{application.id}) is *#{to.status}*"
