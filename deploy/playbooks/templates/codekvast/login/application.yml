@@ -28,7 +28,7 @@ spring:
     boot.admin.client:
         url: "http://{{ database_dns_names[0] }}:8080"
         instance:
-#            management-base-url: "http://{{ ec2_tag_CNAME }}:{{ management_port }}"
+            management-base-url: "http://{{ ec2_tag_CNAME }}:{{ management_port }}"
             service-base-url: "http://{{ ec2_tag_CNAME }}:{{ service_port }}"
     datasource:
         password: "{{ mysql_application_password }}"

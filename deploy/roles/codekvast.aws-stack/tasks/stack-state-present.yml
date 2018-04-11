@@ -60,12 +60,9 @@
     description: "Codekvast internet-facing security group"
     rules:
     - proto: tcp
-      from_port: 80
-      to_port: 80
-      cidr_ip: 0.0.0.0/0
-    - proto: tcp
-      from_port: 443
-      to_port: 443
+      ports:
+      - 80
+      - 443
       cidr_ip: 0.0.0.0/0
 
 - name: Create backend security group
@@ -79,21 +76,18 @@
     description: "Codekvast backend access"
     rules:
     - proto: tcp
-      from_port: 80
-      to_port: 80
+      ports:
+      - 80
+      - 9080
+      - 9081
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
+      group_desc: "Codekvast internet-facing security group"
     - proto: tcp
-      from_port: 9080
-      to_port: 9080
-      group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
-    - proto: tcp
-      from_port: 9080
-      to_port: 9080
+      ports:
+      - 9080
+      - 9081
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
-    - proto: tcp
-      from_port: 9081
-      to_port: 9081
-      group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
+      group_desc: "Codekvast management access"
 
 - name: Create database security group
   local_action:
@@ -106,9 +100,10 @@
     description: "Codekvast database access"
     rules:
     - proto: tcp
-      from_port: 3306
-      to_port: 3306
+      ports:
+      - 3306
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
+      group_desc: "Codekvast backend access"
 
 - name: Create admin security group
   local_action:
@@ -118,12 +113,13 @@
     vpc_id: "{{ vpc_id }}"
     state: "{{ stack.state }}"
     name: "codekvast-{{ stack.customer }}-{{ stack.env }}-admin"
-    description: "Codekvast database access"
+    description: "Codekvast Admin access"
     rules:
     - proto: tcp
-      from_port: 8080
-      to_port: 8080
+      ports:
+      - 8080
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
+      group_desc: "Codekvast backend access"
 
 - name: curl http://whatismyip.akamai.com/
   uri:
@@ -144,28 +140,13 @@
     purge_rules: false
     rules:
     - proto: tcp
-      from_port: 22
-      to_port: 22
-      cidr_ip: "{{ my_ip.content }}/32"
-    - proto: tcp
-      from_port: 3306
-      to_port: 3306
-      cidr_ip: "{{ my_ip.content }}/32"
-    - proto: tcp
-      from_port: 8080
-      to_port: 8080
-      cidr_ip: "{{ my_ip.content }}/32"
-    - proto: tcp
-      from_port: 8081
-      to_port: 8081
-      cidr_ip: "{{ my_ip.content }}/32"
-    - proto: tcp
-      from_port: 9080
-      to_port: 9080
-      cidr_ip: "{{ my_ip.content }}/32"
-    - proto: tcp
-      from_port: 9081
-      to_port: 9081
+      ports:
+      - 22
+      - 3306
+      - 8080
+      - 8081
+      - 9080
+      - 9081
       cidr_ip: "{{ my_ip.content }}/32"
 
 - set_fact:
