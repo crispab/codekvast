@@ -35,16 +35,11 @@ export class DashboardApiService {
     }
 
     getMethodById(id: number): Observable<Method> {
-        const url = this.constructGetMethodByIdUrl(id);
-        return this.http.get<Method>(url);
+        return this.http.get<Method>(this.METHOD_BY_ID_URL + id);
     }
 
     getStatus(): Observable<StatusData> {
         return this.http.get<StatusData>(this.STATUS_URL);
-    }
-
-    constructGetMethodByIdUrl(id: number) {
-        return this.METHOD_BY_ID_URL + id;
     }
 
     getServerSettings() {
