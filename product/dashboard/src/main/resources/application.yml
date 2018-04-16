@@ -29,7 +29,9 @@ logging:
 management:
     endpoints:
         jmx.domain: CodekvastDashboard
-        web.base-path: /management
+        web:
+            base-path: /management
+            exposure.include: '*'
     server:
         port: 9081
         servlet.context-path: /

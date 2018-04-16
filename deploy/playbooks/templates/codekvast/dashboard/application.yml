@@ -12,7 +12,12 @@ logging:
     level.io.codekvast: DEBUG
     pattern.level: "{{ ec2_tag_CNAME0.split('.', 1)[0] }} %5p"
 
-management.server.port: "{{ management_port }}"
+management:
+    server.port: "{{ management_port }}"
+    endpoint:
+        beans.enabled: false
+        conditions.enabled: false
+        mappings.enabled: false
 
 server:
     port: "{{ service_port }}"

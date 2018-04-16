@@ -3,7 +3,12 @@ logging:
     level.io.codekvast: DEBUG
     pattern.level: "admin %5p"
 
-management.server.port: "{{ management_port }}"
+management:
+    server.port: "{{ management_port }}"
+    endpoint:
+        beans.enabled: false
+        conditions.enabled: false
+        mappings.enabled: false
 
 server:
     port: "{{ service_port }}"
@@ -11,12 +16,14 @@ server:
     undertow.accesslog:
         dir: /var/log/codekvast/
         prefix: access.
-spring.mail:
-    username: "{{ spring.mail.username }}"
-    password: "{{ spring.mail.password }}"
-    test-connection: true
-spring.boot.admin.notify:
+
+spring:
     mail:
-        from: "Codekvast Admin [{{ env }}] <noreply@localhost>"
-        subject: "[{{ env }}] #{application.name} (#{application.id}) is #{to.status}"
-    slack.message: "[{{ env }}] *#{application.name}* (#{application.id}) is *#{to.status}*"
+        username: "{{ spring.mail.username }}"
+        password: "{{ spring.mail.password }}"
+        test-connection: true
+    boot.admin.notify:
+        mail:
+            from: "Codekvast Admin [{{ env }}] <noreply@localhost>"
+            subject: "[{{ env }}] #{application.name} (#{application.id}) is #{to.status}"
+        slack.message: "[{{ env }}] *#{application.name}* (#{application.id}) is *#{to.status}*"

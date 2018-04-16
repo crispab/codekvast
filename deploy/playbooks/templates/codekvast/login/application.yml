@@ -16,7 +16,12 @@ logging:
     level.io.codekvast: DEBUG
     pattern.level: "{{ ec2_tag_CNAME1.split('.', 1)[0] }} %5p"
 
-management.server.port: "{{ management_port }}"
+management:
+    server.port: "{{ management_port }}"
+    endpoint:
+        beans.enabled: false
+        conditions.enabled: false
+        mappings.enabled: false
 
 server:
     port: "{{ service_port }}"
@@ -24,6 +29,7 @@ server:
     undertow.accesslog:
         dir: /var/log/codekvast/
         prefix: access.
+
 spring:
     boot.admin.client:
         url: "http://{{ database_dns_names[0] }}:8080"
@@ -33,6 +39,7 @@ spring:
     datasource:
         password: "{{ mysql_application_password }}"
         url: "jdbc:mariadb://{{ database_dns_names[0] }}/codekvast"
+
     security.oauth2.client:
         registration:
             facebook:
