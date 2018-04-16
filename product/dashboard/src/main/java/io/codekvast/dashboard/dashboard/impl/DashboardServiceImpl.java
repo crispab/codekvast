@@ -66,17 +66,10 @@ public class DashboardServiceImpl implements DashboardService {
     private static final Pattern SYNTHETIC_SIGNATURE_PATTERN;
 
     static {
-        // Signatures that
-        //
-        // Contains two consecutive dots
-        // Contains two consecutive dollar signs
-        // Contains two dollar signs separated by one or more word characters
-        // ends with a method name in only upper case letters
-        // ends with ".()"
-        // ends with dollar and one or more lower case characters
-
+        // TODO: Make this database driven
+        // See io.codekvast.dashboard.dashboard.impl.DashboardServiceImplSyntheticSignatureTest
         SYNTHETIC_SIGNATURE_PATTERN = Pattern.compile(
-            ".*(\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\$[a-z]+\\(\\)$)");
+            ".*(\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\$[a-z]+\\(\\)$|\\.\\.anonfun\\..*|\\.\\.(Enhancer|FastClass)BySpringCGLIB\\.\\..*)");
     }
 
     private final JdbcTemplate jdbcTemplate;
@@ -105,7 +98,8 @@ public class DashboardServiceImpl implements DashboardService {
         params.addValue("signature", request.getNormalizedSignature());
         whereClause += "m.signature LIKE :signature ";
 
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(whereClause);
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(whereClause,
+                                                                                                       request.isSuppressSyntheticMethods());
 
 
         namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
@@ -150,7 +144,7 @@ public class DashboardServiceImpl implements DashboardService {
         params.addValue("customerId", customerIdProvider.getCustomerId());
         params.addValue("methodId", methodId);
 
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = :methodId");
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = :methodId", false);
 
         namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
 
@@ -300,6 +294,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
         private final String whereClause;
+        private final boolean suppressSyntheticMethods;
+
         private final List<MethodDescriptor> result = new ArrayList<>();
 
         private QueryState queryState;
@@ -307,8 +303,9 @@ public class DashboardServiceImpl implements DashboardService {
         @Getter
         private int rowCount;
 
-        private MethodDescriptorRowCallbackHandler(String whereClause) {
+        private MethodDescriptorRowCallbackHandler(String whereClause, boolean suppressSyntheticMethods) {
             this.whereClause = whereClause;
+            this.suppressSyntheticMethods = suppressSyntheticMethods;
             queryState = new QueryState(-1L);
         }
 
@@ -337,9 +334,17 @@ public class DashboardServiceImpl implements DashboardService {
         public void processRow(ResultSet rs) throws SQLException {
             this.rowCount += 1;
 
-            long id = rs.getLong("methodId");
             String signature = rs.getString("signature");
+            boolean bridge = rs.getBoolean("bridge");
+            boolean synthetic = rs.getBoolean("synthetic");
 
+            // Throw away unwanted synthetic signatures as early as possible
+            if (suppressSyntheticMethods && (bridge || synthetic || isSyntheticMethod(signature))) {
+                logger.trace("Throwing away synthetic method: {}", signature);
+                return;
+            }
+
+            long id = rs.getLong("methodId");
             if (!queryState.isSameMethod(id)) {
                 // The query is sorted on methodId
                 logger.trace("Found method {}:{}", id, signature);
@@ -380,8 +385,8 @@ public class DashboardServiceImpl implements DashboardService {
                    .packageName(rs.getString("packageName"))
                    .signature(signature)
                    .visibility(rs.getString("visibility"))
-                   .bridge(rs.getBoolean("bridge"))
-                   .synthetic(rs.getBoolean("synthetic"));
+                   .bridge(bridge)
+                   .synthetic(synthetic);
         }
 
         private Set<String> splitOnCommaOrSemicolon(String tags) {
@@ -398,11 +403,7 @@ public class DashboardServiceImpl implements DashboardService {
 
                 boolean keep = true;
 
-                if (request.isSuppressSyntheticMethods() && (md.getBridge() || md.getSynthetic() || isSyntheticMethod(md.getSignature()))) {
-                    logger.trace("Throwing away synthetic method: {}", md);
-                    keep = false;
-                }
-                if (keep && request.isSuppressUntrackedMethods() && md.getStatuses().stream().anyMatch(s -> !s.isTracked())) {
+                if (request.isSuppressUntrackedMethods() && md.getStatuses().stream().anyMatch(s -> !s.isTracked())) {
                     logger.trace("Throwing away untracked method: {}", md);
                     keep = false;
                 }

@@ -49,6 +49,8 @@ import org.springframework.web.client.RestTemplate;
 public class HerokuApiWrapperImpl implements HerokuApiWrapper {
 
     private final CodekvastLoginSettings settings;
+
+    // TODO inject the RestTemplateBuilder to get metrics
     private final RestTemplate restTemplate = new RestTemplateBuilder()
         .messageConverters(new FormHttpMessageConverter(),
                            new StringHttpMessageConverter(),
