@@ -1,9 +1,12 @@
 # Codekvast Release Notes
 
 ## 0.23.3
+
 1. codekvast-agent.jar now waits for a war to be exploded before trying to resolve the app version
+2. Fixed open file leak in AgentServiceImpl. Now the uploaded file's input stream is closed in a try-finally block.
 
 ## 0.23.2
+
 1. Dashboard: Added ability to filter on applications and environments in Search Methods.
 2. Dashboard: Added ability to delete terminated agents.
 3. Agent: codekvast.conf: Added support for appVersion strategy "properties /path/to/file prop1,prop2"
@@ -11,14 +14,17 @@
 5. Upgraded to spring Boot 2.0.1
 
 ## 0.23.1
+
 1. Database schema changes: applications, environments, jvms, invocations.
 1. Added popovers.
 1. Upgraded to Flyway 5.0.7
 
 ## 0.23.0
+
 1. Upgraded to Spring Boot 2, Spring Framework 5, Spring Security 5, Flyway 4.2.0.
 
 ## 0.22.5
+
 1. Implemented login service.
 1. Upgraded to Gradle 4.6
 1. Upgraded dependencies
@@ -26,6 +32,7 @@
 1. Renamed provisioning/ to deploy/
 
 ## 0.22.4
+
 1. Started implementing new login service.
 1. Upgraded Java dependencies: jslack 1.0.25, wiremock 2.15.0, Kotlin 1.2.21
 1. Dashboard: Upgraded JavaScript dependencies: angular 5.2.5, zone.js 0.8.20, rxjs 5.5.6, typescript 2.7.2 (+ some test deps)
@@ -35,29 +42,35 @@
 1. Upgraded to Gradle 4.5
 
 ## 0.22.3
+
 1. Dashboard: the method details table to right is now optional.
 1. Dashboard: method details does not show hosts if more than 10.
 1. Java Agent: downgraded third-party dependencies so that it works in Java 7 again.
 
 ## 0.22.2
+
 1. Dashboard: added more search filters in the Methods page
 
 ## 0.22.1
+
 1. Upgraded to Angular 5.1.1, Typescript 2.6.1, aspectjweaver 1.8.12
 1. Upgraded to Spring Boot 1.5.9
 1. Upgraded to Gradle 4.4
 1. Fixed bug caused by renaming classes in agent-model
 
 ## 0.22.0
+
 1. Moved codebase analysis from agent to server. Now all discovered methods are uploaded to the server, no matter the name pattern.
 
 ## 0.21.6
+
 1. Upgraded to Angular 4.4.4, Typescript 3.5.3.
 1. Upgraded to aspectjweaver 1.8.11.
 1. Upgraded to Spring Boot 1.5.8
 1. Renamed Codekvast Warehouse to Codekvast Dashboard.
 
 ## 0.21.5
+
 1. Added Boot-Class-Path to codekvast-agent's MANIFEST.MF (eliminates the need for -Xbootclasspath/a:codekvast-agent-x.x.jar)
 1. Improved handling of communication failures in Codekvast Warehouse.
 1. Added support for trial periods.
@@ -69,6 +82,7 @@
 1. Added Slack integration in CustomerServiceImpl.
 
 ## 0.21.4
+
 1. Implemented Status page in Codekvast Warehouse.
 1. Upgraded to Angular 4.3.2.
 1. Upgraded to Spring Boot 1.5.6, Jackson 2.9.0.
@@ -77,6 +91,7 @@
 1. Codekvast Agent avoids publishing empty invocation sets.
 
 ## 0.21.3
+
 1. Upgraded to Angular 4.2.4 and Webpack 3.0.0
 1. Added column users.lastActivityAt
 1. Now redirects to /logged-out after webapp session has expired
@@ -85,30 +100,38 @@
 1. Bug fix: the first invocation data is now uploaded very soon after start
 
 ## 0.21.2
+
 1. Added support for Spring Boot executable jars
 1. Upgraded to Angular 4.2.2
 
 ## 0.21.1
-1. Removed support for building a Docker image for Codekvast Warehouse. 
+
+1. Removed support for building a Docker image for Codekvast Warehouse.
 1. Adjusted logging to make it easier do document what to look for when starting the agent.
 
 ## 0.21.0
+
 1. Implemented price plan enforcements.
 1. **NOTE:** Backwards incompatible API change in AgentController.
 
 ## 0.20.3
+
 1. Fixed a OkHttp Response leak in java-agent
 
 ## 0.20.2
+
 1. Made Heroku add-on shareable across apps.
 
 ## 0.20.1
+
 1. Removed classifier 'all' from codekvast-agent-x.x.x.jar. It used to be named codekvast-agent-x.x.x-all.jar
 
 ## 0.20.0
+
 1. Merged codekvast-agent.jar and aspectjweaver.jar
 
 ## 0.19.0
+
 1. Warehouse: Added invocation statuses to method summary and method details page.
 1. Warehouse: Added settings editor.
 1. Warehouse: Implemented detection of inconsistent collector config.
@@ -122,12 +145,14 @@
 1. Added provisioning/ containing Ansible playbooks for setting up an AWS stack per customer/environment.
 
 ## 0.18.6
+
 1. Restructured and cleaned up README.md
 1. Added /home to Warehouse.
 1. Improved Warehouse's /methods. Now the scrollbars work as expected.
 1. Implemented Warehouse's method details page. Ugly, but working.
 
 ## 0.18.5
+
 1. Implemented a simple web interface to Warehouse.
 1. Upgraded to Gradle 3.4.
 1. Upgraded to Angular 4, Typescript 2.

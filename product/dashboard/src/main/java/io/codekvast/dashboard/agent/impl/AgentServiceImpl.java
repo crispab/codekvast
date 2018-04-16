@@ -146,13 +146,17 @@ public class AgentServiceImpl implements AgentService {
     }
 
     private File doSaveInputStream(PublicationType publicationType, InputStream inputStream) throws IOException {
-        createDirectory(settings.getQueuePath());
+        try {
+            createDirectory(settings.getQueuePath());
 
-        File result = File.createTempFile(publicationType + "-", ".ser", settings.getQueuePath());
-        Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
+            File result = File.createTempFile(publicationType + "-", ".ser", settings.getQueuePath());
+            Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
-        logger.info("Saved uploaded {} publication to {}", publicationType, result);
-        return result;
+            logger.info("Saved uploaded {} publication to {}", publicationType, result);
+            return result;
+        } finally {
+            inputStream.close();
+        }
     }
 
     private void createDirectory(File queuePath) throws IOException {
