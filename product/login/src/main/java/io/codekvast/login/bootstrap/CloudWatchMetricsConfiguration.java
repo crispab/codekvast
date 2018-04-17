@@ -60,6 +60,6 @@ public class CloudWatchMetricsConfiguration {
         @Value("${spring.application.name}") String applicationName,
         CodekvastCommonSettings codekvastSettings) {
         return registry -> registry.config().commonTags("application", applicationName,
-                                                        "host", codekvastSettings.getDnsCname());
+                                                        "host", codekvastSettings.getDnsCname().replaceAll("\\..*$", ""));
     }
 }
