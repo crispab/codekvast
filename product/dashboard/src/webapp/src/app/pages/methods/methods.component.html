@@ -180,17 +180,19 @@
                                 <span class="input-group-text font-italic" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">days ago</span>
                             </div>
 
-                            <ng-template #cutoffDatePopover>
-                                <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
-                                    have been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
-                                </p>
-                                <p>'Cutoff Date' has no effect if 'Only never invoked methods' is checked.</p>
-                            </ng-template>
                         </div>
+
+                        <ng-template #cutoffDatePopover>
+                            <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
+                                have been invoked before {{ state.getInvokedBefore() }}</b>.
+                                <!-- TODO: state.getInvokedBefore() does not render -->
+                            </p>
+                            <p>'Cutoff Date' has no effect if 'Only never invoked methods' is checked.</p>
+                        </ng-template>
 
                         <label for="maxResults" class="col-auto">Max&nbsp;Results:</label>
                         <div class="col-auto"
-                             ngbPopover="Limit the search results to {{ state.req.maxResults}} methods, order from oldest to newest."
+                             [ngbPopover]="maxResultsPopover"
                              popoverTitle="Max Results"
                              triggers="mouseenter:mouseleave"
                              placement="right">
@@ -203,6 +205,10 @@
                                    min="1"
                                    max="10000">
                         </div>
+
+                        <ng-template #maxResultsPopover>
+                            Limit the search results to {{ state.req.maxResults }} methods, order from oldest to newest.
+                        </ng-template>
 
                         <button *ngIf="!state.searching" type="submit" class="btn btn-primary btn-sm"
                                 [disabled]="!searchForm.form.valid || !state.anyApplicationSelected() || !state.anyEnvironmentSelected() || state.searching">

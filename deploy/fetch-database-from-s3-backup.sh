@@ -10,7 +10,7 @@ declare tarball=mariadb-backup-${weekday}.tar.gz
 declare mysql_datadir=~/.codekvast_database
 declare s3_bucket="s3://io.codekvast.default.prod.backup"
 
-declare tmp_dir=$(mktemp -t -d fetch-database.XXXXXXX)
+declare tmp_dir=$(mktemp -d /tmp/fetch-database.XXXXXXX)
 trap "rm -fr ${tmp_dir}" EXIT
 
 s3cmd get ${s3_bucket}/${tarball} ${tmp_dir}
@@ -23,6 +23,9 @@ sudo rm -fr ${mysql_datadir}/*
 
 echo "Unpacking ${tmp_dir}/${tarball} into ${mysql_datadir}/ ..."
 sudo tar xf ${tmp_dir}/${tarball} -C ${mysql_datadir}
+
+echo "Changing ownership of ${mysql_datadir}/ ..."
+sudo chown -R ${USER}:"$(id -gn ${USER})" ${mysql_datadir}
 
 echo "Starting a temporary MariaDB container without grant tables..."
 declare container=$(docker run -d -v ${mysql_datadir}:/var/lib/mysql mariadb:10 --skip-grant-tables)

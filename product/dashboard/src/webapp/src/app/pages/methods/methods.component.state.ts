@@ -37,6 +37,7 @@ export class MethodsComponentState {
     initialize() {
         this.api.getMethodsFormData().subscribe(data => {
             console.log('[ck dashboard] methodsFormData=%o', data);
+            // TODO: carry over selected state
             this.applications = [];
             data.applications.forEach(a => this.applications.push(new CheckboxState(a, true)));
             this.environments = [];
