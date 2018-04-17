@@ -21,6 +21,16 @@
         <option name="name" value="logging.level.org.springframework" />
         <option name="value" value="debug" />
       </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="management.metrics.export.cloudwatch.enabled" />
+        <option name="value" value="true" />
+      </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="management.metrics.export.cloudwatch.step" />
+        <option name="value" value="PT10S" />
+      </param>
     </additionalParameters>
     <method />
   </configuration>
