@@ -68,7 +68,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
             file = FileUtils.serializeToFile(publication,
                                              getConfig().getFilenamePrefix("invocations-"), ".ser");
 
-            doPost(file, url, getCodeBaseFingerprint().getSha256(), publication.getInvocations().size());
+            doPost(file, url, getCodeBaseFingerprint().toString(), publication.getInvocations().size());
 
             logger.fine(String.format("Codekvast uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
                                       LogUtil.humanReadableByteCount(file.length()), url));
@@ -83,7 +83,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
         return InvocationDataPublication2.builder()
                                          .commonData(getConfig().commonPublicationData().toBuilder()
-                                                                .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
+                                                                .codeBaseFingerprint(getCodeBaseFingerprint().toString())
                                                                 .customerId(customerId)
                                                                 .sequenceNumber(this.getSequenceNumber())
                                                                 .build())

@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.23.5
+
+1. Added column jvms.codeBaseFingerprint
+2. codekvast-agent.jar now includes the number of codebase files in uploads to server.
+
 ## 0.23.4
 
 1. codekvast-agent.jar now logs repetitive stuff on FINE level. One-time bootstrap stuff is still logged on INFO level.

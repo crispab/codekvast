@@ -109,18 +109,18 @@ public class ImportDAOImpl implements ImportDAO {
         long customerId = data.getCustomerId();
         Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
 
-        int updated = jdbcTemplate.update("UPDATE jvms SET publishedAt = ? WHERE uuid = ?",
-                                          publishedAt, data.getJvmUuid());
+        int updated = jdbcTemplate.update("UPDATE jvms SET codeBaseFingerprint = ?, publishedAt = ? WHERE uuid = ?",
+                                          data.getCodeBaseFingerprint(), publishedAt, data.getJvmUuid());
         if (updated != 0) {
             logger.trace("Updated JVM {}", data.getJvmUuid());
         } else {
             jdbcTemplate.update(
-                "INSERT INTO jvms(customerId, applicationId, applicationVersion, environmentId, uuid, startedAt, publishedAt, methodVisibility, packages," +
+                "INSERT INTO jvms(customerId, applicationId, applicationVersion, environmentId, uuid, codeBaseFingerprint, startedAt, publishedAt, methodVisibility, packages," +
                     " excludePackages, computerId, hostname, agentVersion, tags) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                customerId, applicationId, data.getAppVersion(), environmentId, data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt,
-                data.getMethodVisibility(), data.getPackages().toString(), data.getExcludePackages().toString(), data.getComputerId(),
-                data.getHostname(), data.getAgentVersion(), data.getTags());
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                customerId, applicationId, data.getAppVersion(), environmentId, data.getJvmUuid(), data.getCodeBaseFingerprint(),
+                new Timestamp(data.getJvmStartedAtMillis()), publishedAt, data.getMethodVisibility(), data.getPackages().toString(),
+                data.getExcludePackages().toString(), data.getComputerId(), data.getHostname(), data.getAgentVersion(), data.getTags());
             logger.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
                          Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }

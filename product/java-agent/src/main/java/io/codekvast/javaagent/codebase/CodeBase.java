@@ -175,7 +175,7 @@ public class CodeBase {
         return CodeBasePublication2
             .builder()
             .commonData(config.commonPublicationData().toBuilder()
-                              .codeBaseFingerprint(getFingerprint().getSha256())
+                              .codeBaseFingerprint(getFingerprint().toString())
                               .customerId(customerId)
                               .sequenceNumber(sequenceNumber)
                               .build())

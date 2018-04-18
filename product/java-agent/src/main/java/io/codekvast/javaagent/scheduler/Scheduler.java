@@ -58,7 +58,7 @@ public class Scheduler implements Runnable {
     private final SystemClock systemClock;
 
     // Mutable state
-    long stopWaitingForResolvedAppVersionAtMillis;
+    private long stopWaitingForResolvedAppVersionAtMillis;
 
     private GetConfigResponse1 dynamicConfig;
     private final SchedulerState pollState;

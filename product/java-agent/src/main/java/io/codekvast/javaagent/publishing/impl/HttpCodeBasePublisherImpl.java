@@ -63,7 +63,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
             CodeBasePublication2 publication = codeBase.getCodeBasePublication(getCustomerId(), this.getSequenceNumber());
             file = FileUtils.serializeToFile(publication, getConfig().getFilenamePrefix("codebase-"), ".ser");
 
-            doPost(file, url, codeBase.getFingerprint().getSha256(), publication.getEntries().size());
+            doPost(file, url, codeBase.getFingerprint().toString(), publication.getEntries().size());
 
             logger.fine(String.format("Codekvast uploaded %d methods (%s) to %s", publication.getEntries().size(),
                                     LogUtil.humanReadableByteCount(file.length()), url));
