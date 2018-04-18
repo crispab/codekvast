@@ -136,14 +136,14 @@ public class Scheduler implements Runnable {
                 publishInvocationDataIfNeeded();
             }
         }
-        logger.info(String.format("Scheduler stopped in %d ms", systemClock.currentTimeMillis() - startedAt));
+        logger.info(String.format("Codekvast scheduler stopped in %d ms", systemClock.currentTimeMillis() - startedAt));
     }
 
     @Override
     public void run() {
         synchronized (executor) {
             if (executor.isShutdown()) {
-                logger.fine("Scheduler is shutting down");
+                logger.fine("Codekvast scheduler is shutting down");
                 return;
             }
 

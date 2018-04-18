@@ -1,9 +1,13 @@
 # Codekvast Release Notes
 
+## 0.23.4
+
+1. codekvast-agent.jar now logs repetitive stuff on FINE level. One-time bootstrap stuff is still logged on INFO level.
+
 ## 0.23.3
 
 1. codekvast-agent.jar now waits for a war to be exploded before trying to resolve the app version
-2. Fixed open file leak in AgentServiceImpl. Now the uploaded file's input stream is closed in a try-finally block.
+2. Fixed open file leak in AgentServiceImpl. Now uploaded files' input streams are closed in a try-finally block.
 
 ## 0.23.2
 

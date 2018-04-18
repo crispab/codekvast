@@ -57,7 +57,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         throws CodekvastPublishingException {
 
         if (invocations.isEmpty()) {
-            logger.info("Codekvast detected no invocations to publish");
+            logger.fine("Codekvast detected no invocations to publish");
             return;
         }
 
@@ -70,7 +70,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
             doPost(file, url, getCodeBaseFingerprint().getSha256(), publication.getInvocations().size());
 
-            logger.info(String.format("Codekvast uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
+            logger.fine(String.format("Codekvast uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
                                       LogUtil.humanReadableByteCount(file.length()), url));
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);
