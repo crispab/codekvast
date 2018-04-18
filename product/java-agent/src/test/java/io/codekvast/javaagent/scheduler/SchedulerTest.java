@@ -79,7 +79,7 @@ public class SchedulerTest {
     public void should_handle_shutdown_before_first_poll() throws Exception {
         scheduler.shutdown();
         verifyNoMoreInteractions(configPollerMock);
-        output.expect(containsString("Scheduler stopped in 0 ms"));
+        output.expect(containsString("Codekvast scheduler stopped in 0 ms"));
         assertThat(codeBasePublisher.getSequenceNumber(), is(0));
         assertThat(invocationDataPublisher.getSequenceNumber(), is(0));
     }
