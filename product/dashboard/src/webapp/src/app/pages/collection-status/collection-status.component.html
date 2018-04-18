@@ -106,6 +106,9 @@
                 <li>You have used Codekvast for longer time than your application's usage cycle.</li>
                 <li>You have retired an application or environment.</li>
             </ul>
+            <div class="alert alert-warning" role="alert" *ngIf="state.numSelectedTerminatedAgents() > state.numSelectedFilteredTerminatedAgents()">
+                The filters hide some of the selected agents!
+            </div>
             <hr>
             <div class="alert alert-danger" role="alert">
                 Delete all data collected by {{ state.numSelectedTerminatedAgents() }} terminated {{ getAgentsLabel() }}?<br>

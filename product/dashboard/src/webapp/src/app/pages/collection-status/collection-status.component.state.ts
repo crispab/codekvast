@@ -112,14 +112,21 @@ export class CollectionStatusComponentState {
 
     numTerminatedAgents() {
         if (this.data.agents) {
-            return this.data.agents.filter(a => !a.agentAlive).length
+            return this.data.agents.filter(a => !a.agentAlive).length;
         }
         return null;
     }
 
     numSelectedTerminatedAgents() {
         if (this.data.agents) {
-            return this.data.agents.filter(a => a.selected).length
+            return this.data.agents.filter(a => a.selected).length;
+        }
+        return null;
+    }
+
+    numSelectedFilteredTerminatedAgents() {
+        if (this.getFilteredAgents()) {
+            return this.getFilteredAgents().filter(a => a.selected).length;
         }
         return null;
     }
