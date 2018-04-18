@@ -35,13 +35,22 @@ export class MethodsComponentState {
     }
 
     initialize() {
+
+        let getState = function (name: string, oldState: CheckboxState[]) {
+            let old: boolean[] = oldState.filter(cs => cs.name === name).map(cs => cs.selected);
+            return old.length > 0 ? old[0] : true;
+        };
+
+        let copyNames = function (checkboxState: CheckboxState[], newNames: string[]) {
+            let oldState = Object.assign([], checkboxState);
+            checkboxState.length = 0;
+            newNames.forEach(name => checkboxState.push(new CheckboxState(name, getState(name, oldState))));
+        };
+
         this.api.getMethodsFormData().subscribe(data => {
             console.log('[ck dashboard] methodsFormData=%o', data);
-            // TODO: carry over selected state
-            this.applications = [];
-            data.applications.forEach(a => this.applications.push(new CheckboxState(a, true)));
-            this.environments = [];
-            data.environments.forEach(e => this.environments.push(new CheckboxState(e, true)));
+            copyNames.call(null, this.applications, data.applications);
+            copyNames.call(null, this.environments, data.environments);
         });
     }
 

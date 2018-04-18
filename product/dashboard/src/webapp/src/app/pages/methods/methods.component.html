@@ -184,8 +184,7 @@
 
                         <ng-template #cutoffDatePopover>
                             <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
-                                have been invoked before {{ state.getInvokedBefore() }}</b>.
-                                <!-- TODO: state.getInvokedBefore() does not render -->
+                                have been invoked before {{ state.getInvokedBefore() | date:'short'}}</b>.
                             </p>
                             <p>'Cutoff Date' has no effect if 'Only never invoked methods' is checked.</p>
                         </ng-template>
