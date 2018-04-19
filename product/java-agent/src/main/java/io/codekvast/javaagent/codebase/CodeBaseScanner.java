@@ -127,7 +127,7 @@ public class CodeBaseScanner {
             JarFile jarFile = new JarFile(url.getFile());
             Attributes attributes = jarFile.getManifest().getMainAttributes();
             String mainClass = attributes.getValue(Attributes.Name.MAIN_CLASS);
-            if (mainClass.contains("org.springframework.boot.loader.")) {
+            if (mainClass != null && mainClass.contains("org.springframework.boot.loader.")) {
                 return jarFile;
             }
         } catch (IOException e) {

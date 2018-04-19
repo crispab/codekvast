@@ -4,8 +4,6 @@ import io.codekvast.javaagent.config.AgentConfigFactory;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -34,39 +32,39 @@ public class CodeBaseTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void should_handle_null_codeBase() throws Exception {
+    public void should_handle_null_codeBase() {
         codeBase = new CodeBase(null);
     }
 
     @Test
-    public void should_handle_missing_codeBase() throws Exception {
+    public void should_handle_missing_codeBase() {
         codeBase = getCodeBase("foobar");
         assertThat(codeBase.getUrls().length, is(0));
     }
 
     @Test
-    public void should_handle_dir_containing_classes_but_no_jars() throws MalformedURLException, URISyntaxException {
+    public void should_handle_dir_containing_classes_but_no_jars() {
         codeBase = getCodeBase(CLASSES_ONLY_DIR);
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(1));
     }
 
     @Test
-    public void should_handle_directory_containing_only_jars() throws MalformedURLException, URISyntaxException {
+    public void should_handle_directory_containing_only_jars() {
         codeBase = getCodeBase(SAMPLE_APP_LIB);
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(2));
     }
 
     @Test
-    public void should_handle_directories_containing_classes_and_jars() throws MalformedURLException, URISyntaxException {
+    public void should_handle_directories_containing_classes_and_jars() {
         codeBase = getCodeBase(CLASSES_ONLY_DIR, SAMPLE_APP_LIB);
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(3));
     }
 
     @Test
-    public void should_handle_single_jar() throws MalformedURLException, URISyntaxException {
+    public void should_handle_single_jar() {
         codeBase = getCodeBase(SAMPLE_APP_JAR);
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(1));
