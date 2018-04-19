@@ -329,13 +329,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     private CustomerData getCustomerData(String where_clause, java.io.Serializable identifier) {
         Map<String, Object> result = jdbcTemplate.queryForMap("SELECT " +
-                                                                  " c.id, c.name, c.source, c.plan, c.createdAt, c.collectionStartedAt, " +
+                                                                  "c.id, c.name, c.source, c.plan, c.createdAt, c.collectionStartedAt, " +
                                                                   "c.trialPeriodEndsAt, c.notes AS customerNotes, " +
-                                                                  " pp.createdBy, pp.note AS pricePlanNote, pp.maxMethods, pp.maxNumberOfAgents, pp" +
-                                                                  ".publishIntervalSeconds, pp.pollIntervalSeconds, " +
-                                                                  " pp.retryIntervalSeconds, pp.maxCollectionPeriodDays " +
-                                                                  "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = " +
-                                                                  "c.id " +
+                                                                  "ppo.createdBy, ppo.note AS pricePlanNote, ppo.maxMethods, ppo.maxNumberOfAgents, " +
+                                                                  "ppo.publishIntervalSeconds, ppo.pollIntervalSeconds, " +
+                                                                  "ppo.retryIntervalSeconds, ppo.maxCollectionPeriodDays " +
+                                                                  "FROM customers c LEFT JOIN price_plan_overrides ppo " +
+                                                                  "ON ppo.customerId = c.id " +
                                                                   "WHERE " + where_clause, identifier);
 
         String planName = (String) result.get("plan");
