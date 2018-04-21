@@ -64,8 +64,28 @@ public class CodeBase {
 
     public CodeBase(AgentConfig config) {
         this.config = config;
-        this.codeBaseFiles = config.getCodeBaseFiles();
+        this.codeBaseFiles = detectWebApp(config.getCodeBaseFiles());
         this.fingerprint = calculateFingerprint();
+    }
+
+    private List<File> detectWebApp(List<File> codeBaseFiles) {
+        if (codeBaseFiles.size() != 1) {
+            return codeBaseFiles;
+        }
+
+        File webInf = codeBaseFiles.get(0);
+        if (!webInf.getName().equals("WEB-INF")) {
+            webInf = new File(webInf, "WEB-INF");
+        }
+
+        if (webInf.exists() && webInf.isDirectory()) {
+            File classes = new File(webInf, "classes/");
+            File lib = new File(webInf, "lib");
+            if (classes.exists() && classes.isDirectory() && lib.exists() && lib.isDirectory()) {
+                return Arrays.asList(classes, lib);
+            }
+        }
+        return codeBaseFiles;
     }
 
     URL[] getUrls() {
@@ -84,7 +104,7 @@ public class CodeBase {
         for (File file : codeBaseFiles) {
             if (file.isDirectory()) {
                 if (containsAnyClassFile(file)) {
-                    addUrl(file);
+                    addUrl(makeSureBasenameEndsWithSlash(file));
                 }
                 traverse(builder, file.listFiles());
             } else if (file.getName().endsWith(".jar")) {
@@ -106,6 +126,11 @@ public class CodeBase {
         return result;
     }
 
+    private File makeSureBasenameEndsWithSlash(File file) {
+        // A URLClassLoader does not load raw class files from a directory unless the url ends with a slash
+        return file.getName().endsWith("/") ? file : new File(file.getParent(), file.getName() + "/");
+    }
+
     @SneakyThrows(MalformedURLException.class)
     private void addUrl(File file) {
         logger.finest("Adding URL " + file);
@@ -117,8 +142,8 @@ public class CodeBase {
             if (file.isFile() && file.getName().endsWith(".class")) {
                 return true;
             }
-            if (file.isDirectory()) {
-                return containsAnyClassFile(file);
+            if (file.isDirectory() && containsAnyClassFile(file)) {
+                return true;
             }
         }
         return false;

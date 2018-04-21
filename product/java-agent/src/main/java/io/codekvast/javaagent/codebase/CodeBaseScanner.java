@@ -75,7 +75,11 @@ public class CodeBaseScanner {
                         findConstructors(codeBase, clazz);
                         findMethods(codeBase, clazz, codeBase.getConfig().getNormalizedPackages());
                     } catch (Throwable t) {
-                        logger.warning("Cannot analyze " + classInfo + ": " + t);
+                        if (classInfo.getPackageName().contains(".WEB-INF.classes.")) {
+                            logger.log(finest, "Ignoring " + classInfo);
+                        } else {
+                            logger.warning("Cannot analyze " + classInfo + ": " + t);
+                        }
                     }
                 } else {
                     logger.log(finest, "Ignoring duplicate " + classInfo);

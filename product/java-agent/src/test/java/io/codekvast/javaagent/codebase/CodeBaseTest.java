@@ -1,19 +1,25 @@
 package io.codekvast.javaagent.codebase;
 
 import io.codekvast.javaagent.config.AgentConfigFactory;
+import io.codekvast.javaagent.model.v2.MethodSignature2;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.File;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CodeBaseTest {
 
-    private static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
+    private static final String SAMPLE_WEB_APP = "src/test/resources/sample-web-app";
+    private static final String SAMPLE_APP_LIB = "src/test/resources/sample-web-app/WEB-INF/lib";
+    private static final String SAMPLE_CLASSES_DIR = SAMPLE_WEB_APP + "/WEB-INF/classes";
     private static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
-    private static final String CLASSES_ONLY_DIR = "build/classes/java/main";
 
     private CodeBase codeBase;
 
@@ -28,6 +34,7 @@ public class CodeBaseTest {
         return new CodeBase(AgentConfigFactory.createSampleAgentConfig()
                                               .toBuilder()
                                               .codeBase(sb.toString())
+                                              .packages("sample")
                                               .build());
     }
 
@@ -38,36 +45,143 @@ public class CodeBaseTest {
 
     @Test
     public void should_handle_missing_codeBase() {
+        // when
         codeBase = getCodeBase("foobar");
+
+        // then
         assertThat(codeBase.getUrls().length, is(0));
     }
 
     @Test
     public void should_handle_dir_containing_classes_but_no_jars() {
-        codeBase = getCodeBase(CLASSES_ONLY_DIR);
+        // when
+        codeBase = getCodeBase(SAMPLE_CLASSES_DIR);
+
+        // then
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(1));
+        assertTrue(codeBase.getUrls()[0].getPath().endsWith("/"));
+
+        // when
+        int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
+
+        // then
+        assertThat(scannedClasses, is(2));
+        assertThat(codeBase.getSignatures(), hasSize(2));
+        assertThatCodeBaseContains(codeBase, "InClassesOnly");
+        assertThatCodeBaseNotContains(codeBase, "SampleApp");
+        assertThatCodeBaseNotContains(codeBase, "sample.lib");
     }
 
     @Test
     public void should_handle_directory_containing_only_jars() {
+        // when
         codeBase = getCodeBase(SAMPLE_APP_LIB);
+
+        // then
         assertThat(codeBase.getUrls(), notNullValue());
-        assertThat(codeBase.getUrls().length, is(2));
+        assertThat(codeBase.getUrls().length, is(3));
+
+        // when
+        int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
+
+        // then
+        assertThat(scannedClasses, is(15));
+        assertThat(codeBase.getSignatures(), hasSize(37));
+        assertThatCodeBaseNotContains(codeBase, "InClassesOnly");
+        assertThatCodeBaseContains(codeBase, "SampleApp");
+        assertThatCodeBaseContains(codeBase, "sample.lib");
     }
 
     @Test
     public void should_handle_directories_containing_classes_and_jars() {
-        codeBase = getCodeBase(CLASSES_ONLY_DIR, SAMPLE_APP_LIB);
+        // when
+        codeBase = getCodeBase(SAMPLE_CLASSES_DIR, SAMPLE_APP_LIB);
+
+        // then
         assertThat(codeBase.getUrls(), notNullValue());
-        assertThat(codeBase.getUrls().length, is(3));
+        assertThat(codeBase.getUrls().length, is(4));
+
+        // when
+        int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
+
+        // then
+        assertThat(scannedClasses, is(16));
+        assertThat(codeBase.getSignatures(), hasSize(39));
+        assertThatCodeBaseContains(codeBase, "InClassesOnly");
+        assertThatCodeBaseContains(codeBase, "SampleApp");
+        assertThatCodeBaseContains(codeBase, "sample.lib");
+    }
+
+    @Test
+    public void should_handle_typical_webapp() {
+        codeBase = getCodeBase(SAMPLE_WEB_APP);
+        assertThat(codeBase.getUrls(), notNullValue());
+        assertThat(codeBase.getUrls().length, is(4));
+
+        // when
+        int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
+
+        // then
+        assertThat(scannedClasses, is(16));
+        assertThat(codeBase.getSignatures(), hasSize(39));
+        assertThatCodeBaseContains(codeBase, "InClassesOnly");
+        assertThatCodeBaseContains(codeBase, "SampleApp");
+        assertThatCodeBaseContains(codeBase, "sample.lib");
+    }
+
+    @Test
+    public void should_handle_typical_webapp_WEB_INF() {
+        codeBase = getCodeBase(SAMPLE_WEB_APP + "/WEB-INF");
+        assertThat(codeBase.getUrls(), notNullValue());
+        assertThat(codeBase.getUrls().length, is(4));
+
+        // when
+        int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
+
+        // then
+        assertThat(scannedClasses, is(16));
+        assertThat(codeBase.getSignatures(), hasSize(39));
+        assertThatCodeBaseContains(codeBase, "InClassesOnly");
+        assertThatCodeBaseContains(codeBase, "SampleApp");
+        assertThatCodeBaseContains(codeBase, "sample.lib");
     }
 
     @Test
     public void should_handle_single_jar() {
+        // when
         codeBase = getCodeBase(SAMPLE_APP_JAR);
+
+        // then
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(1));
+
+        // when
+        int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
+
+        // then
+        assertThat(scannedClasses, is(7));
+        assertThat(codeBase.getSignatures(), hasSize(21));
+        assertThatCodeBaseNotContains(codeBase, "InClassesOnly");
+        assertThatCodeBaseContains(codeBase, "SampleApp");
+        assertThatCodeBaseNotContains(codeBase, "org.slf4j");
+    }
+
+    private void assertThatCodeBaseContains(CodeBase codeBase, String signature) {
+        for (MethodSignature2 sig : codeBase.getSignatures()) {
+            if (sig.getAspectjString().contains(signature)) {
+                return;
+            }
+        }
+        fail("Missing signature: " + signature);
+    }
+
+    private void assertThatCodeBaseNotContains(CodeBase codeBase, String signature) {
+        for (MethodSignature2 sig : codeBase.getSignatures()) {
+            if (sig.getAspectjString().contains(signature)) {
+                fail("Unexpected signature: " + sig.getAspectjString());
+            }
+        }
     }
 
 }

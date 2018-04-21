@@ -7,22 +7,21 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static java.util.Arrays.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ManifestAppVersionStrategyTest {
 
-    private static final String VALID_JAR_1_7_7 = "src/test/resources/sample-app/lib/slf4j-api-1.7.7.jar";
+    private static final String VALID_JAR_1_7_7 = "src/test/resources/sample-web-app/WEB-INF/lib/slf4j-api-1.7.7.jar";
     private static final String EXPECTED_VERSION = "1.7.7";
 
-    private final Collection<File> VALID_PATHS;
-    private final Collection<File> INVALID_PATHS;
+    private final Collection<File> VALID_PATHS = asList(new File("src/test/resources/sample-web-app"));
+    private final Collection<File> INVALID_PATHS = asList(new File("src/test/resourcesXXX"));
 
     private final AppVersionStrategy strategy = new ManifestAppVersionStrategy();
 
     public ManifestAppVersionStrategyTest() {
-        VALID_PATHS = Arrays.asList(new File(System.getProperty("user.dir") + File.separator + "src/test/resources"));
-        INVALID_PATHS = Arrays.asList(new File(System.getProperty("user.dir") + File.separator + "src/test/resourcesXXX"));
     }
 
     @Test
@@ -78,7 +77,7 @@ public class ManifestAppVersionStrategyTest {
 
     @Test
     public void should_resolve_when_valid_jar_name_but_invalid_attribute() {
-        String args[] = {"manifest", "src/test/resources/sample-app/lib/slf4j-api-1.7.7.jar", "foobar"};
+        String args[] = {"manifest", "src/test/resources/sample-web-app/WEB-INF/lib/slf4j-api-1.7.7.jar", "foobar"};
 
         assertThat(strategy.canHandle(args), is(true));
         assertThat(strategy.resolveAppVersion(VALID_PATHS, args), is(EXPECTED_VERSION));

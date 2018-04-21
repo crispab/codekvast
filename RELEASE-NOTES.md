@@ -4,6 +4,8 @@
 
 1. Added ability to trace the Java Agent's CodeBaseScanner by e.g., `export CODEKVAST_FINEST_LEVEL=INFO` before starting the app.
 Useful when trouble shooting code base scanning issues and you are unable to edit $CATALINA_HOME/conf/logging.properties.
+1. Java Agent: now detects a typical webapp: The config parameter `codeBase` can now be set to only `path/to/webapp` or `path/to/webapp/WEB-INF`. This will
+be interpreted as `path/to/webapp/WEB-INF/classes/` and `path/to/webapp/WEB-INF/lib` if these exist and are directories.
 
 ## 0.23.5
 
