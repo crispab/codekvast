@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.23.7
+
+1. Java Agent: Correction of 0.23.6: Correctly detect typical webapp even if more codeBase paths than one.
+
 ## 0.23.6
 
 1. Added ability to trace the Java Agent's CodeBaseScanner by e.g., `export CODEKVAST_FINEST_LEVEL=INFO` before starting the app.

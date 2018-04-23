@@ -22,10 +22,7 @@
 package io.codekvast.javaagent.codebase;
 
 import io.codekvast.javaagent.config.AgentConfig;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.Value;
+import lombok.*;
 import lombok.extern.java.Log;
 
 import java.io.File;
@@ -45,10 +42,15 @@ import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 @RequiredArgsConstructor
 @Log
 public class CodeBaseFingerprint {
-    private final int numFiles;
+    private final int numClassFiles;
+    private final int numJarFiles;
 
     @NonNull
     private final String sha256;
+
+    int getNumFiles() {
+        return numClassFiles + numJarFiles;
+    }
 
     public static Builder builder(AgentConfig config) {
         return new Builder(config);
@@ -89,14 +91,23 @@ public class CodeBaseFingerprint {
             md.update(config.getNormalizedPackages().toString().getBytes(utf8));
             md.update(config.getNormalizedExcludePackages().toString().getBytes(utf8));
             md.update(config.getMethodAnalyzer().toString().getBytes(utf8));
-
             md.update(longToBytes(files.size()));
+
+            int numClassFiles = 0;
+            int numJarFiles = 0;
+
             for (File file : files) {
                 md.update(longToBytes(file.length()));
                 md.update(longToBytes(file.lastModified()));
                 md.update(file.getName().getBytes(utf8));
+
+                if (file.getName().endsWith(".class")) {
+                    numClassFiles += 1;
+                } else {
+                    numJarFiles += 1;
+                }
             }
-            return new CodeBaseFingerprint(files.size(), printBase64Binary(md.digest()));
+            return new CodeBaseFingerprint(numClassFiles, numJarFiles, printBase64Binary(md.digest()));
         }
     }
 }

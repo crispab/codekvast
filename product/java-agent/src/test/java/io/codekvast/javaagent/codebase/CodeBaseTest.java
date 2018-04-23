@@ -2,24 +2,22 @@ package io.codekvast.javaagent.codebase;
 
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v2.MethodSignature2;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import java.io.File;
+import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class CodeBaseTest {
 
-    private static final String SAMPLE_WEB_APP = "src/test/resources/sample-web-app";
-    private static final String SAMPLE_APP_LIB = "src/test/resources/sample-web-app/WEB-INF/lib";
+    private static final String SAMPLE_WEB_APP = "/sample-web-app";
+    private static final String SAMPLE_APP_LIB = "/sample-web-app/WEB-INF/lib";
     private static final String SAMPLE_CLASSES_DIR = SAMPLE_WEB_APP + "/WEB-INF/classes";
     private static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
+    private static final String CODEBASE2 = "/codebase2";
 
     private CodeBase codeBase;
 
@@ -27,8 +25,12 @@ public class CodeBaseTest {
         StringBuilder sb = new StringBuilder();
         String delimiter = "";
         for (String s : codeBases) {
-            sb.append(delimiter).append(new File(s).getAbsolutePath());
-            delimiter = ", ";
+            URL resource = getClass().getResource(s);
+            if (resource != null) {
+                String path = resource.getPath();
+                sb.append(delimiter).append(path);
+                delimiter = ", ";
+            }
         }
 
         return new CodeBase(AgentConfigFactory.createSampleAgentConfig()
@@ -62,6 +64,10 @@ public class CodeBaseTest {
         assertThat(codeBase.getUrls().length, is(1));
         assertTrue(codeBase.getUrls()[0].getPath().endsWith("/"));
 
+        CodeBaseFingerprint fingerprint = codeBase.getFingerprint();
+        assertThat(fingerprint.getNumClassFiles(), is(1));
+        assertThat(fingerprint.getNumJarFiles(), is(0));
+
         // when
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
 
@@ -81,6 +87,10 @@ public class CodeBaseTest {
         // then
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(3));
+
+        CodeBaseFingerprint fingerprint = codeBase.getFingerprint();
+        assertThat(fingerprint.getNumClassFiles(), is(0));
+        assertThat(fingerprint.getNumJarFiles(), is(3));
 
         // when
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
@@ -102,6 +112,10 @@ public class CodeBaseTest {
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(4));
 
+        CodeBaseFingerprint fingerprint = codeBase.getFingerprint();
+        assertThat(fingerprint.getNumClassFiles(), is(1));
+        assertThat(fingerprint.getNumJarFiles(), is(3));
+
         // when
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
 
@@ -115,9 +129,38 @@ public class CodeBaseTest {
 
     @Test
     public void should_handle_typical_webapp() {
+        // when
         codeBase = getCodeBase(SAMPLE_WEB_APP);
+
+        // then
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(4));
+
+        CodeBaseFingerprint fingerprint = codeBase.getFingerprint();
+        assertThat(fingerprint.getNumClassFiles(), is(1));
+        assertThat(fingerprint.getNumJarFiles(), is(3));
+
+        // when
+        int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
+
+        // then
+        assertThat(scannedClasses, is(16));
+
+        assertThat(codeBase.getSignatures(), hasSize(39));
+        assertThatCodeBaseContains(codeBase, "InClassesOnly");
+        assertThatCodeBaseContains(codeBase, "SampleApp");
+        assertThatCodeBaseContains(codeBase, "sample.lib");
+    }
+
+    @Test
+    public void should_handle_typical_webapp_WEB_INF() {
+        codeBase = getCodeBase(SAMPLE_WEB_APP + "/WEB-INF");
+        assertThat(codeBase.getUrls(), notNullValue());
+        assertThat(codeBase.getUrls().length, is(4));
+
+        CodeBaseFingerprint fingerprint = codeBase.getFingerprint();
+        assertThat(fingerprint.getNumClassFiles(), is(1));
+        assertThat(fingerprint.getNumJarFiles(), is(3));
 
         // when
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
@@ -131,10 +174,15 @@ public class CodeBaseTest {
     }
 
     @Test
-    public void should_handle_typical_webapp_WEB_INF() {
-        codeBase = getCodeBase(SAMPLE_WEB_APP + "/WEB-INF");
+    public void should_handle_typical_webapp_WEB_INF_with_extra_codeBase() {
+        codeBase = getCodeBase(SAMPLE_WEB_APP + "/WEB-INF", CODEBASE2);
+
         assertThat(codeBase.getUrls(), notNullValue());
-        assertThat(codeBase.getUrls().length, is(4));
+        assertThat(codeBase.getUrls().length, is(5));
+
+        CodeBaseFingerprint fingerprint = codeBase.getFingerprint();
+        assertThat(fingerprint.getNumClassFiles(), is(1));
+        assertThat(fingerprint.getNumJarFiles(), is(4));
 
         // when
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
@@ -161,6 +209,10 @@ public class CodeBaseTest {
 
         // then
         assertThat(scannedClasses, is(7));
+        CodeBaseFingerprint fingerprint = codeBase.getFingerprint();
+        assertThat(fingerprint.getNumClassFiles(), is(0));
+        assertThat(fingerprint.getNumJarFiles(), is(1));
+
         assertThat(codeBase.getSignatures(), hasSize(21));
         assertThatCodeBaseNotContains(codeBase, "InClassesOnly");
         assertThatCodeBaseContains(codeBase, "SampleApp");

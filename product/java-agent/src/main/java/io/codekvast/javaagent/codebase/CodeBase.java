@@ -69,23 +69,27 @@ public class CodeBase {
     }
 
     private List<File> detectWebApp(List<File> codeBaseFiles) {
-        if (codeBaseFiles.size() != 1) {
-            return codeBaseFiles;
-        }
+        List<File> result = new ArrayList<>();
 
-        File webInf = codeBaseFiles.get(0);
-        if (!webInf.getName().equals("WEB-INF")) {
-            webInf = new File(webInf, "WEB-INF");
-        }
+        for (File file : codeBaseFiles) {
+            File webInf = file;
+            if (!webInf.getName().equals("WEB-INF")) {
+                webInf = new File(webInf, "WEB-INF");
+            }
 
-        if (webInf.exists() && webInf.isDirectory()) {
-            File classes = new File(webInf, "classes/");
-            File lib = new File(webInf, "lib");
-            if (classes.exists() && classes.isDirectory() && lib.exists() && lib.isDirectory()) {
-                return Arrays.asList(classes, lib);
+            if (webInf.exists() && webInf.isDirectory()) {
+                File classes = new File(webInf, "classes/");
+                File lib = new File(webInf, "lib");
+                if (classes.exists() && classes.isDirectory() && lib.exists() && lib.isDirectory()) {
+                    // replace file with classes + lib
+                    result.add(classes);
+                    result.add(lib);
+                }
+            } else {
+                result.add(file);
             }
         }
-        return codeBaseFiles;
+        return result;
     }
 
     URL[] getUrls() {
@@ -121,7 +125,7 @@ public class CodeBase {
 
         CodeBaseFingerprint result = builder.build();
 
-        logger.fine(String.format("Made fingerprint of %d files at %s in %d ms, fingerprint=%s", result.getNumFiles(), codeBaseFiles,
+        logger.fine(String.format("Made fingerprint of %d class files and %d jar files at %s in %d ms, fingerprint=%s", result.getNumClassFiles(), result.getNumJarFiles(), codeBaseFiles,
                                   System.currentTimeMillis() - startedAt, result));
         return result;
     }

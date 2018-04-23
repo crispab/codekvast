@@ -27,7 +27,7 @@ public class CodeBaseFingerprintTest {
     private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
     @Before
-    public void beforeTest() throws IOException {
+    public void beforeTest() {
         for (int i = 0; i < files.length; i++) {
             files[i] = new File(folder.getRoot(), "/foo" + i);
             writeFile(files[i], "foo" + i);
@@ -35,7 +35,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_be_equal_when_empty() throws IOException {
+    public void should_be_equal_when_empty() {
         // given
         CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).build();
         CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config).build();
@@ -50,7 +50,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_not_be_equal_when_different_files() throws IOException {
+    public void should_not_be_equal_when_different_files() {
         // given
         CodeBaseFingerprint.Builder b1 = CodeBaseFingerprint.builder(config);
         CodeBaseFingerprint.Builder b2 = CodeBaseFingerprint.builder(config);
@@ -71,7 +71,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_have_certain_value_when_empty() throws IOException {
+    public void should_have_certain_value_when_empty() {
         // given
         CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).build();
 
@@ -83,7 +83,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_be_insensitive_to_file_order() throws IOException {
+    public void should_be_insensitive_to_file_order() {
         // given
         CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).record(files[1]).record(files[2]).build();
         CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config).record(files[2]).record(files[1]).build();
@@ -96,7 +96,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_ignore_duplicate_files() throws IOException {
+    public void should_ignore_duplicate_files() {
         // given
         CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).record(files[1]).build();
         CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config).record(files[1]).record(files[1]).build();
@@ -111,7 +111,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_include_last_modified_in_calculation() throws IOException {
+    public void should_include_last_modified_in_calculation() {
         // given
         CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).record(files[1]).build();
         long now = 1492881351977L;
@@ -126,7 +126,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_include_length_in_calculation() throws IOException {
+    public void should_include_length_in_calculation() {
         // given
         CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).record(files[1]).build();
 
@@ -140,7 +140,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_include_packages_in_calculation() throws IOException {
+    public void should_include_packages_in_calculation() {
         // given
         CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).build();
 
@@ -155,7 +155,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_include_exclude_packages_in_calculation() throws IOException {
+    public void should_include_exclude_packages_in_calculation() {
         // given
         CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).build();
 
@@ -170,7 +170,7 @@ public class CodeBaseFingerprintTest {
     }
 
     @Test
-    public void should_include_method_visibility_in_calculation() throws IOException {
+    public void should_include_method_visibility_in_calculation() {
         // given
         CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config.toBuilder().methodVisibility("public").build()).build();
 
