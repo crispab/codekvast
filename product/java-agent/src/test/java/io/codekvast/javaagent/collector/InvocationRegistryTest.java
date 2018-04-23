@@ -1,8 +1,11 @@
 package io.codekvast.javaagent.collector;
 
 import io.codekvast.javaagent.InvocationRegistry;
+import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
+import io.codekvast.javaagent.publishing.CodekvastPublishingException;
+import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.util.SignatureUtils;
 import org.aspectj.lang.Signature;
 import org.junit.After;
@@ -11,8 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -90,8 +93,26 @@ public class InvocationRegistryTest {
                 t.start();
             }
         }
+
+        Thread publisher = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                NullInvocationDataPublisher publisher = new NullInvocationDataPublisher();
+                try {
+                    startingGun.await();
+                    //noinspection InfiniteLoopStatement
+                    while (true) {
+                        InvocationRegistry.instance.publishInvocationData(publisher);
+                    }
+                } catch (InterruptedException | CodekvastPublishingException ignore) {
+                }
+            }
+        });
+        publisher.start();
+
         startingGun.countDown();
         finishLine.await();
+        publisher.interrupt();
     }
 
     @SuppressWarnings({"unused", "WeakerAccess"})
@@ -102,6 +123,42 @@ public class InvocationRegistryTest {
 
         public void m2() {
 
+        }
+    }
+
+    private static class NullInvocationDataPublisher implements InvocationDataPublisher {
+        @Override
+        public void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint) {
+
+        }
+
+        @Override
+        public CodeBaseFingerprint getCodeBaseFingerprint() {
+            return null;
+        }
+
+        @Override
+        public void publishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations) {
+        }
+
+        @Override
+        public String getName() {
+            return null;
+        }
+
+        @Override
+        public void configure(long customerId, String keyValuePairs) {
+
+        }
+
+        @Override
+        public int getSequenceNumber() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return false;
         }
     }
 }
