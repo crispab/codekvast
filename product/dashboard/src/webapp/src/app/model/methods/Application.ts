@@ -4,5 +4,5 @@ export class Application {
     name: string;
     startedAtMillis: number;
     status: String;
-    version: string
+    version: string;
 }

@@ -130,6 +130,11 @@ public class GetStatusResponse {
     //--- Details ---------------------------------------------------
 
     /**
+     * The applications reporting to this customer account.
+     */
+    private final List<ApplicationDescriptor2> applications;
+
+    /**
      * The agents (JVMs) reporting to this customer account.
      */
     private final List<AgentDescriptor> agents;

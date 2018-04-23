@@ -1,4 +1,5 @@
 import {Agent} from './Agent';
+import {Application} from './Application';
 
 export class StatusData {
     // query stuff
@@ -24,5 +25,6 @@ export class StatusData {
     numLiveEnabledAgents: number;
 
     // details
+    applications: Application[];
     agents: Agent[];
 }

@@ -28,6 +28,7 @@ import io.codekvast.common.security.CustomerIdProvider;
 import io.codekvast.dashboard.dashboard.DashboardService;
 import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
+import io.codekvast.dashboard.dashboard.model.status.ApplicationDescriptor2;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.util.TimeService;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
@@ -160,6 +161,7 @@ public class DashboardServiceImpl implements DashboardService {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
 
         PricePlan pp = customerData.getPricePlan();
+        List<ApplicationDescriptor2> applications = getApplications(customerId);
         List<AgentDescriptor> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
 
         Instant now = timeService.now();
@@ -199,8 +201,34 @@ public class DashboardServiceImpl implements DashboardService {
                                 .numLiveEnabledAgents((int) agents.stream().filter(AgentDescriptor::isAgentLiveAndEnabled).count())
 
                                 // details
+                                .applications(applications)
                                 .agents(agents)
                                 .build();
+    }
+
+    private List<ApplicationDescriptor2> getApplications(Long customerId) {
+        List<ApplicationDescriptor2> result = new ArrayList<>();
+
+        jdbcTemplate.query(
+            "SELECT\n" +
+                "  a.name AS appName, e.name AS envName, MIN(j.startedAt) AS collectedSince, MAX(j.publishedAt) AS collectedTo\n" +
+                "FROM jvms j INNER JOIN applications a ON j.applicationId = a.id\n" +
+                "  INNER JOIN environments e ON j.environmentId = e.id\n" +
+                "WHERE j.customerId = ?\n" +
+                "GROUP BY appName, envName\n" +
+                "ORDER BY appName, envName\n",
+
+            rs -> {
+                result.add(
+                    ApplicationDescriptor2.builder()
+                                          .appName(rs.getString("appName"))
+                                          .environment(rs.getString("envName"))
+                                          .collectedSinceMillis(rs.getTimestamp("collectedSince").getTime())
+                                          .collectedToMillis(rs.getTimestamp("collectedTo").getTime())
+                                          .build().computeFields());
+            }, customerId);
+
+        return result;
     }
 
     @Override
