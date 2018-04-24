@@ -112,8 +112,14 @@ public class InvocationRegistry {
         toggleInvocationsIndex();
 
         try {
+            // Give the InvocationAdder time to see the new currentInvocationIndex so that we
+            // avoid ConcurrentModificationException.
+            Thread.sleep(10L);
+
             //noinspection unchecked
             publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
+        } catch (InterruptedException ignored) {
+            // Do nothing here
         } finally {
             invocations[oldIndex].clear();
         }

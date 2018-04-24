@@ -106,7 +106,7 @@ task generateCodekvastConfig {
         configFile.text = """# Run Codekvast against Jenkins in Tomcat
 #aspectjOptions = -verbose -showWeaveInfo
 appVersion = manifest jenkins-cli.jar Jenkins-CLI-Version
-codeBase = $catalinaBase/webapps/jenkins, ${System.properties['user.home']}/.jenkins/plugins
+codeBase = $catalinaBase/webapps/jenkins, $catalinaBase/lib, ${System.properties['user.home']}/.jenkins/plugins
 methodVisibility = private
 packages = hudson, jenkins
 tags = development, sample

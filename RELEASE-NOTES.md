@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.23.8
+
+1. Java Agent: Fixed a rare ConcurrentModificationException
+
 ## 0.23.7
 
 1. Java Agent: Correction of 0.23.6: Correctly detect typical webapp even if more codeBase paths than one.

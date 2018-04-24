@@ -50,12 +50,12 @@ public class InvocationRegistryTest {
     }
 
     @After
-    public void afterTest() throws Exception {
+    public void afterTest() {
         InvocationRegistry.initialize(null);
     }
 
     @Test
-    public void should_handle_registrations_when_disabled() throws Exception {
+    public void should_handle_registrations_when_disabled() {
         InvocationRegistry.initialize(null);
         assertThat(InvocationRegistry.instance.isNullRegistry(), is(true));
         InvocationRegistry.instance.registerMethodInvocation(signature1);
