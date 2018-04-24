@@ -24,6 +24,7 @@ logging:
     file: build/log/dashboard.log
     level:
         io.codekvast: DEBUG
+        io.micrometer.cloudwatch.CloudWatchMeterRegistry: OFF
         springfox: WARN
 
 management:
@@ -39,11 +40,6 @@ management:
         web.server.auto-time-requests: true
         export.cloudwatch:
             enabled: false
-            step: PT10S
-            readTimeout: PT30S
-            batchSize: 20000
-cloudwatch:
-    namespace: xxx
 
 server:
     compression:

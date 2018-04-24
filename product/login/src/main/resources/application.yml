@@ -40,9 +40,6 @@ management:
         web.server.auto-time-requests: true
         export.cloudwatch:
             enabled: false
-            step: PT60S
-            namespace: Codekvast dev
-            batch-size: 100
 
 server:
     port: 8080

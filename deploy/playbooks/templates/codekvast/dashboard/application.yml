@@ -9,7 +9,9 @@ codekvast:
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
 logging:
     file: /var/log/codekvast/application.log
-    level.io.codekvast: DEBUG
+    level:
+        io.codekvast: DEBUG
+        io.micrometer.cloudwatch.CloudWatchMeterRegistry: OFF
     pattern.level: "{{ ec2_tag_CNAME0.split('.', 1)[0] }} %5p"
 
 management:
@@ -18,6 +20,14 @@ management:
         beans.enabled: false
         conditions.enabled: false
         mappings.enabled: false
+    metrics.export.cloudwatch:
+        aws-access-key-id: "{{ cloudwatch.metrics.access_key }}"
+        aws-region: "{{ aws_region }}"
+        aws-secret-key: "{{ cloudwatch.metrics.secret_key }}"
+        batch-size: 100
+        enabled: true
+        namespace: "Codekvast {{ env }}"
+        step: PT60S
 
 server:
     port: "{{ service_port }}"

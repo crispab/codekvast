@@ -37,7 +37,7 @@ run {
 
     args = [
         "--logging.file=$buildDir/log/${applicationName}.log",
-        "--spring.profiles.active=dev-oauth-secrets,webpack-dev-server"
+        "--spring.profiles.active=dev-secrets,webpack-dev-server"
     ]
 }
 

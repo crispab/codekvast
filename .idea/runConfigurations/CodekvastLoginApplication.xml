@@ -8,7 +8,7 @@
       </pattern>
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.login.CodekvastLoginApplication" />
-    <option name="ACTIVE_PROFILES" value="dev-oauth-secrets,dev-webpack-dev-server" />
+    <option name="ACTIVE_PROFILES" value="dev-secrets,dev-webpack-dev-server" />
     <option name="PROGRAM_PARAMETERS" value="--project.codekvastDisplayVersion=dev" />
     <option name="WORKING_DIRECTORY" value="file://product/login" />
     <option name="ALTERNATIVE_JRE_PATH" />
@@ -20,16 +20,6 @@
       <param>
         <option name="name" value="logging.level.org.springframework" />
         <option name="value" value="debug" />
-      </param>
-      <param>
-        <option name="enabled" value="true" />
-        <option name="name" value="management.metrics.export.cloudwatch.enabled" />
-        <option name="value" value="true" />
-      </param>
-      <param>
-        <option name="enabled" value="true" />
-        <option name="name" value="management.metrics.export.cloudwatch.step" />
-        <option name="value" value="PT10S" />
       </param>
     </additionalParameters>
     <method />

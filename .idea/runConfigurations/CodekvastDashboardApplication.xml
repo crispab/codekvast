@@ -2,7 +2,7 @@
   <configuration default="false" name="CodekvastDashboardApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <module name="dashboard_main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboardApplication" />
-    <option name="ACTIVE_PROFILES" value="dev-webpack-dev-server" />
+    <option name="ACTIVE_PROFILES" value="dev-secrets,dev-webpack-dev-server" />
     <option name="VM_PARAMETERS" value="-ea" />
     <option name="WORKING_DIRECTORY" value="file://product/dashboard" />
     <option name="ALTERNATIVE_JRE_PATH" />
