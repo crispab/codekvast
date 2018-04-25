@@ -106,7 +106,7 @@
                 <li>You have used Codekvast for longer time than your application's usage cycle.</li>
                 <li>You have retired an application or environment.</li>
             </ul>
-            <div class="alert alert-warning" role="alert" *ngIf="state.numSelectedTerminatedAgents() > state.numSelectedFilteredTerminatedAgents()">
+            <div class="alert alert-warning" role="alert" *ngIf="state.numSelectedTerminatedAgents() > state.numSelectedVisibleTerminatedAgents()">
                 The filters hide some of the selected agents!
             </div>
             <hr>
@@ -125,7 +125,9 @@
         <h4 class="text-capitalize">{{ getAgentsLabel() }}</h4>
         <div class="form-inline mb-2" [class.invisible]="state.numTerminatedAgents() === 0">
             <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents">
-            <label class="ml-1" for="showTerminatedAgents">Show {{ state.numTerminatedAgents() }} terminated {{ getAgentsLabel() }}</label>
+            <label class="ml-1" for="showTerminatedAgents">Show&nbsp;
+                <span title="The number of terminated agents that pass the filters below">{{ state.numTerminatedFilteredAgents() }}</span>
+                (<span title="The total number of terminated agents">{{ state.numTerminatedAgents() }}</span>) terminated {{ getAgentsLabel() }}</label>
             <div class="input-group col-auto">
                 <div class="input-group-prepend">
                     <span class="input-group-text">Select terminated agents older than</span>
@@ -172,12 +174,12 @@
                 <th class="align-top">Next expected at</th>
                 <th class="align-top">Comments</th>
                 <th class="align-top">
-                    <input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents" (change)="state.selectOrUnselectAllFilteredTerminatedAgents()"/>
+                    <input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents" (change)="state.selectOrUnselectAllVisibleTerminatedAgents()"/>
                 </th>
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let agent of state.getFilteredAgents()">
+            <tr *ngFor="let agent of state.getVisibleAgents()">
                 <td ngbPopover="{{ agent.agentVersion }}"
                     popoverTitle="Agent Version"
                     triggers="mouseenter:mouseleave"

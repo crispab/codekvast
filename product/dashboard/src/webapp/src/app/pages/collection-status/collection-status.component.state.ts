@@ -102,17 +102,28 @@ export class CollectionStatusComponentState {
 
     getFilteredAgents() {
         if (this.data.agents) {
-            return this.data.agents.filter(a => (this.showTerminatedAgents || a.agentAlive)
-                && `${a.appName} ${a.appVersion}`.toLowerCase().indexOf(this.applicationFilter.toLowerCase()) >= 0
+            return this.data.agents.filter(a =>
+                `${a.appName} ${a.appVersion}`.toLowerCase().indexOf(this.applicationFilter.toLowerCase()) >= 0
                 && a.environment.toLowerCase().indexOf(this.environmentFilter.toLowerCase()) >= 0
                 && a.hostname.toLowerCase().indexOf(this.hostnameFilter.toLowerCase()) >= 0);
         }
         return null;
     }
 
+    getVisibleAgents() {
+        return this.getFilteredAgents().filter(a => (this.showTerminatedAgents || a.agentAlive));
+    }
+
     numTerminatedAgents() {
         if (this.data.agents) {
             return this.data.agents.filter(a => !a.agentAlive).length;
+        }
+        return null;
+    }
+
+    numTerminatedFilteredAgents() {
+        if (this.getFilteredAgents()) {
+            return this.getFilteredAgents().filter(a => !a.agentAlive).length;
         }
         return null;
     }
@@ -124,19 +135,19 @@ export class CollectionStatusComponentState {
         return null;
     }
 
-    numSelectedFilteredTerminatedAgents() {
-        if (this.getFilteredAgents()) {
-            return this.getFilteredAgents().filter(a => a.selected).length;
+    numSelectedVisibleTerminatedAgents() {
+        if (this.getVisibleAgents()) {
+            return this.getVisibleAgents().filter(a => a.selected).length;
         }
         return null;
     }
 
-    selectOrUnselectAllFilteredTerminatedAgents() {
-        if (this.getFilteredAgents()) {
+    selectOrUnselectAllVisibleTerminatedAgents() {
+        if (this.getVisibleAgents()) {
             if (this.autoRefresh) {
                 this.toggleAutoRefresh();
             }
-            this.getFilteredAgents()
+            this.getVisibleAgents()
                 .forEach(a => a.selected = this.selectAllTerminatedAgents && !a.agentAlive && isNullOrUndefined(a.deletionState));
         }
     }
