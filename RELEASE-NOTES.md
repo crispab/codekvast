@@ -3,6 +3,8 @@
 ## 0.23.8
 
 1. Java Agent: Fixed a rare ConcurrentModificationException
+1. Dashboard: added Applications tab to status page.
+1. Added support for exporting metrics to CloudWatch
 
 ## 0.23.7
 
