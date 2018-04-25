@@ -1,5 +1,5 @@
 export class Application {
-    name: string;
+    appName: string;
     environment: string;
     collectedDays: number;
     collectedSinceMillis: number;

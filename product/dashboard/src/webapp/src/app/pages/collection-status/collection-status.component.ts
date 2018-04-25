@@ -18,7 +18,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 export class CollectionStatusComponent implements OnInit, OnDestroy {
     settings: Settings;
     state: CollectionStatusComponentState;
-    agentsLabel = 'agents';
+    agentsLabel = 'Agents';
 
     constructor(private stateService: StateService, private api: DashboardApiService, private agePipe: AgePipe,
                 private modalService: NgbModal) {
@@ -30,7 +30,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
             () => new CollectionStatusComponentState(this.agePipe, this.api, this.modalService));
         this.state.init();
         this.stateService.getAuthData().subscribe((ad: AuthData) => {
-            this.agentsLabel = ad && ad.source === 'heroku' ? 'dynos' : 'agents';
+            this.agentsLabel = ad && ad.source === 'heroku' ? 'Dynos' : 'Agents';
         });
     }
 

@@ -100,6 +100,15 @@ export class CollectionStatusComponentState {
         return now + ': Communication failure'
     }
 
+    getVisibleApplications() {
+        if (this.data.applications) {
+            return this.data.applications.filter(a =>
+                `${a.appName}`.toLowerCase().indexOf(this.applicationFilter.toLowerCase()) >= 0
+                && a.environment.toLowerCase().indexOf(this.environmentFilter.toLowerCase()) >= 0);
+        }
+        return null;
+    }
+
     getFilteredAgents() {
         if (this.data.agents) {
             return this.data.agents.filter(a =>

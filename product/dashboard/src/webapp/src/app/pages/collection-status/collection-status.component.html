@@ -122,82 +122,126 @@
     </ng-template>
 
     <div *ngIf="state.data">
-        <h4 class="text-capitalize">{{ getAgentsLabel() }}</h4>
-        <div class="form-inline mb-2" [class.invisible]="state.numTerminatedAgents() === 0">
-            <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents">
-            <label class="ml-1" for="showTerminatedAgents">Show&nbsp;
-                <span title="The number of terminated agents that pass the filters below">{{ state.numTerminatedFilteredAgents() }}</span>
-                (<span title="The total number of terminated agents">{{ state.numTerminatedAgents() }}</span>) terminated {{ getAgentsLabel() }}</label>
-            <div class="input-group col-auto">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">Select terminated agents older than</span>
-                </div>
-                <input class="form-control"
-                       id="terminatedDays"
-                       type="number"
-                       required
-                       min="0"
-                       max="3650"
-                       [(ngModel)]="state.selectTerminatedAgentsOlderThanDays"/>
-                <div class="input-group-append">
-                    <span class="input-group-text">days</span>
-                </div>
-                <button class="ml-3 btn btn-outline-secondary btn-sm" (click)="state.selectOldTerminatedAgents()">
-                    Select
-                </button>
-            </div>
-            <button class="ml-3 btn btn-outline-secondary btn-sm" [disabled]="state.numSelectedTerminatedAgents() === 0"
-                    (click)="state.openDeleteModal(deleteModalTemplate)">Delete {{ state.numSelectedTerminatedAgents() }} selected
-                terminated agents...
-            </button>
-        </div>
-        <table class="table table-striped table-bordered">
-            <thead>
-            <tr>
-                <th class="align-top">
-                    Application<br>
-                    <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.applicationFilter"
-                           placeholder="Filter by app">
-                </th>
-                <th class="align-top">
-                    Environment<br>
-                    <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.environmentFilter"
-                           placeholder="Filter by env">
-                </th>
-                <th class="align-top">
-                    Host<br>
-                    <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.hostnameFilter"
-                           placeholder="Filter by host">
-                </th>
-                <th class="align-top">Started at</th>
-                <th class="align-top">Data received at</th>
-                <th class="align-top">Next expected at</th>
-                <th class="align-top">Comments</th>
-                <th class="align-top">
-                    <input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents" (change)="state.selectOrUnselectAllVisibleTerminatedAgents()"/>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let agent of state.getVisibleAgents()">
-                <td ngbPopover="{{ agent.agentVersion }}"
-                    popoverTitle="Agent Version"
-                    triggers="mouseenter:mouseleave"
-                    placement="top"
-                    container="body">
-                    {{ agent.appName }} {{ agent.appVersion}}
-                </td>
-                <td>{{ agent.environment }}</td>
-                <td>{{ agent.hostname }}</td>
-                <td>{{ agent.startedAtMillis | ckAge:settings.dateFormat }}</td>
-                <td>{{ agent.publishedAtMillis | ckAge:settings.dateFormat }}</td>
-                <td>
-                    <span [ngClass]="agentUploadExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
-                </td>
-                <td>{{ getComments(agent) }} <i [ngClass]="commentClasses(agent)"></i></td>
-                <td><input [disabled]="!isAgentDeletable(agent)" type="checkbox" [(ngModel)]="agent.selected"></td>
-            </tr>
-            </tbody>
-        </table>
+        <ngb-tabset>
+            <ngb-tab>
+                <ng-template ngbTabTitle><b>Applications</b></ng-template>
+                <ng-template ngbTabContent>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="align-top">
+                                Application<br>
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.applicationFilter"
+                                       placeholder="Filter by app">
+                            </th>
+                            <th class="align-top">
+                                Environment<br>
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.environmentFilter"
+                                       placeholder="Filter by env">
+                            </th>
+                            <th class="align-top">Collected since</th>
+                            <th class="align-top">Collected days</th>
+                            <th class="align-top">Data received at</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let app of state.getVisibleApplications()">
+                            <td>{{ app.appName }}</td>
+                            <td>{{ app.environment }}</td>
+                            <td>{{ app.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
+                            <td>{{ app.collectedDays }}</td>
+                            <td>{{ app.collectedToMillis | ckAge:settings.dateFormat }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </ng-template>
+            </ngb-tab>
+            <ngb-tab>
+                <ng-template ngbTabTitle><b>{{ getAgentsLabel() }}</b></ng-template>
+                <ng-template ngbTabContent>
+                    <div class="form-inline mb-2" [class.invisible]="state.numTerminatedAgents() === 0">
+                        <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents">
+                        <label class="ml-1" for="showTerminatedAgents">Show&nbsp;
+                            <span
+                                title="The number of terminated agents that pass the filters below">{{ state.numTerminatedFilteredAgents() }}</span>
+                            (<span title="The total number of terminated agents">{{ state.numTerminatedAgents() }}</span>) terminated {{
+                            getAgentsLabel() }}</label>
+                        <div class="input-group col-auto">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Select terminated agents older than</span>
+                            </div>
+                            <input class="form-control"
+                                   id="terminatedDays"
+                                   type="number"
+                                   required
+                                   min="0"
+                                   max="3650"
+                                   [(ngModel)]="state.selectTerminatedAgentsOlderThanDays"/>
+                            <div class="input-group-append">
+                                <span class="input-group-text">days</span>
+                            </div>
+                            <button class="ml-3 btn btn-outline-secondary btn-sm" (click)="state.selectOldTerminatedAgents()">
+                                Select
+                            </button>
+                        </div>
+                        <button class="ml-3 btn btn-outline-secondary btn-sm" [disabled]="state.numSelectedTerminatedAgents() === 0"
+                                (click)="state.openDeleteModal(deleteModalTemplate)">Delete {{ state.numSelectedTerminatedAgents() }}
+                            selected
+                            terminated agents...
+                        </button>
+                    </div>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="align-top">
+                                Application<br>
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.applicationFilter"
+                                       placeholder="Filter by app">
+                            </th>
+                            <th class="align-top">
+                                Environment<br>
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.environmentFilter"
+                                       placeholder="Filter by env">
+                            </th>
+                            <th class="align-top">
+                                Host<br>
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.hostnameFilter"
+                                       placeholder="Filter by host">
+                            </th>
+                            <th class="align-top">Started at</th>
+                            <th class="align-top">Data received at</th>
+                            <th class="align-top">Next expected at</th>
+                            <th class="align-top">Comments</th>
+                            <th class="align-top">
+                                <input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents"
+                                       (change)="state.selectOrUnselectAllVisibleTerminatedAgents()"/>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let agent of state.getVisibleAgents()">
+                            <td ngbPopover="{{ agent.agentVersion }}"
+                                popoverTitle="Agent Version"
+                                triggers="mouseenter:mouseleave"
+                                placement="top"
+                                container="body">
+                                {{ agent.appName }} {{ agent.appVersion}}
+                            </td>
+                            <td>{{ agent.environment }}</td>
+                            <td>{{ agent.hostname }}</td>
+                            <td>{{ agent.startedAtMillis | ckAge:settings.dateFormat }}</td>
+                            <td>{{ agent.publishedAtMillis | ckAge:settings.dateFormat }}</td>
+                            <td>
+                                <span [ngClass]="agentUploadExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
+                            </td>
+                            <td>{{ getComments(agent) }} <i [ngClass]="commentClasses(agent)"></i></td>
+                            <td><input [disabled]="!isAgentDeletable(agent)" type="checkbox" [(ngModel)]="agent.selected"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </ng-template>
+            </ngb-tab>
+        </ngb-tabset>
     </div>
 </div>
