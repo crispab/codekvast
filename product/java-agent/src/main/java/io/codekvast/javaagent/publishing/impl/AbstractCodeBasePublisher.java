@@ -39,6 +39,9 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
     @Getter
     private CodeBaseFingerprint codeBaseFingerprint;
 
+    @Getter
+    private int codeBaseCheckCount = 0;
+
     AbstractCodeBasePublisher(Logger log, AgentConfig config) {
         super(log, config);
     }
@@ -46,6 +49,7 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
     @Override
     public void publishCodeBase() throws CodekvastPublishingException {
         if (isEnabled()) {
+            codeBaseCheckCount += 1;
             CodeBase newCodeBase = new CodeBase(getConfig());
             if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {
                 incrementSequenceNumber();

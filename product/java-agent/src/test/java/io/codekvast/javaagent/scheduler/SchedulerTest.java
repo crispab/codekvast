@@ -44,7 +44,7 @@ public class SchedulerTest {
     @Mock
     private SystemClock systemClockMock;
 
-    private AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
+    private AgentConfig config = AgentConfigFactory.createSampleAgentConfig().toBuilder().appVersion("literal 1.17").build();
 
     private CodeBasePublisher codeBasePublisher = new NoOpCodeBasePublisherImpl(config);
 
@@ -52,16 +52,18 @@ public class SchedulerTest {
 
     private Scheduler scheduler;
 
+    private final long T1 = System.currentTimeMillis();
+
     private final GetConfigResponse1 configResponse = GetConfigResponse1.sample()
-        .toBuilder()
-        .configPollIntervalSeconds(0)
-        .configPollRetryIntervalSeconds(0)
-        .codeBasePublisherCheckIntervalSeconds(0)
-        .invocationDataPublisherIntervalSeconds(0)
-        .build();
+                                                                        .toBuilder()
+                                                                        .configPollIntervalSeconds(0)
+                                                                        .configPollRetryIntervalSeconds(0)
+                                                                        .codeBasePublisherCheckIntervalSeconds(0)
+                                                                        .invocationDataPublisherIntervalSeconds(0)
+                                                                        .build();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         scheduler =
             new Scheduler(config, configPollerMock, codeBasePublisherFactoryMock, invocationDataPublisherFactoryMock, systemClockMock);
@@ -72,11 +74,16 @@ public class SchedulerTest {
         when(invocationDataPublisherFactoryMock.create("no-op", config))
             .thenReturn(invocationDataPublisher);
 
-        when(systemClockMock.currentTimeMillis()).thenReturn(System.currentTimeMillis());
+        when(systemClockMock.currentTimeMillis()).thenReturn(T1);
+    }
+
+    private void setTimeToSecondsAndRunScheduler(double seconds) {
+        when(systemClockMock.currentTimeMillis()).thenReturn(T1 + (long) (seconds * 1000.0));
+        scheduler.run();
     }
 
     @Test
-    public void should_handle_shutdown_before_first_poll() throws Exception {
+    public void should_handle_shutdown_before_first_poll() {
         scheduler.shutdown();
         verifyNoMoreInteractions(configPollerMock);
         output.expect(containsString("Codekvast scheduler stopped in 0 ms"));
@@ -99,52 +106,97 @@ public class SchedulerTest {
         verifyNoMoreInteractions(configPollerMock);
 
         assertThat(codeBasePublisher.getSequenceNumber(), is(1));
-        assertThat(invocationDataPublisher.getSequenceNumber(), is(2));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(3));
     }
 
     @Test
-    public void should_do_first_publishing_soon_after_start() throws Exception {
+    public void should_schedule_correctly() throws Exception {
         // given
-        long now = System.currentTimeMillis();
-
         when(configPollerMock.doPoll()).thenReturn(
             configResponse
                 .toBuilder()
-                .configPollIntervalSeconds(5)
-                .codeBasePublisherCheckIntervalSeconds(100)
-                .invocationDataPublisherIntervalSeconds(100)
+                .configPollIntervalSeconds(4)
+                .codeBasePublisherCheckIntervalSeconds(6)
+                .invocationDataPublisherIntervalSeconds(10)
                 .build());
 
+        // timeline
+        // 012345678901234567890123456789012345678901234567890
+        // P   P   P   P   P   P
+        // C     C     C     C     C
+        // I         I         I         I
+        // 012345678901234567890123456789012345678901234567890
+
         // when
-        when(systemClockMock.currentTimeMillis()).thenReturn(now);
-        scheduler.run();
+        setTimeToSecondsAndRunScheduler(0);
+
+        // then
         verify(configPollerMock, times(1)).doPoll();
-        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
+        assertThat(codeBasePublisher.getCodeBaseCheckCount(), is(1));
         assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
 
-        when(systemClockMock.currentTimeMillis()).thenReturn(now + 2_000L);
-        scheduler.run();
+        // when
+        setTimeToSecondsAndRunScheduler(1);
+
+        // then
         verify(configPollerMock, times(1)).doPoll();
-        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
+        assertThat(codeBasePublisher.getCodeBaseCheckCount(), is(1));
         assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
 
-        when(systemClockMock.currentTimeMillis()).thenReturn(now + 10_000L);
-        scheduler.run();
+        // when
+        setTimeToSecondsAndRunScheduler(3.5);
+
+        // then
+        verify(configPollerMock, times(1)).doPoll();
+        assertThat(codeBasePublisher.getCodeBaseCheckCount(), is(1));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
+
+        // when
+        setTimeToSecondsAndRunScheduler(4.5);
+
+        // then
         verify(configPollerMock, times(2)).doPoll();
-
-        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
+        assertThat(codeBasePublisher.getCodeBaseCheckCount(), is(1));
         assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
 
-        when(systemClockMock.currentTimeMillis()).thenReturn(now + 20_000L);
-        scheduler.run();
+        // when
+        setTimeToSecondsAndRunScheduler(4.5);
+
+        // then
+        verify(configPollerMock, times(2)).doPoll();
+        assertThat(codeBasePublisher.getCodeBaseCheckCount(), is(1));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
+
+        // when
+        setTimeToSecondsAndRunScheduler(7);
+
+        // then
+        verify(configPollerMock, times(2)).doPoll();
+        assertThat(codeBasePublisher.getCodeBaseCheckCount(), is(2));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
+
+        // when
+        setTimeToSecondsAndRunScheduler(9);
+
+        // then
         verify(configPollerMock, times(3)).doPoll();
-        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
+        assertThat(codeBasePublisher.getCodeBaseCheckCount(), is(2));
         assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
 
-        when(systemClockMock.currentTimeMillis()).thenReturn(now + 121_000L);
-        scheduler.run();
+        // when
+        setTimeToSecondsAndRunScheduler(11);
+
+        // then
+        verify(configPollerMock, times(3)).doPoll();
+        assertThat(codeBasePublisher.getCodeBaseCheckCount(), is(2));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(2));
+
+        // when
+        setTimeToSecondsAndRunScheduler(13);
+
+        // then
         verify(configPollerMock, times(4)).doPoll();
-        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
+        assertThat(codeBasePublisher.getCodeBaseCheckCount(), is(3));
         assertThat(invocationDataPublisher.getSequenceNumber(), is(2));
     }
 
@@ -155,7 +207,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void should_retry_with_exponential_back_off() throws Exception {
+    public void should_retry_with_exponential_back_off() {
         // given
         Scheduler.SchedulerState state = new Scheduler.SchedulerState("poller", systemClockMock)
             .initialize(10, 10);

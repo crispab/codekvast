@@ -217,7 +217,7 @@ public class Scheduler implements Runnable {
     }
 
     private void configureInvocationDataPublisher() {
-        invocationDataPublisherState.updateIntervals(dynamicConfig.getInvocationDataPublisherRetryIntervalSeconds(),
+        invocationDataPublisherState.updateIntervals(dynamicConfig.getInvocationDataPublisherIntervalSeconds(),
                                                      dynamicConfig.getInvocationDataPublisherRetryIntervalSeconds());
 
         String newName = dynamicConfig.getInvocationDataPublisherName();

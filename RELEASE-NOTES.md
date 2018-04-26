@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.24.0
+
+1. Java Agent: Corrected scheduling bug. Invocation data was published far too often.
+
 ## 0.23.8
 
 1. Java Agent: Fixed a rare ConcurrentModificationException

@@ -42,4 +42,11 @@ public interface CodeBasePublisher extends Publisher {
      * @return The latest CodeBaseFingerprint
      */
     CodeBaseFingerprint getCodeBaseFingerprint();
+
+    /**
+     * How many times has the code base been checked for differences?
+     *
+     * @return The number of times the code base has been scanned for changes.
+     */
+    int getCodeBaseCheckCount();
 }
