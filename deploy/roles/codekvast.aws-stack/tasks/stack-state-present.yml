@@ -182,6 +182,7 @@
     exact_count: 1
     count_tag: "{{ role_tag_database }}"
     instance_tags: "{{ role_tag_database }}"
+    termination_protection: "{{ ('no', 'yes')[stack.env == 'prod'] }}"
     wait: yes
   register: ec2database
 
@@ -205,6 +206,7 @@
     exact_count: "{{ stack.backend_count | default(1) }}"
     count_tag: "{{ role_tag_backend }}"
     instance_tags: "{{ role_tag_backend }}"
+    termination_protection: "{{ ('no', 'yes')[stack.env == 'prod'] }}"
     wait: yes
   register: ec2backends
 
