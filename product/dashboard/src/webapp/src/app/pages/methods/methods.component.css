@@ -10,30 +10,6 @@ div.wrapper {
     overflow: auto;
 }
 
-.content div#methods-table {
-    flex: 66;
-}
-
-.content div#methods-table.details-table-hidden {
-    flex: 99;
-}
-
-.content div#details-table-toggle {
-    flex: 1;
-    padding-top: .5em;
-    padding-left: 2px;
-    padding-right: 5px;
-    background-color: lightgrey;
-}
-
-.content div#details-table {
-    flex: 33;
-}
-
-.content div#details-table.details-table-hidden {
-    display: none;
-}
-
 .wrap-word {
     word-wrap: break-word;
     word-break: break-all;
@@ -42,10 +18,6 @@ div.wrapper {
 
 .signature-column {
     width: 72%;
-}
-
-.details-table-visible .signature-column {
-    width: 69%;
 }
 
 .collected-days-column {
@@ -62,11 +34,6 @@ div.wrapper {
 
 .row-icon-column {
     width: 2em;
-}
-
-#details-table .table-active {
-    height: 6em;
-    width: 100%;
 }
 
 .w-80 {

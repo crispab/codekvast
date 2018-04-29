@@ -54,7 +54,7 @@ public class GetMethodsRequest {
     private final int maxResults;
 
     /**
-     * Surround signature with "%" and replace "#" with "."
+     * Append "%" to signature and replace "#" with "."
      */
     private final boolean normalizeSignature;
 
@@ -97,7 +97,7 @@ public class GetMethodsRequest {
             result = signature;
         } else {
             String sig = signature.replace("*", "%").replace("?", "_").replace("#", ".");
-            sig = "%" + sig + "%";
+            sig = sig + "%";
             result = sig.replaceAll("%+", "%");
         }
         if (!result.equals(signature)) {

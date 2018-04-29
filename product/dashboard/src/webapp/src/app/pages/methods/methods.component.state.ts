@@ -25,7 +25,6 @@ export class MethodsComponentState {
     sortColumn = MethodsComponent.SIGNATURE_COLUMN;
     sortAscending = true;
     selectedMethod: Method;
-    detailsTableVisible = false;
     searching = false;
 
     applications: CheckboxState[] = [];
@@ -38,7 +37,7 @@ export class MethodsComponentState {
 
         let getState = function (name: string, oldState: CheckboxState[]) {
             let old: boolean[] = oldState.filter(cs => cs.name === name).map(cs => cs.selected);
-            return old.length > 0 ? old[0] : true;
+            return old.length > 0 ? old[0] : false;
         };
 
         let copyNames = function (checkboxState: CheckboxState[], newNames: string[]) {
@@ -51,6 +50,15 @@ export class MethodsComponentState {
             console.log('[ck dashboard] methodsFormData=%o', data);
             copyNames.call(null, this.applications, data.applications);
             copyNames.call(null, this.environments, data.environments);
+
+            if (!this.anyEnvironmentSelected()) {
+                // Try to pre-select any environment named 'prod*'
+                this.environments.forEach(e => {
+                    if (e.name.toLowerCase().startsWith('prod')) {
+                        e.selected = true;
+                    }
+                });
+            }
         });
     }
 
@@ -181,24 +189,5 @@ export class MethodsComponentState {
         return this.selectedMethod && this.selectedMethod.id === m.id;
     }
 
-    toggleDetailsTable() {
-        this.detailsTableVisible = !this.detailsTableVisible;
-    }
-
-    detailsTableClasses() {
-        return {
-            'details-table-visible': this.detailsTableVisible,
-            'details-table-hidden': !this.detailsTableVisible
-        }
-    }
-
-    detailsTableToggleClasses() {
-        return {
-            'text-center': true,
-            'fas': true,
-            'fa-angle-double-right': this.detailsTableVisible,
-            'fa-angle-double-left': !this.detailsTableVisible
-        };
-    }
 }
 
