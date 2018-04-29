@@ -3,6 +3,7 @@
 ## 0.24.0
 
 1. Java Agent: Corrected scheduling bug. Invocation data was published far too often.
+1. Dashboard: optimized Methods search. Now a lot faster and consumes less memory.
 
 ## 0.23.8
 
