@@ -21,11 +21,9 @@
  */
 package io.codekvast.dashboard.dashboard;
 
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
-import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
+import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -49,6 +47,9 @@ public interface DashboardService {
      */
     @NotNull
     GetMethodsResponse getMethods(@Valid GetMethodsRequest request);
+
+    @Transactional(readOnly = true)
+    GetMethodsResponse2 getMethods2(@Valid GetMethodsRequest request);
 
     /**
      * Retrieve information about a particular method.

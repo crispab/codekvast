@@ -14,7 +14,7 @@ export class DashboardApiService {
     readonly DELETE_AGENT_URL = '/dashboard/api/v1/agent';
     readonly METHOD_BY_ID_URL = '/dashboard/api/v1/method/detail/';
     readonly METHODS_FORM_DATA_URL = '/dashboard/api/v1/methodsFormData';
-    readonly METHODS_URL = '/dashboard/api/v1/methods';
+    readonly METHODS_URL = '/dashboard/api/v2/methods';
     readonly SERVER_SETTINGS_URL = '/dashboard/api/v1/serverSettings';
     readonly STATUS_URL = '/dashboard/api/v1/status';
 

@@ -70,7 +70,8 @@ public class DashboardServiceImpl implements DashboardService {
         // TODO: Make this database driven
         // See io.codekvast.dashboard.dashboard.impl.DashboardServiceImplSyntheticSignatureTest
         SYNTHETIC_SIGNATURE_PATTERN = Pattern.compile(
-            ".*(\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\$[a-z]+\\(\\)$|\\.\\.anonfun\\..*|\\.\\.(Enhancer|FastClass)BySpringCGLIB\\.\\..*)");
+            ".*(\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\$[a-z]+\\(\\)$|\\.\\.anonfun\\..*|\\.\\.(Enhancer|FastClass)" +
+                "BySpringCGLIB\\.\\..*)");
     }
 
     private final JdbcTemplate jdbcTemplate;
@@ -100,7 +101,8 @@ public class DashboardServiceImpl implements DashboardService {
         whereClause += "m.signature LIKE :signature ";
 
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(whereClause,
-                                                                                                       request.isSuppressSyntheticMethods());
+                                                                                                       request
+                                                                                                           .isSuppressSyntheticMethods());
 
 
         namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
@@ -118,6 +120,94 @@ public class DashboardServiceImpl implements DashboardService {
                                  .methods(methods)
                                  .queryTimeMillis(queryTimeMillis)
                                  .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetMethodsResponse2 getMethods2(@Valid GetMethodsRequest request) {
+        long startedAt = timeService.currentTimeMillis();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("customerId", customerIdProvider.getCustomerId());
+
+        String whereClause = "i.customerId = :customerId AND ";
+
+        if (request.getApplications() != null && !request.getApplications().isEmpty()) {
+            params.addValue("applicationIds", translateNamesToIds("applications", request.getApplications()));
+            whereClause += "i.applicationId IN (:applicationIds) AND ";
+        }
+        if (request.getEnvironments() != null && !request.getEnvironments().isEmpty()) {
+            params.addValue("environmentIds", translateNamesToIds("environments", request.getEnvironments()));
+            whereClause += "i.environmentId IN (:environmentIds) AND ";
+        }
+        params.addValue("signature", request.getNormalizedSignature());
+        whereClause += "m.signature LIKE :signature ";
+
+        String sql = "SELECT\n" +
+            " m.id, m.signature, max(i.status) AS status, min(j.startedAt) AS collectedSince, " +
+            " max(i.invokedAtMillis) AS lastInvokedAtMillis\n" +
+            "FROM invocations i, methods m, jvms j\n" +
+            "WHERE i.methodId = m.id\n" +
+            "      AND i.jvmId = j.id\n" +
+            "      AND " + whereClause +
+            "GROUP BY m.signature\n " +
+            "ORDER BY lastInvokedAtMillis ";
+
+        List<MethodDescriptor2> methods = new ArrayList<>();
+
+        namedParameterJdbcTemplate.query(sql, params, rs -> {
+            String signature = rs.getString("signature");
+            if (request.isSuppressSyntheticMethods() && isSyntheticMethod(signature)) {
+                logger.trace("Suppressing synthetic method {}", signature);
+                return;
+            }
+
+            SignatureStatus2 status = SignatureStatus2.valueOf(rs.getString("status"));
+            if (request.isSuppressUntrackedMethods() && !status.isTracked()) {
+                logger.trace("Suppressing untracked method {}", signature);
+                return;
+            }
+
+            Timestamp collectedSince = rs.getTimestamp("collectedSince");
+            Integer collectedDays = Math.toIntExact(Duration.between(collectedSince.toInstant(), timeService.now()).toDays());
+            if (collectedDays < request.getMinCollectedDays()) {
+                logger.trace("Suppressing method {} since only collected {} days", signature, collectedDays);
+                return;
+            }
+
+            long lastInvokedAtMillis = rs.getLong("lastInvokedAtMillis");
+            if (lastInvokedAtMillis < request.getOnlyInvokedAfterMillis()) {
+                logger.trace("Suppressing method {} since invoked before {} ", signature, request.getOnlyInvokedAfterMillis());
+                return;
+            }
+
+            if (lastInvokedAtMillis > request.getOnlyInvokedBeforeMillis()) {
+                logger.trace("Suppressing method {} since invoked after {} ", signature, request.getOnlyInvokedBeforeMillis());
+                return;
+            }
+
+            methods.add(
+                MethodDescriptor2.builder()
+                                 .id(rs.getLong("id"))
+                                 .signature(signature)
+                                 .trackedPercent(status.isTracked() ? 100 : 0)
+                                 .collectedDays(collectedDays)
+                                 .lastInvokedAtMillis(lastInvokedAtMillis)
+                                 .build());
+        });
+
+
+        long queryTimeMillis = timeService.currentTimeMillis() - startedAt;
+        logger.debug("Processed {} in {} ms.", request, queryTimeMillis);
+
+        int resultSize = Math.min(methods.size(), request.getMaxResults());
+        methods.sort(Comparator.comparing(MethodDescriptor2::getLastInvokedAtMillis));
+        return GetMethodsResponse2.builder()
+                                  .timestamp(startedAt)
+                                  .request(request)
+                                  .numMethods(resultSize)
+                                  .methods(methods.subList(0, resultSize))
+                                  .queryTimeMillis(queryTimeMillis)
+                                  .build();
     }
 
     private Collection<Long> translateNamesToIds(final String tableName, Collection<String> names) {
@@ -265,7 +355,8 @@ public class DashboardServiceImpl implements DashboardService {
                 String.format("No such agent: agentId=%d, jvmId=%d for customerId=%d", agentId, jvmId, customerId));
         }
 
-        logger.info("Deleted {} invocations rows, {} jvms rows and {} agent_state rows for agent {}:{}:{} in {}", deletedInvocations, deletedJvms,
+        logger.info("Deleted {} invocations rows, {} jvms rows and {} agent_state rows for agent {}:{}:{} in {}", deletedInvocations,
+                    deletedJvms,
                     deletedAgentState, customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
 
         // child-less methods, environments and applications are deleted by the WeedingService.

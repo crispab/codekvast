@@ -23,10 +23,7 @@ package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.dashboard.model.ServerSettings;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
-import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
+import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +75,14 @@ public class DashboardApiController {
     public GetMethodsResponse getMethods1(@Valid @RequestBody GetMethodsRequest request) {
         logger.debug("Request: {}", request);
         GetMethodsResponse response = dashboardService.getMethods(request);
+        logger.debug("Response: {}", response);
+        return response;
+    }
+
+    @PostMapping("/dashboard/api/v2/methods")
+    public GetMethodsResponse2 getMethods2(@Valid @RequestBody GetMethodsRequest request) {
+        logger.debug("Request: {}", request);
+        GetMethodsResponse2 response = dashboardService.getMethods2(request);
         logger.debug("Response: {}", response);
         return response;
     }
