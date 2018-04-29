@@ -128,6 +128,10 @@ public class DashboardServiceImpl implements DashboardService {
         long startedAt = timeService.currentTimeMillis();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("customerId", customerIdProvider.getCustomerId());
+        params.addValue("minCollectedDays", request.getMinCollectedDays());
+        params.addValue("now", new Timestamp(timeService.currentTimeMillis()));
+        params.addValue("onlyInvokedAfterMillis", request.getOnlyInvokedAfterMillis());
+        params.addValue("onlyInvokedBeforeMillis", request.getOnlyInvokedBeforeMillis());
 
         String whereClause = "i.customerId = :customerId AND ";
 
@@ -143,19 +147,29 @@ public class DashboardServiceImpl implements DashboardService {
         whereClause += "m.signature LIKE :signature ";
 
         String sql = "SELECT\n" +
-            " m.id, m.signature, max(i.status) AS status, min(j.startedAt) AS collectedSince, " +
-            " max(i.invokedAtMillis) AS lastInvokedAtMillis\n" +
+            "    m.id, m.signature, MAX(i.status) AS status, " +
+            "    MIN(j.startedAt) AS collectedSince,\n" +
+            "    ((TO_SECONDS(:now) - TO_SECONDS(MIN(j.startedAt))) DIV 86400) AS collectedDays,\n" +
+            "    MAX(i.invokedAtMillis) AS lastInvokedAtMillis\n" +
             "FROM invocations i, methods m, jvms j\n" +
             "WHERE i.methodId = m.id\n" +
             "      AND i.jvmId = j.id\n" +
             "      AND " + whereClause +
-            "GROUP BY m.signature\n " +
+            "GROUP BY m.signature\n" +
+            "HAVING collectedDays >= :minCollectedDays " +
+            "   AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n" +
             "ORDER BY lastInvokedAtMillis ";
 
         List<MethodDescriptor2> methods = new ArrayList<>();
 
         namedParameterJdbcTemplate.query(sql, params, rs -> {
+            if (methods.size() >= request.getMaxResults()) {
+                logger.trace("Ignoring row {}, since max result already achieved", rs.getRow());
+                return;
+            }
+
             String signature = rs.getString("signature");
+
             if (request.isSuppressSyntheticMethods() && isSyntheticMethod(signature)) {
                 logger.trace("Suppressing synthetic method {}", signature);
                 return;
@@ -163,25 +177,7 @@ public class DashboardServiceImpl implements DashboardService {
 
             SignatureStatus2 status = SignatureStatus2.valueOf(rs.getString("status"));
             if (request.isSuppressUntrackedMethods() && !status.isTracked()) {
-                logger.trace("Suppressing untracked method {}", signature);
-                return;
-            }
-
-            Timestamp collectedSince = rs.getTimestamp("collectedSince");
-            Integer collectedDays = Math.toIntExact(Duration.between(collectedSince.toInstant(), timeService.now()).toDays());
-            if (collectedDays < request.getMinCollectedDays()) {
-                logger.trace("Suppressing method {} since only collected {} days", signature, collectedDays);
-                return;
-            }
-
-            long lastInvokedAtMillis = rs.getLong("lastInvokedAtMillis");
-            if (lastInvokedAtMillis < request.getOnlyInvokedAfterMillis()) {
-                logger.trace("Suppressing method {} since invoked before {} ", signature, request.getOnlyInvokedAfterMillis());
-                return;
-            }
-
-            if (lastInvokedAtMillis > request.getOnlyInvokedBeforeMillis()) {
-                logger.trace("Suppressing method {} since invoked after {} ", signature, request.getOnlyInvokedBeforeMillis());
+                logger.trace("Suppressing untracked method {} with status {}", signature, status);
                 return;
             }
 
@@ -190,22 +186,21 @@ public class DashboardServiceImpl implements DashboardService {
                                  .id(rs.getLong("id"))
                                  .signature(signature)
                                  .trackedPercent(status.isTracked() ? 100 : 0)
-                                 .collectedDays(collectedDays)
-                                 .lastInvokedAtMillis(lastInvokedAtMillis)
+                                 .collectedDays(rs.getInt("collectedDays"))
+                                 .lastInvokedAtMillis(rs.getLong("lastInvokedAtMillis"))
                                  .build());
+
         });
 
 
         long queryTimeMillis = timeService.currentTimeMillis() - startedAt;
         logger.debug("Processed {} in {} ms.", request, queryTimeMillis);
 
-        int resultSize = Math.min(methods.size(), request.getMaxResults());
-        methods.sort(Comparator.comparing(MethodDescriptor2::getLastInvokedAtMillis));
         return GetMethodsResponse2.builder()
                                   .timestamp(startedAt)
                                   .request(request)
-                                  .numMethods(resultSize)
-                                  .methods(methods.subList(0, resultSize))
+                                  .numMethods(methods.size())
+                                  .methods(methods)
                                   .queryTimeMillis(queryTimeMillis)
                                   .build();
     }
