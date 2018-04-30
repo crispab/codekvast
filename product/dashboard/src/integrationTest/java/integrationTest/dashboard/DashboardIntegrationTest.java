@@ -9,10 +9,7 @@ import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.dashboard.DashboardService;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
-import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
+import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
@@ -420,7 +417,7 @@ public class DashboardIntegrationTest {
         setSecurityContextCustomerId(1L);
 
         // when find exact signature
-        GetMethodsResponse response = dashboardService.getMethods(
+        GetMethodsResponse2 response = dashboardService.getMethods2(
             GetMethodsRequest.defaults().toBuilder().signature("foobar").build());
 
         // then
@@ -435,7 +432,7 @@ public class DashboardIntegrationTest {
         // List<Long> validIds = jdbcTemplate.query("SELECT id FROM methods", (rs, rowNum) -> rs.getLong(1));
 
         // when
-        // Optional<MethodDescriptor> result = dashboardService.getMethodById(validIds.get(0));
+        // Optional<MethodDescriptor1> result = dashboardService.getMethodById(validIds.get(0));
 
         // then
         // assertThat(result.isPresent(), is(true));
@@ -448,7 +445,7 @@ public class DashboardIntegrationTest {
         setSecurityContextCustomerId(1L);
 
         // when
-        Optional<MethodDescriptor> result = dashboardService.getMethodById(-1L);
+        Optional<MethodDescriptor1> result = dashboardService.getMethodById(-1L);
 
         // then
         assertThat(result.isPresent(), is(false));

@@ -23,7 +23,6 @@ package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -44,20 +43,31 @@ public interface DashboardService {
      *
      * @param request The request parameters.
      * @return A response object. Does never return null.
+     * @deprecated Use {@link #getMethods2(GetMethodsRequest)} instead.
      */
     @NotNull
-    GetMethodsResponse getMethods(@Valid GetMethodsRequest request);
+    @Deprecated
+    GetMethodsResponse1 getMethods1(@Valid GetMethodsRequest request);
 
-    @Transactional(readOnly = true)
+    /**
+     * Retrieve information about a set of methods.
+     *
+     * Use case: <ol> <li>In IDEA: Right-click a method name -&gt; Copy Reference (Ctrl-Alt-Shift-C)</li> <li>In Codekvast Dashboard web UI:
+     * paste into the search field (Ctrl-V)</li> </ol>
+     *
+     * @param request The request parameters.
+     * @return A response object. Does never return null.
+     */
+    @NotNull
     GetMethodsResponse2 getMethods2(@Valid GetMethodsRequest request);
 
     /**
      * Retrieve information about a particular method.
      *
      * @param methodId The primary key of the method.
-     * @return an optional MethodDescriptor. Does never return null.
+     * @return an optional MethodDescriptor1. Does never return null.
      */
-    Optional<MethodDescriptor> getMethodById(@NotNull Long methodId);
+    Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId);
 
     /**
      * Retrieve status for the authenticated customer.

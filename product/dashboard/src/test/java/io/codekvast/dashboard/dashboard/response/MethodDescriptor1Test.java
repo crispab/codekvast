@@ -3,7 +3,7 @@ package io.codekvast.dashboard.dashboard.response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.codekvast.dashboard.dashboard.model.methods.ApplicationDescriptor;
 import io.codekvast.dashboard.dashboard.model.methods.EnvironmentDescriptor;
-import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
+import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor1;
 import org.junit.Test;
 
 import static io.codekvast.javaagent.model.v2.SignatureStatus2.*;
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author olle.hallin@crisp.se
  */
-public class MethodDescriptorTest {
+public class MethodDescriptor1Test {
 
     private final long days = 24 * 60 * 60 * 1000L;
     private final long now = System.currentTimeMillis();
@@ -27,7 +27,7 @@ public class MethodDescriptorTest {
     @Test
     public void should_calculate_min_max_correctly() {
         // given
-        MethodDescriptor md = buildMethodDescriptor(fourteenDaysAgo, twoDaysAgo, never, twoDaysAgo);
+        MethodDescriptor1 md = buildMethodDescriptor(fourteenDaysAgo, twoDaysAgo, never, twoDaysAgo);
 
         // when
 
@@ -48,7 +48,7 @@ public class MethodDescriptorTest {
     @Test
     public void should_serializable_to_JSON() throws Exception {
         // given
-        MethodDescriptor md = buildMethodDescriptor(fourteenDaysAgo, twoDaysAgo, never, twoDaysAgo);
+        MethodDescriptor1 md = buildMethodDescriptor(fourteenDaysAgo, twoDaysAgo, never, twoDaysAgo);
         long lastInvokedAtMillis = md.getLastInvokedAtMillis();
 
         // when
@@ -62,13 +62,13 @@ public class MethodDescriptorTest {
                                                    .writeValueAsString(md));
     }
 
-    private MethodDescriptor buildMethodDescriptor(long collectedSinceMillis, long collectedToMillis,
-                                                   long invokedAtMillis1, long invokedAtMillis2) {
-        return MethodDescriptor.builder()
-                               .id(1L)
-                               .declaringType("declaringType")
-                               .modifiers("")
-                               .occursInApplication(
+    private MethodDescriptor1 buildMethodDescriptor(long collectedSinceMillis, long collectedToMillis,
+                                                    long invokedAtMillis1, long invokedAtMillis2) {
+        return MethodDescriptor1.builder()
+                                .id(1L)
+                                .declaringType("declaringType")
+                                .modifiers("")
+                                .occursInApplication(
                                    ApplicationDescriptor.builder()
                                                         .name("app1")
                                                         .version("1.1")
@@ -77,7 +77,7 @@ public class MethodDescriptorTest {
                                                         .publishedAtMillis(collectedToMillis)
                                                         .invokedAtMillis(invokedAtMillis1)
                                                         .build())
-                               .occursInApplication(
+                                .occursInApplication(
                                    ApplicationDescriptor.builder()
                                                         .name("app1")
                                                         .version("1.2")
@@ -86,7 +86,7 @@ public class MethodDescriptorTest {
                                                         .publishedAtMillis(collectedToMillis - 10)
                                                         .invokedAtMillis(invokedAtMillis1 - 10)
                                                         .build())
-                               .occursInApplication(
+                                .occursInApplication(
                                    ApplicationDescriptor.builder()
                                                         .name("app1")
                                                         .version("1.3")
@@ -95,7 +95,7 @@ public class MethodDescriptorTest {
                                                         .publishedAtMillis(collectedToMillis)
                                                         .invokedAtMillis(invokedAtMillis2)
                                                         .build())
-                               .collectedInEnvironment(
+                                .collectedInEnvironment(
                                    EnvironmentDescriptor.builder()
                                                         .name("test")
                                                         .collectedSinceMillis(collectedSinceMillis)
@@ -104,7 +104,7 @@ public class MethodDescriptorTest {
                                                         .tag("tag2=2")
                                                         .tag("tag1=1")
                                                         .build().computeFields())
-                               .collectedInEnvironment(
+                                .collectedInEnvironment(
                                    EnvironmentDescriptor.builder()
                                                         .name("customer1")
                                                         .collectedSinceMillis(collectedSinceMillis)
@@ -116,12 +116,12 @@ public class MethodDescriptorTest {
                                                         .tag("bar=2")
                                                         .tag("baz")
                                                         .build().computeFields())
-                               .packageName("packageName")
-                               .signature("signature")
-                               .visibility("public")
-                               .bridge(null)
-                               .synthetic(false)
-                               .build().computeFields();
+                                .packageName("packageName")
+                                .signature("signature")
+                                .visibility("public")
+                                .bridge(null)
+                                .synthetic(false)
+                                .build().computeFields();
     }
 
 }

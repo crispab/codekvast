@@ -32,7 +32,7 @@ import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
- * A validated parameters object for {@link DashboardService#getMethods(GetMethodsRequest)}
+ * A validated parameters object for {@link DashboardService#getMethods1(GetMethodsRequest)} and {@link DashboardService#getMethods2(GetMethodsRequest)}
  *
  * @author olle.hallin@crisp.se
  */

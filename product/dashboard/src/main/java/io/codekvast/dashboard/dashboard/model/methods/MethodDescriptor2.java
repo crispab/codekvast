@@ -40,10 +40,10 @@ public class MethodDescriptor2 {
     private final String signature;
 
     @NonNull
-    private final int trackedPercent;
+    private final Integer trackedPercent;
 
     @NonNull
-    private Integer collectedDays;
+    private final Integer collectedDays;
 
     @NonNull
     private Long lastInvokedAtMillis;

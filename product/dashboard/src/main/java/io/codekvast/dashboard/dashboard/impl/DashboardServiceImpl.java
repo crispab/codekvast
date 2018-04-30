@@ -82,7 +82,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetMethodsResponse getMethods(@Valid GetMethodsRequest request) {
+    public GetMethodsResponse1 getMethods1(@Valid GetMethodsRequest request) {
         long startedAt = timeService.currentTimeMillis();
 
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -107,19 +107,19 @@ public class DashboardServiceImpl implements DashboardService {
 
         namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
 
-        List<MethodDescriptor> methods = rowCallbackHandler.getResult(request);
+        List<MethodDescriptor1> methods = rowCallbackHandler.getResult(request);
 
 
         long queryTimeMillis = timeService.currentTimeMillis() - startedAt;
         logger.debug("Processed {} in {} ms. {} result set rows processed.", request, queryTimeMillis, rowCallbackHandler.getRowCount());
 
-        return GetMethodsResponse.builder()
-                                 .timestamp(startedAt)
-                                 .request(request)
-                                 .numMethods(methods.size())
-                                 .methods(methods)
-                                 .queryTimeMillis(queryTimeMillis)
-                                 .build();
+        return GetMethodsResponse1.builder()
+                                  .timestamp(startedAt)
+                                  .request(request)
+                                  .numMethods(methods.size())
+                                  .methods(methods)
+                                  .queryTimeMillis(queryTimeMillis)
+                                  .build();
     }
 
     @Override
@@ -148,13 +148,10 @@ public class DashboardServiceImpl implements DashboardService {
 
         String sql = "SELECT\n" +
             "    m.id, m.signature, MAX(i.status) AS status, " +
-            "    MIN(j.startedAt) AS collectedSince,\n" +
             "    ((TO_SECONDS(:now) - TO_SECONDS(MIN(j.startedAt))) DIV 86400) AS collectedDays,\n" +
             "    MAX(i.invokedAtMillis) AS lastInvokedAtMillis\n" +
             "FROM invocations i, methods m, jvms j\n" +
-            "WHERE i.methodId = m.id\n" +
-            "      AND i.jvmId = j.id\n" +
-            "      AND " + whereClause +
+            "WHERE i.methodId = m.id AND i.jvmId = j.id AND " + whereClause +
             "GROUP BY m.signature\n" +
             "HAVING collectedDays >= :minCollectedDays " +
             "   AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n" +
@@ -218,7 +215,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<MethodDescriptor> getMethodById(@NotNull Long methodId) {
+    public Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId) {
         GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
                                                      .maxResults(1)
                                                      .suppressUntrackedMethods(false)
@@ -410,7 +407,7 @@ public class DashboardServiceImpl implements DashboardService {
         private final String whereClause;
         private final boolean suppressSyntheticMethods;
 
-        private final List<MethodDescriptor> result = new ArrayList<>();
+        private final List<MethodDescriptor1> result = new ArrayList<>();
 
         private QueryState queryState;
 
@@ -427,7 +424,7 @@ public class DashboardServiceImpl implements DashboardService {
 
             // This is a simpler to understand approach than trying to do everything in the database.
             // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows
-            // for each method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor per
+            // for each method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor1 per
             // method ID.
             // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
 
@@ -471,7 +468,7 @@ public class DashboardServiceImpl implements DashboardService {
             long publishedAt = rs.getTimestamp("publishedAt").getTime();
             long invokedAtMillis = rs.getLong("invokedAtMillis");
 
-            MethodDescriptor.MethodDescriptorBuilder builder = queryState.getBuilder();
+            MethodDescriptor1.MethodDescriptor1Builder builder = queryState.getBuilder();
             String appName = rs.getString("appName");
             String appVersion = rs.getString("appVersion");
 
@@ -507,13 +504,13 @@ public class DashboardServiceImpl implements DashboardService {
             return new HashSet<>(Arrays.asList(tags.split("\\s*[,;]\\s")));
         }
 
-        private List<MethodDescriptor> getResult(GetMethodsRequest request) {
+        private List<MethodDescriptor1> getResult(GetMethodsRequest request) {
             // Include the last method
             queryState.addTo(result);
 
             // Get rid of unwanted result
-            for (Iterator<MethodDescriptor> iterator = result.iterator(); iterator.hasNext(); ) {
-                MethodDescriptor md = iterator.next();
+            for (Iterator<MethodDescriptor1> iterator = result.iterator(); iterator.hasNext(); ) {
+                MethodDescriptor1 md = iterator.next();
 
                 boolean keep = true;
 
@@ -545,7 +542,7 @@ public class DashboardServiceImpl implements DashboardService {
             logger.debug("Result size before limiting size: {}", result.size());
 
             // Sort with respect to lastInvokedAt ASC (so that we keep the oldest invocations)
-            result.sort(Comparator.comparing(MethodDescriptor::getLastInvokedAtMillis));
+            result.sort(Comparator.comparing(MethodDescriptor1::getLastInvokedAtMillis));
 
             // Limit the result
             return result.stream().limit(request.getMaxResults()).collect(Collectors.toList());
@@ -564,12 +561,12 @@ public class DashboardServiceImpl implements DashboardService {
         private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();
         private final Map<String, EnvironmentDescriptor> environments = new HashMap<>();
 
-        private MethodDescriptor.MethodDescriptorBuilder builder;
+        private MethodDescriptor1.MethodDescriptor1Builder builder;
         private int rows;
 
-        MethodDescriptor.MethodDescriptorBuilder getBuilder() {
+        MethodDescriptor1.MethodDescriptor1Builder getBuilder() {
             if (builder == null) {
-                builder = MethodDescriptor.builder().id(methodId);
+                builder = MethodDescriptor1.builder().id(methodId);
             }
             return builder;
         }
@@ -589,7 +586,7 @@ public class DashboardServiceImpl implements DashboardService {
             environments.put(name, environmentDescriptor.mergeWith(environments.get(name)));
         }
 
-        void addTo(List<MethodDescriptor> result) {
+        void addTo(List<MethodDescriptor1> result) {
             if (builder != null) {
                 logger.trace("Adding method {} to result (compiled from {} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));

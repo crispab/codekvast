@@ -52,7 +52,7 @@ public class DashboardApiControllerTest {
         // given
         GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
                                                      .signature("some signature").build();
-        when(dashboardService.getMethods(request)).thenReturn(GetMethodsResponse
+        when(dashboardService.getMethods1(request)).thenReturn(GetMethodsResponse1
                                                                   .builder()
                                                                   .methods(emptyList())
                                                                   .build());
@@ -75,13 +75,13 @@ public class DashboardApiControllerTest {
         long collectedSinceMillis = now.minus(17, ChronoUnit.DAYS).toEpochMilli();
         long collectedToMillis = now.minusSeconds(30).toEpochMilli();
 
-        MethodDescriptor methodDescriptor = MethodDescriptor.builder()
-                                                            .id(17L)
-                                                            .signature("sig")
-                                                            .visibility("public")
-                                                            .synthetic(false)
-                                                            .bridge(false)
-                                                            .collectedInEnvironment(
+        MethodDescriptor1 methodDescriptor1 = MethodDescriptor1.builder()
+                                                               .id(17L)
+                                                               .signature("sig")
+                                                               .visibility("public")
+                                                               .synthetic(false)
+                                                               .bridge(false)
+                                                               .collectedInEnvironment(
                                                                 EnvironmentDescriptor.builder()
                                                                                      .name("dev")
                                                                                      .collectedSinceMillis(collectedSinceMillis)
@@ -90,7 +90,7 @@ public class DashboardApiControllerTest {
                                                                                      .tag("tag1")
                                                                                      .tag("tag2")
                                                                                      .build().computeFields())
-                                                            .occursInApplication(
+                                                               .occursInApplication(
                                                                 ApplicationDescriptor.builder()
                                                                                      .name("application")
                                                                                      .version("version")
@@ -99,9 +99,9 @@ public class DashboardApiControllerTest {
                                                                                      .invokedAtMillis(invokedAtMillis)
                                                                                      .status(SignatureStatus2.INVOKED)
                                                                                      .build())
-                                                            .build().computeFields();
+                                                               .build().computeFields();
 
-        when(dashboardService.getMethodById(17L)).thenReturn(Optional.of(methodDescriptor));
+        when(dashboardService.getMethodById(17L)).thenReturn(Optional.of(methodDescriptor1));
         mockMvc.perform(get("/dashboard/api/v1/method/detail/17"))
                .andExpect(status().isOk())
                .andExpect(content().contentType(APPLICATION_JSON_UTF8))

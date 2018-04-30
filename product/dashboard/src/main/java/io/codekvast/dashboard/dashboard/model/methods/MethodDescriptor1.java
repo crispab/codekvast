@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Data
 @Setter(value = AccessLevel.NONE)
 @Builder(toBuilder = true)
-public class MethodDescriptor {
+public class MethodDescriptor1 {
 
     @NonNull
     private final Long id;
@@ -82,7 +82,7 @@ public class MethodDescriptor {
     /**
      * Assigns values to all computed fields.
      */
-    public MethodDescriptor computeFields() {
+    public MethodDescriptor1 computeFields() {
         this.collectedSinceMillis =
             occursInApplications.stream().map(ApplicationDescriptor::getStartedAtMillis).reduce(Math::min).orElse(0L);
 

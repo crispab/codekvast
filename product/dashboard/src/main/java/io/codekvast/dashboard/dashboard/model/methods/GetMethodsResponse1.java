@@ -35,7 +35,7 @@ import java.util.List;
 @Value
 @Builder
 @ToString(exclude = "methods")
-public class GetMethodsResponse {
+public class GetMethodsResponse1 {
     /**
      * When was the request received? Millis since epoch.
      */
@@ -59,5 +59,5 @@ public class GetMethodsResponse {
     /**
      * The resulting methods.
      */
-    private final List<MethodDescriptor> methods;
+    private final List<MethodDescriptor1> methods;
 }

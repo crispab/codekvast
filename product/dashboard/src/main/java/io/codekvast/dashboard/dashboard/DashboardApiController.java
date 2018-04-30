@@ -72,9 +72,9 @@ public class DashboardApiController {
     }
 
     @PostMapping("/dashboard/api/v1/methods")
-    public GetMethodsResponse getMethods1(@Valid @RequestBody GetMethodsRequest request) {
+    public GetMethodsResponse1 getMethods1(@Valid @RequestBody GetMethodsRequest request) {
         logger.debug("Request: {}", request);
-        GetMethodsResponse response = dashboardService.getMethods(request);
+        GetMethodsResponse1 response = dashboardService.getMethods1(request);
         logger.debug("Response: {}", response);
         return response;
     }
@@ -88,10 +88,10 @@ public class DashboardApiController {
     }
 
     @GetMapping("/dashboard/api/v1/method/detail/{id}")
-    public ResponseEntity<MethodDescriptor> getMethod1(@PathVariable(value = "id") Long methodId) {
+    public ResponseEntity<MethodDescriptor1> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
 
-        Optional<MethodDescriptor> result = dashboardService.getMethodById(methodId);
+        Optional<MethodDescriptor1> result = dashboardService.getMethodById(methodId);
 
         logger.debug("{} method with id={} in {} ms", result.map(methodDescriptor1 -> "Found").orElse("Could not find"),
                      methodId, System.currentTimeMillis() - startedAt);
