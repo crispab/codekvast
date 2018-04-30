@@ -155,7 +155,7 @@ public class DashboardServiceImpl implements DashboardService {
             "GROUP BY m.signature\n" +
             "HAVING collectedDays >= :minCollectedDays " +
             "   AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n" +
-            "ORDER BY lastInvokedAtMillis ";
+            "ORDER BY lastInvokedAtMillis, m.signature ";
 
         List<MethodDescriptor2> methods = new ArrayList<>();
 
