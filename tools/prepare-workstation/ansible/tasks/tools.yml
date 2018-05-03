@@ -41,3 +41,12 @@
 
 - name: Install Yarn
   package: name=yarn state=present
+
+- name: Install Ruby
+  package: name={{ item }} state=installed
+  with_items:
+  - ruby
+  - ruby-dev
+
+- name: Install Kensa
+  shell: gem install kensa
