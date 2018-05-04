@@ -9,9 +9,6 @@
   handlers:
   - include: handlers/main.yml
 
-  roles:
-  - {role: franklinkim.docker, tags: [docker, docker-engine], distribution_release: zesty}
-  
   post_tasks:
   - {include: tasks/tools.yml, tags: tools}
   - {include: tasks/docker.yml, tags: docker}

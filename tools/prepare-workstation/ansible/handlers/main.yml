@@ -3,3 +3,6 @@
   shell: aws --profile {{ item }} ec2 describe-availability-zones
   with_items:
   - codekvast
+
+- name: Relogin needed
+  debug: msg='You need to logout and login'

@@ -1,6 +1,23 @@
 ---
+- name: Install Docker APT key
+  apt_key: url=https://download.docker.com/linux/ubuntu/gpg id=0EBFCD88
+
+- name: Define Docker distribution release
+  set_fact: distribution_release='artful'
+
+- name: Define Docker APT repository
+  apt_repository: filename=docker repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ distribution_release | default(ansible_distribution_release) }} stable'
+
+- name: Install Docker Engine
+  package: name=docker-ce state=present
+
+- name: Make Docker start after reboot
+  service: name=docker enabled=yes
+
 - name: Install docker-cleanup in /etc/cron.daily
   template: src=docker-cleanup dest=/etc/cron.daily owner=root group=root mode=a=rx
 
 - name: Add user to docker group
   user: name={{ actual_username }} groups=docker append=yes
+  notify:
+  - 'Relogin needed'
