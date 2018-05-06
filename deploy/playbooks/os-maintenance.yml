@@ -11,5 +11,8 @@
   - name: Install swedish language pack
     package: name=language-pack-sv state=present
 
+  - name: Cleanup APT cache to make room for upgrade
+    apt: update_cache=no autoremove=yes autoclean=yes
+
   - name: Upgrade installed packages
-    apt: update_cache=yes upgrade=safe autoremove=yes purge=yes
+    apt: update_cache=yes autoremove=yes autoclean=yes purge=yes upgrade=safe
