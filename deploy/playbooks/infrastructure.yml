@@ -18,6 +18,7 @@
     dns_records:
     - { name: 'codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: 's3-website.eu-central-1.amazonaws.com', owner: olle }
     - { name: 'www.codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: 's3-website.eu-central-1.amazonaws.com', owner: olle }
+    - { name: '_d60ed2fdbf07f3f631a87cbe4b31da89.codekvast.io', type: CNAME, value: '_1f2bc564036706f4ddbb398053c86ab4.acm-validations.aws', owner: 'AWS Certificate Manager'}
 
   tasks:
   - name: Create S3 buckets for static websites
