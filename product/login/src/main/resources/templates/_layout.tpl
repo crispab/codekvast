@@ -16,7 +16,9 @@ html {
         link(rel: 'stylesheet', type: 'text/css', href: 'https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css'); newLine()
         link(rel: 'stylesheet', type: 'text/css', href: '/assets/codekvast.css'); newLine()
 
+        script(type: 'text/javascript', src: 'https://code.jquery.com/jquery-3.3.1.slim.min.js', integrity: 'sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=', crossorigin: 'anonymous') { yield('') }; newLine()
         script(type: 'text/javascript', src: 'https://www.google-analytics.com/analytics.js') { yield('') }; newLine()
+
     }
     newLine()
     body {
@@ -38,6 +40,19 @@ html {
             }
 
             main(class: 'container') {
+
+                div(class: 'alert alert-warning alert-dismissible fade show', role: 'alert'){
+                      p('Codekvast uses cookies.')
+                      p {
+                            yield('Read more about the ')
+                            a(href:'http://www.codekvast.io/pages/privacy-policy.html', target:'_new', 'Codekvast Privacy Policy')
+                      }
+
+                      button(type: 'button', class: 'close', 'data-dismiss': 'alert', 'aria-label': 'Close') {
+                          span('aria-hidden': 'true', '&times;')
+                      }
+                }
+
                 bodyContents()
             }
 
