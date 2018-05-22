@@ -35,17 +35,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * @author olle.hallin@crisp.se
@@ -63,6 +59,18 @@ public class LoginController {
     @ModelAttribute("settings")
     public CodekvastLoginSettings getCodekvastSettings() {
         return settings;
+    }
+
+    @ModelAttribute("cookieConsent")
+    public Boolean getCookieConsent(@CookieValue(name = "cookieConsent", defaultValue = "FALSE") Boolean cookieConsent) {
+        logger.info("cookieConsent={}", cookieConsent);
+        return Optional.ofNullable(cookieConsent).orElse(Boolean.FALSE);
+    }
+
+    @ModelAttribute("cookieDomain")
+    public String cookieDomain(@RequestHeader("Host") String requestHost) {
+        logger.info("requestHost={}", requestHost);
+        return requestHost.startsWith("localhost") ? "localhost" : ".codekvast.io";
     }
 
     @GetMapping("/userinfo")
@@ -108,7 +116,7 @@ public class LoginController {
         return authentication == null ? "index" : "redirect:userinfo";
     }
 
-    @RequestMapping(method = POST, path = "/launch/{customerId}")
+    @PostMapping("/launch/{customerId}")
     public void launchDashboard(@PathVariable("customerId") Long customerId, HttpServletResponse response) {
         User user = loginService.getUserFromSecurityContext();
 

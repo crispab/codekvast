@@ -4,6 +4,6 @@
     <toRun type="SpringBootApplicationConfigurationType" name="CodekvastDashboardApplication" />
     <toRun type="SpringBootApplicationConfigurationType" name="CodekvastLoginApplication" />
     <toRun type="js.build_tools.npm" name="npm start dashboard" />
-    <method />
+    <method v="2" />
   </configuration>
 </component>
