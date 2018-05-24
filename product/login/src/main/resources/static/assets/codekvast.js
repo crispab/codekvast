@@ -2,7 +2,7 @@
 
     codekvast.giveCookieConsent = function (cookieDomain) {
         console.log('Setting cookieConsent cookie on domain %o', cookieDomain);
-        $('#cookieConsentAlert').addClass('invisible');
+        $('#cookieConsentAlert').addClass('d-none');
         Cookies.set('cookieConsent', 'TRUE', {domain: cookieDomain});
     }
 

@@ -57,7 +57,7 @@ html {
                             yield('. Your use of Codekvast services is subject to this policy and terms.')
                         }
 
-                        button(type: 'button', class: 'close', 'aria-label': 'Close', onclick: "codekvast.giveCookieConsent('$cookieDomain')") {
+                        button(type: 'button', class: 'close', 'aria-label': 'Close', onclick: 'codekvast.giveCookieConsent("' + cookieDomain + '")') {
                             span('aria-hidden': 'true', '&times;')
                         }
                     }
