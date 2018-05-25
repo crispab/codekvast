@@ -13,3 +13,18 @@
 
 - name: Enable and start awslogs service
   service: name=awslogs enabled=yes state=started
+
+- name: Install unzip
+  package: name=unzip state=present
+
+- name: Download /tmp/AmazonCloudWatchAgent.zip
+  get_url: url=https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip dest=/tmp/AmazonCloudWatchAgent.zip
+
+- name: Create installation directory
+  file: path=/tmp/AmazonCloudWatchAgent state=directory
+
+- name: Unpack /tmp/AmazonCloudWatchAgent.zip
+  unarchive: src=/tmp/AmazonCloudWatchAgent.zip dest=/tmp/AmazonCloudWatchAgent/ copy=no
+
+- name: Install /tmp/AmazonCloudWatchAgent/amazon-cloudwatch-agent.deb
+  apt: deb=/tmp/AmazonCloudWatchAgent/amazon-cloudwatch-agent.deb state=present
