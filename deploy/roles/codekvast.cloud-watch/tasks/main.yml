@@ -1,30 +1,36 @@
 ---
-- name: Copy /tmp/awslogs-agent-setup.py
-  copy: src=awslogs-agent-setup.py dest=/tmp/awslogs-agent-setup.py
+- name: Disable and stop awslogs service
+  service: name=awslogs enabled=no state=stopped
+  ignore_errors: true
 
-- name: Create /tmp/awslogs.config
-  template:
-    src: "awslogs.conf.{{ server_type }}.j2"
-    dest: /tmp/awslogs.config
-  notify:
-  - Reconfigure awslogs
-
-- meta: flush_handlers
-
-- name: Enable and start awslogs service
-  service: name=awslogs enabled=yes state=started
+- name: Uninstall awslogs
+  file: path={{ item }} state=absent
+  with_items:
+  - /var/awslogs
+  - /etc/init.d/awslogs
+  - /etc/logrotate.d/awslogs
+  - /etc/cron.d/awslogs
+  - /etc/cron.d/awslogs_log_rotate
 
 - name: Install unzip
   package: name=unzip state=present
 
-- name: Download /tmp/AmazonCloudWatchAgent.zip
-  get_url: url=https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip dest=/tmp/AmazonCloudWatchAgent.zip
+- name: Download /root/AmazonCloudWatchAgent.zip
+  get_url: url=https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip dest=/root/AmazonCloudWatchAgent.zip
 
 - name: Create installation directory
   file: path=/tmp/AmazonCloudWatchAgent state=directory
 
-- name: Unpack /tmp/AmazonCloudWatchAgent.zip
-  unarchive: src=/tmp/AmazonCloudWatchAgent.zip dest=/tmp/AmazonCloudWatchAgent/ copy=no
+- name: Unpack /root/AmazonCloudWatchAgent.zip
+  unarchive: src=/root/AmazonCloudWatchAgent.zip dest=/tmp/AmazonCloudWatchAgent/ copy=no
 
 - name: Install /tmp/AmazonCloudWatchAgent/amazon-cloudwatch-agent.deb
   apt: deb=/tmp/AmazonCloudWatchAgent/amazon-cloudwatch-agent.deb state=present
+  notify: Define amazon-cloudwatch-agent
+
+- name: Install /etc/logrotate.d/amazon-cloudwatch-agent
+  copy: src=logrotate.d/amazon-cloudwatch-agent dest=/etc/logrotate.d/amazon-cloudwatch-agent
+
+- name: Install CloudWatchAgent config
+  template: src=amazon-cloudwatch-agent.json dest=/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+  notify: Restart amazon-cloudwatch-agent service

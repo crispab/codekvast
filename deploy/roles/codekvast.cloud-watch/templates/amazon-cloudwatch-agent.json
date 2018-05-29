@@ -1,0 +1,45 @@
+{
+  "agent": {
+    "metrics_collection_interval": 60,
+    "logfile": "/var/log/amazon-cloudwatch-agent"
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {"file_path": "/var/log/codekvast/application.log", "log_group_name": "{{ env }}", "timezone": "UTC"},
+          {"file_path": "/var/log/codekvast/access.log", "log_group_name": "{{ env }}", "timezone": "UTC"},
+          {"file_path": "/var/log/syslog", "log_group_name": "{{ env }}", "timezone": "UTC"},
+          {"file_path": "/var/log/amazon-cloudwatch-agent", "log_group_name": "{{ env }}", "timezone": "UTC"}
+        ]
+      }
+    }
+  },
+  "metrics": {
+    "namespace": "Codekvast {{ env }}",
+    "metrics_collected": {
+      "cpu": {
+        "measurement": ["cpu_usage_idle", "cpu_usage_iowait", "cpu_usage_user", "cpu_usage_system"],
+        "totalcpu": true
+      },
+      "disk": {
+        "measurement": ["free", "total", "used", "used_percent", "inodes_free"],
+        "resources": ["*"],
+        "ignore_file_system_types": ["tmpfs", "devtmpfs"]
+      },
+      "mem": {
+        "measurement": ["active", "available", "available_percent", "buffered", "cached", "free", "inactive", "total", "used", "used_percent"]
+      },
+      "swap": {
+        "measurement": ["free", "used", "swap_used_percent"]
+      },
+      "net": {
+        "measurement": ["bytes_sent", "bytes_recv", "drop_in", "drop_out", "err_in", "err_out", "packets_sent", "packets_recv"],
+        "resources": ["*"]
+      },
+      "processes": {
+        "measurement": ["blocked", "dead", "idle", "paging", "running", "sleeping", "stopped", "total", "total_threads", "wait", "zombies"]
+      }
+    }
+  }
+}

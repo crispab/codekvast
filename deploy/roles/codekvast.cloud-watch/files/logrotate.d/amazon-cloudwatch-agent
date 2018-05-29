@@ -1,0 +1,8 @@
+/var/log/amazon-cloudwatch-agent {
+       daily
+       rotate 7
+       delaycompress
+       compress
+       notifempty
+       missingok
+}
