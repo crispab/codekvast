@@ -1,4 +1,8 @@
 ---
+- name: "Destroying {{ stack.env }} stack for customer '{{ stack.customer }}'"
+  debug: var=stack
+  when: _debug is defined and _debug
+
 - name: Find correct VPC
   local_action:
     module: ec2_vpc_net_facts
@@ -9,7 +13,8 @@
       "tag:Name": "{{ aws_stack_name }}"
   register: net
 
-- debug: var=net.vpcs[0].id
+- debug: var=net
+  when: _debug is defined and _debug
 
 - set_fact: vpc_id=net.vpcs[0].id
 

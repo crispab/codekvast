@@ -10,7 +10,6 @@ aws_common_tags:
   Env: "{{ stack.env }}"
   Owner: Codekvast
 
-ec2_instance_type: "t2.micro"
 ec2_instance_profile_name: "Codekvast-CloudWatch"
 
 s3_database_backup_bucket: "io.codekvast.{{ stack.customer|lower }}.{{ stack.env|lower }}.backup"

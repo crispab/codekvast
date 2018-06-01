@@ -3,18 +3,8 @@
 aws_region: eu-central-1
 
 aws_stacks:
-  - customer: default
-    env: prod
-    cidr_base: "10.0"
-    state: present
-    app_cnames:
-    - api
-    - login
-    - dashboard
-    db_cname: 'db'
-    backend_count: 2
-  - customer: default
-    env: staging
+  - env: staging
+    customer: default
     cidr_base: "10.1"
     state: present
     app_cnames:
@@ -23,6 +13,20 @@ aws_stacks:
     - 'dashboard-staging'
     db_cname: 'db-staging'
     backend_count: 2
+    backend_instance_type: 't2.micro'
+    db_instance_type: 't2.micro'
+  - env: prod
+    customer: default
+    cidr_base: "10.0"
+    state: present
+    app_cnames:
+    - api
+    - login
+    - dashboard
+    db_cname: 'db'
+    backend_count: 2
+    backend_instance_type: 't2.micro'
+    db_instance_type: 't2.micro'
 
 ports:
   login:

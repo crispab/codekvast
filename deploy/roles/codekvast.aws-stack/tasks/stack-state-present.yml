@@ -1,4 +1,8 @@
 ---
+- name: "Building {{ stack.env }} stack for customer '{{ stack.customer }}'"
+  debug: var=stack
+  when: _debug is defined and _debug
+
 - name: Create VPC
   local_action:
     module: ec2_vpc_net
@@ -9,6 +13,9 @@
     cidr_block: "{{ stack.cidr_base }}.0.0/16"
     tags: "{{ aws_common_tags }}"
   register: net
+
+- debug: var=net
+  when: _debug is defined and _debug
 
 - set_fact: vpc_id="{{ net.vpc.id }}"
 
@@ -21,6 +28,9 @@
     vpc_id: "{{ vpc_id }}"
   register: igw
 
+- debug: var=igw
+  when: _debug is defined and _debug
+
 - name: Create VPC subnet
   local_action:
     module: ec2_vpc_subnet
@@ -32,6 +42,9 @@
     cidr: "{{ stack.cidr_base }}.1.0/24"
     resource_tags: "{{ aws_common_tags }}"
   register: subnet
+
+- debug: var=subnet
+  when: _debug is defined and _debug
 
 - set_fact: subnet_id="{{ subnet.subnet.id }}"
 
@@ -48,6 +61,9 @@
       - dest: 0.0.0.0/0
         gateway_id: "{{ igw.gateway_id }}"
   register: route_table
+
+- debug: var=route_table
+  when: _debug is defined and _debug
 
 - name: Create frontend security group
   local_action:
@@ -128,6 +144,9 @@
   register: my_ip
   changed_when: false
 
+- debug: var=my_ip
+  when: _debug is defined and _debug
+
 - name: Create management security group
   local_action:
     module: ec2_group
@@ -158,7 +177,7 @@
       Owner: Codekvast
     role_tag_backend:
       Name: "Codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
-      role: "backend,frontend"
+      role: "backend"
       Customer: "{{ stack.customer }}"
       Env: "{{ stack.env }}"
       Owner: Codekvast
@@ -176,7 +195,7 @@
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-admin"
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
     image: "{{ aws_ami_id }}"
-    instance_type: "{{ ec2_instance_type }}"
+    instance_type: "{{ stack.db_instance_type }}"
     instance_profile_name: "{{ ec2_instance_profile_name }}"
     user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
     exact_count: 1
@@ -186,9 +205,15 @@
     wait: yes
   register: ec2database
 
+- debug: var=ec2database
+  when: _debug is defined and _debug
+
 - set_fact: database_instance_id="{{ ec2database.tagged_instances[0].id }}"
 
-- name: Create EC2 backend instance
+- debug: var=database_instance_id
+  when: _debug is defined and _debug
+
+- name: Create EC2 backend instances
   local_action:
     module: ec2
     region: "{{ aws_region }}"
@@ -200,7 +225,7 @@
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
     image: "{{ aws_ami_id }}"
-    instance_type: "{{ ec2_instance_type }}"
+    instance_type: "{{ stack.backend_instance_type }}"
     instance_profile_name: "{{ ec2_instance_profile_name }}"
     user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
     exact_count: "{{ stack.backend_count | default(1) }}"
@@ -210,7 +235,13 @@
     wait: yes
   register: ec2backends
 
+- debug: var=ec2backends
+  when: _debug is defined and _debug
+
 - set_fact: backend_instance_ids="{{ ec2backends.tagged_instances|map(attribute='id') | list }}"
+
+- debug: var=backend_instance_ids
+  when: _debug is defined and _debug
 
 - name: Refresh external EC2 cache
   command: "{{ inventory_dir }}/ec2.py --refresh-cache"
@@ -257,6 +288,9 @@
     tags: "{{ aws_common_tags }}"
     wait: yes
   register: elb
+
+- debug: var=elb
+  when: _debug is defined and _debug
 
 - set_fact: elb_dns_name="{{ elb.elb.dns_name }}"
 
