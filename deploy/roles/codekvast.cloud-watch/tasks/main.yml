@@ -26,7 +26,7 @@
 
 - name: Install /tmp/AmazonCloudWatchAgent/amazon-cloudwatch-agent.deb
   apt: deb=/tmp/AmazonCloudWatchAgent/amazon-cloudwatch-agent.deb state=present
-  notify: Define amazon-cloudwatch-agent
+  notify: Define amazon-cloudwatch-agent service
 
 - name: Install /etc/logrotate.d/amazon-cloudwatch-agent
   copy: src=logrotate.d/amazon-cloudwatch-agent dest=/etc/logrotate.d/amazon-cloudwatch-agent
