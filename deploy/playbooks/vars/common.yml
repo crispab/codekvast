@@ -3,8 +3,26 @@
 aws_region: eu-central-1
 
 aws_stacks:
-- {customer: default, env: prod,    cidr_base: "10.0", state: present, app_cnames: ['api', 'login', 'dashboard'], db_cname: 'db', backend_count: 2}
-- {customer: default, env: staging, cidr_base: "10.1", state: present, app_cnames: ['api-staging', 'login-staging', 'dashboard-staging'], db_cname: 'db-staging', backend_count: 2}
+  - customer: default
+    env: prod
+    cidr_base: "10.0"
+    state: present
+    app_cnames:
+    - api
+    - login
+    - dashboard
+    db_cname: 'db'
+    backend_count: 2
+  - customer: default
+    env: staging
+    cidr_base: "10.1"
+    state: present
+    app_cnames:
+    - 'api-staging'
+    - 'login-staging'
+    - 'dashboard-staging'
+    db_cname: 'db-staging'
+    backend_count: 2
 
 ports:
   login:
