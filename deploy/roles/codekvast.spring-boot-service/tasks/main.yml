@@ -54,6 +54,23 @@
   - systemctl daemon-reload
   - "restart codekvast service"
 
+- name: "Install /opt/codekvast/codekvast-javaagent-{{ codekvastVersion }}.jar"
+  copy:
+    src: ../../product/java-agent/build/libs/codekvast-javaagent-{{ codekvastVersion }}.jar
+    dest: "/opt/codekvast/codekvast-javaagent-{{ codekvastVersion }}.jar"
+    owner: codekvast
+    group: codekvast
+    mode: 0700
+  notify: "restart codekvast service"
+
+- name: "Install dest=/opt/codekvast/{{ service_name }}/codekvast.conf"
+  template:
+    src: codekvast.conf
+    dest: /opt/codekvast/{{ service_name }}/codekvast.conf
+    owner: codekvast
+    group: codekvast
+  notify: "restart codekvast service"
+
 - name: "Enable codekvast-{{ service_name }}"
   service:
     name: "codekvast-{{ service_name }}"
