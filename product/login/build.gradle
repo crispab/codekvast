@@ -22,9 +22,9 @@ dependencies {
     compile 'com.jayway.jsonpath:json-path:2.4.0'
 
     runtime project(':product:db-migration')
-    runtime 'org.codehaus.groovy:groovy-templates:2.4.15'
+    runtime 'org.codehaus.groovy:groovy-templates:2.5.0'
 
-    testCompile "com.github.tomakehurst:wiremock:2.16.0"
+    testCompile "com.github.tomakehurst:wiremock:2.18.0"
 }
 
 run {

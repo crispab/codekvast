@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.24.1
+
+1. Upgraded to Spring Boot 2.0.3, Gradle 4.8
+
 ## 0.24.0
 
 1. Java Agent: Corrected scheduling bug. Invocation data was published far too often.
