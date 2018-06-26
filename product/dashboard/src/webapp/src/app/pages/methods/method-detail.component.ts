@@ -7,6 +7,7 @@ import {InvocationStatusPipe} from '../../pipes/invocation-status.pipe';
 import {Method} from '../../model/methods/Method';
 import {Settings} from '../../components/settings.model';
 import {StateService} from '../../services/state.service';
+import {switchMap} from 'rxjs/operators';
 
 @Component({
     selector: 'ck-method-detail',
@@ -25,8 +26,7 @@ export class MethodDetailComponent implements OnInit {
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
-        this.route.params
-            .switchMap((params: Params) => this.api.getMethodById(+params['id']))
+        this.route.params.pipe(switchMap((params: Params) => this.api.getMethodById(+params['id'])))
             .subscribe(method => {
                 this.method = method;
                 this.errorMessage = undefined;

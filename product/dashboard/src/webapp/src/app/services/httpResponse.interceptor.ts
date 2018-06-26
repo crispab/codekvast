@@ -1,10 +1,10 @@
-import 'rxjs/add/operator/do';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {Router} from '@angular/router';
 import {StateService} from './state.service';
 import {CookieService} from 'ngx-cookie';
+import {tap} from 'rxjs/operators';
 
 @Injectable()
 export class HttpResponseInterceptor implements HttpInterceptor {
@@ -18,8 +18,7 @@ export class HttpResponseInterceptor implements HttpInterceptor {
                 headers: new HttpHeaders()
                     .set('Content-type', 'application/json; charset=utf-8')
                     .set('X-XSRF-TOKEN', this.cookieService.get('XSRF-TOKEN'))
-            }))
-            .do(event => {
+            })).pipe(tap(event => {
                 if (event instanceof HttpResponse) {
                     console.log('[ck dashboard] HttpResponse=%o', event);
                 }
@@ -33,6 +32,6 @@ export class HttpResponseInterceptor implements HttpInterceptor {
                         this.router.navigate(['/not-logged-in']);
                     }
                 }
-            });
+            }));
     }
 }

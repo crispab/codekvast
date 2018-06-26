@@ -9,7 +9,7 @@ import {MethodsComponent} from './methods.component';
 import {Method} from '../../model/methods/Method';
 import {StateService} from '../../services/state.service';
 import {MethodsFormData} from '../../model/methods/MethodsFormData';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 let component: MethodsComponent;
 let fixture: ComponentFixture<MethodsComponent>;
@@ -43,12 +43,10 @@ describe('MethodsComponent', () => {
                 {
                     provide: ConfigService,
                     useValue: {}
-                },
-                {
+                }, {
                     provide: DashboardApiService,
                     useValue: dashboardApiStub
-                },
-                StateService
+                }, StateService
             ]
         });
 

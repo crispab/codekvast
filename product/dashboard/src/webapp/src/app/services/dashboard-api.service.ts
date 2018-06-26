@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MethodData} from '../model/methods/MethodData';
 import {Method} from '../model/methods/Method';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {ServerSettings} from '../model/ServerSettings';
 import {StatusData} from '../model/status/StatusData';
 

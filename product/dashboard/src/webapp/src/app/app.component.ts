@@ -1,3 +1,4 @@
+import {filter, map, tap} from 'rxjs/operators';
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {ConfigService} from './services/config.service';
 import {NavigationEnd, Router} from '@angular/router';
@@ -31,14 +32,14 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.router.events
-            .filter(event => event instanceof NavigationEnd)
-            .map(event => (event as NavigationEnd).urlAfterRedirects)
-            .do(url => {
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd),
+            map(event => (event as NavigationEnd).urlAfterRedirects),
+            tap(url => {
                 console.log('[ck dashboard] NavigationEnd: %o', url);
                 this.updateGoogleAnalytics(url);
                 this.setLoggedInState();
-            })
+            }))
             .subscribe(url => {
                 let feature = this.titleCasePipe.transform(url.substr(1));
                 this.titleService.setTitle('Codekvast ' + feature);

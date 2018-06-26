@@ -4,8 +4,7 @@
 import {CookieService} from 'ngx-cookie';
 import {Injectable} from '@angular/core';
 import {isNullOrUndefined} from 'util';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import {Observable, Subject} from 'rxjs';
 
 export class AuthData {
     readonly customerName: string;
