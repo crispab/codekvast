@@ -2,7 +2,7 @@
 
 ## 0.24.1
 
-1. Upgraded to Spring Boot 2.0.3, Gradle 4.8.1, Angular 6.0.6, RxJS 6.2.1
+1. Upgraded to Spring Boot 2.0.3, Gradle 4.8.1, Angular 6.0.6, RxJS 6.2.1, Webpack 4
 
 ## 0.24.0
 

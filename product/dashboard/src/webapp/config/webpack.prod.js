@@ -2,11 +2,12 @@ process.env.ENV = 'production';
 
 var webpack = require('webpack');
 var webpackMerge = require('webpack-merge');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var helpers = require('./helpers');
 
 module.exports = webpackMerge(commonConfig, {
+    mode: 'production',
+
     devtool: 'source-map',
 
     output: {
@@ -26,14 +27,15 @@ module.exports = webpackMerge(commonConfig, {
             }
         }),
         new webpack.NoEmitOnErrorsPlugin(),
-        new webpack.optimize.UglifyJsPlugin({ // https://github.com/angular/angular/issues/10618
-            mangle: {
-                keep_fnames: true
-            }
-        }),
-        new ExtractTextPlugin('[name].[hash].css'),
 
         new webpack.optimize.ModuleConcatenationPlugin()
-    ]
-});
+    ],
 
+    optimization: {
+        minimize: true,
+
+        splitChunks: {
+            chunks: 'all'
+        }
+    }
+});

@@ -9,6 +9,6 @@ class NotLoggedInPage extends Page {
     static url = '/not-logged-in'
 
     static at = {
-        title == "Codekvast Not-Logged-In"
+        title == "Codekvast Not-logged-in"
     }
 }

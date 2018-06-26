@@ -1,6 +1,8 @@
 var helpers = require('./helpers');
 
 module.exports = {
+    mode: 'development',
+
     devtool: 'inline-source-map',
 
     resolve: {
