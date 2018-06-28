@@ -19,14 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.weeding;
+package io.codekvast.dashboard
+
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+import org.springframework.context.annotation.ComponentScan
 
 /**
+ * The Spring Boot main for codekvast-dashboard,
+ *
  * @author olle.hallin@crisp.se
  */
-public interface WeedingService {
-    /**
-     * Performs data weeding. It removes redundant data from the database, to keep it from growing unbounded.
-     */
-    void performDataWeeding();
+@SpringBootApplication
+@ComponentScan(basePackages = ["io.codekvast"])
+class CodekvastDashboardApplication
+
+fun main(args: Array<String>) {
+    runApplication<CodekvastDashboardApplication>(*args)
 }

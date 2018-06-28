@@ -19,44 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.weeding;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
+package io.codekvast.dashboard.weeding
 
 /**
- * Periodically performs data weeding, i.e., remove redundant data that does not affect what a customer sees.
- *
  * @author olle.hallin@crisp.se
  */
-@Component
-@Slf4j
-public class WeedingTask {
-
-    private final WeedingService weedingService;
-
-    @Inject
-    public WeedingTask(WeedingService weedingService) {
-        this.weedingService = weedingService;
-    }
-
+interface WeedingService {
     /**
-     * Scheduled task that invokes the data weeding service.
+     * Performs data weeding. It removes redundant data from the database, to keep it from growing unbounded.
      */
-    @Scheduled(
-        initialDelayString = "${codekvast.dataWeedingInitialDelaySeconds}000",
-        fixedDelayString = "${codekvast.dataWeedingIntervalSeconds}000")
-    public void performDataWeeding() {
-        String oldThreadName = Thread.currentThread().getName();
-        Thread.currentThread().setName("Codekvast Data Weeder");
-        try {
-            weedingService.performDataWeeding();
-        } finally {
-            Thread.currentThread().setName(oldThreadName);
-        }
-    }
-
+    fun performDataWeeding()
 }

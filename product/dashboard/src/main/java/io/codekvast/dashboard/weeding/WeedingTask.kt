@@ -19,23 +19,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard;
+package io.codekvast.dashboard.weeding
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
+import javax.inject.Inject
 
 /**
- * The Spring Boot main for codekvast-dashboard,
+ * Periodically performs data weeding, i.e., remove redundant data that does not affect what a customer sees.
  *
  * @author olle.hallin@crisp.se
  */
-@SpringBootApplication
-@ComponentScan(basePackages = "io.codekvast")
-public class CodekvastDashboardApplication {
+@Component
+class WeedingTask
+    @Inject constructor(private val weedingService: WeedingService) {
 
-    public static void main(String[] args) {
-        new SpringApplication(CodekvastDashboardApplication.class).run(args);
+    /**
+     * Scheduled task that invokes the data weeding service.
+     */
+    @Scheduled(initialDelayString = "\${codekvast.dataWeedingInitialDelaySeconds}000", fixedDelayString = "\${codekvast.dataWeedingIntervalSeconds}000")
+    fun performDataWeeding() {
+        val oldThreadName = Thread.currentThread().name
+        Thread.currentThread().name = "Codekvast Data Weeder"
+        try {
+            weedingService.performDataWeeding()
+        } finally {
+            Thread.currentThread().name = oldThreadName
+        }
     }
 
 }
