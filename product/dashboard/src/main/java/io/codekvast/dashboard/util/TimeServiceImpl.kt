@@ -19,18 +19,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.util;
+package io.codekvast.dashboard.util
 
-import java.time.Instant;
+import org.springframework.stereotype.Component
+
+import java.time.Instant
 
 /**
- * Strategy for getting current time.
+ * Default implementation of TimeService.
  *
  * @author olle.hallin@crisp.se
  */
-public interface TimeService {
+@Component
+class TimeServiceImpl : TimeService {
 
-    long currentTimeMillis();
+    override fun currentTimeMillis(): Long {
+        return System.currentTimeMillis()
+    }
 
-    Instant now();
+    override fun now(): Instant {
+        return Instant.now()
+    }
 }
