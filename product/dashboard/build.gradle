@@ -1,7 +1,7 @@
 apply from: "$rootDir/gradle/spring-boot-app.gradle"
 apply from: "$rootDir/gradle/spring-boot-jdbc.gradle"
 apply from: "$rootDir/gradle/spring-boot-web.gradle"
-// apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
+apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
 apply plugin: 'groovy'
 
 description = 'The Codekvast dashboard'

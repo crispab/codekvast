@@ -3,7 +3,6 @@ ext {
     flywayVersion = '5.1.3'
     gsonVersion = '2.8.5'
     jacocoVersion = '0.8.1'
-    kotlinVersion = '1.2.21'
     seleniumVersion = '3.13.0'
     springBootAdminVersion = '2.0.1'
     springBootVersion = '2.0.3.RELEASE'

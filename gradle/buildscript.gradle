@@ -1,3 +1,6 @@
+def kotlinVersion = '1.2.41'
+def springBootVersion = '2.0.3.RELEASE'
+
 repositories {
     jcenter()
     mavenCentral()
@@ -13,9 +16,10 @@ dependencies {
     classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
     classpath 'org.ajoberstar:grgit:1.8.0'
     classpath 'org.flywaydb:flyway-gradle-plugin:5.0.7'
-    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.21'
+    classpath 'org.jetbrains.kotlin:kotlin-allopen:' + kotlinVersion
+    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:' + kotlinVersion
     classpath 'org.kordamp:markdown-gradle-plugin:1.1.0'
     classpath 'org.mariadb.jdbc:mariadb-java-client:2.2.1'
-    classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE'
+    classpath 'org.springframework.boot:spring-boot-gradle-plugin:' + springBootVersion
     classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:1.4.1'
 }

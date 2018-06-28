@@ -1,7 +1,6 @@
 package io.codekvast.dashboard.sample
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.google.gson.Gson
 import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Test
@@ -11,7 +10,7 @@ import org.junit.Test
  */
 class SamplePojoTest {
 
-    private val objectMapper = ObjectMapper().registerModule(KotlinModule())
+    private val gson = Gson()
 
     @Test
     fun should_be_equal() {
@@ -22,8 +21,8 @@ class SamplePojoTest {
     @Test
     fun should_serialize_to_json() {
         val src = SamplePojo(1, "b", 2.1)
-        val json = objectMapper.writeValueAsString(src)
-        val deserialized = objectMapper.readValue(json, SamplePojo::class.java)
+        val json = gson.toJson(src)
+        val deserialized = gson.fromJson(json, SamplePojo::class.java)
         assertThat(deserialized, equalTo(src))
     }
 }
