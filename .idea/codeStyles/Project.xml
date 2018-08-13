@@ -33,6 +33,7 @@
       <option name="FROM_EL_WRAP" value="2" />
       <option name="WHERE_EL_WRAP" value="3" />
       <option name="WHERE_EL_BOUND" value="2" />
+      <option name="CORTEGE_SPACE_BEFORE_L_PAREN" value="false" />
       <option name="EXPR_CASE_WHEN_WRAP" value="false" />
       <option name="EXPR_CASE_THEN_WRAP" value="true" />
       <option name="PRIMARY_KEY_NAME_TEMPLATE" value="{table}_{columns}_pk" />
