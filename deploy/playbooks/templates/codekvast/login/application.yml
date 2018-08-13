@@ -29,7 +29,7 @@ management:
         aws-region: "{{ aws_region }}"
         aws-secret-key: "{{ cloudwatch.metrics.secret_key }}"
         batch-size: 100
-        enabled: true
+        enabled: false
         namespace: "Codekvast {{ env }}"
         step: PT60S
 
