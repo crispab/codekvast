@@ -38,12 +38,6 @@
     group: codekvast
   notify: "restart codekvast service"
 
-- name: "Remove obsolete /opt/codekvast/{{ service_name }}/application.properties"
-  file:
-    path: "/opt/codekvast/{{ service_name }}/application.properties"
-    state: absent
-  notify: "restart codekvast service"
-
 - name: "Install /etc/systemd/system/codekvast-{{ service_name }}.service"
   template:
     src: "systemd.service"
@@ -63,10 +57,10 @@
     mode: 0700
   notify: "restart codekvast service"
 
-- name: "Install dest=/opt/codekvast/{{ service_name }}/codekvast.conf"
+- name: "Install dest=/opt/codekvast/{{ service_name }}/codekvast-agent.properties"
   template:
-    src: codekvast.conf
-    dest: /opt/codekvast/{{ service_name }}/codekvast.conf
+    src: codekvast-agent.properties
+    dest: /opt/codekvast/{{ service_name }}/codekvast-agent.properties
     owner: codekvast
     group: codekvast
   notify: "restart codekvast service"
