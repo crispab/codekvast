@@ -93,10 +93,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 grantedAuthorities.add(authority);
 
                 Object email = null;
-                if (OidcUserAuthority.class.isInstance(authority)) {
-                    email = ((OidcUserAuthority)authority).getUserInfo().getClaims().get("email");
-                } else if (OAuth2UserAuthority.class.isInstance(authority)) {
+                if (OAuth2UserAuthority.class.isInstance(authority)) {
                     email = ((OAuth2UserAuthority)authority).getAttributes().get("email");
+                } else {
+                    logger.error("Don't know how to extract the email address from a {}", authority.getClass().getName());
                 }
                 if (email != null) {
                     List<CustomerData> customerData = customerService.getCustomerDataByUserEmail(email.toString());
