@@ -9,6 +9,10 @@ management:
         beans.enabled: false
         conditions.enabled: false
         mappings.enabled: false
+    metrics.export.datadog:
+        api-key: "{{ datadog_api_key }}"
+        enabled: true
+        step: PT60S
 
 server:
     port: "{{ service_port }}"

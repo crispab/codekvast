@@ -15,7 +15,7 @@ logging:
     file: /var/log/codekvast/application.log
     level:
         io.codekvast: DEBUG
-        io.micrometer.cloudwatch.CloudWatchMeterRegistry: OFF
+        io.micrometer.datadog.DatadogMeterRegistry: OFF
     pattern.level: "{{ ec2_tag_CNAME1.split('.', 1)[0] }} %5p"
 
 management:
@@ -24,13 +24,9 @@ management:
         beans.enabled: false
         conditions.enabled: false
         mappings.enabled: false
-    metrics.export.cloudwatch:
-        aws-access-key-id: "{{ cloudwatch.metrics.access_key }}"
-        aws-region: "{{ aws_region }}"
-        aws-secret-key: "{{ cloudwatch.metrics.secret_key }}"
-        batch-size: 100
-        enabled: false
-        namespace: "Codekvast {{ env }}"
+    metrics.export.datadog:
+        api-key: "{{ datadog_api_key }}"
+        enabled: true
         step: PT60S
 
 server:

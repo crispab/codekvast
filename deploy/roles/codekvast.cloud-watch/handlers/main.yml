@@ -1,6 +1,0 @@
----
-- name: Define amazon-cloudwatch-agent service
-  shell: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a start -m ec2
-
-- name: Restart amazon-cloudwatch-agent service
-  service: name=amazon-cloudwatch-agent state=restarted

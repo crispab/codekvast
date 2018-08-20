@@ -6,3 +6,4 @@
 #------------------------------------------------------------------------------------
 - {src: HanXHX.mysql, version: 9c0455a} # master branch at 2016-11-09
 - {src: geerlingguy.nginx, version: 2.5.0}
+- {src: Datadog.datadog, version: 2.3.0}

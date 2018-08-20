@@ -1,8 +1,13 @@
 # Codekvast Release Notes
 
+## 0.24.2
+
+1. Upgraded to Spring Boot 2.0.4
+
 ## 0.24.1
 
-1. Upgraded to Spring Boot 2.0.3, Gradle 4.9, Lombok 1.18.2, Angular 6.0.6, RxJS 6.2.1, Webpack 4
+1. Upgraded to Spring Boot 2.0.4, Gradle 4.9, Lombok 1.18.2, Angular 6.0.6, RxJS 6.2.1, Webpack 4
+2. Replaced Cloud Watch with Datadog
 
 ## 0.24.0
 

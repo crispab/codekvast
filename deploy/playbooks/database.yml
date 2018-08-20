@@ -33,7 +33,8 @@
       host: '%'
 
   roles:
-  - {role: codekvast.cloud-watch, tags: [cloud-watch]}
+  - {role: codekvast.cloud-watch, tags: [metrics, cloud-watch]}
+  - {role: Datadog.datadog, tags: [metrics, datadog] }
   - {role: HanXHX.mysql, tags: mariadb}
 
   post_tasks:

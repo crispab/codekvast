@@ -21,7 +21,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-devtools'
     compile "de.codecentric:spring-boot-admin-starter-client:$springBootAdminVersion"
 
-    compile 'io.micrometer:micrometer-registry-cloudwatch:1.0.5'
+    compile 'io.micrometer:micrometer-registry-datadog'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }

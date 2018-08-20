@@ -17,7 +17,11 @@
     service_name: login
     service_port: "{{ ports.login.service }}"
     management_port: "{{ ports.login.management }}"
+    datadog_config:
+        tags: "service:login"
+        logs_enabled: true
 
   roles:
-  - {role: codekvast.cloud-watch, tags: [cloud-watch, login]}
+  - {role: codekvast.cloud-watch, tags: [metrics, cloud-watch, login]}
+  - {role: Datadog.datadog, tags: [metrics, datadog, login] }
   - {role: codekvast.spring-boot-service, tags: [service, login]}

@@ -8,6 +8,9 @@ management:
     server:
         port: 9082
         servlet.context-path: /
+    metrics:
+        export.datadog:
+            enabled: false
 spring:
     mail:
         host: smtp.gmail.com

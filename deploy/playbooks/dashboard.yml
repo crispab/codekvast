@@ -20,9 +20,13 @@
 
     queuePath: "/var/codekvast/dashboard/queue"
     fileImportIntervalSeconds: 30
+    datadog_config:
+        tags: "service:dashboard"
+        logs_enabled: true
 
   roles:
-  - {role: codekvast.cloud-watch, tags: [cloud-watch, dashboard]}
+  - {role: codekvast.cloud-watch, tags: [metrics, cloud-watch, dashboard]}
+  - {role: Datadog.datadog, tags: [metrics, datadog, dashboard] }
   - {role: codekvast.spring-boot-service, tags: [service, dashboard]}
 
   post_tasks:
