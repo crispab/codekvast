@@ -25,7 +25,6 @@ logging:
     file: build/log/dashboard.log
     level:
         io.codekvast: DEBUG
-        io.micrometer.datadog.DatadogMeterRegistry: OFF
         springfox: WARN
 
 management:
@@ -39,8 +38,7 @@ management:
         servlet.context-path: /
     metrics:
         web.server.auto-time-requests: true
-        export.datadog:
-            enabled: false
+        export.datadog.enabled: false
 
 server:
     compression:

@@ -3,7 +3,9 @@ codekvast:
 
 logging:
     file: /var/log/codekvast/application.log
-    level.io.codekvast: DEBUG
+    level:
+        io.codekvast: DEBUG
+        io.micrometer.datadog.DatadogMeterRegistry: OFF
     pattern.level: "admin %5p"
 
 management:

@@ -26,7 +26,6 @@ logging:
     file: build/log/login.log
     level:
         io.codekvast: DEBUG
-        io.micrometer.datadog.DatadogMeterRegistry: OFF
 
 management:
     endpoints:
@@ -39,8 +38,7 @@ management:
         servlet.context-path: /
     metrics:
         web.server.auto-time-requests: true
-        export.datadog:
-            enabled: false
+        export.datadog.enabled: false
 
 server:
     port: 8080
