@@ -55,6 +55,7 @@ public class SlackServiceIntegrationTest {
         private String applicationName;
         private String displayVersion;
         private String dnsCname;
+        private String environment;
         private String slackWebHookToken;
         private String slackWebHookUrl;
         private String dashboardJwtSecret;

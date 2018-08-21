@@ -91,6 +91,11 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
     private String dnsCname;
 
     /**
+     * In which environment are we running? dev, staging or prod
+     */
+    private String environment;
+
+    /**
      * To where should we POST slack messages?
      */
     private String slackWebHookUrl;

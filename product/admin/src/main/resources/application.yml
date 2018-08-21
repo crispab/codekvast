@@ -27,12 +27,15 @@ spring:
                 enable: true
                 required: true
             ssl.enable: true
-    boot.admin.notify:
-        mail:
-            enabled: false
-            to: 'codekvast-support@hit.se'
-            from: "Codekvast Admin [dev] <noreply@localhost>"
-        slack:
-            enabled: false
-            webhook-url: 'https://hooks.slack.com/services/XXXX/YYYY/ZZZZ'
-            channel: alarms
+    boot.admin:
+        notify:
+            mail:
+                enabled: false
+                to: 'codekvast-support@hit.se'
+                from: "Codekvast Admin [dev] <noreply@localhost>"
+            slack:
+                enabled: false
+                webhook-url: 'https://hooks.slack.com/services/XXXX/YYYY/ZZZZ'
+                channel: alarms
+        ui:
+            title: Codekvast Admin

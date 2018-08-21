@@ -150,6 +150,7 @@ public class SecurityServiceImplTest {
         private String applicationName = null;
         private String displayVersion = null;
         private String dnsCname = null;
+        private String environment = null;
         private String slackWebHookToken = null;
         private String slackWebHookUrl = null;
     }

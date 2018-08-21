@@ -122,6 +122,11 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
      */
     private String dnsCname;
 
+    /**
+     * In which environment are we running? dev, staging or prod
+     */
+    private String environment;
+
     @PostConstruct
     public void logStartup() {
         //noinspection UseOfSystemOutOrSystemErr

@@ -13,6 +13,7 @@ codekvast:
     dataWeedingIntervalSeconds: 600
     deleteImportedFiles: true
     dnsCname: localhost
+    environment: dev
     fileImportInitialDelaySeconds: 5
     fileImportIntervalSeconds: 60
     loginBaseUrl: http://localhost:8080
