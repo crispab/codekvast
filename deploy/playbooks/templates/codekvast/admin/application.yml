@@ -1,3 +1,6 @@
+codekvast:
+    environment: "{{ ec2_tag_Env }}"
+
 logging:
     file: /var/log/codekvast/application.log
     level.io.codekvast: DEBUG

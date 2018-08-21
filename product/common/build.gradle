@@ -31,6 +31,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.springframework.boot:spring-boot-actuator-autoconfigure'
+    compile 'io.micrometer:micrometer-registry-datadog'
 
     testCompile lombok
     testCompile testFrameworks

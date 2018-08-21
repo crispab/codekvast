@@ -18,7 +18,10 @@
     service_port: "{{ ports.admin.service }}"
     management_port: "{{ ports.admin.management }}"
     datadog_config:
-        tags: "service:admin"
+        tags:
+          - "env:{{ ec2_tag_Env }}"
+          - "CNAME:{{ ec2_tag_CNAME }}"
+          - "service:admin"
         logs_enabled: true
 
   roles:

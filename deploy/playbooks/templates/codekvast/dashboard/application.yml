@@ -3,6 +3,7 @@ codekvast:
     dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
     dashboardJwtSecret: "{{ codekvast_dashboardJwtSecret }}"
     dnsCname: "{{ ec2_tag_CNAME2 }}"
+    environment: "{{ ec2_tag_Env }}"
     fileImportIntervalSeconds: "{{ fileImportIntervalSeconds }}"
     loginBaseUrl: "https://{{ ec2_tag_LBCNAME1 }}"
     queuePath: "{{ queuePath }}"

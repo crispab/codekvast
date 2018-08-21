@@ -4,6 +4,7 @@ codekvast:
     dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
     dashboardJwtSecret: "{{ codekvast_dashboardJwtSecret }}"
     dnsCname: "{{ ec2_tag_CNAME1 }}"
+    environment: "{{ ec2_tag_Env }}"
     herokuApiPassword: "{{ codekvast_herokuApiPassword }}"
     herokuApiSsoSalt: "{{ codekvast_herokuApiSsoSalt }}"
     herokuCodekvastUrl: "https://{{ ec2_tag_LBCNAME0 }}"

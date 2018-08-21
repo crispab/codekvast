@@ -11,7 +11,11 @@ mainClassName = 'io.codekvast.admin.CodekvastAdminApplication'
 dependencies {
     compile "de.codecentric:spring-boot-admin-starter-server:$springBootAdminVersion"
 
+    runtime project(":product:common")
     runtime 'org.springframework.boot:spring-boot-starter-mail'
+
+    // Dummy dependency just because we depend on ":product:common" (which drags in spring-boot-starter-jdbc)
+    runtime 'org.hsqldb:hsqldb'
 }
 
 //--- Packaging ------------------------------------------------------------------------------------------------------------------

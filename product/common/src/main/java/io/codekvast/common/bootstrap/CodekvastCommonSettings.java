@@ -39,4 +39,6 @@ public interface CodekvastCommonSettings {
     String getDashboardJwtSecret();
 
     Long getDashboardJwtExpirationHours();
+
+    String getEnvironment();
 }
