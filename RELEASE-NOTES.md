@@ -3,6 +3,7 @@
 ## 0.24.3
 
 1. Now logs in JSON format to /var/log/codekvast/$service/application.log
+2. Application start/stop is now logged to the Slack channel #alarms (was: #builds)
 
 ## 0.24.2
 

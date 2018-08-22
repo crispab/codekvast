@@ -57,7 +57,7 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     public void onApplicationEvent(ApplicationReadyEvent event) {
         doSend(
             String.format("%s %s in %s has started", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
-            Channel.BUILDS);
+            Channel.ALARMS);
 
     }
 
@@ -65,7 +65,7 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     public void notifyShutdown() {
         doSend(
             String.format("%s %s in %s is stopping", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
-            Channel.BUILDS);
+            Channel.ALARMS);
     }
 
     private void doSend(String text, Channel channel) {

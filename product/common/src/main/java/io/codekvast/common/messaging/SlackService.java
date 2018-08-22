@@ -25,7 +25,7 @@ package io.codekvast.common.messaging;
  * @author olle.hallin@crisp.se
  */
 public interface SlackService {
-    enum Channel {BUILDS, BUSINESS_EVENTS}
+    enum Channel {ALARMS, BUILDS, BUSINESS_EVENTS}
 
     void sendNotification(String text, Channel channel);
 }
