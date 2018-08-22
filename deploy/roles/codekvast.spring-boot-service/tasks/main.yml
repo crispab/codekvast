@@ -15,15 +15,15 @@
 - name: Create codekvast user
   user: name=codekvast group=codekvast state=present home=/opt/codekvast
 
-# TODO: remove
-- name: Scrap old log directory
-  file: path=/var/log/codekvast state=absent
-
 - name: Create directories
   file: path={{ item }} state=directory owner=codekvast group=codekvast
   with_items:
   - "/opt/codekvast/{{ service_name }}"
   - "/var/log/codekvast/{{ service_name }}"
+
+# TODO: remove
+- name: Scrap old log files
+  shell: rm -f /var/log/codekvast/*.log
 
 - name: "Install codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar"
   copy:
