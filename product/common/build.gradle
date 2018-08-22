@@ -30,9 +30,14 @@ dependencies {
     compile 'javax.servlet:javax.servlet-api'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    compile 'org.springframework.boot:spring-boot-starter-logging'
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.boot:spring-boot-actuator-autoconfigure'
     compile 'io.micrometer:micrometer-registry-datadog'
+
+    runtime 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
+    runtime 'ch.qos.logback.contrib:logback-jackson:0.1.5'
+    runtime 'com.fasterxml.jackson.core:jackson-databind'
 
     testCompile lombok
     testCompile testFrameworks
