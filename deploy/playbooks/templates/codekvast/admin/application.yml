@@ -35,8 +35,14 @@ spring:
     boot.admin:
         notify:
             mail:
+                enabled: true
+                test-connection: true
                 from: "Codekvast Admin [{{ env }}] <noreply@localhost>"
                 subject: "[{{ env }}] #{application.name} (#{application.id}) is #{to.status}"
-            slack.message: "[{{ env }}] *#{application.name}* (#{application.id}) is *#{to.status}*"
+            slack:
+                enabled: true
+                webhook-url: 'https://hooks.slack.com/services/{{ codekvast_slackWebhookToken }}'
+                channel: alarms
+                message: "[{{ env }}] *#{application.name}* (#{application.id}) is *#{to.status}*"
         ui:
             title: "Codekvast Admin {{ codekvastVersion }} [{{ env }}]"
