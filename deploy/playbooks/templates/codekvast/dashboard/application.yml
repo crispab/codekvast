@@ -15,7 +15,6 @@ logging:
     level:
         io.codekvast: DEBUG
         io.micrometer.datadog.DatadogMeterRegistry: OFF
-    pattern.level: "{{ ec2_tag_CNAME0.split('.', 1)[0] }} %5p"
 
 management:
     server.port: "{{ management_port }}"
@@ -32,7 +31,7 @@ server:
     port: "{{ service_port }}"
     servlet.session.cookie.name: "{{ settings.session.cookie.name }}"
     undertow.accesslog:
-    file: "/var/log/codekvast/{{ service_name }}/"
+        dir: /var/log/codekvast/{{ service_name }}/
         prefix: access.
 spring:
     boot.admin.client:

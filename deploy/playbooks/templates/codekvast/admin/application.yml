@@ -8,7 +8,6 @@ logging:
     level:
         io.codekvast: DEBUG
         io.micrometer.datadog.DatadogMeterRegistry: OFF
-    pattern.level: "admin %5p"
 
 management:
     server.port: "{{ management_port }}"

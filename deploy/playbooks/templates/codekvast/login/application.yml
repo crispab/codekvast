@@ -19,7 +19,6 @@ logging:
     level:
         io.codekvast: DEBUG
         io.micrometer.datadog.DatadogMeterRegistry: OFF
-    pattern.level: "{{ ec2_tag_CNAME1.split('.', 1)[0] }} %5p"
 
 management:
     server.port: "{{ management_port }}"
