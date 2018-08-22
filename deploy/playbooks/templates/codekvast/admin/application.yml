@@ -2,7 +2,9 @@ codekvast:
     environment: "{{ ec2_tag_Env }}"
 
 logging:
-    file: /var/log/codekvast/application.log
+    file: "/var/log/codekvast/{{ service_name }}/application.log"
+    file.max-size: '10MB'
+    file.max-history: 10
     level:
         io.codekvast: DEBUG
         io.micrometer.datadog.DatadogMeterRegistry: OFF
@@ -23,7 +25,7 @@ server:
     port: "{{ service_port }}"
     servlet.session.cookie.name: "{{ settings.session.cookie.name }}"
     undertow.accesslog:
-        dir: /var/log/codekvast/
+        dir: /var/log/codekvast//{{ service_name }}/
         prefix: access.
 
 spring:
