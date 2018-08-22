@@ -23,7 +23,7 @@
 
 # TODO: remove
 - name: Scrap old log files
-  shell: rm -f /var/log/codekvast/*.log
+  shell: rm -f /var/log/codekvast/*.log /var/log/codekvast/*.gz
 
 - name: "Install codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar"
   copy:
