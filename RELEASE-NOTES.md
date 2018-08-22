@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.24.3
+
+1. Now logs in JSON format to /var/log/codekvast/$service/application.log
+
 ## 0.24.2
 
 1. Upgraded to Spring Boot 2.0.4
