@@ -25,6 +25,5 @@
         logs_enabled: true
 
   roles:
-  - {role: codekvast.cloud-watch, tags: [metrics, cloud-watch, admin]}
   - {role: Datadog.datadog, tags: [metrics, datadog, admin] }
   - {role: codekvast.spring-boot-service, tags: [service, admin]}
