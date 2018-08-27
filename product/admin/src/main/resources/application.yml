@@ -1,6 +1,7 @@
 codekvast:
     environment: dev
     dnsCname: localhost
+    slackWebHookUrl: https://hooks.slack.com/services
 
 server:
     port: 8082
