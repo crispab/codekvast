@@ -8,7 +8,7 @@ declare region=$(grep aws_region playbooks/vars/common.yml | cut -d: -f2)
 declare AWS_EC2="aws --profile codekvast --region ${region} ec2"
 
 declare environment=${1:-staging}
-declare description=${2:-$USER}
+declare description=${2:-$(hostname)}
 
 declare groupName=codekvast-default-${environment}-management
 declare myIp=$(curl -s https://api.ipify.org)
@@ -31,5 +31,7 @@ case $answer in
     y|Y) ;;
 esac
 
-echo "Ok, going ahead..."
-# aws --profile codekvast ec2 authorize-security-group ...
+for port in 22 3306 8080 8081 8082; do
+    echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/24\", \"Description\": \"Management from $description\"}]}]"
+    aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/24\", \"Description\": \"Management from $description\"}]}]"
+done
