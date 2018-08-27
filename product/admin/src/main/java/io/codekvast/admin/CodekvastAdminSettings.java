@@ -23,6 +23,7 @@ package io.codekvast.admin;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,7 @@ import javax.annotation.PreDestroy;
 @Validated
 @Data
 @Slf4j
+@ToString(exclude = {"slackWebHookToken"})
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
 public class CodekvastAdminSettings implements CodekvastCommonSettings {
 
