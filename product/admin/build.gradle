@@ -9,10 +9,10 @@ group = 'crisp'
 mainClassName = 'io.codekvast.admin.CodekvastAdminApplication'
 
 dependencies {
+    compile project(":product:common")
     compile "de.codecentric:spring-boot-admin-starter-server:$springBootAdminVersion"
     compile 'org.springframework.boot:spring-boot-starter-security'
 
-    runtime project(":product:common")
     runtime 'org.springframework.boot:spring-boot-starter-mail'
 
     // Dummy dependency just because we depend on ":product:common" (which drags in spring-boot-starter-jdbc)

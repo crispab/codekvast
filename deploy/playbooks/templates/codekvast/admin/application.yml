@@ -1,5 +1,7 @@
 codekvast:
+    dnsCname: "{{ ec2_tag_CNAME }}"
     environment: "{{ ec2_tag_Env }}"
+    slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
 
 logging:
     file: "/var/log/codekvast/{{ service_name }}/application.log"

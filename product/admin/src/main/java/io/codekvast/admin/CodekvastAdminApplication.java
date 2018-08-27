@@ -24,8 +24,10 @@ package io.codekvast.admin;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan(basePackages = "io.codekvast")
 @EnableAdminServer
 public class CodekvastAdminApplication {
 

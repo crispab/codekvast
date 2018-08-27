@@ -1,5 +1,6 @@
 codekvast:
     environment: dev
+    dnsCname: localhost
 
 server:
     port: 8082
