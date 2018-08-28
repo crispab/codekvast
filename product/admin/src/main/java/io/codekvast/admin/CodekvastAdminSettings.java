@@ -39,7 +39,6 @@ import javax.annotation.PreDestroy;
  */
 @Component("codekvastSettings")
 @ConfigurationProperties(prefix = "codekvast")
-@Validated
 @Data
 @Slf4j
 @ToString(exclude = {"slackWebHookToken"})

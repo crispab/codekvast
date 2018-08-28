@@ -11,6 +11,7 @@
   vars_files:
   - vars/secrets.yml
   - vars/common.yml
+  - vars/datadog.yml
 
   vars:
     server_type: application
@@ -20,9 +21,6 @@
 
     queuePath: "/var/codekvast/dashboard/queue"
     fileImportIntervalSeconds: 30
-    datadog_config:
-        tags: "service:dashboard"
-        logs_enabled: true
 
   roles:
   - {role: Datadog.datadog, tags: [metrics, datadog, dashboard] }

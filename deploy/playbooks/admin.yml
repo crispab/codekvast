@@ -11,18 +11,13 @@
   vars_files:
   - vars/secrets.yml
   - vars/common.yml
+  - vars/datadog.yml
 
   vars:
     server_type: database
     service_name: admin
     service_port: "{{ ports.admin.service }}"
     management_port: "{{ ports.admin.management }}"
-    datadog_config:
-        tags:
-          - "env:{{ ec2_tag_Env }}"
-          - "CNAME:{{ ec2_tag_CNAME }}"
-          - "service:admin"
-        logs_enabled: true
 
   roles:
   - {role: Datadog.datadog, tags: [metrics, datadog, admin] }

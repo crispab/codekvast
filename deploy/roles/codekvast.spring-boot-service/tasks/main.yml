@@ -21,10 +21,6 @@
   - "/opt/codekvast/{{ service_name }}"
   - "/var/log/codekvast/{{ service_name }}"
 
-# TODO: remove
-- name: Scrap old log files
-  shell: rm -f /var/log/codekvast/*.log /var/log/codekvast/*.gz
-
 - name: "Install codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar"
   copy:
     src: ../../product/{{ service_name }}/build/libs/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar
