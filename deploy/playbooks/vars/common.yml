@@ -49,3 +49,12 @@ settings:
   staging:
     hsts:
       max_age_seconds: 3600 # one hour
+
+datadog_agent_version: '1:6.4.2-1'
+
+datadog_config:
+  tags:
+    - "env:{{ ec2_tag_Env }}"
+    - "CNAME:{{ ec2_tag_CNAME }}"
+    - "service:{{ service_name }}"
+  logs_enabled: true

@@ -1,0 +1,5 @@
+- type: file
+  path: "/var/log/codekvast/{{ service_name }}/application.log"
+  service: "{{ service_name }}"
+  source: java
+  sourcecategory: codekvast

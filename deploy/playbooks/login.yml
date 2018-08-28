@@ -11,7 +11,6 @@
   vars_files:
   - vars/secrets.yml
   - vars/common.yml
-  - vars/datadog.yml
 
   vars:
     server_type: application

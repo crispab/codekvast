@@ -12,6 +12,7 @@
   - vars/common.yml
 
   vars:
+    service_name: mariadb
     server_type: database
 
     mysql_origin: 'default'
@@ -61,3 +62,17 @@
 
   - name: Link /root/mariadb-backup to /etc/cron.daily
     file: src=/root/mariadb-backup dest=/etc/cron.daily/mariadb-backup state=link
+
+  - name: Create MySQL user for Datadog
+    shell: mysql -e "{{ item }};"
+    ignore_errors: yes
+    with_items:
+    - "CREATE USER 'datadog'@'localhost' IDENTIFIED BY '{{ mysql_datadog_password }}'"
+    - "GRANT REPLICATION CLIENT ON *.* TO 'datadog'@'localhost' WITH MAX_USER_CONNECTIONS 5"
+    - "GRANT PROCESS ON *.* TO 'datadog'@'localhost'"
+    - "GRANT SELECT ON performance_schema.* TO 'datadog'@'localhost'"
+    notify: restart datadog-agent
+
+  - name: Configure Datadog Agent for MariaDB
+    template: src=database/datadog/config.yaml.j2 dest=/etc/datadog-agent/conf.d/mysql.d/conf.yaml mode=644
+    notify: restart datadog-agent
