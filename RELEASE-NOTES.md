@@ -6,6 +6,7 @@
 2. Application start/stop is now logged to the Slack channel #alarms (was: #builds)
 3. Now also Codekvast Admin logs start/stop to Slack #alarms
 4. Upgraded to Gradle 4.10
+5. Added login count metrics.
 
 ## 0.24.2
 

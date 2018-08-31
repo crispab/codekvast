@@ -27,6 +27,7 @@ import io.codekvast.common.security.SecurityService;
 import io.codekvast.common.security.WebappCredentials;
 import io.codekvast.login.api.LoginService;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
+import io.codekvast.login.metrics.MetricsService;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,7 @@ public class LoginServiceImpl implements LoginService {
     private final CodekvastLoginSettings settings;
     private final CustomerService customerService;
     private final SecurityService securityService;
+    private final MetricsService metricsService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -86,6 +88,7 @@ public class LoginServiceImpl implements LoginService {
     public User getUserFromAuthentication(OAuth2AuthenticationToken authentication) {
         //noinspection unchecked
         Map<String, Object> details = authentication.getPrincipal().getAttributes();
+        String clientRegistrationId = authentication.getAuthorizedClientRegistrationId();
         logger.debug("Details={}", details);
 
         String email = (String) details.get("email");
@@ -94,6 +97,12 @@ public class LoginServiceImpl implements LoginService {
                         .email(email)
                         .customerData(customerService.getCustomerDataByUserEmail(email))
                         .build();
+
+        logger.debug("{} authenticated by {} has access to {} Codekvast projects", email, clientRegistrationId,
+                    user.getCustomerData().size());
+        if (!user.getCustomerData().isEmpty()) {
+            metricsService.countLogin(clientRegistrationId);
+        }
         logger.debug("Returning {}", user);
         return user;
     }
