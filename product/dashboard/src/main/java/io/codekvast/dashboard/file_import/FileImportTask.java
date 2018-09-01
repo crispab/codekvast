@@ -22,11 +22,13 @@
 package io.codekvast.dashboard.file_import;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.metrics.MetricsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import javax.annotation.PostConstruct;
 import java.io.File;
 
 /**
@@ -36,17 +38,15 @@ import java.io.File;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class FileImportTask {
 
     private final CodekvastDashboardSettings settings;
     private final PublicationImporter publicationImporter;
+    private final MetricsService metricsService;
 
-    @Inject
-    public FileImportTask(CodekvastDashboardSettings settings, PublicationImporter publicationImporter) {
-
-        this.settings = settings;
-        this.publicationImporter = publicationImporter;
-
+    @PostConstruct
+    public void postConstruct() {
         logger.info("Looking for files in {} every {} seconds", settings.getQueuePath(),
                     settings.getQueuePathPollIntervalSeconds());
     }
@@ -58,20 +58,22 @@ public class FileImportTask {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName("Codekvast FileImport");
         try {
-            logger.trace("Looking for files to import in {}", settings.getQueuePath());
-            walkDirectory(settings.getQueuePath());
+            File queuePath = settings.getQueuePath();
+            logger.trace("Looking for files to import in {}", queuePath);
+            metricsService.gaugePublicationQueueLength(countFiles(queuePath));
+            processFiles(queuePath);
         } finally {
             Thread.currentThread().setName(oldThreadName);
         }
     }
 
-    private void walkDirectory(File path) {
+    private void processFiles(File path) {
         if (path != null) {
             File[] files = path.listFiles();
             if (files != null) {
                 for (File file : files) {
                     if (file.isDirectory()) {
-                        walkDirectory(file);
+                        processFiles(file);
                     } else if (file.getName().endsWith(".ser")) {
                         boolean handled = publicationImporter.importPublicationFile(file);
                         if (handled && settings.isDeleteImportedFiles()) {
@@ -83,6 +85,23 @@ public class FileImportTask {
                 }
             }
         }
+    }
+
+    private int countFiles(File path) {
+        int result = 0;
+        if (path != null) {
+            File[] files = path.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        result += countFiles(file);
+                    } else if (file.isFile()) {
+                        result += 1;
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private void deleteFile(File file) {

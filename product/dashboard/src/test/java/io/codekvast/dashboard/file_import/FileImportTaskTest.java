@@ -1,6 +1,7 @@
 package io.codekvast.dashboard.file_import;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.metrics.MetricsService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +30,9 @@ public class FileImportTaskTest {
     @Mock
     private PublicationImporter importer;
 
+    @Mock
+    private MetricsService metricsService;
+
     private CodekvastDashboardSettings settings;
 
     private FileImportTask task;
@@ -38,7 +42,7 @@ public class FileImportTaskTest {
         settings = new CodekvastDashboardSettings();
         settings.setQueuePath(temporaryFolder.getRoot());
 
-        task = new FileImportTask(settings, importer);
+        task = new FileImportTask(settings, importer, metricsService);
     }
 
     @Test

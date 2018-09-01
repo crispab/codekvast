@@ -7,6 +7,7 @@
 3. Now also Codekvast Admin logs start/stop to Slack #alarms
 4. Upgraded to Gradle 4.10
 5. Added login count metrics.
+6. Added file import metrics.
 
 ## 0.24.2
 

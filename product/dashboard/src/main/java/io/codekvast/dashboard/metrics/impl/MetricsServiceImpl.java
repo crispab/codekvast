@@ -23,8 +23,11 @@ package io.codekvast.dashboard.metrics.impl;
 
 import io.codekvast.dashboard.metrics.MetricsService;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static java.util.Arrays.asList;
 
 /**
  * @author olle.hallin@crisp.se
@@ -45,8 +48,16 @@ public class MetricsServiceImpl implements MetricsService {
     }
 
     @Override
-    public void countImportedPublication(String kind, String format) {
-        meterRegistry.counter("codekvast.intake.accepted", "kind", kind, "format", format).increment();
-        meterRegistry.counter("codekvast.intake.accepted." + kind, "format", format).increment();
+    public void countImportedPublication(PublicationKind kind, String format) {
+        String k = kind.name().toLowerCase();
+        meterRegistry.counter("codekvast.intake.accepted", "kind", k, "format", format).increment();
+        meterRegistry.counter("codekvast.intake.accepted." + k, "format", format).increment();
+    }
+
+    @Override
+    public void gaugePublicationSize(PublicationKind kind, String environment, int size) {
+        String k = kind.name().toLowerCase();
+        meterRegistry.gauge("codekvast.intake.publicationSize", asList(Tag.of("kind", k), Tag.of("env", environment)), size);
+        meterRegistry.gauge("codekvast.intake.publicationSize." + k, asList(Tag.of("env", environment)), size);
     }
 }

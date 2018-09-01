@@ -25,18 +25,22 @@ import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
+import io.codekvast.dashboard.metrics.MetricsService;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.InvocationDataPublication;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.*;
 import java.util.Set;
+
+import static io.codekvast.dashboard.metrics.MetricsService.PublicationKind.CODEBASE;
+import static io.codekvast.dashboard.metrics.MetricsService.PublicationKind.INVOCATIONS;
 
 /**
  * Importer for serialized publications.
@@ -49,60 +53,59 @@ import java.util.Set;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class PublicationImporterImpl implements PublicationImporter {
 
     private final CodeBaseImporter codeBaseImporter;
     private final InvocationDataImporter invocationDataImporter;
     private final Validator validator;
-
-    @Inject
-    public PublicationImporterImpl(CodeBaseImporter codeBaseImporter,
-                                   InvocationDataImporter invocationDataImporter,
-                                   Validator validator) {
-        this.codeBaseImporter = codeBaseImporter;
-        this.invocationDataImporter = invocationDataImporter;
-        this.validator = validator;
-    }
+    private final MetricsService metricsService;
 
     @Override
     public boolean importPublicationFile(File file) {
         logger.info("Processing {}", file);
-
+        boolean handled = false;
         try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 
             long startedAt = System.currentTimeMillis();
             Object object = ois.readObject();
             logger.debug("Deserialized a {} in {} ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt);
 
-            return !isValidObject(object) || handlePublication(object);
-
+            handled = !isValidObject(object) || handlePublication(object);
         } catch (LicenseViolationException e) {
             logger.warn("Ignoring " + file + ": " + e);
 
             // Prevent the file from being processed again.
             // The agent will keep retrying uploading new publication files.
-            return true;
+            handled = true;
         } catch (ClassNotFoundException | IOException e) {
             logger.error("Cannot import " + file, e);
         }
-        return false;
+        if (!handled) {
+            metricsService.countRejectedPublication();
+        }
+        return handled;
     }
 
     @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks", "deprecation"})
     private boolean handlePublication(Object object) {
         if (object instanceof CodeBasePublication) {
+            metricsService.countImportedPublication(CODEBASE, "v1");
             return codeBaseImporter.importPublication(CodeBasePublication2.fromV1Format((CodeBasePublication) object));
         }
 
         if (object instanceof CodeBasePublication2) {
+            metricsService.countImportedPublication(CODEBASE, "v2");
             return codeBaseImporter.importPublication((CodeBasePublication2) object);
         }
 
         if (object instanceof InvocationDataPublication) {
+            metricsService.countImportedPublication(INVOCATIONS, "v1");
             return invocationDataImporter.importPublication(InvocationDataPublication2.fromV1Format((InvocationDataPublication) object));
         }
 
         if (object instanceof InvocationDataPublication2) {
+            metricsService.countImportedPublication(INVOCATIONS, "v2");
             return invocationDataImporter.importPublication((InvocationDataPublication2) object);
         }
 
@@ -114,7 +117,7 @@ public class PublicationImporterImpl implements PublicationImporter {
         Set<ConstraintViolation<Object>> violations = validator.validate(object);
         for (ConstraintViolation<Object> v : violations) {
             logger.error("Invalid {}: {}={}: {}", object.getClass().getSimpleName(), v.getPropertyPath(),
-                      v.getInvalidValue(), v.getMessage());
+                         v.getInvalidValue(), v.getMessage());
         }
         return violations.isEmpty();
     }

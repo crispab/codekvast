@@ -22,12 +22,15 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
+import io.codekvast.dashboard.metrics.MetricsService;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import static io.codekvast.dashboard.metrics.MetricsService.PublicationKind.CODEBASE;
 
 /**
  * @author olle.hallin@crisp.se
@@ -38,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     private final ImportDAO importDAO;
+    private final MetricsService metricsService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -51,6 +55,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
         long jvmId = importDAO.importJvm(data, appId, environmentId);
         importDAO.importMethods(data, customerId, appId, environmentId, jvmId, publication.getCommonData().getPublishedAtMillis(),
                                 publication.getEntries());
+        metricsService.gaugePublicationSize(CODEBASE, publication.getCommonData().getEnvironment(), publication.getEntries().size());
         return true;
     }
 }

@@ -5,6 +5,7 @@ import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentController;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,17 +36,17 @@ public class AgentControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @SuppressWarnings("unused")
     @MockBean
     private AgentService agentService;
 
-    @SuppressWarnings("unused")
     @MockBean
     private JdbcTemplate jdbcTemplate;
 
-    @SuppressWarnings("unused")
     @MockBean
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @MockBean
+    private MeterRegistry meterRegistry;
 
     @Test
     public void should_accept_post_to_agentPollConfig() throws Exception {

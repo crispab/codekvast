@@ -40,4 +40,9 @@ public class MetricsServiceImpl implements MetricsService {
         meterRegistry.counter("codekvast.login.count", "authenticationProvider", authenticationProvider).increment();
         meterRegistry.counter("codekvast.login.count" + "." + authenticationProvider).increment();
     }
+
+    @Override
+    public void countDashboardLaunch() {
+        meterRegistry.counter("codekvast.login.dashboard.launches").increment();
+    }
 }

@@ -19,23 +19,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.metrics;
+package io.codekvast.dashboard.metrics;
 
 /**
- * Wrapper for login metrics.
+ * Wrapper for all things related to metrics collection.
  *
  * @author olle.hallin@crisp.se
  */
 public interface MetricsService {
-    /**
-     * Increments the login counter for this authentication provider.
-     * @param authenticationProvider The service that authenticated the user.
-     */
-    void countLogin(String authenticationProvider);
+
+    enum PublicationKind {CODEBASE, INVOCATIONS};
 
     /**
-     * Increments the counter for dashboard launches.
+     * Updates the gauge for the number of queued publications.
+     *
+     * @param queueLength The queue length.
      */
-    void countDashboardLaunch();
+    void gaugePublicationQueueLength(int queueLength);
+
+    /**
+     * Count the fact that a publication was rejected.
+     */
+    void countRejectedPublication();
+
+    /**
+     * Count the fact that a publication was imported.
+     *
+     * @param kind   The kind of publication.
+     * @param format One of "v1", "v2".
+     */
+    void countImportedPublication(PublicationKind kind, String format);
+
+    /**
+     * Gauges the size of an imported publication.
+     *  @param kind The kind of publication.
+     * @param environment The by te of the environment (provided by the publication).
+     * @param size The size of the publication.
+     */
+    void gaugePublicationSize(PublicationKind kind, String environment, int size);
 }
-
