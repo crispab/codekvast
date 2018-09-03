@@ -35,6 +35,11 @@ import static java.util.Arrays.asList;
 @Service
 @RequiredArgsConstructor
 public class MetricsServiceImpl implements MetricsService {
+    private static final String KIND_TAG = "kind";
+    private static final String FORMAT_TAG = "format";
+    private static final String CUSTOMER_ID_TAG = "cid";
+    private static final String CUSTOMER_ENVIRONMENT_TAG = "cenv";
+
     private final MeterRegistry meterRegistry;
 
     @Override
@@ -49,15 +54,25 @@ public class MetricsServiceImpl implements MetricsService {
 
     @Override
     public void countImportedPublication(PublicationKind kind, String format) {
-        String k = kind.name().toLowerCase();
-        meterRegistry.counter("codekvast.intake.accepted", "kind", k, "format", format).increment();
-        meterRegistry.counter("codekvast.intake.accepted." + k, "format", format).increment();
+        String name = "codekvast.intake.accepted";
+        meterRegistry.counter(name, KIND_TAG, asTag(kind), FORMAT_TAG, format).increment();
+        meterRegistry.counter(name + "." + asTag(kind), FORMAT_TAG, format).increment();
     }
 
     @Override
-    public void gaugePublicationSize(PublicationKind kind, String environment, int size) {
-        String k = kind.name().toLowerCase();
-        meterRegistry.gauge("codekvast.intake.publicationSize", asList(Tag.of("kind", k), Tag.of("env", environment)), size);
-        meterRegistry.gauge("codekvast.intake.publicationSize." + k, asList(Tag.of("env", environment)), size);
+    public void gaugePublicationSize(PublicationKind kind, long customerId, String customerEnvironment, int size) {
+        String name = "codekvast.intake.publicationSize";
+
+        meterRegistry.gauge(name,
+                            asList(Tag.of(KIND_TAG, asTag(kind)), Tag.of(CUSTOMER_ID_TAG, Long.toString(customerId)),
+                                   Tag.of(CUSTOMER_ENVIRONMENT_TAG, customerEnvironment)), size);
+
+        meterRegistry.gauge(name + "." + asTag(kind),
+                            asList(Tag.of(CUSTOMER_ID_TAG, Long.toString(customerId)),
+                                   Tag.of(CUSTOMER_ENVIRONMENT_TAG, customerEnvironment)), size);
+    }
+
+    private String asTag(PublicationKind kind) {
+        return kind.name().toLowerCase();
     }
 }

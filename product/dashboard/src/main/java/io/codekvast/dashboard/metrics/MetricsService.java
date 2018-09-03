@@ -28,7 +28,7 @@ package io.codekvast.dashboard.metrics;
  */
 public interface MetricsService {
 
-    enum PublicationKind {CODEBASE, INVOCATIONS};
+    enum PublicationKind {CODEBASE, INVOCATIONS}
 
     /**
      * Updates the gauge for the number of queued publications.
@@ -52,9 +52,11 @@ public interface MetricsService {
 
     /**
      * Gauges the size of an imported publication.
-     *  @param kind The kind of publication.
-     * @param environment The by te of the environment (provided by the publication).
-     * @param size The size of the publication.
+     *
+     * @param kind                The kind of publication.
+     * @param customerId          The customer ID.
+     * @param customerEnvironment The customer's environment (fetched from the publication header).
+     * @param size                The size of the publication.
      */
-    void gaugePublicationSize(PublicationKind kind, String environment, int size);
+    void gaugePublicationSize(PublicationKind kind, long customerId, String customerEnvironment, int size);
 }

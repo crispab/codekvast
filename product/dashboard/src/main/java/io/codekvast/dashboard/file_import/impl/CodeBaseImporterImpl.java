@@ -55,7 +55,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
         long jvmId = importDAO.importJvm(data, appId, environmentId);
         importDAO.importMethods(data, customerId, appId, environmentId, jvmId, publication.getCommonData().getPublishedAtMillis(),
                                 publication.getEntries());
-        metricsService.gaugePublicationSize(CODEBASE, publication.getCommonData().getEnvironment(), publication.getEntries().size());
+        metricsService.gaugePublicationSize(CODEBASE, customerId, publication.getCommonData().getEnvironment(), publication.getEntries().size());
         return true;
     }
 }
