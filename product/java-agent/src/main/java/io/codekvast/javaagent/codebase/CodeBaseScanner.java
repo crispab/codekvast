@@ -147,7 +147,15 @@ public class CodeBaseScanner {
         try {
             Attributes attributes = jarFile.getManifest().getMainAttributes();
             String classesDir = attributes.getValue("Spring-Boot-Classes");
+            if (classesDir == null) {
+                // Later versions of Spring Boot lacks this attribute
+                classesDir = "BOOT-INF/classes/";
+            }
             String libDir = attributes.getValue("Spring-Boot-Lib");
+            if (libDir == null) {
+                // Later versions of Spring Boot lacks this attribute
+                libDir = "BOOT-INF/lib/";
+            }
 
             Enumeration<JarEntry> jarEntries = jarFile.entries();
             while (jarEntries.hasMoreElements()) {
