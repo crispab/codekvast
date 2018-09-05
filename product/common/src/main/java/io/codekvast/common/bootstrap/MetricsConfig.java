@@ -38,11 +38,7 @@ public class MetricsConfig {
 
     @Bean
     public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
-        // @formatter:off
-        return registry -> registry.config().commonTags("env", settings.getEnvironment(),
-                                                        "CNAME", settings.getDnsCname(),
-                                                        "service", settings.getApplicationName());
-        // @formatter:on
+        return registry -> registry.config().commonTags("service", settings.getApplicationName());
     }
 
 }
