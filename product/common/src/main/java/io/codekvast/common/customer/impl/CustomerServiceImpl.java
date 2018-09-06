@@ -134,6 +134,8 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             result = customerData;
         }
+        // TODO: Send Slack notification about ended trial period.
+        //  Requires a database change to prevent more than one notification per customer.
         return result;
     }
 

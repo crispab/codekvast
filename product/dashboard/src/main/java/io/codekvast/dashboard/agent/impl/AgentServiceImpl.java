@@ -33,6 +33,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +59,27 @@ public class AgentServiceImpl implements AgentService {
     private final CodekvastDashboardSettings settings;
     private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
+
+    @Scheduled(initialDelay = 60_000L, fixedDelay = 600_000L)
+    @Transactional(rollbackFor = Exception.class)
+    public void disableDeadAgents() {
+        String oldThreadName = Thread.currentThread().getName();
+        try {
+            Thread.currentThread().setName("Codekvast AgentService");
+            Instant now = Instant.now();
+
+            // Disable all agents that have been dead for more than two file import intervals...
+            int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
+                                                  "WHERE nextPollExpectedAt < ? AND enabled = TRUE ",
+                                              Timestamp.from(now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2)));
+            if (updated > 0) {
+                logger.info("Disabled {} dead agents", updated);
+            }
+        } finally {
+            Thread.currentThread().setName(oldThreadName);
+        }
+
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -89,18 +111,10 @@ public class AgentServiceImpl implements AgentService {
         long customerId = customerData.getCustomerId();
         Instant now = Instant.now();
 
-        // Disable all agents that have been dead for more than two file import intervals...
-        int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
-                                              "WHERE customerId = ? AND nextPollExpectedAt < ? AND enabled = TRUE ",
-                                          customerId, Timestamp.from(now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2)));
-        if (updated > 0) {
-            logger.info("Disabled {} dead agents for {}", updated, customerData);
-        }
-
         Timestamp nextExpectedPollTimestamp = Timestamp.from(now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
-        updated =
-            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE customerId = ? AND jvmUuid = ?",
-                                Timestamp.from(now), nextExpectedPollTimestamp, customerId, jvmUuid);
+        int updated =
+            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE jvmUuid = ? ",
+                                Timestamp.from(now), nextExpectedPollTimestamp, jvmUuid);
         if (updated == 0) {
             logger.info("The agent {}:{} has started", customerId, jvmUuid);
 
@@ -116,23 +130,19 @@ public class AgentServiceImpl implements AgentService {
                                             "WHERE enabled = TRUE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
                                         Integer.class, customerId, Timestamp.from(now.minusSeconds(10)), jvmUuid);
 
-        String planName = customerData.getPricePlan().getName();
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
         boolean enabled = numOtherEnabledLiveAgents < maxNumberOfAgents;
         if (!enabled) {
-            logger.warn("Customer {} has already {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents,
-                        planName, maxNumberOfAgents);
+            logger.warn("Customer {} has already {} live agents (max is {})", customerId, numOtherEnabledLiveAgents, maxNumberOfAgents);
         } else {
-            logger.debug("Customer {} now has {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents + 1,
-                         planName, maxNumberOfAgents);
+            logger.debug("Customer {} now has {} live agents (max is {})", customerId, numOtherEnabledLiveAgents + 1, maxNumberOfAgents);
         }
 
-        jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE jvmUuid = ?", enabled, jvmUuid);
         CustomerData cd = customerService.registerAgentDataPublication(customerData, now);
-        if (cd.isTrialPeriodExpired(now)) {
-            logger.info("Trial period expired for {}", cd);
+        if (cd.isTrialPeriodExpired(now) && enabled) {
             enabled = false;
         }
+        jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE jvmUuid = ?", enabled, jvmUuid);
         return enabled;
     }
 
