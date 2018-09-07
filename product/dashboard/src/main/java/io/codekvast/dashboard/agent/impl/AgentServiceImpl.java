@@ -60,27 +60,6 @@ public class AgentServiceImpl implements AgentService {
     private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
 
-    @Scheduled(initialDelay = 60_000L, fixedDelay = 600_000L)
-    @Transactional(rollbackFor = Exception.class)
-    public void disableDeadAgents() {
-        String oldThreadName = Thread.currentThread().getName();
-        try {
-            Thread.currentThread().setName("Codekvast AgentService");
-            Instant now = Instant.now();
-
-            // Disable all agents that have been dead for more than two file import intervals...
-            int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
-                                                  "WHERE nextPollExpectedAt < ? AND enabled = TRUE ",
-                                              Timestamp.from(now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2)));
-            if (updated > 0) {
-                logger.info("Disabled {} dead agents", updated);
-            }
-        } finally {
-            Thread.currentThread().setName(oldThreadName);
-        }
-
-    }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
@@ -107,14 +86,20 @@ public class AgentServiceImpl implements AgentService {
     }
 
     private boolean updateAgentState(CustomerData customerData, String jvmUuid) {
-
         long customerId = customerData.getCustomerId();
         Instant now = Instant.now();
 
+        // Disable all agents that have been dead for more than two file import intervals...
+        int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
+                                              "WHERE nextPollExpectedAt < ? AND enabled = TRUE ",
+                                          Timestamp.from(now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2)));
+        if (updated > 0) {
+            logger.info("Disabled {} dead agents", updated);
+        }
+
         Timestamp nextExpectedPollTimestamp = Timestamp.from(now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
-        int updated =
-            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE jvmUuid = ? ",
-                                Timestamp.from(now), nextExpectedPollTimestamp, jvmUuid);
+        updated = jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE jvmUuid = ? ",
+                                      Timestamp.from(now), nextExpectedPollTimestamp, jvmUuid);
         if (updated == 0) {
             logger.info("The agent {}:{} has started", customerId, jvmUuid);
 
