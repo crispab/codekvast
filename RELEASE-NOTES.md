@@ -9,6 +9,7 @@
 5. Added login count metrics.
 6. Added file import metrics.
 7. Bug fix in the agent. Applying codekvast-agent on a Spring Boot 2.0+ executable jar resulted in an NPE when trying to scan the codebase.
+8. Removed Codekvast Admin
 
 ## 0.24.2
 

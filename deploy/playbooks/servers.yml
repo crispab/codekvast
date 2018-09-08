@@ -3,7 +3,7 @@
 # Configures all servers once the infrastructure has been provisioned.
 # See also infrastructure.yml
 #---------------------------------------------------------------------------
-- {include: database.yml, tags: [server, database]}
-- {include: nginx.yml, tags: [server, nginx]}
-- {include: dashboard.yml, tags: [server, service, dashboard]}
-- {include: login.yml, tags: [server, service, login]}
+- {import_playbook: database.yml, tags: [server, database]}
+- {import_playbook: nginx.yml, tags: [server, nginx]}
+- {import_playbook: dashboard.yml, tags: [server, service, dashboard]}
+- {import_playbook: login.yml, tags: [server, service, login]}
