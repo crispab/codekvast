@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Deploys Codekvast Admin to the staging environment
+# Removes Codekvast Admin from the staging environment
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh

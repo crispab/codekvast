@@ -1,6 +1,6 @@
 ---
 #--------------------------------------------------------------------------------------------------------------------------------
-# Playbook that installs the Codekvast Admin application, which is an executable Spring Boot jar running as a systemd service
+# Playbook that removes the Codekvast Admin application
 #--------------------------------------------------------------------------------------------------------------------------------
 - name: Codekvast Admin Application
   hosts: tag_role_database

@@ -35,9 +35,6 @@ ports:
   dashboard:
     service: 8081
     management: 9081
-  admin:
-    service: 8080
-    management: 9080
 
 settings:
   session:

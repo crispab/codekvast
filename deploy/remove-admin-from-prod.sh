@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Deploys Codekvast Admin to the production environment
+# Removes Codekvast Admin from the production environment
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh

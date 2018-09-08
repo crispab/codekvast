@@ -121,22 +121,6 @@
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
       group_desc: "Codekvast backend access"
 
-- name: Create admin security group
-  local_action:
-    module: ec2_group
-    region: "{{ aws_region }}"
-    profile: codekvast
-    vpc_id: "{{ vpc_id }}"
-    state: "{{ stack.state }}"
-    name: "codekvast-{{ stack.customer }}-{{ stack.env }}-admin"
-    description: "Codekvast Admin access"
-    rules:
-    - proto: tcp
-      ports:
-      - 8080
-      group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
-      group_desc: "Codekvast backend access"
-
 - name: curl http://whatismyip.akamai.com/
   uri:
     url: http://whatismyip.akamai.com/
@@ -192,7 +176,6 @@
     vpc_subnet_id: "{{ subnet_id }}"
     groups:
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-database"
-    - "codekvast-{{ stack.customer }}-{{ stack.env }}-admin"
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
     image: "{{ aws_ami_id }}"
     instance_type: "{{ stack.db_instance_type }}"
