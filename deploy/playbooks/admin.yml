@@ -8,16 +8,36 @@
   become: yes
   serial: 1
 
-  vars_files:
-  - vars/secrets.yml
-  - vars/common.yml
+  tasks:
+  - name: "Stop and disable codekvast-admin"
+    service:
+      name: "codekvast-admin"
+      state: stopped
+      enabled: no
+    ignore_errors: yes
 
-  vars:
-    server_type: database
-    service_name: admin
-    service_port: "{{ ports.admin.service }}"
-    management_port: "{{ ports.admin.management }}"
+  - name: "Remove /etc/systemd/system/codekvast-admin.service"
+    file: path="/etc/systemd/system/codekvast-admin.service" state=absent
 
-  roles:
-  - {role: Datadog.datadog, tags: [metrics, datadog, admin] }
-  - {role: codekvast.spring-boot-service, tags: [service, admin], service_state: absent}
+  - name: Remove Datadog config directory for Codekvast
+    file: path=/etc/datadog-agent/conf.d/codekvast.d state=absent
+    notify: restart datadog-agent
+
+  - name: Uninstall OpenJDK 8
+    package: name=openjdk-8-jdk-headless state=absent
+
+  - name: Remove directories
+    file: path={{ item }} state=absent
+    with_items:
+    - "/opt/codekvast/admin"
+    - "/var/log/codekvast/admin"
+
+  - name: Remove codekvast user
+    user: name=codekvast group=codekvast state=absent
+
+  - name: Remove codekvast group
+    group: name=codekvast state=absent
+
+  handlers:
+  - name: restart datadog-agent
+    service: name=datadog-agent state=restarted
