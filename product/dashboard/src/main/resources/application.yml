@@ -55,10 +55,6 @@ server:
 
 spring:
     application.name: Codekvast Dashboard
-    boot.admin.client:
-        url: http://localhost:8082
-        auto-registration: true
-        auto-deregistration: false
     datasource:
         hikari:
             connection-test-query: SELECT 1 FROM DUAL

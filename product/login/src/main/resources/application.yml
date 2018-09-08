@@ -58,10 +58,6 @@ server:
 
 spring:
     application.name: Codekvast Login
-    boot.admin.client:
-        url: http://localhost:8082
-        auto-registration: true
-        auto-deregistration: false
     datasource:
         hikari:
             connection-test-query: SELECT 1 FROM DUAL
