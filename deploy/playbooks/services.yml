@@ -1,0 +1,8 @@
+---
+#---------------------------------------------------------------------------
+# Configures all services once the infrastructure has been provisioned and the database
+# and nginx has been installed.
+# See also infrastructure.yml and servers.yml
+#---------------------------------------------------------------------------
+- {include: dashboard.yml, tags: [server, service, dashboard]}
+- {include: login.yml, tags: [server, service, login]}
