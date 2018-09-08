@@ -20,4 +20,4 @@
 
   roles:
   - {role: Datadog.datadog, tags: [metrics, datadog, admin] }
-  - {role: codekvast.spring-boot-service, tags: [service, admin]}
+  - {role: codekvast.spring-boot-service, tags: [service, admin], service_state: absent}
