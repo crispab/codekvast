@@ -91,15 +91,17 @@ public class AgentServiceImpl implements AgentService {
 
         // Disable all agents that have been dead for more than two file import intervals...
         int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
-                                              "WHERE nextPollExpectedAt < ? AND enabled = TRUE ",
+                                              "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND nextPollExpectedAt < ?",
+                                          customerId, jvmUuid,
                                           Timestamp.from(now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2)));
         if (updated > 0) {
             logger.info("Disabled {} dead agents", updated);
         }
 
         Timestamp nextExpectedPollTimestamp = Timestamp.from(now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
-        updated = jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE jvmUuid = ? ",
-                                      Timestamp.from(now), nextExpectedPollTimestamp, jvmUuid);
+        updated =
+            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE customerId = ? AND jvmUuid = ? ",
+                                Timestamp.from(now), nextExpectedPollTimestamp, customerId, jvmUuid);
         if (updated == 0) {
             logger.info("The agent {}:{} has started", customerId, jvmUuid);
 
