@@ -16,19 +16,19 @@ aws_stacks:
     backend_count_b: 1
     backend_instance_type: 't2.micro'
     db_instance_type: 't2.micro'
-#  - env: prod
-#    customer: default
-#    cidr_base: "10.0"
-#    state: present
-#    app_cnames:
-#    - api
-#    - login
-#    - dashboard
-#    db_cname: 'db'
-#    backend_count_a: 1
-#    backend_count_b: 1
-#    backend_instance_type: 't2.micro'
-#    db_instance_type: 't2.micro'
+  - env: prod
+    customer: default
+    cidr_base: "10.0"
+    state: present
+    app_cnames:
+    - api
+    - login
+    - dashboard
+    db_cname: 'db'
+    backend_count_a: 1
+    backend_count_b: 1
+    backend_instance_type: 't2.micro'
+    db_instance_type: 't2.micro'
 
 ports:
   login:

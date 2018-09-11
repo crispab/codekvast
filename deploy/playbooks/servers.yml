@@ -4,6 +4,5 @@
 # See also infrastructure.yml
 #---------------------------------------------------------------------------
 - {import_playbook: database.yml, tags: [server, database]}
-- {import_playbook: nginx.yml, tags: [server, nginx]}
 - {import_playbook: dashboard.yml, tags: [server, service, dashboard]}
 - {import_playbook: login.yml, tags: [server, service, login]}
