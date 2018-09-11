@@ -26,6 +26,7 @@
     profile: codekvast
     state: "{{ stack.state }}"
     vpc_id: "{{ vpc_id }}"
+    tags: "{{ aws_common_tags }}"
   register: igw
 
 - debug: var=igw
@@ -57,7 +58,7 @@
     state: "{{ stack.state }}"
     az: "{{ aws_region }}b"
     cidr: "{{ stack.cidr_base }}.2.0/24"
-    resource_tags: "{{ aws_common_tags }}"
+    tags: "{{ aws_common_tags }}"
   register: subnet
 
 - debug: var=subnet
@@ -110,16 +111,18 @@
     rules:
     - proto: tcp
       ports:
-      - 8080
-      - 8081
+      - "{{ ports.login.service }}"
+      - "{{ ports.login.management }}"
+      - "{{ ports.dashboard.service }}"
+      - "{{ ports.dashboard.management }}"
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
       group_desc: "Codekvast internet-facing security group"
     - proto: tcp
       ports:
-      - 8080
-      - 8081
-      - 9080
-      - 9081
+      - "{{ ports.login.service }}"
+      - "{{ ports.login.management }}"
+      - "{{ ports.dashboard.service }}"
+      - "{{ ports.dashboard.management }}"
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
       group_desc: "Codekvast management access"
 
@@ -301,6 +304,7 @@
     health_check_port: "{{ ports.dashboard.management }}"
     health_check_path: /management/health
     health_check_interval: 10
+    successful_response_codes: "200-299"
     health_check_timeout: 2
     healthy_threshold_count: 2
     unhealthy_threshold_count: 3
