@@ -95,7 +95,6 @@
     rules:
     - proto: tcp
       ports:
-      - 80
       - 443
       cidr_ip: 0.0.0.0/0
 
