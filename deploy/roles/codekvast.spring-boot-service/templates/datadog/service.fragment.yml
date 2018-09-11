@@ -1,0 +1,26 @@
+- type: file
+  path: "/var/log/codekvast/{{ service_name }}/application.log"
+  service: "{{ service_name }}"
+  source: java
+  sourcecategory: codekvast
+  log_processing_rules:
+  - type: mask_sequences
+    name: mask_license_key
+    replace_placeholder: "licenseKey=XXXX"
+    pattern: "licenseKey=[0-9A-F]+"
+
+- type: file
+  path: "/var/log/codekvast/{{ service_name }}/access.log"
+  service: "{{ service_name }}"
+  source: apache
+  sourcecategory: codekvast
+
+- type: file
+  path: "/var/log/codekvast/{{ service_name }}/management_access.log"
+  service: "{{ service_name }}"
+  source: apache
+  sourcecategory: codekvast
+  log_processing_rules:
+  - type: exclude_at_match
+    name: exclude_health_checks
+    pattern: /management/health

@@ -3,5 +3,5 @@
 # Configures all services once the infrastructure has been provisioned and the database has been installed.
 # See also infrastructure.yml and servers.yml
 #---------------------------------------------------------------------------
-- {import_playbook: dashboard.yml, tags: [server, service, dashboard]}
-- {import_playbook: login.yml, tags: [server, service, login]}
+- {import_playbook: dashboard.yml, tags: [dashboard]}
+- {import_playbook: login.yml, tags: [login]}

@@ -5,9 +5,9 @@
 - name: Copy config fragments to Datadog config directory
   template: src=datadog/{{ item.src }} dest=/etc/datadog-agent/conf.d/codekvast.d/{{ item.dest }}
   with_items:
-  - src: 0-logs.fragment
+  - src: 0-logs.fragment.yml
     dest: 0-logs.fragment
-  - src: service.fragment
+  - src: service.fragment.yml
     dest: "{{ service_name }}.fragment"
 
 - name: Assemble the Datadog config file
@@ -15,7 +15,6 @@
     src: /etc/datadog-agent/conf.d/codekvast.d/
     regexp: "\\.fragment$"
     dest: /etc/datadog-agent/conf.d/codekvast.d/conf.yaml
-    backup: yes
   notify: restart datadog-agent
 
 - name: Lookup the private DNS name for the database server
