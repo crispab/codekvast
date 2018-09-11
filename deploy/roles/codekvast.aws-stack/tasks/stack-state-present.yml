@@ -31,14 +31,14 @@
 - debug: var=igw
   when: _debug is defined and _debug
 
-- name: Create VPC subnet
+- name: Create VPC subnet A
   local_action:
     module: ec2_vpc_subnet
     region: "{{ aws_region }}"
     profile: codekvast
     vpc_id: "{{ vpc_id }}"
     state: "{{ stack.state }}"
-    az: "{{ aws_az }}"
+    az: "{{ aws_region }}a"
     cidr: "{{ stack.cidr_base }}.1.0/24"
     resource_tags: "{{ aws_common_tags }}"
   register: subnet
@@ -46,9 +46,26 @@
 - debug: var=subnet
   when: _debug is defined and _debug
 
-- set_fact: subnet_id="{{ subnet.subnet.id }}"
+- set_fact: subnet_id_a="{{ subnet.subnet.id }}"
 
-- name: Set up subnet route table
+- name: Create VPC subnet B
+  local_action:
+    module: ec2_vpc_subnet
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    state: "{{ stack.state }}"
+    az: "{{ aws_region }}b"
+    cidr: "{{ stack.cidr_base }}.2.0/24"
+    resource_tags: "{{ aws_common_tags }}"
+  register: subnet
+
+- debug: var=subnet
+  when: _debug is defined and _debug
+
+- set_fact: subnet_id_b="{{ subnet.subnet.id }}"
+
+- name: Create subnet route table
   local_action:
     module: ec2_vpc_route_table
     region: "{{ aws_region }}"
@@ -56,7 +73,8 @@
     vpc_id: "{{ vpc_id }}"
     tags: "{{ aws_common_tags }}"
     subnets:
-      - "{{ subnet_id }}"
+      - "{{ subnet_id_a }}"
+      - "{{ subnet_id_b }}"
     routes:
       - dest: 0.0.0.0/0
         gateway_id: "{{ igw.gateway_id }}"
@@ -93,13 +111,14 @@
     rules:
     - proto: tcp
       ports:
-      - 80
-      - 9080
-      - 9081
+      - 8080
+      - 8081
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
       group_desc: "Codekvast internet-facing security group"
     - proto: tcp
       ports:
+      - 8080
+      - 8081
       - 9080
       - 9081
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
@@ -173,7 +192,7 @@
     profile: codekvast # in ~/.boto
     key_name: codekvast
     assign_public_ip: yes
-    vpc_subnet_id: "{{ subnet_id }}"
+    vpc_subnet_id: "{{ subnet_id_a }}"
     groups:
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-database"
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
@@ -196,14 +215,15 @@
 - debug: var=database_instance_id
   when: _debug is defined and _debug
 
-- name: Create EC2 backend instances
+#----------------------------------
+- name: "Create EC2 backend instances in {{ aws_region }}a"
   local_action:
     module: ec2
     region: "{{ aws_region }}"
     profile: codekvast # in ~/.boto
     key_name: codekvast
     assign_public_ip: yes
-    vpc_subnet_id: "{{ subnet_id }}"
+    vpc_subnet_id: "{{ subnet_id_a }}"
     groups:
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
@@ -211,71 +231,159 @@
     instance_type: "{{ stack.backend_instance_type }}"
     instance_profile_name: "{{ ec2_instance_profile_name }}"
     user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
-    exact_count: "{{ stack.backend_count | default(1) }}"
+    exact_count: "{{ stack.backend_count_a | default(1) }}"
     count_tag: "{{ role_tag_backend }}"
     instance_tags: "{{ role_tag_backend }}"
     termination_protection: "{{ ('no', 'yes')[stack.env == 'prod'] }}"
     wait: yes
-  register: ec2backends
+  register: ec2backends_a
+
+#-----------------------------------
+- name: "Create EC2 backend instances in {{ aws_region }}b"
+  local_action:
+    module: ec2
+    region: "{{ aws_region }}"
+    profile: codekvast # in ~/.boto
+    key_name: codekvast
+    assign_public_ip: yes
+    vpc_subnet_id: "{{ subnet_id_b }}"
+    groups:
+    - "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
+    - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
+    image: "{{ aws_ami_id }}"
+    instance_type: "{{ stack.backend_instance_type }}"
+    instance_profile_name: "{{ ec2_instance_profile_name }}"
+    user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
+    exact_count: "{{ stack.backend_count_b | default(1) }}"
+    count_tag: "{{ role_tag_backend }}"
+    instance_tags: "{{ role_tag_backend }}"
+    termination_protection: "{{ ('no', 'yes')[stack.env == 'prod'] }}"
+    wait: yes
+  register: ec2backends_b
+
+- debug: var=ec2backends_a
+  when: _debug is defined and _debug
+
+- debug: var=ec2backends_b
+  when: _debug is defined and _debug
+
+- set_fact:
+    ec2backends: "{{ ec2backends_a.tagged_instances }} + {{ ec2backends_b.tagged_instances }}"
 
 - debug: var=ec2backends
   when: _debug is defined and _debug
 
-- set_fact: backend_instance_ids="{{ ec2backends.tagged_instances|map(attribute='id') | list }}"
+- set_fact:
+    backend_ids: "{{ backend_ids|default([]) + [{'Id': item }] }}"
+  with_items: "{{ ec2backends_a.tagged_instances|map(attribute='id') | list }} + {{ ec2backends_b.tagged_instances|map(attribute='id') | list }}"
 
-- debug: var=backend_instance_ids
+- debug: var=backend_ids
   when: _debug is defined and _debug
 
-- name: Refresh external EC2 cache
-  command: "{{ inventory_dir }}/ec2.py --refresh-cache"
-  when: ec2database.changed or ec2backends.changed
+#-----------------------------------
+#- name: Refresh external EC2 cache
+#  command: "{{ inventory_dir }}/ec2.py --refresh-cache"
+#  when: ec2database.changed or ec2backends.changed
 
-- name: Refresh in-memory EC2 cache
-  meta: refresh_inventory
-  when: ec2database.changed or ec2backends.changed
+#- name: Refresh in-memory EC2 cache
+#  meta: refresh_inventory
+#  when: ec2database.changed or ec2backends.changed
 
-- name: Create Elastic Load Balancer
+- name: "Create ALB target group for api/dashboard"
+  local_action:
+    module: elb_target_group
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    name: "{{ aws_target_group_dashboard }}"
+    protocol: http
+    port: "{{ ports.dashboard.service }}"
+    health_check_protocol: http
+    health_check_port: "{{ ports.dashboard.management }}"
+    health_check_path: /management/health
+    health_check_interval: 10
+    health_check_timeout: 2
+    healthy_threshold_count: 2
+    unhealthy_threshold_count: 3
+    state: present
+    stickiness_enabled: no
+    tags: "{{ aws_common_tags }}"
+    target_type: instance
+    targets: "{{ backend_ids }}"
+
+- name: "Create ALB target group for login"
+  local_action:
+    module: elb_target_group
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    name: "{{ aws_target_group_login }}"
+    protocol: http
+    port: "{{ ports.login.service }}"
+    health_check_protocol: http
+    health_check_port: "{{ ports.login.management }}"
+    health_check_path: /management/health
+    health_check_interval: 10
+    health_check_timeout: 2
+    healthy_threshold_count: 2
+    unhealthy_threshold_count: 3
+    state: present
+    stickiness_enabled: yes
+    stickiness_lb_cookie_duration: 300
+    stickiness_type: lb_cookie
+    tags: "{{ aws_common_tags }}"
+    target_type: instance
+    targets: "{{ backend_ids }}"
+
+- name: Destroy Elastic Load Balancer
   local_action:
     module: ec2_elb_lb
     region: "{{ aws_region }}"
     profile: codekvast
     name: "{{ aws_stack_name }}"
-    instance_ids: "{{ backend_instance_ids }}"
-    stickiness:
-      type:  application
-      cookie: "{{ settings.session.cookie.name }}"
-      enabled: yes
-    listeners:
-    - protocol: http
-      load_balancer_port: 80
-      instance_port: 80
-      proxy_protocol: True
-    - protocol: https
-      load_balancer_port: 443
-      instance_protocol: http
-      instance_port: 80
-      ssl_certificate_id: "{{ ssl_certificate_id }}"
-    health_check:
-      ping_protocol: http
-      ping_port: 9080
-      ping_path: /management/health
-      response_timeout: 5
-      interval: 15
-      unhealthy_threshold: 2
-      healthy_threshold: 2
-    purge_instance_ids: yes
-    security_group_names:
-    - codekvast-{{ stack.customer }}-{{ stack.env }}-frontend
-    state: "{{ stack.state }}"
-    subnets: "{{ subnet_id }}"
-    tags: "{{ aws_common_tags }}"
-    wait: yes
-  register: elb
+    state: absent
 
-- debug: var=elb
+- name: Create Application Load Balancer
+  local_action:
+    module: elb_application_lb
+    region: "{{ aws_region }}"
+    profile: codekvast
+    name: "{{ aws_stack_name }}"
+    state: present
+    deletion_protection: "{{ ('no', 'yes')[stack.env == 'prod'] }}"
+    scheme: internet-facing
+    security_groups:
+    - "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
+    state: present
+    subnets:
+    - "{{ subnet_id_a }}"
+    - "{{ subnet_id_b }}"
+    tags: "{{ aws_common_tags }}"
+    listeners:
+    - Protocol: HTTPS
+      Port: 443
+      Certificates:
+      - CertificateArn: "{{ ssl_certificate_id }}"
+      SslPolicy: ELBSecurityPolicy-2015-05
+      DefaultActions:
+      - Type: forward
+        TargetGroupName: "{{ aws_target_group_dashboard }}"
+      Rules:
+        - Conditions:
+          - Field: host-header
+            Values:
+            - "{{ stack.app_cnames[1] }}.codekvast.io"
+          Priority: '1'
+          Actions:
+          - Type: forward
+            TargetGroupName: "{{ aws_target_group_login }}"
+    wait: yes
+  register: alb
+
+- debug: var=alb
   when: _debug is defined and _debug
 
-- set_fact: elb_dns_name="{{ elb.elb.dns_name }}"
+- set_fact: alb_dns_name="{{ alb.dns_name }}"
 
 - name: Define load balancer's CNAMEs
   local_action:
@@ -284,7 +392,7 @@
     command: create
     overwrite: yes
     record: "{{ item }}.codekvast.io"
-    value: "{{ elb_dns_name }}"
+    value: "{{ alb_dns_name }}"
     ttl: 3600
     type: CNAME
     zone: codekvast.io
@@ -317,7 +425,7 @@
   loop_control:
     label: "{{ item.1.public_dns_name }}"
 
-- name: Define application instances' api CNAMEs
+- name: Define api CNAMEs
   local_action:
     module: route53
     profile: codekvast # in ~/.boto
@@ -328,11 +436,11 @@
     ttl: 60
     type: CNAME
     zone: codekvast.io
-  with_indexed_items: "{{ ec2backends.tagged_instances }}"
+  with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
 
-- name: Define application instances' login CNAMEs
+- name: Define login CNAMEs
   local_action:
     module: route53
     profile: codekvast # in ~/.boto
@@ -343,11 +451,11 @@
     ttl: 60
     type: CNAME
     zone: codekvast.io
-  with_indexed_items: "{{ ec2backends.tagged_instances }}"
+  with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
 
-- name: Define application instances' dashboard CNAMEs
+- name: Define dashboard CNAMEs
   local_action:
     module: route53
     profile: codekvast # in ~/.boto
@@ -358,7 +466,7 @@
     ttl: 60
     type: CNAME
     zone: codekvast.io
-  with_indexed_items: "{{ ec2backends.tagged_instances }}"
+  with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
 
@@ -377,7 +485,7 @@
       LBCNAME0: "{{ stack.app_cnames[0] }}.codekvast.io"
       LBCNAME1: "{{ stack.app_cnames[1] }}.codekvast.io"
       LBCNAME2: "{{ stack.app_cnames[2] }}.codekvast.io"
-  with_indexed_items: "{{ ec2backends.tagged_instances }}"
+  with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
 
@@ -397,4 +505,4 @@
     search_regex: OpenSSH
   with_items:
   - "{{ ec2database.tagged_instances|map(attribute='public_ip') | list }}"
-  - "{{ ec2backends.tagged_instances|map(attribute='public_ip') | list }}"
+  - "{{ ec2backends|map(attribute='public_ip') | list }}"

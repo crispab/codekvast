@@ -24,14 +24,14 @@ case "$groupId" in
     ;;
 esac
 
-echo -n "Will modify the security group $groupName to enable TCP access from $myIp to ports 22,3306,8080-8082 with the description \"$description\". Ok? [y/N]: "
+echo -n "Will modify the security group $groupName to enable TCP access from $myIp to ports 22,3306,8080-8081 with the description \"$description\". Ok? [y/N]: "
 read answer
 case $answer in
     ""|n|N) exit 0;;
     y|Y) ;;
 esac
 
-for port in 22 3306 8080 8081 8082; do
+for port in 22 3306 8080 8081; do
     echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/24\", \"Description\": \"Management from $description\"}]}]"
     aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/24\", \"Description\": \"Management from $description\"}]}]"
 done
