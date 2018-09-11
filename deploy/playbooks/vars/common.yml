@@ -12,21 +12,23 @@ aws_stacks:
     - 'login-staging'
     - 'dashboard-staging'
     db_cname: 'db-staging'
-    backend_count: 2
+    backend_count_a: 1
+    backend_count_b: 1
     backend_instance_type: 't2.micro'
     db_instance_type: 't2.micro'
-  - env: prod
-    customer: default
-    cidr_base: "10.0"
-    state: present
-    app_cnames:
-    - api
-    - login
-    - dashboard
-    db_cname: 'db'
-    backend_count: 2
-    backend_instance_type: 't2.micro'
-    db_instance_type: 't2.micro'
+#  - env: prod
+#    customer: default
+#    cidr_base: "10.0"
+#    state: present
+#    app_cnames:
+#    - api
+#    - login
+#    - dashboard
+#    db_cname: 'db'
+#    backend_count_a: 1
+#    backend_count_b: 1
+#    backend_instance_type: 't2.micro'
+#    db_instance_type: 't2.micro'
 
 ports:
   login:
