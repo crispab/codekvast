@@ -46,7 +46,7 @@ import static com.google.common.base.Preconditions.checkState;
 @Validated
 @Data
 @Slf4j
-@ToString(exclude = {"cipherSecret", "dashboardJwtSecret", "herokuApiPassword", "herokuApiSsoSalt", "slackWebHookToken"})
+@ToString(exclude = {"cipherSecret", "dashboardJwtSecret", "herokuApiPassword", "herokuApiSsoSalt", "herokuOAuthClientSecret", "slackWebHookToken"})
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
 public class CodekvastLoginSettings implements CodekvastCommonSettings {
 
