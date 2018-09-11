@@ -64,7 +64,8 @@ public class MetricsServiceImpl implements MetricsService {
         String name = "codekvast.intake.publicationSize";
 
         meterRegistry.gauge(name,
-                            asList(Tag.of(KIND_TAG, asTag(kind)), Tag.of(CUSTOMER_ID_TAG, Long.toString(customerId)),
+                            asList(Tag.of(KIND_TAG, asTag(kind)),
+                                   Tag.of(CUSTOMER_ID_TAG, Long.toString(customerId)),
                                    Tag.of(CUSTOMER_ENVIRONMENT_TAG, customerEnvironment)), size);
 
         meterRegistry.gauge(name + "." + asTag(kind),

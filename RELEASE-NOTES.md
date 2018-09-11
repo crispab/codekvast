@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.24.4
+
+1. Replaced Nginx with AWS ALB
+2. Added tag "env" to all application metrics.
+
 ## 0.24.3
 
 1. Now logs in JSON format to /var/log/codekvast/$service/application.log
