@@ -21,7 +21,6 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import io.codekvast.javaagent.model.v1.InvocationDataPublication;
 import lombok.*;
 
 import javax.validation.constraints.Min;
@@ -55,14 +54,5 @@ public class InvocationDataPublication2 implements Serializable {
         return String.format(
             "InvocationDataPublication{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
             commonData, invocations.size(), recordingIntervalStartedAtMillis);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static InvocationDataPublication2 fromV1Format(InvocationDataPublication pub1) {
-        return InvocationDataPublication2.builder()
-                                         .commonData(CommonPublicationData2.fromV1format(pub1.getCommonData()))
-                                         .invocations(pub1.getInvocations())
-                                         .recordingIntervalStartedAtMillis(pub1.getRecordingIntervalStartedAtMillis())
-                                         .build();
     }
 }

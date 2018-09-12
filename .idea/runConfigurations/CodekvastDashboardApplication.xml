@@ -16,7 +16,14 @@
         <option name="name" value="codekvast.dataWeedingIntervalSeconds" />
         <option name="value" value="15" />
       </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="codekvast.deleteImportedFiles" />
+        <option name="value" value="false" />
+      </param>
     </additionalParameters>
-    <method />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

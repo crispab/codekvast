@@ -26,8 +26,6 @@ import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
 import io.codekvast.dashboard.metrics.MetricsService;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.model.v1.InvocationDataPublication;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +35,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.Set;
 
 import static io.codekvast.dashboard.metrics.MetricsService.PublicationKind.CODEBASE;
@@ -76,20 +71,26 @@ public class PublicationImporterImpl implements PublicationImporter {
             logger.debug("Deserialized a {} in {} ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt);
 
             handled = !isValidObject(object) || handlePublication(object);
+        } catch (InvalidClassException e) {
+            // An incompatible publication file was lying in the queue.
+            // The publication data is lost.
+            // Prevent the file from being processed again.
+            logger.error("Could not import {}: {}. Will not try again.", file, e.toString());
+            handled = true;
         } catch (LicenseViolationException e) {
-            logger.warn("Ignoring " + file + ": " + e);
 
             // Prevent the file from being processed again.
             // The agent will keep retrying uploading new publication files.
+            logger.warn("Ignoring {}: {}", file, e.toString());
             handled = true;
         } catch (DataAccessException e) {
-            logger.warn("Could not import {}: {}", file, e.toString());
             // A new attempt to process the file should be made in a new transaction.
+            logger.warn("Could not import {}: {}. Will try again.", file, e.toString());
             handled = false;
         } catch (Exception e) {
-            logger.error("Cannot import " + file, e);
             // A new attempt to process the file should be made.
             // Perhaps after deploying a new version of the service.
+            logger.error("Cannot import " + file + ". Will try again.", e);
             handled = false;
         }
         if (!handled) {
@@ -98,21 +99,11 @@ public class PublicationImporterImpl implements PublicationImporter {
         return handled;
     }
 
-    @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks", "deprecation"})
+    @SuppressWarnings({"ChainOfInstanceofChecks", "InstanceofConcreteClass", "CastToConcreteClass"})
     private boolean handlePublication(Object object) {
-        if (object instanceof CodeBasePublication) {
-            metricsService.countImportedPublication(CODEBASE, "v1");
-            return codeBaseImporter.importPublication(CodeBasePublication2.fromV1Format((CodeBasePublication) object));
-        }
-
         if (object instanceof CodeBasePublication2) {
             metricsService.countImportedPublication(CODEBASE, "v2");
             return codeBaseImporter.importPublication((CodeBasePublication2) object);
-        }
-
-        if (object instanceof InvocationDataPublication) {
-            metricsService.countImportedPublication(INVOCATIONS, "v1");
-            return invocationDataImporter.importPublication(InvocationDataPublication2.fromV1Format((InvocationDataPublication) object));
         }
 
         if (object instanceof InvocationDataPublication2) {

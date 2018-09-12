@@ -21,7 +21,6 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import lombok.*;
 
 import javax.validation.constraints.Min;
@@ -110,28 +109,6 @@ public class CommonPublicationData2 implements Serializable {
             appVersion,
             hostname,
             publishedAtMillis);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static CommonPublicationData2 fromV1format(CommonPublicationData data1) {
-        return CommonPublicationData2.builder()
-                                     .agentVersion(data1.getAgentVersion())
-                                     .appName(data1.getAppName())
-                                     .appVersion(data1.getAppVersion())
-                                     .codeBaseFingerprint(data1.getCodeBaseFingerprint())
-                                     .computerId(data1.getComputerId())
-                                     .customerId(data1.getCustomerId())
-                                     .environment(data1.getEnvironment())
-                                     .excludePackages(toList(data1.getExcludePackages()))
-                                     .hostname(data1.getHostname())
-                                     .jvmStartedAtMillis(data1.getJvmStartedAtMillis())
-                                     .jvmUuid(data1.getJvmUuid())
-                                     .methodVisibility(data1.getMethodVisibility())
-                                     .packages(toList(data1.getPackages()))
-                                     .publishedAtMillis(data1.getPublishedAtMillis())
-                                     .sequenceNumber(data1.getSequenceNumber())
-                                     .tags(data1.getTags())
-                                     .build();
     }
 
     private static List<String> toList(String commaSeparatedList) {

@@ -51,9 +51,9 @@ public class PublicationImporterImplTest {
     }
 
     @Test
-    public void should_import_CodeBasePublication1() throws URISyntaxException {
+    public void should_import_CodeBasePublication2() throws URISyntaxException {
         // given
-        File file = new File(getClass().getResource("/sample-publications/codebase-v1.ser").toURI());
+        File file = new File(getClass().getResource("/sample-publications/codebase-v2.ser").toURI());
         when(codeBaseImporter.importPublication(any(CodeBasePublication2.class))).thenReturn(true);
 
         // when
@@ -68,9 +68,9 @@ public class PublicationImporterImplTest {
     }
 
     @Test
-    public void should_reject_CodeBasePublication1_when_DuplicateKeyException() throws URISyntaxException {
+    public void should_reject_CodeBasePublication2_when_DuplicateKeyException() throws URISyntaxException {
         // given
-        File file = new File(getClass().getResource("/sample-publications/codebase-v1.ser").toURI());
+        File file = new File(getClass().getResource("/sample-publications/codebase-v2.ser").toURI());
         when(codeBaseImporter.importPublication(any(CodeBasePublication2.class))).thenThrow(new DuplicateKeyException("Thrown by mock"));
 
         // when
@@ -85,9 +85,23 @@ public class PublicationImporterImplTest {
     }
 
     @Test
-    public void should_import_InvocationDataPublication1() throws URISyntaxException {
+    public void should_swallow_CodeBasePublication2_when_InvalidClassException() throws URISyntaxException {
         // given
-        File file = new File(getClass().getResource("/sample-publications/invocations-v1.ser").toURI());
+        File file = new File(getClass().getResource("/sample-publications/codebase-v2-bad-serialVersionUID.ser").toURI());
+
+        // when
+        boolean handled = publicationImporter.importPublicationFile(file);
+
+        // then
+        assertThat(handled, is(true));
+
+        verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
+    }
+
+    @Test
+    public void should_import_InvocationDataPublication2() throws URISyntaxException {
+        // given
+        File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
         when(invocationDataImporter.importPublication(any(InvocationDataPublication2.class))).thenReturn(true);
 
         // when
@@ -101,9 +115,9 @@ public class PublicationImporterImplTest {
     }
 
     @Test
-    public void should_reject_InvocationDataPublication1_when_DuplicateKeyException() throws URISyntaxException {
+    public void should_reject_InvocationDataPublication2_when_DuplicateKeyException() throws URISyntaxException {
         // given
-        File file = new File(getClass().getResource("/sample-publications/invocations-v1.ser").toURI());
+        File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
         when(invocationDataImporter.importPublication(any(InvocationDataPublication2.class)))
             .thenThrow(new DuplicateKeyException("Thrown by mock"));
 
@@ -140,7 +154,7 @@ public class PublicationImporterImplTest {
     @Test
     public void should_handle_invalid_content() throws URISyntaxException {
         // given
-        File file = new File(getClass().getResource("/sample-publications/invocations-v1.ser").toURI());
+        File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
         when(validator.validate(any())).thenReturn(Collections.singleton(mock(ConstraintViolation.class)));
 
         // when

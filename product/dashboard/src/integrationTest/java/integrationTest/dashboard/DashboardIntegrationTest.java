@@ -9,14 +9,14 @@ import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.dashboard.DashboardService;
-import io.codekvast.dashboard.dashboard.model.methods.*;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse2;
+import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor1;
 import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.*;
@@ -350,21 +350,6 @@ public class DashboardIntegrationTest {
         assertThat(customerData.getTrialPeriodEndsAt(), is(now.plus(days, DAYS)));
         assertThat(customerData.isTrialPeriodExpired(now.plus(days - 1, DAYS)), is(false));
         assertThat(customerData.isTrialPeriodExpired(now.plus(days + 1, DAYS)), is(true));
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void should_import_codeBasePublication1() {
-        //@formatter:off
-        CodeBasePublication publication = CodeBasePublication.builder()
-            .commonData(CommonPublicationData.sampleCommonPublicationData())
-            .entries(Arrays.asList(CodeBaseEntry.sampleCodeBaseEntry()))
-            .overriddenSignatures(Collections.singletonMap("signature", "overriddenBySignature"))
-            .strangeSignatures(Collections.singletonMap("rawStrangeSignature", "normalizedStrangeSignature"))
-            .build();
-        //@formatter:on
-
-        codeBaseImporter.importPublication(CodeBasePublication2.fromV1Format(publication));
     }
 
     @Test

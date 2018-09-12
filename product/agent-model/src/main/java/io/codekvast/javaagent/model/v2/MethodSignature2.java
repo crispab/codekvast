@@ -21,7 +21,6 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import io.codekvast.javaagent.model.v1.MethodSignature;
 import lombok.*;
 
 import java.io.Serializable;
@@ -37,6 +36,8 @@ import java.io.Serializable;
 @ToString(of = "aspectjString")
 @EqualsAndHashCode(of = "aspectjString")
 public class MethodSignature2 implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @NonNull
     private final String aspectjString;
     private final Boolean bridge;
@@ -55,23 +56,6 @@ public class MethodSignature2 implements Serializable {
     @NonNull
     private final String returnType;
     private final Boolean synthetic;
-
-    @SuppressWarnings("deprecation")
-    public static MethodSignature2 fromV1Format(MethodSignature m1) {
-        return builder()
-            .aspectjString(m1.getAspectjString())
-            .bridge(null)
-            .declaringType(m1.getDeclaringType())
-            .exceptionTypes(m1.getExceptionTypes())
-            .methodName(m1.getMethodName())
-            .modifiers(m1.getModifiers())
-            .packageName(m1.getPackageName())
-            .parameterTypes(m1.getParameterTypes())
-            .returnType(m1.getReturnType())
-            .synthetic(null)
-            .build();
-
-    }
 
     public static MethodSignature2 createSampleMethodSignature() {
         return builder()
