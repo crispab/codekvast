@@ -7,7 +7,7 @@ After=syslog.target
 [Service]
 User=codekvast
 WorkingDirectory=/opt/codekvast/{{ service_name }}
-ExecStart=/bin/sh -c "java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ ports.jvm_debugger }} -javaagent:/opt/codekvast/codekvast-javaagent-{{ codekvastVersion }}.jar -Dcodekvast.configuration=/opt/codekvast/{{ service_name }}/codekvast-agent.properties -Dsun.misc.URLClassPath.disableJarChecking=true  -jar /opt/codekvast/{{ service_name }}/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar > /dev/null"
+ExecStart=/bin/sh -c "java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ ports[service_name].jvm_debugger }} -javaagent:/opt/codekvast/codekvast-javaagent-{{ codekvastVersion }}.jar -Dcodekvast.configuration=/opt/codekvast/{{ service_name }}/codekvast-agent.properties -Dsun.misc.URLClassPath.disableJarChecking=true  -jar /opt/codekvast/{{ service_name }}/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar > /dev/null"
 KillMode=control-group
 SuccessExitStatus=143
 TimeoutSec=30

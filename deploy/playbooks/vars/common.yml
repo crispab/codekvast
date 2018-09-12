@@ -33,13 +33,14 @@ aws_stacks:
 ports:
   ssh: 22
   mysql: 3306
-  jvm_debugger: 5009
   login:
     service: 8080
     management: 9080
+    jvm_debugger: 5010
   dashboard:
     service: 8081
     management: 9081
+    jvm_debugger: 5011
 
 settings:
   session:

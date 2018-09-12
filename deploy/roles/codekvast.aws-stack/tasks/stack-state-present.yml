@@ -167,11 +167,12 @@
       ports:
       - "{{ ports.ssh }}"
       - "{{ ports.mysql }}"
-      - "{{ ports.jvm_debugger }}"
       - "{{ ports.login.service }}"
       - "{{ ports.login.management }}"
+      - "{{ ports.login.jvm_debugger }}"
       - "{{ ports.dashboard.service }}"
       - "{{ ports.dashboard.management }}"
+      - "{{ ports.dashboard.jvm_debugger }}"
       cidr_ip: "{{ my_ip.content }}/32"
 
 - set_fact:

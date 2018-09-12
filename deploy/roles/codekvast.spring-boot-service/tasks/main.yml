@@ -86,4 +86,4 @@
   wait_for:
     port: "{{ service_port }}"
     state: started
-    timeout: 30
+    timeout: 45
