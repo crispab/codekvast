@@ -32,11 +32,15 @@ import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.Set;
 
 import static io.codekvast.dashboard.metrics.MetricsService.PublicationKind.CODEBASE;
@@ -64,7 +68,7 @@ public class PublicationImporterImpl implements PublicationImporter {
     @Override
     public boolean importPublicationFile(File file) {
         logger.info("Processing {}", file);
-        boolean handled = false;
+        boolean handled;
         try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 
             long startedAt = System.currentTimeMillis();
@@ -78,8 +82,15 @@ public class PublicationImporterImpl implements PublicationImporter {
             // Prevent the file from being processed again.
             // The agent will keep retrying uploading new publication files.
             handled = true;
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (DataAccessException e) {
+            logger.warn("Could not import {}: {}", file, e.toString());
+            // A new attempt to process the file should be made in a new transaction.
+            handled = false;
+        } catch (Exception e) {
             logger.error("Cannot import " + file, e);
+            // A new attempt to process the file should be made.
+            // Perhaps after deploying a new version of the service.
+            handled = false;
         }
         if (!handled) {
             metricsService.countRejectedPublication();

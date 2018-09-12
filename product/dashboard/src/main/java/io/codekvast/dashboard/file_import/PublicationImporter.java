@@ -30,6 +30,7 @@ public interface PublicationImporter {
 
     /**
      * De-serializes and handles a publication.
+     * Does never throw any exceptions.
      *
      * @param file The file that contains the serialized publication.
      *

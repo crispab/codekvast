@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DuplicateKeyException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -67,6 +68,23 @@ public class PublicationImporterImplTest {
     }
 
     @Test
+    public void should_reject_CodeBasePublication1_when_DuplicateKeyException() throws URISyntaxException {
+        // given
+        File file = new File(getClass().getResource("/sample-publications/codebase-v1.ser").toURI());
+        when(codeBaseImporter.importPublication(any(CodeBasePublication2.class))).thenThrow(new DuplicateKeyException("Thrown by mock"));
+
+        // when
+        boolean handled = publicationImporter.importPublicationFile(file);
+
+        // then
+        assertThat(handled, is(false));
+
+        verify(codeBaseImporter).importPublication(any(CodeBasePublication2.class));
+        verify(validator).validate(any());
+        verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
+    }
+
+    @Test
     public void should_import_InvocationDataPublication1() throws URISyntaxException {
         // given
         File file = new File(getClass().getResource("/sample-publications/invocations-v1.ser").toURI());
@@ -77,6 +95,23 @@ public class PublicationImporterImplTest {
 
         // then
         assertThat(handled, is(true));
+        verify(invocationDataImporter).importPublication(any(InvocationDataPublication2.class));
+        verify(validator).validate(any());
+        verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
+    }
+
+    @Test
+    public void should_reject_InvocationDataPublication1_when_DuplicateKeyException() throws URISyntaxException {
+        // given
+        File file = new File(getClass().getResource("/sample-publications/invocations-v1.ser").toURI());
+        when(invocationDataImporter.importPublication(any(InvocationDataPublication2.class)))
+            .thenThrow(new DuplicateKeyException("Thrown by mock"));
+
+        // when
+        boolean handled = publicationImporter.importPublicationFile(file);
+
+        // then
+        assertThat(handled, is(false));
         verify(invocationDataImporter).importPublication(any(InvocationDataPublication2.class));
         verify(validator).validate(any());
         verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
