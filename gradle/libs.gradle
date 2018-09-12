@@ -11,7 +11,7 @@ ext {
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
     logback = 'ch.qos.logback:logback-classic:1.2.3'
     lombok = 'org.projectlombok:lombok:1.18.2'
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.2.6'
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.3.0'
     slf4jApi = 'org.slf4j:slf4j-api:1.7.25'
     testFrameworks = [
         'junit:junit:4.12',
