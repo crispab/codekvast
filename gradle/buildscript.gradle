@@ -1,5 +1,5 @@
-def kotlinVersion = '1.2.61'
-def springBootVersion = '2.0.4.RELEASE'
+def kotlinVersion = '1.2.70'
+def springBootVersion = '2.0.5.RELEASE'
 
 repositories {
     jcenter()
