@@ -23,4 +23,5 @@
 
   roles:
   - {role: Datadog.datadog, tags: [metrics, datadog, login] }
+  - {role: codekvast.common, tags: [service, common]}
   - {role: codekvast.spring-boot-service, tags: [service, login]}

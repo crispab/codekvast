@@ -1,0 +1,13 @@
+---
+- name: Setting timezone to UTC
+  timezone: name=UTC
+
+- name: Install OpenJDK 8
+  package: name=openjdk-8-jdk-headless state=present
+
+- name: Create codekvast group
+  group: name=codekvast state=present
+
+- name: Create codekvast user
+  user: name=codekvast group=codekvast state=present home=/opt/codekvast
+
