@@ -2,19 +2,20 @@
 
 ## 0.24.4
 
-1. Replaced Nginx with AWS ALB
+1. Replaced Nginx with AWS ALB.
 2. Added tag "env" to all application metrics.
+3. Java Agent: Removed deprecated V1 model classes.
 
 ## 0.24.3
 
 1. Now logs in JSON format to /var/log/codekvast/$service/application.log
-2. Application start/stop is now logged to the Slack channel #alarms (was: #builds)
-3. Now also Codekvast Admin logs start/stop to Slack #alarms
-4. Upgraded to Gradle 4.10
+2. Application start/stop is now logged to the Slack channel #alarms (was: #builds).
+3. Now also Codekvast Admin logs start/stop to Slack #alarms.
+4. Upgraded to Gradle 4.10.
 5. Added login count metrics.
 6. Added file import metrics.
 7. Bug fix in the agent. Applying codekvast-agent on a Spring Boot 2.0+ executable jar resulted in an NPE when trying to scan the codebase.
-8. Removed Codekvast Admin
+8. Removed Codekvast Admin.
 
 ## 0.24.2
 
