@@ -62,7 +62,7 @@
     mode: 0700
   notify: "restart codekvast service"
 
-- name: "Install dest=/opt/codekvast/{{ service_name }}/codekvast-agent.properties"
+- name: "Install /opt/codekvast/{{ service_name }}/codekvast-agent.properties"
   template:
     src: codekvast-agent.properties
     dest: /opt/codekvast/{{ service_name }}/codekvast-agent.properties
@@ -87,3 +87,21 @@
     port: "{{ service_port }}"
     state: started
     timeout: 45
+
+- name: Install /opt/codekvast/remove-old-versions.sh
+  copy:
+    src: remove-old-versions.sh
+    dest: /opt/codekvast/remove-old-versions.sh
+    owner: codekvast
+    group: codekvast
+    mode: 0700
+
+- name: Execute /opt/codekvast/remove-old-versions.sh
+  command: /opt/codekvast/remove-old-versions.sh
+  register: removed_versions
+  changed_when: removed_versions.stdout != ""
+
+- debug: var=removed_versions.stdout_lines
+  when: removed_versions.stdout != ""
+
+
