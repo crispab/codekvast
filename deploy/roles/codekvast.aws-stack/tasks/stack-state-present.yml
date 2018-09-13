@@ -219,6 +219,23 @@
 - debug: var=database_instance_id
   when: _debug is defined and _debug
 
+- name: Create an EBS volume for the database
+  local_action:
+    module: ec2_vol
+    region: "{{ aws_region }}"
+    profile: codekvast # in ~/.boto
+    device_name: /dev/sdf
+    volume_size: 10
+    volume_type: gp2
+    state: present
+    tags: "{{ aws_common_tags }}"
+    instance: "{{ database_instance_id }}"
+  register: database_data_volume
+  when: not ec2database.tagged_instances[0].block_device_mapping['/dev/sdf'] is defined
+
+- debug: var=database_data_volume
+  when: _debug is defined and _debug
+
 #----------------------------------
 - name: "Create EC2 backend instances in {{ aws_region }}a"
   local_action:
@@ -277,8 +294,12 @@
 - debug: var=ec2backends
   when: _debug is defined and _debug
 
+# Clear from the previous stack (which is in another VPC)
 - set_fact:
-    backend_ids: "{{ backend_ids|default([]) + [{'Id': item }] }}"
+    backend_ids: []
+
+- set_fact:
+    backend_ids: "{{ backend_ids + [{'Id': item }] }}"
   with_items: "{{ ec2backends_a.tagged_instances|map(attribute='id') | list }} + {{ ec2backends_b.tagged_instances|map(attribute='id') | list }}"
 
 - debug: var=backend_ids

@@ -23,7 +23,7 @@
     mysql_extra_configuration:
       character_set_server: 'utf8'
       collation_server: 'utf8_general_ci'
-
+    mysql_datadir: /data/mysql
     mysql_databases:
     - codekvast
 
@@ -32,6 +32,30 @@
       password: '{{ mysql_application_password }}'
       priv: codekvast.*:ALL
       host: '%'
+
+  pre_tasks:
+  - name: Create a partition table for /dev/xvdf
+    parted: device=/dev/xvdf number=1 state=present
+    register: partition_table
+
+  - debug: var=partition_table
+    when: _debug is defined and _debug
+
+  - name: Create ext4 file system on /dev/xvdf
+    filesystem: dev=/dev/xvdf1 fstype=ext4
+    register: fs
+
+  - debug: var=fs
+    when: _debug is defined and _debug
+
+  - name: "Create the directory /data"
+    file: path=/data state=directory
+
+  - name: "Mount /dev/xvdf1 on /data"
+    mount: src=/dev/xvdf1 path=/data state=mounted fstype=ext4
+
+  - name: "Move old MariaDB databases from /var/lib/mysql to {{ mysql_datadir }}"
+    command: mv /var/lib/mysql {{ mysql_datadir }} creates={{ mysql_datadir }} removes=/var/lib/mysql
 
   roles:
   - {role: Datadog.datadog, tags: [metrics, datadog] }
