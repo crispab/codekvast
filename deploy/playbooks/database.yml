@@ -54,6 +54,14 @@
   - name: "Mount /dev/xvdf1 on /data"
     mount: src=/dev/xvdf1 path=/data state=mounted fstype=ext4
 
+  - name: "Check if {{ mysql_datadir }}/mysql exists"
+    stat: path={{ mysql_datadir }}/mysql
+    register: st
+
+  - name: "Stop MariaBD before moving database to {{ mysql_datadir }}"
+    service: name=mysql state=stopped
+    when: not st.stat.isdir is defined
+
   - name: "Move old MariaDB databases from /var/lib/mysql to {{ mysql_datadir }}"
     command: mv /var/lib/mysql {{ mysql_datadir }} creates={{ mysql_datadir }} removes=/var/lib/mysql
 
