@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="login-staging00.codekvast.io" type="Remote" folderName="Remote debug staging">
+    <module name="login_main" />
+    <option name="USE_SOCKET_TRANSPORT" value="true" />
+    <option name="SERVER_MODE" value="false" />
+    <option name="SHMEM_ADDRESS" />
+    <option name="HOST" value="login-staging00.codekvast.io" />
+    <option name="PORT" value="5010" />
+    <option name="AUTO_RESTART" value="false" />
+    <method v="2" />
+  </configuration>
+</component>

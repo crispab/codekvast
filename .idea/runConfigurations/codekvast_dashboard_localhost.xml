@@ -1,10 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Remote debug codekvast-dashboard" type="Remote" factoryName="Remote" singleton="true">
+  <configuration default="false" name="codekvast-dashboard@localhost" type="Remote" folderName="Remote debug localhost" singleton="true">
     <option name="USE_SOCKET_TRANSPORT" value="true" />
     <option name="SERVER_MODE" value="false" />
-    <option name="SHMEM_ADDRESS" value="javadebug" />
+    <option name="SHMEM_ADDRESS" />
     <option name="HOST" value="localhost" />
     <option name="PORT" value="5005" />
-    <method />
+    <option name="AUTO_RESTART" value="false" />
+    <method v="2" />
   </configuration>
 </component>
