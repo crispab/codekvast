@@ -21,42 +21,54 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
-import io.codekvast.dashboard.file_import.InvocationDataImporter;
-import io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
-import io.codekvast.dashboard.metrics.IntakeMetricsService;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
-import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
+import lombok.Builder;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.TreeSet;
-
-import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.INVOCATIONS;
 
 /**
+ * Helper for importing common stuff.
+ *
  * @author olle.hallin@crisp.se
  */
 @Component
-@Slf4j
 @RequiredArgsConstructor
-public class InvocationDataImporterImpl implements InvocationDataImporter {
+class CommonImporter {
 
-    private final CommonImporter commonImporter;
     private final ImportDAO importDAO;
-    private final IntakeMetricsService metricsService;
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public boolean importPublication(InvocationDataPublication2 publication) {
-        logger.info("Importing {}", publication);
+    ImportContext importCommonData(CommonPublicationData2 data) {
+        long appId = importDAO.importApplication(data);
+        long environmentId = importDAO.importEnvironment(data);
+        long jvmId = importDAO.importJvm(data, appId, environmentId);
 
-        CommonPublicationData2 data = publication.getCommonData();
-        ImportContext importContext = commonImporter.importCommonData(data);
-        importDAO.importInvocations(importContext, publication.getRecordingIntervalStartedAtMillis(),
-                                    new TreeSet<>(publication.getInvocations()));
-        metricsService.gaugePublicationSize(INVOCATIONS, data.getCustomerId(), data.getEnvironment(), publication.getInvocations().size());
-        return true;
+        return ImportContext.builder()
+                            .customerId(data.getCustomerId())
+                            .appId(appId)
+                            .environmentId(environmentId)
+                            .jvmId(jvmId)
+                            .publishedAtMillis(data.getPublishedAtMillis())
+                            .build();
+    }
+
+    @Value
+    @Builder
+    static class ImportContext {
+        @NonNull
+        private final Long customerId;
+
+        @NonNull
+        private final Long appId;
+
+        @NonNull
+        private final Long environmentId;
+
+        @NonNull
+        private final Long jvmId;
+
+        @NonNull
+        private final Long publishedAtMillis;
     }
 }

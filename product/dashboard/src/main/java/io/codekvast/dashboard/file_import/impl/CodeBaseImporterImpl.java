@@ -40,6 +40,7 @@ import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKin
 @Slf4j
 public class CodeBaseImporterImpl implements CodeBaseImporter {
 
+    private final CommonImporter commonImporter;
     private final ImportDAO importDAO;
     private final IntakeMetricsService metricsService;
 
@@ -49,13 +50,10 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
         logger.info("Importing {}", publication);
 
         CommonPublicationData2 data = publication.getCommonData();
-        long customerId = data.getCustomerId();
-        long appId = importDAO.importApplication(data);
-        long environmentId = importDAO.importEnvironment(data);
-        long jvmId = importDAO.importJvm(data, appId, environmentId);
-        importDAO.importMethods(data, customerId, appId, environmentId, jvmId, publication.getCommonData().getPublishedAtMillis(),
-                                publication.getEntries());
-        metricsService.gaugePublicationSize(CODEBASE, customerId, publication.getCommonData().getEnvironment(), publication.getEntries().size());
+        CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
+        importDAO.importMethods(data, importContext, publication.getEntries());
+        metricsService.gaugePublicationSize(CODEBASE, data.getCustomerId(), publication.getCommonData().getEnvironment(),
+                                            publication.getEntries().size());
         return true;
     }
 }

@@ -35,7 +35,7 @@ management:
             exposure.include: '*'
     server:
         port: 9080
-        servlet.context-path: /
+        servlet.importContext-path: /
     metrics:
         web.server.auto-time-requests: true
         export.datadog.enabled: false
@@ -43,7 +43,7 @@ management:
 server:
     port: 8080
     servlet:
-        context-path: /
+        importContext-path: /
         session:
             cookie:
                 max-age: 10m

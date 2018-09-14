@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
+import io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 
@@ -45,7 +46,7 @@ public interface ImportDAO {
     /**
      * Inserts or updates a row in the environments table.
      *
-     * @param commonData    The JVM data
+     * @param commonData The JVM data
      * @return The primary key of the inserted or updated environments row.
      */
     long importEnvironment(CommonPublicationData2 commonData);
@@ -63,26 +64,19 @@ public interface ImportDAO {
     /**
      * Inserts missing rows into the database's methods and invocations tables. Does never update existing rows.
      *
-     * @param data              The common publication data
-     * @param customerId        The customer ID
-     * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData2)}
-     * @param environmentId The value returned from {@link #importEnvironment(CommonPublicationData2)}
-     * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData2, long, long)}
-     * @param publishedAtMillis The timestamp the publication was published.
-     * @param entries           The collection of code base entries to store.
+     * @param data          The common publication data
+     * @param importContext The import importContext returned by {@link CommonImporter#importCommonData(CommonPublicationData2)}
+     * @param entries       The collection of code base entries to store.
      */
-    void importMethods(CommonPublicationData2 data, long customerId, long appId, long environmentId, long jvmId,
-                       long publishedAtMillis, Collection<CodeBaseEntry2> entries);
+    void importMethods(CommonPublicationData2 data, ImportContext importContext, Collection<CodeBaseEntry2> entries);
 
     /**
      * Inserts or updates rows into the invocations table. Existing rows are updated with the new interval.
      *
-     * @param customerId      The customer ID
-     * @param appId           The application ID returned by {@link #importApplication(CommonPublicationData2)}
-     * @param environmentId The value returned from {@link #importEnvironment(CommonPublicationData2)}
-     * @param jvmId           The JVM ID returned by {@link #importJvm(CommonPublicationData2, long, long)}
-     * @param invokedAtMillis The start of the recording interval.
-     * @param invocations     The set of signatures that were invoked in this recording interval.
+     * @param importContext                    The import importContext returned by
+     * {@link CommonImporter#importCommonData(CommonPublicationData2)}
+     * @param recordingIntervalStartedAtMillis When was the invocation of these invocations recorded?
+     * @param invocations                      The set of signatures that were invoked in this recording interval.
      */
-    void importInvocations(long customerId, long appId, long environmentId, long jvmId, long invokedAtMillis, Set<String> invocations);
+    void importInvocations(ImportContext importContext, long recordingIntervalStartedAtMillis, Set<String> invocations);
 }
