@@ -1,7 +1,7 @@
 package io.codekvast.dashboard.file_import;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.metrics.DashboardMetricsService;
+import io.codekvast.dashboard.metrics.IntakeMetricsService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class FileImportTaskTest {
     private PublicationImporter importer;
 
     @Mock
-    private DashboardMetricsService metricsService;
+    private IntakeMetricsService metricsService;
 
     private CodekvastDashboardSettings settings;
 

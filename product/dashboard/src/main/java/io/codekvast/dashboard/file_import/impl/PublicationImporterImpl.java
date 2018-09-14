@@ -25,7 +25,7 @@ import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
-import io.codekvast.dashboard.metrics.DashboardMetricsService;
+import io.codekvast.dashboard.metrics.IntakeMetricsService;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +38,8 @@ import javax.validation.Validator;
 import java.io.*;
 import java.util.Set;
 
-import static io.codekvast.dashboard.metrics.DashboardMetricsService.PublicationKind.CODEBASE;
-import static io.codekvast.dashboard.metrics.DashboardMetricsService.PublicationKind.INVOCATIONS;
+import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.CODEBASE;
+import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.INVOCATIONS;
 
 /**
  * Importer for serialized publications.
@@ -58,7 +58,7 @@ public class PublicationImporterImpl implements PublicationImporter {
     private final CodeBaseImporter codeBaseImporter;
     private final InvocationDataImporter invocationDataImporter;
     private final Validator validator;
-    private final DashboardMetricsService metricsService;
+    private final IntakeMetricsService metricsService;
 
     @Override
     public boolean importPublicationFile(File file) {

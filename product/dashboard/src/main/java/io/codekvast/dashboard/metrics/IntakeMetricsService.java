@@ -22,11 +22,11 @@
 package io.codekvast.dashboard.metrics;
 
 /**
- * Wrapper for dashboard metrics.
+ * Wrapper for intake metrics.
  *
  * @author olle.hallin@crisp.se
  */
-public interface DashboardMetricsService {
+public interface IntakeMetricsService {
 
     enum PublicationKind {CODEBASE, INVOCATIONS}
 

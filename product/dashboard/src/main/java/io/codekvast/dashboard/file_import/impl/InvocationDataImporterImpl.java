@@ -22,7 +22,7 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
-import io.codekvast.dashboard.metrics.DashboardMetricsService;
+import io.codekvast.dashboard.metrics.IntakeMetricsService;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.TreeSet;
 
-import static io.codekvast.dashboard.metrics.DashboardMetricsService.PublicationKind.INVOCATIONS;
+import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.INVOCATIONS;
 
 /**
  * @author olle.hallin@crisp.se
@@ -42,7 +42,7 @@ import static io.codekvast.dashboard.metrics.DashboardMetricsService.Publication
 @RequiredArgsConstructor
 public class InvocationDataImporterImpl implements InvocationDataImporter {
     private final ImportDAO importDAO;
-    private final DashboardMetricsService metricsService;
+    private final IntakeMetricsService metricsService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
