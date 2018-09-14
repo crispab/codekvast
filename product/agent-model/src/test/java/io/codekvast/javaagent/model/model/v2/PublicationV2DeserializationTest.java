@@ -12,15 +12,15 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertThat;
 
 /**
- * A test to prove that we can deserialize publications produced by a pre-v2 agent.
- * The test resources are produced by gradle :sample:sample-gradle-application:run
+ * A test to prove that we can deserialize publications produced by a v2 agent.
+ * The test resources are produced by ./gradlew :sample:sample-gradle-application:run
  *
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("deprecation")
 public class PublicationV2DeserializationTest {
-    private static final String CODEBASE_RESOURCE = "/sample-publications/codebase-v2.ser";
-    private static final String INVOCATIONS_RESOURCE = "/sample-publications/invocations-v2.ser";
+    private static final String CODEBASE_RESOURCE = "/sample-publications/codebase-v2-0.24.0.ser";
+    private static final String INVOCATIONS_RESOURCE = "/sample-publications/invocations-v2-0.24.0.ser";
 
     @Test
     public void should_deserialize_codebaseV2_file() throws IOException, ClassNotFoundException {

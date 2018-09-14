@@ -56,4 +56,12 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
     public void countSentSlackMessage() {
         meterRegistry.counter("codekvast.slack_messages").increment();
     }
+
+    @Override
+    public void countLogin(String source) {
+        meterRegistry.counter("codekvast.login.count", "source", source).increment();
+        meterRegistry.counter("codekvast.login.count" + "." + source).increment();
+    }
+
+
 }

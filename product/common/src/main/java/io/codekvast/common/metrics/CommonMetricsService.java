@@ -50,4 +50,10 @@ public interface CommonMetricsService {
 
     void countSentSlackMessage();
 
+    /**
+     * Counts a login
+     *
+     * @param source The authentication source, e.g., "google", "github" etc.
+     */
+    void countLogin(String source);
 }

@@ -36,12 +36,6 @@ public class LoginMetricsServiceImpl implements LoginMetricsService {
     private final MeterRegistry meterRegistry;
 
     @Override
-    public void countLogin(String authenticationProvider) {
-        meterRegistry.counter("codekvast.login.count", "authenticationProvider", authenticationProvider).increment();
-        meterRegistry.counter("codekvast.login.count" + "." + authenticationProvider).increment();
-    }
-
-    @Override
     public void countDashboardLaunch() {
         meterRegistry.counter("codekvast.login.dashboard.launches").increment();
     }

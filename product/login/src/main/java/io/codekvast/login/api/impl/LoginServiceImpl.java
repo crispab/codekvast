@@ -99,10 +99,7 @@ public class LoginServiceImpl implements LoginService {
                         .build();
 
         logger.debug("{} authenticated by {} has access to {} Codekvast projects", email, clientRegistrationId,
-                    user.getCustomerData().size());
-        if (!user.getCustomerData().isEmpty()) {
-            metricsService.countLogin(clientRegistrationId);
-        }
+                     user.getCustomerData().size());
         logger.debug("Returning {}", user);
         return user;
     }

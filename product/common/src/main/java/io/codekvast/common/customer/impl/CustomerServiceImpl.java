@@ -23,6 +23,7 @@ package io.codekvast.common.customer.impl;
 
 import io.codekvast.common.customer.*;
 import io.codekvast.common.messaging.SlackService;
+import io.codekvast.common.metrics.CommonMetricsService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final JdbcTemplate jdbcTemplate;
     private final SlackService slackService;
+    private final CommonMetricsService metricsService;
 
     @Override
     @Transactional(readOnly = true)
@@ -205,6 +207,8 @@ public class CustomerServiceImpl implements CustomerService {
                 request.getCustomerId(), request.getEmail(), now, now, request.getSource(), 1);
             logger.debug("Added user {}", request);
         }
+
+        metricsService.countLogin(request.getSource());
         logger.info("Logged in {}", request);
     }
 

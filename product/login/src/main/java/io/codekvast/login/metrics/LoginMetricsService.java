@@ -28,12 +28,6 @@ package io.codekvast.login.metrics;
  */
 public interface LoginMetricsService {
     /**
-     * Increments the login counter for this authentication provider.
-     * @param authenticationProvider The service that authenticated the user.
-     */
-    void countLogin(String authenticationProvider);
-
-    /**
      * Increments the counter for dashboard launches.
      */
     void countDashboardLaunch();

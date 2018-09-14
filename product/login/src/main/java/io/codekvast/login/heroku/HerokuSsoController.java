@@ -23,7 +23,6 @@ package io.codekvast.login.heroku;
 
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
-import io.codekvast.login.metrics.LoginMetricsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -52,7 +51,6 @@ public class HerokuSsoController {
 
     private final CodekvastLoginSettings settings;
     private final SecurityService securityService;
-    private final LoginMetricsService metricsService;
 
     @ExceptionHandler
     public ResponseEntity<String> onAuthenticationException(AuthenticationException e) {
@@ -76,7 +74,6 @@ public class HerokuSsoController {
         response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
         response
             .setHeader(HttpHeaders.LOCATION, String.format("%s/dashboard/heroku/sso/%s/%s", settings.getDashboardBaseUrl(), code, navData));
-        metricsService.countLogin("heroku");
     }
 
 }

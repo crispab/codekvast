@@ -36,7 +36,8 @@ import java.io.Serializable;
 @ToString(of = "aspectjString")
 @EqualsAndHashCode(of = "aspectjString")
 public class MethodSignature2 implements Serializable {
-    private static final long serialVersionUID = 1L;
+    // This is the value that happens to be out there in io.codekvast:codekvast-agent:0.24.0
+    private static final long serialVersionUID = -7147483656689129200L;
 
     @NonNull
     private final String aspectjString;
