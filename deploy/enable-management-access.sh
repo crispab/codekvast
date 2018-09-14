@@ -26,14 +26,17 @@ case "$groupId" in
     ;;
 esac
 
-echo -n "Will modify the security group $groupName to enable TCP access from $myIp to ports $portsToOpen with the description \"$description\". Ok? [y/N]: "
+echo -n "Will modify the security group $groupName to enable all ICMP access and TCP access to ports $portsToOpen from $myIp with the description \"$description\". Ok? [y/N]: "
 read answer
 case $answer in
     ""|n|N) exit 0;;
     y|Y) ;;
 esac
 
+echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"icmp\"\", \"FromPort\": -1, \"ToPort\": -1, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"Management from $description\"}]}]"
+aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"icmp\", \"FromPort\": -1, \"ToPort\": -1, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"Management from $description\"}]}]"
+
 for port in ${portsToOpen}; do
-    echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/24\", \"Description\": \"Management from $description\"}]}]"
-    aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/24\", \"Description\": \"Management from $description\"}]}]"
+    echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"Management from $description\"}]}]"
+    aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"Management from $description\"}]}]"
 done

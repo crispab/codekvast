@@ -7,6 +7,7 @@
 3. Java Agent: Removed deprecated V1 model classes.
 4. Upgraded to Spring Boot 2.0.5, Kotlin 1.2.70, Angular 6.1.7
 5. Added some more metrics.
+6. All application metrics are tagged with hostname.
 
 ## 0.24.3
 
