@@ -67,7 +67,7 @@
 
   roles:
   - {role: Datadog.datadog, tags: [metrics, datadog] }
-  - {role: HanXHX.mysql, tags: mariadb}
+  - {role: HanXHX.mysql, tags: [database, mariadb] }
 
   post_tasks:
   - set_fact:

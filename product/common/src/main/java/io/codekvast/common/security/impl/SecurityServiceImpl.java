@@ -99,7 +99,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public Long getCustomerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (Long) authentication.getPrincipal();
+        return authentication == null ? null : (Long) authentication.getPrincipal();
     }
 
     @Override

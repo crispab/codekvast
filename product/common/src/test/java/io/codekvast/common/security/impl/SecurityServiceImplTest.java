@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 
 import java.io.UnsupportedEncodingException;
@@ -137,6 +139,18 @@ public class SecurityServiceImplTest {
     @Test
     public void should_mask_string_with_odd_length() {
         assertThat(SecurityServiceImpl.maskSecondHalf("123456789012345678901"), is("1234567890XXXXXXXXXXX"));
+    }
+
+    @Test
+    public void should_return_null_getCustomerId_when_unauthenticated() {
+        securityService.removeAuthentication();
+        assertThat(securityService.getCustomerId(), is(nullValue()));
+    }
+
+    @Test
+    public void should_return_customerId_when_authenticated() {
+        SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken(4711L, "credentials"));
+        assertThat(securityService.getCustomerId(), is(4711L));
     }
 
     @Getter
