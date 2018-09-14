@@ -1,6 +1,7 @@
 package integrationTest.dashboard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.codekvast.common.metrics.CommonMetricsService;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentController;
 import io.codekvast.dashboard.agent.AgentService;
@@ -47,6 +48,9 @@ public class AgentControllerIntegrationTest {
 
     @MockBean
     private MeterRegistry meterRegistry;
+
+    @MockBean
+    private CommonMetricsService commonMetricsService;
 
     @Test
     public void should_accept_post_to_agentPollConfig() throws Exception {

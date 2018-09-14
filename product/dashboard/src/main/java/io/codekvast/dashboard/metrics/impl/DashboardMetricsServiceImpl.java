@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.metrics.impl;
 
-import io.codekvast.dashboard.metrics.MetricsService;
+import io.codekvast.dashboard.metrics.DashboardMetricsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ import static java.util.Arrays.asList;
  */
 @Service
 @RequiredArgsConstructor
-public class MetricsServiceImpl implements MetricsService {
+public class DashboardMetricsServiceImpl implements DashboardMetricsService {
     private static final String KIND_TAG = "kind";
     private static final String FORMAT_TAG = "format";
     private static final String CUSTOMER_ID_TAG = "cid";

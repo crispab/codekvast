@@ -19,23 +19,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.metrics;
+package io.codekvast.common.metrics;
 
 /**
- * Wrapper for login metrics.
+ * Base interface for metrics-related services
  *
  * @author olle.hallin@crisp.se
  */
-public interface MetricsService {
-    /**
-     * Increments the login counter for this authentication provider.
-     * @param authenticationProvider The service that authenticated the user.
-     */
-    void countLogin(String authenticationProvider);
+public interface CommonMetricsService {
 
     /**
-     * Increments the counter for dashboard launches.
+     * Counts an application startup attempt.
+     *
+     * NOTE: The counter is incremented early in the startup sequence, so there is no guarantee that the application manages to start
+     * successfully.
      */
-    void countDashboardLaunch();
+    void countApplicationStartup();
+
+    /**
+     * Counts a finished application startup sequence.
+     *
+     * NOTE: The counter is incremented only when the application is ready to receive traffic.
+     */
+    void countApplicationStarted();
+
+    /**
+     * Counts shutdown events.
+     */
+    void countApplicationShutdown();
+
+    void countSentSlackMessage();
+
 }
-

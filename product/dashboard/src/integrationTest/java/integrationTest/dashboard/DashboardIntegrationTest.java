@@ -6,6 +6,7 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.CustomerService.LoginRequest;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlanDefaults;
+import io.codekvast.common.metrics.CommonMetricsService;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.dashboard.DashboardService;
@@ -25,6 +26,7 @@ import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import org.flywaydb.core.Flyway;
 import org.junit.*;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -99,6 +101,9 @@ public class DashboardIntegrationTest {
 
     @Rule
     public SpringMethodRule springMethodRule = new SpringMethodRule();
+
+    @MockBean
+    private CommonMetricsService commonMetricsService;
 
     @Inject
     private JdbcTemplate jdbcTemplate;

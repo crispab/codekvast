@@ -22,7 +22,7 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
-import io.codekvast.dashboard.metrics.MetricsService;
+import io.codekvast.dashboard.metrics.DashboardMetricsService;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.codekvast.dashboard.metrics.MetricsService.PublicationKind.CODEBASE;
+import static io.codekvast.dashboard.metrics.DashboardMetricsService.PublicationKind.CODEBASE;
 
 /**
  * @author olle.hallin@crisp.se
@@ -41,7 +41,7 @@ import static io.codekvast.dashboard.metrics.MetricsService.PublicationKind.CODE
 public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     private final ImportDAO importDAO;
-    private final MetricsService metricsService;
+    private final DashboardMetricsService metricsService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

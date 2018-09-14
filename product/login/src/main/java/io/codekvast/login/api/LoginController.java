@@ -25,7 +25,7 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.CipherException;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.heroku.HerokuService;
-import io.codekvast.login.metrics.MetricsService;
+import io.codekvast.login.metrics.LoginMetricsService;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class LoginController {
     private final CustomerService customerService;
     private final CodekvastLoginSettings settings;
     private final HerokuService herokuService;
-    private final MetricsService metricsService;
+    private final LoginMetricsService metricsService;
 
     @ModelAttribute("settings")
     public CodekvastLoginSettings getCodekvastSettings() {

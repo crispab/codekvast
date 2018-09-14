@@ -19,44 +19,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.metrics;
+package io.codekvast.common.metrics.impl;
+
+import io.codekvast.common.metrics.CommonMetricsService;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
- * Wrapper for all things related to metrics collection.
- *
  * @author olle.hallin@crisp.se
  */
-public interface MetricsService {
+@Component
+@RequiredArgsConstructor
+public class CommonMetricsServiceImpl implements CommonMetricsService {
 
-    enum PublicationKind {CODEBASE, INVOCATIONS}
+    private static final String EVENT_TAG = "event";
 
-    /**
-     * Updates the gauge for the number of queued publications.
-     *
-     * @param queueLength The queue length.
-     */
-    void gaugePublicationQueueLength(int queueLength);
+    private final MeterRegistry meterRegistry;
 
-    /**
-     * Count the fact that a publication was rejected.
-     */
-    void countRejectedPublication();
+    @Override
+    public void countApplicationStartup() {
+        meterRegistry.counter("codekvast.lifecycle", EVENT_TAG, "startup").increment();
+    }
 
-    /**
-     * Count the fact that a publication was imported.
-     *
-     * @param kind   The kind of publication.
-     * @param format One of "v1", "v2".
-     */
-    void countImportedPublication(PublicationKind kind, String format);
+    @Override
+    public void countApplicationStarted() {
+        meterRegistry.counter("codekvast.lifecycle", EVENT_TAG, "started").increment();
+    }
 
-    /**
-     * Gauges the size of an imported publication.
-     *
-     * @param kind                The kind of publication.
-     * @param customerId          The customer ID.
-     * @param customerEnvironment The customer's environment (fetched from the publication header).
-     * @param size                The size of the publication.
-     */
-    void gaugePublicationSize(PublicationKind kind, long customerId, String customerEnvironment, int size);
+    @Override
+    public void countApplicationShutdown() {
+        meterRegistry.counter("codekvast.lifecycle", EVENT_TAG, "shutdown").increment();
+    }
+
+    @Override
+    public void countSentSlackMessage() {
+        meterRegistry.counter("codekvast.slack_messages").increment();
+    }
 }

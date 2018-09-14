@@ -25,14 +25,15 @@ import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.webhook.Payload;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.messaging.SlackService;
+import io.codekvast.common.metrics.CommonMetricsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.time.Instant;
@@ -46,6 +47,7 @@ import java.time.Instant;
 public class SlackServiceImpl implements SlackService, ApplicationListener<ApplicationReadyEvent> {
 
     private final CodekvastCommonSettings settings;
+    private final CommonMetricsService metricsService;
     private final Slack slack = Slack.getInstance();
 
     @Override
@@ -54,18 +56,24 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
         doSend(text, channel);
     }
 
-    @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
-        doSend(
-            String.format("%s %s in %s has started", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
-            Channel.ALARMS);
-
+    @PostConstruct
+    public void countStartAttempt() {
+        metricsService.countApplicationStartup();
     }
 
     @PreDestroy
     public void notifyShutdown() {
+        metricsService.countApplicationShutdown();
         doSend(
             String.format("%s %s in %s is stopping", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
+            Channel.ALARMS);
+    }
+
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent event) {
+        metricsService.countApplicationStarted();
+        doSend(
+            String.format("%s %s in %s has started", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
             Channel.ALARMS);
     }
 
@@ -79,6 +87,7 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
                 long startedAt = System.currentTimeMillis();
                 slack.send(url, payload);
                 logger.info("Sent '{}' to Slack in {} ms", payload.getText(), System.currentTimeMillis() - startedAt);
+                metricsService.countSentSlackMessage();
             } catch (IOException e) {
                 logger.error("Could not send {} to Slack: {}", payload, getRootCause(e));
             }

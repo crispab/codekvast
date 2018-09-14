@@ -19,30 +19,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.metrics.impl;
-
-import io.codekvast.login.metrics.MetricsService;
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+package io.codekvast.dashboard.metrics;
 
 /**
+ * Wrapper for dashboard metrics.
+ *
  * @author olle.hallin@crisp.se
  */
-@Service
-@RequiredArgsConstructor
-public class MetricsServiceImpl implements MetricsService {
+public interface DashboardMetricsService {
 
-    private final MeterRegistry meterRegistry;
+    enum PublicationKind {CODEBASE, INVOCATIONS}
 
-    @Override
-    public void countLogin(String authenticationProvider) {
-        meterRegistry.counter("codekvast.login.count", "authenticationProvider", authenticationProvider).increment();
-        meterRegistry.counter("codekvast.login.count" + "." + authenticationProvider).increment();
-    }
+    /**
+     * Updates the gauge for the number of queued publications.
+     *
+     * @param queueLength The queue length.
+     */
+    void gaugePublicationQueueLength(int queueLength);
 
-    @Override
-    public void countDashboardLaunch() {
-        meterRegistry.counter("codekvast.login.dashboard.launches").increment();
-    }
+    /**
+     * Count the fact that a publication was rejected.
+     */
+    void countRejectedPublication();
+
+    /**
+     * Count the fact that a publication was imported.
+     *
+     * @param kind   The kind of publication.
+     * @param format One of "v1", "v2".
+     */
+    void countImportedPublication(PublicationKind kind, String format);
+
+    /**
+     * Gauges the size of an imported publication.
+     *
+     * @param kind                The kind of publication.
+     * @param customerId          The customer ID.
+     * @param customerEnvironment The customer's environment (fetched from the publication header).
+     * @param size                The size of the publication.
+     */
+    void gaugePublicationSize(PublicationKind kind, long customerId, String customerEnvironment, int size);
 }

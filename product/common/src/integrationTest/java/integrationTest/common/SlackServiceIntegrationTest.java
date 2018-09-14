@@ -3,9 +3,12 @@ package integrationTest.common;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.messaging.SlackService;
 import io.codekvast.common.messaging.impl.SlackServiceImpl;
+import io.codekvast.common.metrics.CommonMetricsService;
 import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Properties;
 
@@ -22,19 +25,25 @@ import static org.junit.Assume.assumeTrue;
  */
 public class SlackServiceIntegrationTest {
 
-    private SlackService slackService;
+    @Mock
+    private CommonMetricsService metricsService;
+
     private CodekvastCommonSettingsForTestImpl settings = new CodekvastCommonSettingsForTestImpl();
+
+    private SlackService slackService;
 
     @Before
     public void beforeTest() throws Exception {
         assumeTrue("true".equals(System.getenv("RUN_SLACK_TESTS")));
+
+        MockitoAnnotations.initMocks(this);
 
         Properties props = new Properties();
         props.load(getClass().getResourceAsStream("/secrets.properties"));
 
         settings.setSlackWebHookUrl("https://hooks.slack.com/services");
         settings.setSlackWebHookToken(props.getProperty("codekvast.slackWebHookToken"));
-        slackService = new SlackServiceImpl(settings);
+        slackService = new SlackServiceImpl(settings, metricsService);
     }
 
     @Test

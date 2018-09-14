@@ -27,7 +27,7 @@ import io.codekvast.common.security.SecurityService;
 import io.codekvast.common.security.WebappCredentials;
 import io.codekvast.login.api.LoginService;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
-import io.codekvast.login.metrics.MetricsService;
+import io.codekvast.login.metrics.LoginMetricsService;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +50,7 @@ public class LoginServiceImpl implements LoginService {
     private final CodekvastLoginSettings settings;
     private final CustomerService customerService;
     private final SecurityService securityService;
-    private final MetricsService metricsService;
+    private final LoginMetricsService metricsService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

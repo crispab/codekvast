@@ -22,7 +22,7 @@
 package io.codekvast.dashboard.file_import;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.metrics.MetricsService;
+import io.codekvast.dashboard.metrics.DashboardMetricsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,7 +43,7 @@ public class FileImportTask {
 
     private final CodekvastDashboardSettings settings;
     private final PublicationImporter publicationImporter;
-    private final MetricsService metricsService;
+    private final DashboardMetricsService metricsService;
 
     @PostConstruct
     public void postConstruct() {
