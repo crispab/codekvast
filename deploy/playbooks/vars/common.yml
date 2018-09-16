@@ -46,12 +46,6 @@ settings:
   session:
     cookie:
       name: JSESSIONID
-  prod:
-    hsts:
-      max_age_seconds: 2592000 # 30 days
-  staging:
-    hsts:
-      max_age_seconds: 3600 # one hour
 
 datadog_agent_version: '1:6.4.2-1'
 
