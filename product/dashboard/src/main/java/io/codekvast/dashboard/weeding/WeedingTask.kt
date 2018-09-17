@@ -21,6 +21,8 @@
  */
 package io.codekvast.dashboard.weeding
 
+import org.slf4j.LoggerFactory
+import org.springframework.dao.CannotAcquireLockException
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import javax.inject.Inject
@@ -43,9 +45,17 @@ class WeedingTask
         Thread.currentThread().name = "Codekvast Data Weeder"
         try {
             weedingService.performDataWeeding()
+        } catch (e: CannotAcquireLockException) {
+            logger.warn("Could not perform data weeding: $e")
+        } catch (e: Exception) {
+            logger.error("Could not perform data weeding", e)
         } finally {
             Thread.currentThread().name = oldThreadName
         }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(WeedingTask::class.java.name)!!
     }
 
 }

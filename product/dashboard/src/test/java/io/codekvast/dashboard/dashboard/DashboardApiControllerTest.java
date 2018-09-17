@@ -48,17 +48,17 @@ public class DashboardApiControllerTest {
     }
 
     @Test
-    public void should_getMethods() throws Exception {
+    public void should_getMethods_V2() throws Exception {
         // given
         GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
                                                      .signature("some signature").build();
-        when(dashboardService.getMethods1(request)).thenReturn(GetMethodsResponse1
-                                                                  .builder()
-                                                                  .methods(emptyList())
-                                                                  .build());
+        when(dashboardService.getMethods2(request)).thenReturn(GetMethodsResponse2
+                                                                   .builder()
+                                                                   .methods(emptyList())
+                                                                   .build());
 
         // when
-        mockMvc.perform(post("/dashboard/api/v1/methods")
+        mockMvc.perform(post("/dashboard/api/v2/methods")
                             .accept(APPLICATION_JSON_UTF8)
                             .contentType(APPLICATION_JSON_UTF8)
                             .content(gson.toJson(request)))
@@ -82,23 +82,23 @@ public class DashboardApiControllerTest {
                                                                .synthetic(false)
                                                                .bridge(false)
                                                                .collectedInEnvironment(
-                                                                EnvironmentDescriptor.builder()
-                                                                                     .name("dev")
-                                                                                     .collectedSinceMillis(collectedSinceMillis)
-                                                                                     .collectedToMillis(collectedToMillis)
-                                                                                     .invokedAtMillis(invokedAtMillis)
-                                                                                     .tag("tag1")
-                                                                                     .tag("tag2")
-                                                                                     .build().computeFields())
+                                                                   EnvironmentDescriptor.builder()
+                                                                                        .name("dev")
+                                                                                        .collectedSinceMillis(collectedSinceMillis)
+                                                                                        .collectedToMillis(collectedToMillis)
+                                                                                        .invokedAtMillis(invokedAtMillis)
+                                                                                        .tag("tag1")
+                                                                                        .tag("tag2")
+                                                                                        .build().computeFields())
                                                                .occursInApplication(
-                                                                ApplicationDescriptor.builder()
-                                                                                     .name("application")
-                                                                                     .version("version")
-                                                                                     .startedAtMillis(collectedSinceMillis)
-                                                                                     .publishedAtMillis(collectedToMillis)
-                                                                                     .invokedAtMillis(invokedAtMillis)
-                                                                                     .status(SignatureStatus2.INVOKED)
-                                                                                     .build())
+                                                                   ApplicationDescriptor.builder()
+                                                                                        .name("application")
+                                                                                        .version("version")
+                                                                                        .startedAtMillis(collectedSinceMillis)
+                                                                                        .publishedAtMillis(collectedToMillis)
+                                                                                        .invokedAtMillis(invokedAtMillis)
+                                                                                        .status(SignatureStatus2.INVOKED)
+                                                                                        .build())
                                                                .build().computeFields();
 
         when(dashboardService.getMethodById(17L)).thenReturn(Optional.of(methodDescriptor1));

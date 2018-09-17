@@ -82,48 +82,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetMethodsResponse1 getMethods1(@Valid GetMethodsRequest request) {
-        long startedAt = timeService.currentTimeMillis();
-
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("customerId", customerIdProvider.getCustomerId());
-
-        String whereClause = "";
-        if (request.getApplications() != null && !request.getApplications().isEmpty()) {
-            params.addValue("applicationIds", translateNamesToIds("applications", request.getApplications()));
-            whereClause = "i.applicationId IN (:applicationIds) AND ";
-        }
-        if (request.getEnvironments() != null && !request.getEnvironments().isEmpty()) {
-            params.addValue("environmentIds", translateNamesToIds("environments", request.getEnvironments()));
-            whereClause += "i.environmentId IN (:environmentIds) AND ";
-        }
-        params.addValue("signature", request.getNormalizedSignature());
-        whereClause += "m.signature LIKE :signature ";
-
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(whereClause,
-                                                                                                       request
-                                                                                                           .isSuppressSyntheticMethods());
-
-
-        namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
-
-        List<MethodDescriptor1> methods = rowCallbackHandler.getResult(request);
-
-
-        long queryTimeMillis = timeService.currentTimeMillis() - startedAt;
-        logger.debug("Processed {} in {} ms. {} result set rows processed.", request, queryTimeMillis, rowCallbackHandler.getRowCount());
-
-        return GetMethodsResponse1.builder()
-                                  .timestamp(startedAt)
-                                  .request(request)
-                                  .numMethods(methods.size())
-                                  .methods(methods)
-                                  .queryTimeMillis(queryTimeMillis)
-                                  .build();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public GetMethodsResponse2 getMethods2(@Valid GetMethodsRequest request) {
         long startedAt = timeService.currentTimeMillis();
         MapSqlParameterSource params = new MapSqlParameterSource();

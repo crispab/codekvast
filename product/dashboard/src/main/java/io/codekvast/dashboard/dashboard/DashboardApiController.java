@@ -71,14 +71,6 @@ public class DashboardApiController {
         return serverSettings;
     }
 
-    @PostMapping("/dashboard/api/v1/methods")
-    public GetMethodsResponse1 getMethods1(@Valid @RequestBody GetMethodsRequest request) {
-        logger.debug("Request: {}", request);
-        GetMethodsResponse1 response = dashboardService.getMethods1(request);
-        logger.debug("Response: {}", response);
-        return response;
-    }
-
     @PostMapping("/dashboard/api/v2/methods")
     public GetMethodsResponse2 getMethods2(@Valid @RequestBody GetMethodsRequest request) {
         logger.debug("Request: {}", request);
