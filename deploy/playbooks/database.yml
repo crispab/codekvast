@@ -20,7 +20,7 @@
     mariadb_version: '10.1'
     mysql_backup_dir: '/var/backups/mariadb'
     mysql_bind_address: '0.0.0.0'
-    mysql_slow_query_log_file: '/var/log/mysql/slow-queries.log'
+    mysql_slow_query_log_file: '/var/log/mysql/mysql-slow.log'
     mysql_extra_configuration:
       character_set_server: 'utf8'
       collation_server: 'utf8_general_ci'

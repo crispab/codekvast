@@ -122,7 +122,8 @@ public class ImportDAOImpl implements ImportDAO {
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 customerId, applicationId, data.getAppVersion(), environmentId, data.getJvmUuid(), data.getCodeBaseFingerprint(),
                 new Timestamp(data.getJvmStartedAtMillis()), publishedAt, data.getMethodVisibility(), data.getPackages().toString(),
-                data.getExcludePackages().toString(), data.getComputerId(), data.getHostname(), data.getAgentVersion(), data.getTags(), Boolean.FALSE);
+                data.getExcludePackages().toString(), data.getComputerId(), data.getHostname(), data.getAgentVersion(), data.getTags(),
+                Boolean.FALSE);
             logger.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
                          Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }
@@ -193,10 +194,11 @@ public class ImportDAOImpl implements ImportDAO {
 
     private Map<String, Long> getExistingMethods(long customerId) {
         Map<String, Long> result = new HashMap<>();
-        jdbcTemplate.query("SELECT id, signature FROM methods WHERE customerId = " + customerId,
+        jdbcTemplate.query("SELECT id, signature FROM methods WHERE customerId = ? ",
                            rs -> {
                                result.put(rs.getString(2), rs.getLong(1));
-                           });
+                           },
+                           customerId);
         return result;
     }
 
