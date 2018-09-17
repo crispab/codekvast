@@ -20,10 +20,16 @@
     mariadb_version: '10.1'
     mysql_backup_dir: '/var/backups/mariadb'
     mysql_bind_address: '0.0.0.0'
+    mysql_slow_query_log_file: '/var/log/mysql/slow-queries.log'
     mysql_extra_configuration:
       character_set_server: 'utf8'
       collation_server: 'utf8_general_ci'
+      innodb_print_all_deadlocks: true
+      slow_query_log: true
+      slow_query_log_file: "{{ mysql_slow_query_log_file }}"
+      long_query_time: 2
     mysql_datadir: /data/mysql
+    mysql_log_error: '/var/log/mysql/error.log'
     mysql_databases:
     - codekvast
 
@@ -54,16 +60,22 @@
   - name: "Mount /dev/xvdf1 on /data"
     mount: src=/dev/xvdf1 path=/data state=mounted fstype=ext4
 
+  - set_fact: standard_datadir=/var/lib/mysql
+  - name: "Check if {{ standard_datadir }} exists"
+    stat: path={{ standard_datadir }}
+    register: st1
+
   - name: "Check if {{ mysql_datadir }}/mysql exists"
     stat: path={{ mysql_datadir }}/mysql
-    register: st
+    register: st2
 
-  - name: "Stop MariaBD before moving database to {{ mysql_datadir }}"
+  - name: "Stop MariaBD before moving {{ standard_datadir }} to {{ mysql_datadir }}"
     service: name=mysql state=stopped
-    when: not st.stat.isdir is defined
+    when: st1.stat.isdir is defined and st1.stat.isdir and not st2.stat.isdir is defined
 
-  - name: "Move old MariaDB databases from /var/lib/mysql to {{ mysql_datadir }}"
-    command: mv /var/lib/mysql {{ mysql_datadir }} creates={{ mysql_datadir }} removes=/var/lib/mysql
+  - name: "Move old MariaDB databases from {{ standard_datadir }} to {{ mysql_datadir }}"
+    command: mv {{ standard_datadir }} {{ mysql_datadir }} creates={{ mysql_datadir }} removes={{ standard_datadir }}
+    when: st1.stat.isdir is defined and st1.stat.isdir and not st2.stat.isdir is defined
 
   roles:
   - {role: Datadog.datadog, tags: [metrics, datadog] }

@@ -80,16 +80,16 @@ logs:
     #   tags: (optional) add tags to each logs collected
 
     - type: file
-      path: /var/log/mysql/error.log
+      path: {{ mysql_log_error }}
       source: mysql
       sourcecategory: database
       service: codekvast
 
-    # - type: file
-    #   path: /var/log/mysql/mysql-slow.log
-    #   source: mysql
-    #   sourcecategory: database
-    #   service: myapplication
+    - type: file
+      path: {{ mysql_slow_query_log_file }}
+      source: mysql
+      sourcecategory: database
+      service: codekvast
 
     # - type: file
     #   path: /var/log/mysql/mysql.log
