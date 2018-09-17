@@ -111,8 +111,6 @@ public class DashboardApiController {
 
     @DeleteMapping("/dashboard/api/v1/agent/{agentId}/{jvmId}")
     public void deleteAgent(@PathVariable(value = "agentId") Long agentId, @PathVariable(value = "jvmId") Long jvmId) {
-        logger.debug("Deleting agent {}:{}", agentId, jvmId);
         dashboardService.deleteAgent(agentId, jvmId);
-        logger.debug("Deleted agent {}:{}", agentId, jvmId);
     }
 }

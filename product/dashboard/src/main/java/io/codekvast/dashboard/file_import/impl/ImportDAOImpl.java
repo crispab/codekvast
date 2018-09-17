@@ -118,11 +118,11 @@ public class ImportDAOImpl implements ImportDAO {
             jdbcTemplate.update(
                 "INSERT INTO jvms(customerId, applicationId, applicationVersion, environmentId, uuid, codeBaseFingerprint, startedAt, " +
                     "publishedAt, methodVisibility, packages," +
-                    " excludePackages, computerId, hostname, agentVersion, tags) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    " excludePackages, computerId, hostname, agentVersion, tags, garbage) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 customerId, applicationId, data.getAppVersion(), environmentId, data.getJvmUuid(), data.getCodeBaseFingerprint(),
                 new Timestamp(data.getJvmStartedAtMillis()), publishedAt, data.getMethodVisibility(), data.getPackages().toString(),
-                data.getExcludePackages().toString(), data.getComputerId(), data.getHostname(), data.getAgentVersion(), data.getTags());
+                data.getExcludePackages().toString(), data.getComputerId(), data.getHostname(), data.getAgentVersion(), data.getTags(), Boolean.FALSE);
             logger.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
                          Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }

@@ -580,15 +580,15 @@ public class DashboardIntegrationTest {
     public void should_delete_agent_when_valid_parameters() {
         // given
         setSecurityContextCustomerId(1L);
-        assertThat(countRowsInTable("agent_state"), is(4));
-        assertThat(countRowsInTable("jvms"), is(4));
+        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(1));
+        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(1));
 
         // when
         dashboardService.deleteAgent(1L, 1L);
 
         // then
-        assertThat(countRowsInTable("agent_state"), is(3));
-        assertThat(countRowsInTable("jvms"), is(3));
+        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(2));
+        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(2));
     }
 
     @Test

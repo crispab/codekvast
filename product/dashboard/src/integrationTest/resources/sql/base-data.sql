@@ -50,22 +50,24 @@ INSERT INTO methods (id, customerId, visibility, signature) VALUES
   (10, 1, 'public', 'm10');
 
 INSERT INTO jvms (id, customerId, applicationId, applicationVersion, environmentId, uuid, methodVisibility, packages, excludePackages,
-                  computerId, hostname, agentVersion, tags)
+                  computerId, hostname, agentVersion, tags, garbage)
 VALUES
   (1, 1, 1, 'v1', 1, 'uuid1', 'public', 'com.foobar1', 'com.foobar.excluded1', 'computerId1', 'hostname1', 'agentVersion1',
-   'tag1=t1,tag2=t2'),
+   'tag1=t1,tag2=t2', FALSE),
   (2, 1, 2, 'v2', 2, 'uuid2', 'protected', 'com.foobar2', 'com.foobar.excluded2', 'computerId2', 'hostname2', 'agentVersion2',
-   'tag1=t1,tag2=t2'),
+   'tag1=t1,tag2=t2', FALSE),
   (3, 1, 3, 'v3', 3, 'uuid3', 'package-private', 'com.foobar3', 'com.foobar.excluded3', 'computerId3', 'hostname3', 'agentVersion3',
-   'tag1=t1,tag2=t2'),
-  (4, 1, 4, 'v4', 4, 'uuid4', 'private', 'com.foobar4', NULL, 'computerId4', 'hostname4', 'agentVersion4', 'tag1=t1,tag2=t2');
+   'tag1=t1,tag2=t2', FALSE),
+  (4, 1, 4, 'v4', 4, 'uuid4', 'private', 'com.foobar4', NULL, 'computerId4', 'hostname4', 'agentVersion4', 'tag1=t1,tag2=t2', FALSE),
+  (5, 1, 4, 'v4', 4, 'uuid5', 'private', 'com.foobar5', NULL, 'computerId5', 'hostname5', 'agentVersion5', 'tag1=t1,tag2=t2', TRUE);
 
-INSERT INTO agent_state (id, customerId, jvmUuid, enabled)
+INSERT INTO agent_state (id, customerId, jvmUuid, enabled, garbage)
 VALUES
-  (1, 1, 'uuid1', TRUE),
-  (2, 1, 'uuid2', FALSE),
-  (3, 1, 'uuid3', TRUE),
-  (4, 1, 'uuid4', FALSE);
+  (1, 1, 'uuid1', TRUE, FALSE),
+  (2, 1, 'uuid2', FALSE, FALSE),
+  (3, 1, 'uuid3', TRUE, FALSE),
+  (4, 1, 'uuid4', FALSE, FALSE),
+  (5, 1, 'uuid5', FALSE, TRUE);
 
 INSERT INTO users (id, customerId, email, lastLoginSource, numberOfLogins, firstLoginAt, lastLoginAt)
 VALUES

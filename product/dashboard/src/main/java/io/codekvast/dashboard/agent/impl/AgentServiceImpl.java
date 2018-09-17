@@ -33,7 +33,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,8 +105,8 @@ public class AgentServiceImpl implements AgentService {
             logger.info("The agent {}:{} has started", customerId, jvmUuid);
 
             jdbcTemplate
-                .update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled) VALUES (?, ?, ?, ?, ?)",
-                        customerId, jvmUuid, Timestamp.from(now), nextExpectedPollTimestamp, Boolean.TRUE);
+                .update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?, ?, ?)",
+                        customerId, jvmUuid, Timestamp.from(now), nextExpectedPollTimestamp, Boolean.TRUE, Boolean.FALSE);
         } else {
             logger.debug("The agent {}:{} has polled", customerId, jvmUuid);
         }

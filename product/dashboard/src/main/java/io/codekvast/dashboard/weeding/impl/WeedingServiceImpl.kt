@@ -45,24 +45,34 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         val startedAt = Instant.now()
         logger.debug("Performing data weeding")
 
+
+        logger.debug("Deleting garbage JVMs...")
+        val jvmCount = jdbcTemplate.update("DELETE FROM jvms WHERE garbage = TRUE")
+
+        logger.debug("Deleting garbage agents...")
+        val agentStateCount = jdbcTemplate.update("DELETE FROM agent_state WHERE garbage = TRUE")
+
+        logger.debug("Deleting unreferenced methods...")
         val methodCount = jdbcTemplate.update("""
             DELETE m FROM methods AS m
             LEFT JOIN invocations AS i ON m.id = i.methodId
             WHERE i.methodId IS NULL""")
 
+        logger.debug("Deleting unreferenced applications...")
         val applicationCount = jdbcTemplate.update("""
             DELETE a FROM applications AS a
             LEFT JOIN invocations AS i ON a.id = i.applicationId
             WHERE i.applicationId IS NULL""")
 
+        logger.debug("Deleting unreferenced environments...")
         val environmentCount = jdbcTemplate.update("""
             DELETE e FROM environments AS e
             LEFT JOIN invocations AS i ON e.id = i.environmentId
             WHERE i.environmentId IS NULL""")
 
-        if (methodCount + applicationCount + environmentCount > 0) {
-            logger.info("Data weeding: {} unreferenced methods, {} empty environments and {} empty applications deleted in {}.",
-                methodCount, environmentCount, applicationCount, Duration.between(startedAt, Instant.now()))
+        if (jvmCount + methodCount + applicationCount + environmentCount > 0) {
+            logger.info("Data weeding: {} jvms, {} agents, {} unreferenced methods, {} empty environments and {} empty applications deleted in {}.",
+                jvmCount, agentStateCount, methodCount, environmentCount, applicationCount, Duration.between(startedAt, Instant.now()))
         } else {
             logger.debug("Data weeding: Found nothing to delete")
         }

@@ -109,7 +109,7 @@ public class DashboardServiceImpl implements DashboardService {
             "    ((TO_SECONDS(:now) - TO_SECONDS(MIN(j.startedAt))) DIV 86400) AS collectedDays,\n" +
             "    MAX(i.invokedAtMillis) AS lastInvokedAtMillis\n" +
             "FROM invocations i, methods m, jvms j\n" +
-            "WHERE i.methodId = m.id AND i.jvmId = j.id AND " + whereClause +
+            "WHERE i.methodId = m.id AND i.jvmId = j.id AND j.garbage = FALSE AND " + whereClause +
             "GROUP BY m.signature\n" +
             "HAVING collectedDays >= :minCollectedDays " +
             "   AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n" +
@@ -250,11 +250,11 @@ public class DashboardServiceImpl implements DashboardService {
         List<ApplicationDescriptor2> result = new ArrayList<>();
 
         jdbcTemplate.query(
-            "SELECT\n" +
-                "  a.name AS appName, e.name AS envName, MIN(j.startedAt) AS collectedSince, MAX(j.publishedAt) AS collectedTo\n" +
-                "FROM jvms j INNER JOIN applications a ON j.applicationId = a.id\n" +
-                "  INNER JOIN environments e ON j.environmentId = e.id\n" +
-                "WHERE j.customerId = ?\n" +
+            "SELECT a.name AS appName, e.name AS envName, MIN(j.startedAt) AS collectedSince, MAX(j.publishedAt) AS collectedTo\n" +
+                "FROM jvms j\n" +
+                "       INNER JOIN applications a ON j.applicationId = a.id\n" +
+                "       INNER JOIN environments e ON j.environmentId = e.id\n" +
+                "WHERE j.customerId = ? AND j.garbage = FALSE\n" +
                 "GROUP BY appName, envName\n" +
                 "ORDER BY appName, envName\n",
 
@@ -294,39 +294,34 @@ public class DashboardServiceImpl implements DashboardService {
             return;
         }
 
-        logger.debug("Deleting agent {}:{}:{}", customerId, agentId, jvmId);
+        logger.debug("Marking agent {}:{}:{} as garbage", customerId, agentId, jvmId);
         Instant startedAt = Instant.now();
 
-        int deletedInvocations = jdbcTemplate.update("DELETE FROM invocations WHERE customerId = ? AND jvmId = ?", customerId, jvmId);
+        int updatedAgentState = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND id = ? AND garbage = FALSE ", customerId, agentId);
 
-        int deletedJvms = jdbcTemplate.update("DELETE FROM jvms WHERE customerId = ? AND id = ?", customerId, jvmId);
+        int updatedJvms = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND id = ? AND garbage = FALSE ", customerId, jvmId);
 
-        int deletedAgentState = jdbcTemplate.update("DELETE FROM agent_state WHERE customerId = ? AND id = ?", customerId, agentId);
-
-        if (deletedInvocations + deletedJvms + deletedAgentState == 0) {
-            logger.warn("No such agent: agentId={}, jvmId={} for customerId={}", agentId, jvmId, customerId);
+        if (updatedJvms + updatedAgentState == 0) {
+            logger.warn("Cannot mark agent {}:{}:{} as garbage: Not found", customerId, agentId, jvmId);
         } else {
-            logger.info("Deleted {} invocations rows, {} jvms rows and {} agent_state rows for agent {}:{}:{} in {}", deletedInvocations,
-                        deletedJvms,
-                        deletedAgentState, customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
+            logger.info("Marked agent {}:{}:{} as garbage in {}", customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
         }
 
-        // child-less methods, environments and applications are deleted by the WeedingService.
+        // The garbage will be deleted by the WeedingService.
     }
 
     private List<AgentDescriptor> getAgents(Long customerId, int publishIntervalSeconds) {
         List<AgentDescriptor> result = new ArrayList<>();
 
         jdbcTemplate.query(
-            "SELECT agent_state.id AS agentId, agent_state.enabled, agent_state.lastPolledAt, agent_state.nextPollExpectedAt, " +
-                "jvms.id AS jvmId, jvms.startedAt, jvms.publishedAt, jvms.methodVisibility, jvms.packages, jvms.excludePackages, " +
-                "jvms.hostname, jvms.agentVersion, jvms.tags, jvms.applicationVersion AS appVersion, " +
-                "applications.name AS appName, environments.name AS envName " +
-                "FROM agent_state, jvms, applications, environments " +
-                "WHERE jvms.customerId = ? " +
-                "AND jvms.uuid = agent_state.jvmUuid " +
-                "AND jvms.applicationId = applications.id " +
-                "AND jvms.environmentId = environments.id " +
+            "SELECT agent_state.id AS agentId, agent_state.enabled, agent_state.lastPolledAt, agent_state.nextPollExpectedAt, jvms.id AS " +
+                "jvmId,\n" +
+                "       jvms.startedAt, jvms.publishedAt, jvms.methodVisibility, jvms.packages, jvms.excludePackages, jvms.hostname, jvms" +
+                ".agentVersion,\n" +
+                "       jvms.tags, jvms.applicationVersion AS appVersion, applications.name AS appName, environments.name AS envName\n" +
+                "FROM agent_state, jvms, applications, environments\n" +
+                "WHERE jvms.customerId = ? AND jvms.uuid = agent_state.jvmUuid AND jvms.applicationId = applications.id AND\n" +
+                "        jvms.environmentId = environments.id AND jvms.garbage = FALSE AND agent_state.garbage = FALSE\n" +
                 "ORDER BY jvms.id ",
 
             rs -> {
@@ -397,7 +392,7 @@ public class DashboardServiceImpl implements DashboardService {
                                      "  INNER JOIN environments e ON e.id = i.environmentId \n" +
                                      "  INNER JOIN methods m ON m.id = i.methodId \n" +
                                      "  INNER JOIN jvms j ON j.id = i.jvmId \n" +
-                                     "  WHERE i.customerId = :customerId AND %s \n" +
+                                     "  WHERE i.customerId = :customerId AND j.garbage = FALSE AND %s \n" +
                                      "  ORDER BY i.methodId ASC", whereClause);
         }
 
