@@ -46,6 +46,8 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         logger.debug("Performing data weeding")
 
 
+        val invocationsBefore = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Long::class.java)!!
+
         logger.debug("Deleting garbage JVMs...")
         val jvmCount = jdbcTemplate.update("DELETE FROM jvms WHERE garbage = TRUE")
 
@@ -70,9 +72,11 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             LEFT JOIN invocations AS i ON e.id = i.environmentId
             WHERE i.environmentId IS NULL""")
 
+        val invocationsAfter = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Long::class.java)!!
+
         if (jvmCount + methodCount + applicationCount + environmentCount > 0) {
-            logger.info("Data weeding: {} jvms, {} agents, {} unreferenced methods, {} empty environments and {} empty applications deleted in {}.",
-                jvmCount, agentStateCount, methodCount, environmentCount, applicationCount, Duration.between(startedAt, Instant.now()))
+            logger.info("Data weeding: approx. {} invocations, {} jvms, {} agents, {} unreferenced methods, {} empty environments and {} empty applications deleted in {}.",
+                invocationsBefore - invocationsAfter, jvmCount, agentStateCount, methodCount, environmentCount, applicationCount, Duration.between(startedAt, Instant.now()))
         } else {
             logger.debug("Data weeding: Found nothing to delete")
         }

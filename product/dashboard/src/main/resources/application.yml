@@ -9,8 +9,8 @@ codekvast:
     dashboardBaseUrl: http://localhost:8081
     dashboardJwtExpirationHours: 168
     dashboardJwtSecret: secret
-    dataWeedingInitialDelaySeconds: 15
-    dataWeedingIntervalSeconds: 600
+    dataWeedingInitialDelaySeconds: 600
+    dataWeedingIntervalSeconds: 3600
     deleteImportedFiles: true
     dnsCname: localhost
     environment: dev

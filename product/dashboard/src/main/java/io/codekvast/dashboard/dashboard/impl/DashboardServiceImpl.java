@@ -294,9 +294,6 @@ public class DashboardServiceImpl implements DashboardService {
             return;
         }
 
-        logger.debug("Marking agent {}:{}:{} as garbage", customerId, agentId, jvmId);
-        Instant startedAt = Instant.now();
-
         int updatedAgentState = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND id = ? AND garbage = FALSE ", customerId, agentId);
 
         int updatedJvms = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND id = ? AND garbage = FALSE ", customerId, jvmId);
@@ -304,7 +301,7 @@ public class DashboardServiceImpl implements DashboardService {
         if (updatedJvms + updatedAgentState == 0) {
             logger.warn("Cannot mark agent {}:{}:{} as garbage: Not found", customerId, agentId, jvmId);
         } else {
-            logger.info("Marked agent {}:{}:{} as garbage in {}", customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
+            logger.info("Marked agent {}:{}:{} as garbage", customerId, agentId, jvmId);
         }
 
         // The garbage will be deleted by the WeedingService.
