@@ -16,7 +16,7 @@ Usage: $0 [weekday] [environment]
     Where weekday is one of monday, tuesday, wednesday, thursday, friday, saturday, sunday or extra.
     extra is an extra backup created by the script $(dirname $0)/copy-database-from-prod-to-staging.sh.
 
-    environment is one of staging or prod.
+    environment is one of staging or prod. It is the environment that will receive the backup.
 
 EOF
 }

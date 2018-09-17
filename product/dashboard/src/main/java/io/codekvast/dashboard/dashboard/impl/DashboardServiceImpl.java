@@ -289,25 +289,27 @@ public class DashboardServiceImpl implements DashboardService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteAgent(Long agentId, Long jvmId) {
         Long customerId = customerIdProvider.getCustomerId();
+        if (customerId == null) {
+            logger.warn("Unauthenticated attempt to delete agent");
+            return;
+        }
 
         logger.debug("Deleting agent {}:{}:{}", customerId, agentId, jvmId);
         Instant startedAt = Instant.now();
 
-        int deletedInvocations = jdbcTemplate.update("DELETE FROM invocations WHERE customerId = ? AND jvmId = ?",
-                                                     customerId, jvmId);
+        int deletedInvocations = jdbcTemplate.update("DELETE FROM invocations WHERE customerId = ? AND jvmId = ?", customerId, jvmId);
 
         int deletedJvms = jdbcTemplate.update("DELETE FROM jvms WHERE customerId = ? AND id = ?", customerId, jvmId);
 
         int deletedAgentState = jdbcTemplate.update("DELETE FROM agent_state WHERE customerId = ? AND id = ?", customerId, agentId);
 
         if (deletedInvocations + deletedJvms + deletedAgentState == 0) {
-            throw new IllegalArgumentException(
-                String.format("No such agent: agentId=%d, jvmId=%d for customerId=%d", agentId, jvmId, customerId));
+            logger.warn("No such agent: agentId={}, jvmId={} for customerId={}", agentId, jvmId, customerId);
+        } else {
+            logger.info("Deleted {} invocations rows, {} jvms rows and {} agent_state rows for agent {}:{}:{} in {}", deletedInvocations,
+                        deletedJvms,
+                        deletedAgentState, customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
         }
-
-        logger.info("Deleted {} invocations rows, {} jvms rows and {} agent_state rows for agent {}:{}:{} in {}", deletedInvocations,
-                    deletedJvms,
-                    deletedAgentState, customerId, agentId, jvmId, Duration.between(startedAt, Instant.now()));
 
         // child-less methods, environments and applications are deleted by the WeedingService.
     }

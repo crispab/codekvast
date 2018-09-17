@@ -23,7 +23,10 @@ package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.dashboard.model.ServerSettings;
-import io.codekvast.dashboard.dashboard.model.methods.*;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse2;
+import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor1;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

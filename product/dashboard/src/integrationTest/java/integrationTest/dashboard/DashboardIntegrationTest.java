@@ -591,11 +591,21 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("jvms"), is(3));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_fail_to_delete_agent_when_invalid_customerId() {
+    public void should_ignore_to_delete_agent_when_invalid_customerId() {
         // given
         setSecurityContextCustomerId(4711L);
+
+        // when
+        dashboardService.deleteAgent(1L, 1L);
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_ignore_to_delete_agent_when_null_customerId() {
+        // given
+        setSecurityContextCustomerId(null);
 
         // when
         dashboardService.deleteAgent(1L, 1L);

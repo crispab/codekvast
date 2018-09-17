@@ -44,7 +44,7 @@ export class CollectionStatusComponentState {
             'fas': true,
             'fa-pause': this.autoRefresh,
             'fa-play': !this.autoRefresh
-        }
+        };
     }
 
     toggleAutoRefresh() {
@@ -97,7 +97,7 @@ export class CollectionStatusComponentState {
 
     communicationFailure() {
         let now = this.agePipe.transform(new Date(), 'shortTime');
-        return now + ': Communication failure'
+        return now + ': Communication failure';
     }
 
     getVisibleApplications() {
@@ -187,7 +187,7 @@ export class CollectionStatusComponentState {
 
     deleteSelectedAgents() {
         if (this.data.agents) {
-            this.data.agents.filter(a => a.selected && !a.agentAlive).forEach(a => this.deleteAgent(a))
+            this.data.agents.filter(a => a.selected && !a.agentAlive).forEach(a => this.deleteAgent(a));
         }
     }
 

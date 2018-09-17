@@ -6,7 +6,7 @@
 #   -e env=eee where eee is either prod or staging
 #   -e weekday=www where www is one of monday, tuesday, wednesday, thursday, friday, saturday, sunday or extra
 #-----------------------------------------------------------------------------------------------------------
-- name: Restore extra production database
+- name: "Restore production database backup from last {{ weekday }}"
   hosts: "tag_Name_Codekvast_default_{{ env }}_database"
   user: ubuntu
   become: yes
