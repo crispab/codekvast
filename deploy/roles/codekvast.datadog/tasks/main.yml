@@ -1,0 +1,12 @@
+---
+- name: Add dd-agent to the group systemd-journal
+  user: name=dd-agent groups=systemd-journal append=yes
+
+- set_fact: destDir=/etc/datadog-agent/conf.d/journald.d
+
+- name: "Create {{ destDir }}"
+  file: path={{ destDir }} state=directory
+
+- name: Configure journald forwarding
+  template: src=journald.yaml dest={{ destDir }}/config.yaml
+  notify: restart datadog-agent

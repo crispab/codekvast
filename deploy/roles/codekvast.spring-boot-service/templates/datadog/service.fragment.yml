@@ -1,6 +1,6 @@
 - type: file
   path: "/var/log/codekvast/{{ service_name }}/application.log"
-  service: "{{ service_name }}"
+  service: "codekvast-{{ service_name }}"
   source: java
   sourcecategory: codekvast
   log_processing_rules:
@@ -11,13 +11,13 @@
 
 - type: file
   path: "/var/log/codekvast/{{ service_name }}/access.log"
-  service: "{{ service_name }}"
+  service: "codekvast-{{ service_name }}"
   source: apache
   sourcecategory: codekvast
 
 - type: file
   path: "/var/log/codekvast/{{ service_name }}/management_access.log"
-  service: "{{ service_name }}"
+  service: "codekvast-{{ service_name }}"
   source: apache
   sourcecategory: codekvast
   log_processing_rules:

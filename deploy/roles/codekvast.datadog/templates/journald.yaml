@@ -1,0 +1,6 @@
+logs:
+  - type: journald
+    include_units:
+    - 'systemd*'
+    - 'ssh*'
+    - 'codekvast-*'
