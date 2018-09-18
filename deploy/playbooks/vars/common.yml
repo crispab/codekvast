@@ -56,3 +56,7 @@ datadog_config:
   process_config:
     enabled: true
     scrub_args: true
+
+swapfile_size: 512MB
+swapfile_swappiness: 10
+swapfile_vfs_cache_pressure: 50

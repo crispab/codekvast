@@ -1,0 +1,7 @@
+# test file for swapfile
+---
+- hosts: localhost
+  connection: local
+  become: true
+  roles:
+    - ../../

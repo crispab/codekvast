@@ -1,0 +1,87 @@
+# tasks file for swapfile
+---
+- name: install dependencies
+  apt:
+    name: "{{ item }}"
+    state: "{{ apt_install_state | default('latest') }}"
+    update_cache: true
+    cache_valid_time: "{{ apt_update_cache_valid_time | default(3600) }}"
+  with_items: "{{ swapfile_dependencies }}"
+  tags:
+    - configuration
+    - swapfile
+    - swapfile-install
+    - swapfile-install-dependencies
+
+- block:
+
+  - name: write swap file
+    command: fallocate -l {{ swapfile_size }} {{ swapfile_file }}
+    args:
+      creates: "{{ swapfile_file }}"
+    register: _write_swapfile
+    tags:
+      - swapfile-write-file
+
+  - name: set swap file permissions
+    file:
+      path: "{{ swapfile_file }}"
+      owner: root
+      group: root
+      mode: 0600
+    tags:
+      - swapfile-set-file-permissions
+
+  - name: create swap file
+    command: mkswap {{ swapfile_file }}
+    register: _create_swapfile
+    when: _write_swapfile.changed
+    tags:
+      - swapfile-mkswap
+
+  - name: enable swapfile
+    command: swapon {{ swapfile_file }}
+    when: _create_swapfile.changed
+    tags:
+      - swapfile-enable-swapfile
+
+  - name: add swapfile to /etc/fstab
+    mount:
+      name: none
+      src: "{{ swapfile_file }}"
+      fstype: swap
+      opts: sw
+      passno: '0'
+      dump: '0'
+      state: present
+    tags:
+      - swapfile-fstab
+
+  when: swapfile_size != false
+  tags:
+    - configuration
+    - swapfile
+
+- name: configure vm.swappiness
+  sysctl:
+    name: vm.swappiness
+    value: "{{ swapfile_swappiness }}"
+    reload: true
+    state: present
+  when: swapfile_swappiness is defined
+  tags:
+    - configuration
+    - swapfile
+    - swapfile-vm-swappiness
+
+- name: configure vm.vfs_cache_pressure
+  sysctl:
+    name: vm.vfs_cache_pressure
+    value: "{{ swapfile_vfs_cache_pressure }}"
+    reload: true
+    state: present
+  when: swapfile_vfs_cache_pressure is defined
+  tags:
+    - configuration
+    - swapfile
+    - swapfile-vm-vfs-cache-pressure
