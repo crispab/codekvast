@@ -47,8 +47,6 @@ class WeedingTask
             weedingService.performDataWeeding()
         } catch (e: CannotAcquireLockException) {
             logger.warn("Could not perform data weeding: $e")
-        } catch (e: Exception) {
-            logger.error("Could not perform data weeding", e)
         } finally {
             Thread.currentThread().name = oldThreadName
         }

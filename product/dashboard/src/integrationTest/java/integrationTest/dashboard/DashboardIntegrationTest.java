@@ -18,6 +18,7 @@ import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
+import io.codekvast.dashboard.weeding.WeedingTask;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.*;
@@ -125,6 +126,9 @@ public class DashboardIntegrationTest {
 
     @Inject
     private InvocationDataImporter invocationDataImporter;
+
+    @Inject
+    private WeedingTask weedingTask;
 
     @Inject
     private TestDataGenerator testDataGenerator;
@@ -580,15 +584,15 @@ public class DashboardIntegrationTest {
     public void should_delete_agent_when_valid_parameters() {
         // given
         setSecurityContextCustomerId(1L);
-        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(1));
-        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(1));
+        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
+        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
 
         // when
         dashboardService.deleteAgent(1L, 1L);
 
         // then
-        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(2));
-        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(2));
+        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(1));
+        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(1));
     }
 
     @Test
@@ -609,6 +613,29 @@ public class DashboardIntegrationTest {
 
         // when
         dashboardService.deleteAgent(1L, 1L);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/base-data.sql", "/sql/weedable-data.sql"})
+    public void should_perform_dataWeeding() {
+        // given
+        assertThat(countRowsInTable("invocations"), is(2));
+        assertThat(countRowsInTable("applications"), is(5));
+        assertThat(countRowsInTable("environments"), is(5));
+        assertThat(countRowsInTable("methods"), is(10));
+        assertThat(countRowsInTable("jvms"), is(5));
+        assertThat(countRowsInTable("agent_state"), is(5));
+
+        // when
+        weedingTask.performDataWeeding();
+
+        // then
+        assertThat(countRowsInTable("invocations"), is(1));
+        assertThat(countRowsInTable("applications"), is(4));
+        assertThat(countRowsInTable("environments"), is(4));
+        assertThat(countRowsInTable("methods"), is(1));
+        assertThat(countRowsInTable("jvms"), is(4));
+        assertThat(countRowsInTable("agent_state"), is(4));
     }
 
     private void assertAgentEnabled(String jvmUuid, Boolean expectedEnabled) {

@@ -45,43 +45,36 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         val startedAt = Instant.now()
         logger.debug("Performing data weeding")
 
-
-        val invocationsBefore = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Long::class.java)!!
-
+        val invocationsBefore = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Int::class.java)!!
         val deletedJvms = jdbcTemplate.update("DELETE FROM jvms WHERE garbage = TRUE ")
-        logger.debug("Deleted {} garbage jvms rows", deletedJvms)
-
-        val deletedAgentStates = jdbcTemplate.update("DELETE FROM agent_state WHERE garbage = TRUE ")
-        logger.debug("Deleted {} garbage agent_state rows", deletedAgentStates)
-
-        var deletedMethods = 0
-        var deletedApplications = 0
-        var deletedEnvironments = 0
 
         if (deletedJvms > 0) {
-            logger.debug("Deleting unreferenced methods, applications and environments...")
+            val invocationsAfter = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Int::class.java)!!
+            val deletedInvocations = invocationsBefore - invocationsAfter
 
-            deletedMethods = jdbcTemplate.update("""
+            logger.debug("Deleted {} garbage jvms rows, which cascaded to approx. {} invocation rows", deletedJvms, deletedInvocations)
+
+            val deletedMethods = jdbcTemplate.update("""
                 DELETE m FROM methods AS m
                 LEFT JOIN invocations AS i ON m.id = i.methodId
                 WHERE i.methodId IS NULL""")
 
-            deletedApplications = jdbcTemplate.update("""
+            val deletedApplications = jdbcTemplate.update("""
                 DELETE a FROM applications AS a
-                LEFT JOIN invocations AS i ON a.id = i.applicationId
-                WHERE i.applicationId IS NULL""")
+                LEFT JOIN jvms AS j ON a.id = j.applicationId
+                WHERE j.applicationId IS NULL""")
 
-            deletedEnvironments = jdbcTemplate.update("""
+            val deletedEnvironments = jdbcTemplate.update("""
                 DELETE e FROM environments AS e
-                LEFT JOIN invocations AS i ON e.id = i.environmentId
-                WHERE i.environmentId IS NULL""")
+                LEFT JOIN jvms AS j ON e.id = j.environmentId
+                WHERE j.environmentId IS NULL""")
+            logger.debug("Deleted {} unreferenced methods, {} empty applications and {} empty environments", deletedMethods, deletedApplications, deletedEnvironments)
         }
 
-        if (deletedJvms + deletedAgentStates > 0) {
-            val invocationsAfter = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Long::class.java)!!
+        val deletedAgentStates = jdbcTemplate.update("DELETE FROM agent_state WHERE garbage = TRUE ")
 
-            logger.info("Data weeding: {} jvms, {} agents, approx. {} invocations, {} unreferenced methods, {} empty environments and {} empty applications deleted in {}.",
-                deletedJvms, deletedAgentStates, invocationsBefore - invocationsAfter, deletedMethods, deletedEnvironments, deletedApplications, Duration.between(startedAt, Instant.now()))
+        if (deletedJvms + deletedAgentStates > 0) {
+            logger.info("Data weeding: {} jvms rows and {} agent_state rows deleted in {}.", deletedJvms, deletedAgentStates, Duration.between(startedAt, Instant.now()))
         } else {
             logger.debug("Data weeding: Found nothing to delete")
         }

@@ -4,7 +4,9 @@ DELETE FROM invocations;
 DELETE FROM methods;
 DELETE FROM jvms;
 DELETE FROM applications;
+DELETE FROM environments;
 DELETE FROM price_plan_overrides;
+DELETE FROM heroku_details;
 DELETE FROM customers;
 DELETE FROM price_plans;
 
@@ -58,19 +60,16 @@ VALUES
    'tag1=t1,tag2=t2', FALSE),
   (3, 1, 3, 'v3', 3, 'uuid3', 'package-private', 'com.foobar3', 'com.foobar.excluded3', 'computerId3', 'hostname3', 'agentVersion3',
    'tag1=t1,tag2=t2', FALSE),
-  (4, 1, 4, 'v4', 4, 'uuid4', 'private', 'com.foobar4', NULL, 'computerId4', 'hostname4', 'agentVersion4', 'tag1=t1,tag2=t2', FALSE),
-  (5, 1, 4, 'v4', 4, 'uuid5', 'private', 'com.foobar5', NULL, 'computerId5', 'hostname5', 'agentVersion5', 'tag1=t1,tag2=t2', TRUE);
+  (4, 1, 4, 'v4', 4, 'uuid4', 'private', 'com.foobar4', NULL, 'computerId4', 'hostname4', 'agentVersion4', 'tag1=t1,tag2=t2', FALSE);
 
 INSERT INTO agent_state (id, customerId, jvmUuid, enabled, garbage)
 VALUES
   (1, 1, 'uuid1', TRUE, FALSE),
   (2, 1, 'uuid2', FALSE, FALSE),
   (3, 1, 'uuid3', TRUE, FALSE),
-  (4, 1, 'uuid4', FALSE, FALSE),
-  (5, 1, 'uuid5', FALSE, TRUE);
+  (4, 1, 'uuid4', FALSE, FALSE);
 
 INSERT INTO users (id, customerId, email, lastLoginSource, numberOfLogins, firstLoginAt, lastLoginAt)
 VALUES
   (1, 1, 'email1', 'source1', 1, NOW(), NOW()),
   (2, 1, 'email2', 'source2', 2, NOW(), NOW());
-
