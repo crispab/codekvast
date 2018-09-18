@@ -47,14 +47,10 @@ settings:
     cookie:
       name: JSESSIONID
 
-datadog_agent_version: '1:6.4.2-1'
-
 datadog_config:
   hostname: "{{ ec2_tag_CNAME }}"
   tags:
     - "env:{{ ec2_tag_Env }}"
-    - "CNAME:{{ ec2_tag_CNAME }}"
-    - "service:{{ service_name }}"
   collect_ec2_tags: true
   logs_enabled: true
   process_config:

@@ -1,6 +1,7 @@
 logs:
   - type: journald
-    include_units:
-    - 'systemd*'
-    - 'ssh*'
-    - 'codekvast-*'
+    exclude_units:
+    - 'agent*'
+    - 'trace-agent*'
+    - 'ansible*'
+    - 'sudo*'

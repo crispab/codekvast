@@ -8,5 +8,5 @@
   file: path={{ destDir }} state=directory
 
 - name: Configure journald forwarding
-  template: src=journald.yaml dest={{ destDir }}/config.yaml
+  template: src=journald.yaml dest={{ destDir }}/conf.yaml
   notify: restart datadog-agent
