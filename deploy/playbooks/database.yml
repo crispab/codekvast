@@ -117,6 +117,10 @@
     - "GRANT SELECT ON performance_schema.* TO 'datadog'@'localhost'"
     notify: restart datadog-agent
 
+  - name: Make sure Datadog Agent can tail MariaDB log files
+    user: name=dd-agent groups=adm append=yes
+    notify: restart datadog-agent
+
   - name: Configure Datadog Agent for MariaDB
     template: src=database/datadog/config.yaml.j2 dest=/etc/datadog-agent/conf.d/mysql.d/conf.yaml mode=644
     notify: restart datadog-agent
