@@ -45,18 +45,15 @@ public interface IntakeMetricsService {
     /**
      * Count the fact that a publication was imported.
      *
-     * @param kind   The kind of publication.
-     * @param format One of "v1", "v2".
+     * @param kind The kind of publication.
      */
-    void countImportedPublication(PublicationKind kind, String format);
+    void countImportedPublication(PublicationKind kind);
 
     /**
      * Gauges the size of an imported publication.
      *
-     * @param kind                The kind of publication.
-     * @param customerId          The customer ID.
-     * @param customerEnvironment The customer's environment (fetched from the publication header).
-     * @param size                The size of the publication.
+     * @param kind The kind of publication.
+     * @param size The size of the publication.
      */
-    void gaugePublicationSize(PublicationKind kind, long customerId, String customerEnvironment, int size);
+    void gaugePublicationSize(PublicationKind kind, int size);
 }

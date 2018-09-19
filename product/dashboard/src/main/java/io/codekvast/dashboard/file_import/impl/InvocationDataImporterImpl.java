@@ -56,7 +56,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
         ImportContext importContext = commonImporter.importCommonData(data);
         importDAO.importInvocations(importContext, publication.getRecordingIntervalStartedAtMillis(),
                                     new TreeSet<>(publication.getInvocations()));
-        metricsService.gaugePublicationSize(INVOCATIONS, data.getCustomerId(), data.getEnvironment(), publication.getInvocations().size());
+        metricsService.gaugePublicationSize(INVOCATIONS, publication.getInvocations().size());
         return true;
     }
 }

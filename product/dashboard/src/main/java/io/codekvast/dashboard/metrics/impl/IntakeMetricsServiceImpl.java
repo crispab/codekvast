@@ -36,9 +36,6 @@ import static java.util.Arrays.asList;
 @RequiredArgsConstructor
 public class IntakeMetricsServiceImpl implements IntakeMetricsService {
     private static final String KIND_TAG = "kind";
-    private static final String FORMAT_TAG = "format";
-    private static final String CUSTOMER_ID_TAG = "cid";
-    private static final String CUSTOMER_ENVIRONMENT_TAG = "cenv";
 
     private final MeterRegistry meterRegistry;
 
@@ -53,24 +50,13 @@ public class IntakeMetricsServiceImpl implements IntakeMetricsService {
     }
 
     @Override
-    public void countImportedPublication(PublicationKind kind, String format) {
-        String name = "codekvast.intake.accepted";
-        meterRegistry.counter(name, KIND_TAG, asTag(kind), FORMAT_TAG, format).increment();
-        meterRegistry.counter(name + "." + asTag(kind), FORMAT_TAG, format).increment();
+    public void countImportedPublication(PublicationKind kind) {
+        meterRegistry.counter("codekvast.intake.accepted", KIND_TAG, asTag(kind)).increment();
     }
 
     @Override
-    public void gaugePublicationSize(PublicationKind kind, long customerId, String customerEnvironment, int size) {
-        String name = "codekvast.intake.publicationSize";
-
-        meterRegistry.gauge(name,
-                            asList(Tag.of(KIND_TAG, asTag(kind)),
-                                   Tag.of(CUSTOMER_ID_TAG, Long.toString(customerId)),
-                                   Tag.of(CUSTOMER_ENVIRONMENT_TAG, customerEnvironment)), size);
-
-        meterRegistry.gauge(name + "." + asTag(kind),
-                            asList(Tag.of(CUSTOMER_ID_TAG, Long.toString(customerId)),
-                                   Tag.of(CUSTOMER_ENVIRONMENT_TAG, customerEnvironment)), size);
+    public void gaugePublicationSize(PublicationKind kind, int size) {
+        meterRegistry.gauge("codekvast.intake.publicationSize", asList(Tag.of(KIND_TAG, asTag(kind))), size);
     }
 
     private String asTag(PublicationKind kind) {

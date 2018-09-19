@@ -52,8 +52,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
         CommonPublicationData2 data = publication.getCommonData();
         CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
         importDAO.importMethods(data, importContext, publication.getEntries());
-        metricsService.gaugePublicationSize(CODEBASE, data.getCustomerId(), publication.getCommonData().getEnvironment(),
-                                            publication.getEntries().size());
+        metricsService.gaugePublicationSize(CODEBASE, publication.getEntries().size());
         return true;
     }
 }

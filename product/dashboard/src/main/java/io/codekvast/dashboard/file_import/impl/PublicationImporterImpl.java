@@ -102,16 +102,16 @@ public class PublicationImporterImpl implements PublicationImporter {
     @SuppressWarnings({"ChainOfInstanceofChecks", "InstanceofConcreteClass", "CastToConcreteClass"})
     private boolean handlePublication(Object object) {
         if (object instanceof CodeBasePublication2) {
-            metricsService.countImportedPublication(CODEBASE, "v2");
+            metricsService.countImportedPublication(CODEBASE);
             return codeBaseImporter.importPublication((CodeBasePublication2) object);
         }
 
         if (object instanceof InvocationDataPublication2) {
-            metricsService.countImportedPublication(INVOCATIONS, "v2");
+            metricsService.countImportedPublication(INVOCATIONS);
             return invocationDataImporter.importPublication((InvocationDataPublication2) object);
         }
 
-        logger.warn("Don't know how to handle {}", object.getClass().getSimpleName());
+        logger.warn("Don't know how to handle {}", object.getClass().getName());
         return false;
     }
 
