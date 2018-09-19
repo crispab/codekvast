@@ -3,7 +3,7 @@
 # Playbook which updates the CNAMEs for all running instances
 #---------------------------------------------------------------
 - name: AWS infrastructure stack
-  hosts: all[0]
+  hosts: localhost
   connection: local
   gather_facts: no
 
@@ -50,7 +50,7 @@
       ttl: 600
       type: CNAME
       zone: codekvast.io
-    loop: "{{ backend.instances|product(['CNAME'])|list }}"
+    loop: "{{ database.instances|product(['CNAME'])|list }}"
     loop_control:
       label: "{{item.1 }}: {{ item.0.tags[item.1] }} => {{ item.0.public_dns_name }}"
 
