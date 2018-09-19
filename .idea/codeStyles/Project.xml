@@ -40,7 +40,7 @@
       <option name="INDENT_SELECT_INTO_CLAUSE" value="true" />
       <option name="NEW_LINE_AFTER_SELECT_ITEM" value="false" />
     </SqlCodeStyleSettings>
-    <TypeScriptCodeStyleSettings>
+    <TypeScriptCodeStyleSettings version="0">
       <option name="USE_DOUBLE_QUOTES" value="false" />
       <option name="FORCE_QUOTE_STYlE" value="true" />
       <option name="OBJECT_LITERAL_WRAP" value="2" />
