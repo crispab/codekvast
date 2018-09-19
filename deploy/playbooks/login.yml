@@ -22,7 +22,6 @@
         logs_enabled: true
 
   roles:
-  - {role: oefenweb.swapfile, tags: [os]}
   - {role: Datadog.datadog, tags: [metrics, datadog] }
   - {role: codekvast.datadog, tags: [metrics, datadog] }
   - {role: codekvast.common, tags: [service, common]}
