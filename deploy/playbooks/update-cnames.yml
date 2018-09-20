@@ -52,7 +52,7 @@
       zone: codekvast.io
     loop: "{{ database.instances|product(['CNAME'])|list }}"
     loop_control:
-      label: "{{item.1 }}: {{ item.0.tags[item.1] }} => {{ item.0.public_dns_name }}"
+      label: "{{item.0.tags[item.1] + ' => ' + item.0.public_dns_name }}"
 
   - name: "Define the backend instances' CNAMEs"
     local_action:
@@ -67,4 +67,4 @@
       zone: codekvast.io
     loop: "{{ backend.instances|product(['CNAME0', 'CNAME1', 'CNAME2'])|list }}"
     loop_control:
-      label: "{{item.1 }}: {{ item.0.tags[item.1] }} => {{ item.0.public_dns_name }}"
+      label: "{{item.0.tags[item.1] + ' => ' + item.0.public_dns_name }}"
