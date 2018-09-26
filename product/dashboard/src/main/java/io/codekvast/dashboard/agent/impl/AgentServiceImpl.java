@@ -90,7 +90,8 @@ public class AgentServiceImpl implements AgentService {
 
         // Disable all agents that have been dead for more than two file import intervals...
         int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
-                                              "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND nextPollExpectedAt < ?",
+                                              "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND nextPollExpectedAt < ? " +
+                                              "ORDER BY id ",
                                           customerId, jvmUuid,
                                           Timestamp.from(now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2)));
         if (updated > 0) {
