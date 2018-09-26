@@ -316,19 +316,22 @@ public class DashboardIntegrationTest {
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
     @Sql(scripts = "/sql/base-data.sql")
     public void should_reject_publication_invalid_licenseKey() {
-        customerService.assertPublicationSize("undefined", 10);
+        CustomerData customerData = customerService.getCustomerDataByLicenseKey("undefined");
+        customerService.assertPublicationSize(customerData, 10);
     }
 
     @Test(expected = LicenseViolationException.class)
     @Sql(scripts = "/sql/base-data.sql")
     public void should_reject_publication_too_large() {
-        customerService.assertPublicationSize("", 100_000);
+        CustomerData customerData = customerService.getCustomerDataByLicenseKey("");
+        customerService.assertPublicationSize(customerData, 100_000);
     }
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
     public void should_accept_publication() {
-        customerService.assertPublicationSize("", 10);
+        CustomerData customerData = customerService.getCustomerDataByLicenseKey("");
+        customerService.assertPublicationSize(customerData, 10);
     }
 
     @Test
@@ -537,8 +540,8 @@ public class DashboardIntegrationTest {
                                                                 .methodVisibility("public")
                                                                 .nextPollExpectedAtMillis(cutMillis(timestamps.plusOneMinute))
                                                                 .nextPublicationExpectedAtMillis(cutMillis(
-                                                                     Timestamp.from(timestamps.minusTenMinutes.toInstant().plusSeconds(
-                                                                         PricePlanDefaults.DEMO.getPublishIntervalSeconds()))))
+                                                                    Timestamp.from(timestamps.minusTenMinutes.toInstant().plusSeconds(
+                                                                        PricePlanDefaults.DEMO.getPublishIntervalSeconds()))))
                                                                 .packages("com.foobar1")
                                                                 .pollReceivedAtMillis(cutMillis(timestamps.minusTenMinutes))
                                                                 .publishedAtMillis(cutMillis(timestamps.minusTwoMinutes))

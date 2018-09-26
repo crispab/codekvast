@@ -66,7 +66,7 @@ public class CustomerServiceImplTest {
     @Test(expected = LicenseViolationException.class)
     public void should_reject_too_big_codeBasePublication() {
         when(jdbcTemplate.queryForObject(anyString(), eq(String.class), eq(1L))).thenReturn("test");
-
-        service.assertPublicationSize("", 100_000);
+        CustomerData customerData = service.getCustomerDataByLicenseKey("");
+        service.assertPublicationSize(customerData, 100_000);
     }
 }

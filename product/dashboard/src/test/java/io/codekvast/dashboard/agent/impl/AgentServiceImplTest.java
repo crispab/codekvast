@@ -127,7 +127,7 @@ public class AgentServiceImplTest {
     public void should_have_checked_licenseKey() throws Exception {
         // given
         int publicationSize = 4711;
-        doThrow(new LicenseViolationException("stub")).when(customerService).assertPublicationSize(anyString(), eq(publicationSize));
+        doThrow(new LicenseViolationException("stub")).when(customerService).assertPublicationSize(any(CustomerData.class), eq(publicationSize));
 
         // when
         service.savePublication(AgentService.PublicationType.CODEBASE, "key", publicationSize, null);

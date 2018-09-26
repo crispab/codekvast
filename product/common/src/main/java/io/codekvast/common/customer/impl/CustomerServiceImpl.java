@@ -103,8 +103,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public void assertPublicationSize(String licenseKey, int publicationSize) throws LicenseViolationException {
-        doAssertNumberOfMethods(getCustomerDataByLicenseKey(licenseKey), publicationSize);
+    public void assertPublicationSize(CustomerData customerData, int publicationSize) throws LicenseViolationException {
+        doAssertNumberOfMethods(customerData, publicationSize);
     }
 
     @Override

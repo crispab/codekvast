@@ -106,7 +106,7 @@ public class AgentServiceImpl implements AgentService {
 
             jdbcTemplate
                 .update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?, ?, ?)",
-                        customerId, jvmUuid, Timestamp.from(now), nextExpectedPollTimestamp, Boolean.TRUE, Boolean.FALSE);
+                    customerId, jvmUuid, Timestamp.from(now), nextExpectedPollTimestamp, Boolean.TRUE, Boolean.FALSE);
         } else {
             logger.debug("The agent {}:{} has polled", customerId, jvmUuid);
         }
@@ -133,19 +133,20 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public File savePublication(@NonNull PublicationType publicationType, @NonNull String licenseKey, int publicationSize,
                                 InputStream inputStream) throws LicenseViolationException, IOException {
+        CustomerData customerData = customerService.getCustomerDataByLicenseKey(licenseKey);
+        customerService.assertPublicationSize(customerData, publicationSize);
 
-        customerService.assertPublicationSize(licenseKey, publicationSize);
-
-        return doSaveInputStream(publicationType, inputStream);
+        return doSaveInputStream(publicationType, customerData.getCustomerId(), inputStream);
     }
 
-    private File doSaveInputStream(PublicationType publicationType, InputStream inputStream) throws IOException {
+    private File doSaveInputStream(PublicationType publicationType, Long customerId, InputStream inputStream) throws IOException {
         try {
             createDirectory(settings.getQueuePath());
 
-            File result = File.createTempFile(publicationType + "-", ".ser", settings.getQueuePath());
+            File result = File.createTempFile(publicationType + "-" + customerId + "-", ".ser", settings.getQueuePath());
             Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
             logger.info("Saved uploaded {} publication to {}", publicationType, result);

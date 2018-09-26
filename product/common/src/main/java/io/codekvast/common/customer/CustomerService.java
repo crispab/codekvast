@@ -76,11 +76,11 @@ public interface CustomerService {
     /**
      * Validates a received publication before accepting it.
      *
-     * @param licenseKey      The license key to check
+     * @param customerData    The customer data.
      * @param publicationSize The size of the publication.
      * @throws LicenseViolationException iff the license key is invalid
      */
-    void assertPublicationSize(String licenseKey, int publicationSize) throws LicenseViolationException;
+    void assertPublicationSize(CustomerData customerData, int publicationSize) throws LicenseViolationException;
 
     /**
      * Checks that the database does not contain too many methods for a certain customer.
