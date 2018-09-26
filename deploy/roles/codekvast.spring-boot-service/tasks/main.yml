@@ -86,7 +86,7 @@
   wait_for:
     port: "{{ service_port }}"
     state: started
-    timeout: 45
+    timeout: 60
 
 - name: Install /opt/codekvast/remove-old-versions.sh
   copy:
