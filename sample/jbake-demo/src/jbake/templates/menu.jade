@@ -1,0 +1,39 @@
+div(class='navbar navbar-default navbar-fixed-top', role='navigation')
+    div.container
+        div.navbar-header
+            button(type='button', class='navbar-toggle', data-toggle='collapse', data-target='.navbar-collapse')
+                span.sr-only Toggle navigation
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+            a.navbar-brand(href='#{content.rootpath}') JBake
+        div(class='navbar-collapse collapse')
+            ul(class='nav navbar-nav')
+                li
+                    a(href='#{content.rootpath}index.html') Home
+                li
+                    a(href='#{content.rootpath}about.html') About
+                li
+                    a(href='#{content.rootpath}#{config.feed_file}') Subscribe
+                li.dropdown
+                    a(href='#', class='dropdown-toggle', data-toggle='dropdown') Dropdown <b class="caret"></b>
+                    ul.dropdown-menu
+                        li
+                            a(href='#') Action
+                        li
+                            a(href='#') Another action
+                        li
+                            a(href='#') Something else here
+                        li.divider
+                        li.dropdown-header Nav header
+                        li
+                            a(href='#') Separated link
+                        li
+                            a(href='#') One more separated link
+
+
+
+
+
+
+
