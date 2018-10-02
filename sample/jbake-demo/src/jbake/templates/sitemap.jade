@@ -1,12 +1,6 @@
 doctype xml
-urlset(xmlns='http://www.sitemaps.org/schemas/sitemap/0.9', xsi:schemaLocation='http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd')
-  each content in published_content
-    url
-      loc #{config.site_host}#{content.uri}
-      lastmod #{formatter.format(content.date,"dd MMMM yyyy")}
-
-
-
-
-
-
+urlset(xmlns='https://www.sitemaps.org/schemas/sitemap/0.9')
+    each content in published_content
+        url
+            loc #{config.site_host}#{content.uri}
+            lastmod #{formatter.format(content.date, "yyyy-MM-dd")}
