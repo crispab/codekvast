@@ -37,7 +37,7 @@ dependencies {
     testCompile testFrameworks
 
     integrationTestCompile project(":product:testsupport")
-    integrationTestCompile "com.github.tomakehurst:wiremock:2.18.0"
+    integrationTestCompile "com.github.tomakehurst:wiremock:$wiremockVersion"
     integrationTestRuntime logback
 
     jacocoagent "org.jacoco:org.jacoco.agent:$jacocoVersion:runtime@jar"
