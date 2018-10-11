@@ -5,7 +5,7 @@
 1. Replaced Nginx with AWS ALB.
 2. Added tag "env" to all application metrics.
 3. Java Agent: Removed deprecated V1 model classes.
-4. Upgraded to Spring Boot 2.0.5, Kotlin 1.2.71, Angular 6.1.9
+4. Upgraded to Spring Boot 2.0.5, Kotlin 1.2.71, Angular 6.1.10
 5. Added some more metrics.
 6. All application metrics are tagged with hostname.
 
