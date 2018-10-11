@@ -17,13 +17,11 @@ import {DashboardApiService} from './services/dashboard-api.service';
 })
 export class AppComponent implements OnInit {
 
+    loggedInAs = 'Not logged in';
+    viewingCustomer = '';
     private showHerokuIntegrationMenu = false;
     private googleAnalyticsInitialized = false;
     private Boomerang: any = window['Boomerang'];
-
-    loggedInAs = 'Not logged in';
-    viewingCustomer = '';
-
     private readonly googleAnalyticsId = 'UA-97240168-3';
 
     constructor(private api: DashboardApiService, private configService: ConfigService, private cookieService: CookieService,
@@ -32,6 +30,7 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        // @formatter:off
         this.router.events.pipe(
             filter(event => event instanceof NavigationEnd),
             map(event => (event as NavigationEnd).urlAfterRedirects),
@@ -44,8 +43,33 @@ export class AppComponent implements OnInit {
                 let feature = this.titleCasePipe.transform(url.substr(1));
                 this.titleService.setTitle('Codekvast ' + feature);
             });
-
+        // @formatter:on
         this.api.getServerSettings().subscribe(settings => this.configService.setServerSettings(settings));
+    }
+
+    getVersion(): String {
+        return this.configService.getVersion();
+    }
+
+    getServerVersion(): String {
+        return this.configService.getServerSettings().serverVersion;
+    }
+
+    topNavClasses() {
+        return {
+            'integration-menu-heroku': this.stateService.isLoggedIn() && this.showHerokuIntegrationMenu,
+            'native-login-menu': this.stateService.isLoggedIn() && !this.showHerokuIntegrationMenu,
+            container: true
+        };
+    }
+
+    logout() {
+        this.doLogout();
+        window.location.href = this.configService.getServerSettings().logoutUrl;
+    }
+
+    logoutButtonText() {
+        return this.stateService.isLoggedIn() ? 'Logout' : 'Login';
     }
 
     private setLoggedInState() {
@@ -94,27 +118,6 @@ export class AppComponent implements OnInit {
         this.Boomerang.reset();
     }
 
-    getVersion(): String {
-        return this.configService.getVersion();
-    }
-
-    getServerVersion(): String {
-        return this.configService.getServerSettings().serverVersion;
-    }
-
-    topNavClasses() {
-        return {
-            'integration-menu-heroku': this.stateService.isLoggedIn() && this.showHerokuIntegrationMenu,
-            'native-login-menu': this.stateService.isLoggedIn() && !this.showHerokuIntegrationMenu,
-            container: true
-        };
-    }
-
-    logout() {
-        this.doLogout();
-        window.location.href = this.configService.getServerSettings().logoutUrl;
-    }
-
     private updateGoogleAnalytics(url: string) {
         let ga = window['ga'];
 
@@ -127,9 +130,5 @@ export class AppComponent implements OnInit {
         console.log(`[ck dashboard] Sending ${url} to GoogleAnalytics`);
         ga('set', 'page', url);
         ga('send', 'pageview');
-    }
-
-    logoutButtonText() {
-        return this.stateService.isLoggedIn() ? 'Logout' : 'Login';
     }
 }

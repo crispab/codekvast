@@ -2,7 +2,9 @@
     <ul class="nav justify-content-end mr-1">
         <li class="nav-item px-3"><span class="btn disabled">{{ viewingCustomer }}</span></li>
         <li class="nav-item px-3"><span class="btn disabled">{{ loggedInAs }}</span></li>
-        <li class="nav-item px-3 pt-1"><a class="btn btn-secondary btn-sm" (click)="logout()"><i class="fas fa-sign-out-alt" [class.d-none]="!loggedIn"></i>{{ logoutButtonText() }}</a></li>
+        <li class="nav-item px-3 pt-1"><a class="btn btn-secondary btn-sm" (click)="logout()"><i class="fas fa-sign-out-alt"
+                                                                                                 [class.d-none]="!loggedIn"></i>{{ logoutButtonText() }}
+        </a></li>
     </ul>
 </div>
 <header id="top-nav" [ngClass]="topNavClasses()">
@@ -33,14 +35,19 @@
 <footer class="bg-info small">
     <ul class="nav justify-content-end mr-1">
         <li class="nav-item px-3" [class.d-none]="!showHerokuIntegrationMenu"><span class="btn disabled">{{ loggedInAs }}</span></li>
-        <li class="nav-item px-3 pt-1" [class.d-none]="!showHerokuIntegrationMenu"><a class="btn btn-secondary btn-sm" href="#" (click)="logout()"><i class="fas fa-sign-out-alt" [class.d-none]="!loggedIn"></i>{{ logoutButtonText() }}</a></li>
+        <li class="nav-item px-3 pt-1" [class.d-none]="!showHerokuIntegrationMenu"><a class="btn btn-secondary btn-sm" href="#"
+                                                                                      (click)="logout()"><i class="fas fa-sign-out-alt"
+                                                                                                            [class.d-none]="!loggedIn"></i>{{ logoutButtonText() }}
+        </a></li>
         <li class="nav-item px-3"><a class="btn btn-info" href='http://www.codekvast.io' target="_new">Latest News</a></li>
-        <li class="nav-item px-3"><a class="btn btn-info" href='http://www.codekvast.io/pages/privacy-policy.html' target="_new">Privacy Policy</a></li>
+        <li class="nav-item px-3"><a class="btn btn-info" href='http://www.codekvast.io/pages/privacy-policy.html' target="_new">Privacy
+            Policy</a></li>
         <li class="nav-item px-3"><a class="btn btn-info" id="api-docs" href='/swagger-ui.html' target="_new">API docs</a></li>
         <li class="nav-item px-3"><span class="btn disabled"
                                         container="body"
                                         ngbPopover="Server version {{ getServerVersion() }}"
                                         triggers="mouseenter:mouseleave"
-                                        placement="top">Codekvast Dashboard <span id="codekvastVersion">{{ getVersion() }}</span></span></li>
+                                        placement="top">Codekvast Dashboard <span id="codekvastVersion">{{ getVersion() }}</span></span>
+        </li>
     </ul>
 </footer>

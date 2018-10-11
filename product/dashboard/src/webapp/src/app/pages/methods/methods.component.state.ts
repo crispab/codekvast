@@ -70,23 +70,6 @@ export class MethodsComponentState {
         return this.environments.some(s => s.selected === true);
     }
 
-    private sortBy(column: string) {
-        if (this.sortColumn === column) {
-            this.sortAscending = !this.sortAscending;
-        } else {
-            this.sortColumn = column;
-        }
-    }
-
-    private getHeaderIconClassesFor(column: string) {
-        return {
-            'fas': true,
-            'fa-sort-down': this.sortAscending,
-            'fa-sort-up': !this.sortAscending,
-            'invisible': column !== this.sortColumn // avoid column width fluctuations
-        };
-    }
-
     headerIconClassesSignature() {
         return this.getHeaderIconClassesFor(MethodsComponent.SIGNATURE_COLUMN);
     }
@@ -147,10 +130,6 @@ export class MethodsComponentState {
         return d;
     }
 
-    private getCutoffTimeMillis(): number {
-        return this.includeOnlyNeverInvokedMethods ? 0 : this.getInvokedBefore().getTime();
-    }
-
     search() {
         this.searching = true;
         this.req.suppressSyntheticMethods = !this.includeSyntheticMethods;
@@ -187,6 +166,27 @@ export class MethodsComponentState {
 
     isSelectedMethod(m: Method) {
         return this.selectedMethod && this.selectedMethod.id === m.id;
+    }
+
+    private sortBy(column: string) {
+        if (this.sortColumn === column) {
+            this.sortAscending = !this.sortAscending;
+        } else {
+            this.sortColumn = column;
+        }
+    }
+
+    private getHeaderIconClassesFor(column: string) {
+        return {
+            'fas': true,
+            'fa-sort-down': this.sortAscending,
+            'fa-sort-up': !this.sortAscending,
+            'invisible': column !== this.sortColumn // avoid column width fluctuations
+        };
+    }
+
+    private getCutoffTimeMillis(): number {
+        return this.includeOnlyNeverInvokedMethods ? 0 : this.getInvokedBefore().getTime();
     }
 
 }

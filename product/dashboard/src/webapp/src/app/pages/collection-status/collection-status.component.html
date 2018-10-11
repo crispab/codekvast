@@ -146,12 +146,14 @@
                                 <li>You have used Codekvast for longer time than your application's usage cycle.</li>
                                 <li>You have retired an application or environment.</li>
                             </ul>
-                            <div class="alert alert-warning" role="alert" *ngIf="state.numSelectedTerminatedAgents() > state.numSelectedVisibleTerminatedAgents()">
+                            <div class="alert alert-warning" role="alert"
+                                 *ngIf="state.numSelectedTerminatedAgents() > state.numSelectedVisibleTerminatedAgents()">
                                 The filters hide some of the selected agents!
                             </div>
                             <hr>
                             <div class="alert alert-danger" role="alert">
-                                Delete all data collected by {{ state.numSelectedTerminatedAgents() }} terminated {{ getAgentsLabel() }}?<br>
+                                Delete all data collected by {{ state.numSelectedTerminatedAgents() }} terminated {{ getAgentsLabel() }}
+                                ?<br>
                                 There is no way to restore once deleted data.
                             </div>
                         </div>
@@ -234,7 +236,8 @@
                             <td>{{ agent.startedAtMillis | ckAge:settings.dateFormat }}</td>
                             <td>{{ agent.publishedAtMillis | ckAge:settings.dateFormat }}</td>
                             <td>
-                                <span [ngClass]="agentUploadExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
+                                <span
+                                    [ngClass]="agentUploadExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
                             </td>
                             <td>{{ getComments(agent) }} <i [ngClass]="commentClasses(agent)"></i></td>
                             <td><input [disabled]="!isAgentDeletable(agent)" type="checkbox" [(ngModel)]="agent.selected"></td>
