@@ -33,6 +33,12 @@
       <option name="FROM_EL_WRAP" value="2" />
       <option name="WHERE_EL_WRAP" value="3" />
       <option name="WHERE_EL_BOUND" value="2" />
+      <option name="TABLE_OPENING" value="1" />
+      <option name="TABLE_CONTENT" value="2" />
+      <option name="TABLE_CLOSING" value="3" />
+      <option name="TABLE_ALTER_INSTRUCTION_ALIGN" value="false" />
+      <option name="ROUTINE_ARG_ALIGN_TYPES" value="true" />
+      <option name="IMP_IF_THEN_WRAP_THEN" value="true" />
       <option name="CORTEGE_SPACE_BEFORE_L_PAREN" value="false" />
       <option name="EXPR_CASE_WHEN_WRAP" value="false" />
       <option name="EXPR_CASE_THEN_WRAP" value="true" />

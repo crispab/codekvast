@@ -2,28 +2,26 @@ yieldUnescaped '<!DOCTYPE html>'; newLine()
 html {
     comment " Codekvast Login version ${settings.displayVersion} "; newLine()
     head {
-        meta('http-equiv': '"Content-Type" content="text/html; charset=utf-8"'); newLine()
-        meta('http-equiv': 'x-ua-compatible', content: 'ie=edge'); newLine()
-        meta(content: 'width=device-width, initial-scale=1', name: 'viewport'); newLine()
-        meta(charset: 'utf-8'); newLine()
-
-        title("Codekvast $title"); newLine()
+        meta(charset: 'utf-8') newLine()
+        meta(name: 'viewport', content: 'width=device-width, initial-scale=1.0, shrink-to-fit=no') newLine()
+        title("${config.site_title} - ${content.title}") newLine()
 
         link(rel: 'icon', href: '/favicon.ico', type: 'image/ico'); newLine()
 
-        link(rel: 'stylesheet', type: 'text/css', href: 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'); newLine()
-        link(rel: 'stylesheet', type: 'text/css', href: 'https://use.fontawesome.com/releases/v5.0.8/css/solid.css'); newLine()
-        link(rel: 'stylesheet', type: 'text/css', href: 'https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css'); newLine()
-        link(rel: 'stylesheet', type: 'text/css', href: '/assets/codekvast.css'); newLine()
+        link(rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', integrity: 'sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm', crossorigin: 'anonymous');
+        newLine()
+        link(rel: 'stylesheet', href: 'https://use.fontawesome.com/releases/v5.0.8/css/solid.css'); newLine()
+        link(rel: 'stylesheet', href: 'https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css'); newLine()
+        link(rel: 'stylesheet', href: '/assets/codekvast.css'); newLine()
 
         script(
             type: 'text/javascript',
             src: 'https://code.jquery.com/jquery-3.3.1.slim.min.js',
             integrity: 'sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=',
-            crossorigin: 'anonymous') { yield('') }; newLine()
-        script(type: 'text/javascript', src: 'https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js') { yield('') }; newLine()
-        script(type: 'text/javascript', src: 'https://www.google-analytics.com/analytics.js') { yield('') }; newLine()
-        script(type: 'text/javascript', src: '/assets/codekvast.js') { yield('') }; newLine()
+            crossorigin: 'anonymous') {}; newLine()
+        script(type: 'text/javascript', src: 'https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js') {}; newLine()
+        script(type: 'text/javascript', src: 'https://www.google-analytics.com/analytics.js') {}; newLine()
+        script(type: 'text/javascript', src: '/assets/codekvast.js') {}; newLine()
 
     }
     newLine()
