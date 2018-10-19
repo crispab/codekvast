@@ -28,6 +28,7 @@ dependencies {
     compile 'com.github.seratch:jslack:1.1.6'
     compile 'io.jsonwebtoken:jjwt:0.9.1'
     compile 'javax.servlet:javax.servlet-api'
+    compile 'org.jetbrains:annotations:16.0.2'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-logging'

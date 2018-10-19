@@ -60,7 +60,7 @@
     <option name="OPTION_LINK_TO_JDK_DOCS" value="true" />
   </component>
   <component name="NullableNotNullManager">
-    <option name="myDefaultNullable" value="javax.annotation.Nullable" />
+    <option name="myDefaultNullable" value="org.jetbrains.annotations.Nullable" />
     <option name="myDefaultNotNull" value="javax.annotation.Nonnull" />
     <option name="myNullables">
       <value>

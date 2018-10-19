@@ -22,6 +22,7 @@
 package io.codekvast.common.health;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -45,32 +46,59 @@ import java.time.Instant;
 @Endpoint(id = "lb-health")
 public class LoadBalancerHealthIndicator extends AbstractHealthIndicator {
 
+    private static final String IN_OPERATION = "In operation";
+    private static final String OUT_OF_SERVICE = "Out of service";
+    private static final String OUT_OF_SERVICE_SINCE = OUT_OF_SERVICE + " since ";
+
+    @Nullable
     private volatile Instant outOfServiceSince = null;
 
+    /**
+     * Do <pre><code>
+     * curl -X POST http:/xxx:$managementPort/management/lb-health
+     * </code> </pre> to set the service to out-of-service,
+     * i.e., <code>http://xxx:$managementPort/management/health</code> will return HTTP status 503.
+     *
+     * @return {@value OUT_OF_SERVICE_SINCE} xxx
+     */
     @WriteOperation
     public String outOfService() {
-        logger.info("Setting service to out of service");
+        logger.info("Setting service to {}", OUT_OF_SERVICE);
         this.outOfServiceSince = Instant.now();
-        return "Out of service";
+        return OUT_OF_SERVICE_SINCE + outOfServiceSince;
     }
 
+    /**
+     * Do <pre><code>
+     * curl -X http:/xxx:$managementPort/management/lb-health to get the current service state.
+     * </code></pre>
+     *
+     * @return {@value IN_OPERATION} or {@value OUT_OF_SERVICE_SINCE} xxx
+     */
     @ReadOperation
-    public String state() {
-        return outOfServiceSince == null ? "In operation" : "Out of service since " + outOfServiceSince;
+    public String currentState() {
+        return outOfServiceSince == null ? IN_OPERATION : OUT_OF_SERVICE_SINCE + outOfServiceSince;
     }
 
+    /**
+     * Do <pre><code>
+     * curl -X DELETE http:/xxx:$managementPort/management/lb-health to set the service state to In operation
+     * </code></pre>
+     *
+     * @return {@value IN_OPERATION}
+     */
     @DeleteOperation
     public String inOperation() {
-        logger.info("Setting service to in operation");
+        logger.info("Setting service to {}", IN_OPERATION);
         this.outOfServiceSince = null;
-        return "In operation";
+        return IN_OPERATION;
     }
 
     @Override
     protected void doHealthCheck(Health.Builder builder) {
         if (outOfServiceSince != null) {
-            logger.info("Out of service since {}", outOfServiceSince);
-            builder.outOfService().withDetail("Out of service since since", outOfServiceSince);
+            logger.info("{}{}", OUT_OF_SERVICE_SINCE, outOfServiceSince);
+            builder.outOfService().withDetail(OUT_OF_SERVICE_SINCE, outOfServiceSince);
         } else {
             builder.up();
         }
