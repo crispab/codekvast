@@ -28,6 +28,9 @@ logging:
         io.codekvast: DEBUG
 
 management:
+    endpoint:
+        health:
+            show-details: "ALWAYS"
     endpoints:
         jmx.domain: CodekvastLogin
         web:

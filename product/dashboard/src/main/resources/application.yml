@@ -28,6 +28,9 @@ logging:
         springfox: WARN
 
 management:
+    endpoint:
+        health:
+            show-details: "ALWAYS"
     endpoints:
         jmx.domain: CodekvastDashboard
         web:
