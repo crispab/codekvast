@@ -216,7 +216,7 @@ def launchAppAndWaitForReady(String command) {
     sleep 5000
 
     int attempt = 1
-    int maxAttempts = 30
+    int maxAttempts = 60
     def endpoint = getSystemTestEndpoint()
     logger.lifecycle("Waiting for {} to become ready...", endpoint)
 

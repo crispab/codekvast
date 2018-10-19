@@ -25,6 +25,7 @@
       <option name="KEYWORD_CASE" value="0" />
       <option name="TYPE_CASE" value="3" />
       <option name="QUOTE_IDENTIFIER" value="1" />
+      <option name="QUERY_TRUE_INDENT" value="false" />
       <option name="SET_EL_WRAP" value="0" />
       <option name="SET_EL_COMMA" value="0" />
       <option name="WITH_EL_WRAP" value="0" />
@@ -38,6 +39,7 @@
       <option name="TABLE_CLOSING" value="3" />
       <option name="TABLE_ALTER_INSTRUCTION_ALIGN" value="false" />
       <option name="ROUTINE_ARG_ALIGN_TYPES" value="true" />
+      <option name="IMP_DECLARE_EL_WRAP" value="1" />
       <option name="IMP_IF_THEN_WRAP_THEN" value="true" />
       <option name="CORTEGE_SPACE_BEFORE_L_PAREN" value="false" />
       <option name="EXPR_CASE_WHEN_WRAP" value="false" />
