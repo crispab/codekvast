@@ -28,17 +28,20 @@ logging:
         io.codekvast: DEBUG
 
 management:
-    endpoint:
-        health:
-            show-details: "ALWAYS"
     endpoints:
-        jmx.domain: CodekvastLogin
+        enabled-by-default: true
+        jmx:
+            domain: CodekvastLogin
         web:
             base-path: /management
             exposure.include: '*'
+    endpoint:
+        health:
+            show-details: "ALWAYS"
+            cache.time-to-live: 1s
     server:
         port: 9080
-        servlet.importContext-path: /
+        servlet.context-path: /
     metrics:
         web.server.auto-time-requests: true
         export.datadog.enabled: false
@@ -46,7 +49,7 @@ management:
 server:
     port: 8080
     servlet:
-        importContext-path: /
+        context-path: /
         session:
             cookie:
                 max-age: 10m

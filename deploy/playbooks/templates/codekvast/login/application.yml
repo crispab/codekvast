@@ -33,7 +33,6 @@ management:
 
 server:
     port: "{{ service_port }}"
-    servlet.session.cookie.name: "{{ settings.session.cookie.name }}"
     undertow.accesslog:
         dir: "/var/log/codekvast/{{ service_name }}/"
         prefix: access.

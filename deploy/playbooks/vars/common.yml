@@ -42,11 +42,6 @@ ports:
     management: 9081
     jvm_debugger: 5011
 
-settings:
-  session:
-    cookie:
-      name: JSESSIONID
-
 datadog_config:
   hostname: "{{ ec2_tag_CNAME }}"
   tags:
