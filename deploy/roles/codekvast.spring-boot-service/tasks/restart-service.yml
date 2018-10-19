@@ -1,0 +1,12 @@
+---
+- name: "Set codekvast-{{ service_name }} to out-of-service"
+  uri: url="http://localhost:{{ management_port }}/management/lb-health" method=POST
+  ignore_errors: yes
+  register: lb_result
+
+- name: "Wait for the load balancer to notice that codekvast-{{ service_name }} is out-of-service"
+  wait_for: timeout="{{ health_check.interval * (health_check.unhealthy_threshold_count + 1) }}"
+  when: lb_result.status == 200
+
+- name: "Restart the service"
+  service: name="codekvast-{{ service_name }}" state=restarted

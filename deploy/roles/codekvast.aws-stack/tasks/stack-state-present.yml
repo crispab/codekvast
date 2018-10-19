@@ -326,11 +326,11 @@
     health_check_protocol: http
     health_check_port: "{{ ports.dashboard.management }}"
     health_check_path: /management/health
-    health_check_interval: 10
-    successful_response_codes: "200-299"
-    health_check_timeout: 2
-    healthy_threshold_count: 2
-    unhealthy_threshold_count: 3
+    health_check_interval: "{{ health_check.interval }}"
+    successful_response_codes: "{{ health_check.successful_response_codes }}"
+    health_check_timeout: "{{ health_check.timeout }}"
+    healthy_threshold_count: "{{ health_check.healthy_threshold_count }}"
+    unhealthy_threshold_count: "{{ health_check.unhealthy_threshold_count }}"
     state: present
     stickiness_enabled: no
     tags: "{{ aws_common_tags }}"
