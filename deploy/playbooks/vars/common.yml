@@ -58,7 +58,7 @@ swapfile_vfs_cache_pressure: 50
 
 health_check:
     healthy_threshold_count: 2
-    interval: 5
-    timeout: 2
+    interval_seconds: 5
+    timeout_seconds: 2
     unhealthy_threshold_count: 2
     successful_response_codes: "200-299"

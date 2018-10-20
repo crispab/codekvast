@@ -3,4 +3,5 @@
   shell: systemctl daemon-reload
 
 - name: "restart codekvast service"
-  include_tasks: restart-service.yml
+  # Not possible to have more than one task in a handler, so they are in a separate file.
+  include_tasks: handler-restart-codekvast-service.yml
