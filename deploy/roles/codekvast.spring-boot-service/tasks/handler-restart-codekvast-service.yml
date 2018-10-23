@@ -1,0 +1,15 @@
+---
+# This is actually the handler named "restart-codekvast-service". Due to restrictions in Ansible, a handler
+# can only consist of one single task. To get around that limitation, the handler tasks are defined in this include file.
+
+- name: "Set the load balancer health to out-of-service"
+  uri: url="http://localhost:{{ management_port }}/management/lb-health" method=POST
+  ignore_errors: yes
+  register: lb_result
+
+- name: "Wait for the load balancer to detect that the service is out-of-service"
+  wait_for: timeout="{{ 5 + (health_check.interval_seconds * (health_check.unhealthy_threshold_count + 1)) }}"
+  when: lb_result.status == 200
+
+- name: "Restart the service"
+  service: name="codekvast-{{ service_name }}" state=restarted
