@@ -20,7 +20,7 @@ module.exports = {
                 test: /\.ts$/,
                 loader: 'istanbul-instrumenter-loader',
                 exclude: [
-                    'node_modules',
+                    helpers.root('node_modules'),
                     /\.spec\.ts$/
                 ]
             },

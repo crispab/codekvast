@@ -46,10 +46,10 @@ module.exports = {
     },
 
     plugins: [
-        new webpack.EnvironmentPlugin([
-            'CODEKVAST_VERSION',
-            'ENV'
-        ]),
+        new webpack.EnvironmentPlugin({
+            CODEKVAST_VERSION: 'dev',
+            ENV: 'development'
+        }),
 
         new CopyWebpackPlugin([
             {from: 'static'}
