@@ -9,6 +9,7 @@ import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
+import io.codekvast.dashboard.agent.impl.AgentDAO;
 import io.codekvast.dashboard.dashboard.DashboardService;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
@@ -120,6 +121,9 @@ public class DashboardIntegrationTest {
 
     @Inject
     private AgentService agentService;
+
+    @Inject
+    private AgentDAO agentDAO;
 
     @Inject
     private CodeBaseImporter codeBaseImporter;
@@ -354,7 +358,7 @@ public class DashboardIntegrationTest {
         assertThat(customerData.isTrialPeriodExpired(now), is(false));
 
         // when
-        customerData = customerService.registerAgentDataPublication(customerData, now);
+        customerData = customerService.registerAgentPoll(customerData, now);
 
         // then
         assertThat(customerData.getCollectionStartedAt(), is(now));
@@ -504,6 +508,24 @@ public class DashboardIntegrationTest {
         assertAgentEnabled("uuid2", FALSE);
         assertAgentEnabled("uuid3", FALSE);
         assertAgentEnabled("uuid4", FALSE);
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_recognize_enabled_agent_environment() {
+        assertThat(agentDAO.isEnvironmentEnabled(1L, "uuid3"), is(true));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_recognize_disabled_agent_environment() {
+        assertThat(agentDAO.isEnvironmentEnabled(1L, "uuid4"), is(false));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_treat_unknown_agent_environment_as_enabled() {
+        assertThat(agentDAO.isEnvironmentEnabled(4711L, "foobar"), is(true));
     }
 
     @Test

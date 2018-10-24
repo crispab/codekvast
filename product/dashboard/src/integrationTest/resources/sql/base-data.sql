@@ -33,11 +33,11 @@ INSERT INTO applications (id, customerId, name) VALUES
   (3, 1, 'app3'),
   (4, 1, 'app4');
 
-INSERT INTO environments (id, customerId, name) VALUES
-  (1, 1, 'env1'),
-  (2, 1, 'env2'),
-  (3, 1, 'env3'),
-  (4, 1, 'env4');
+INSERT INTO environments (id, customerId, name, enabled) VALUES
+  (1, 1, 'env1', TRUE),
+  (2, 1, 'env2', TRUE),
+  (3, 1, 'env3', TRUE),
+  (4, 1, 'env4', FALSE);
 
 INSERT INTO methods (id, customerId, visibility, signature) VALUES
   (1, 1, 'public', 'm1'),

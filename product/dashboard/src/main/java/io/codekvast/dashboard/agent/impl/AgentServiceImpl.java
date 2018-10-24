@@ -32,7 +32,6 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.sql.Timestamp;
 import java.time.Instant;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -56,8 +54,8 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class AgentServiceImpl implements AgentService {
 
     private final CodekvastDashboardSettings settings;
-    private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
+    private final AgentDAO agentDAO;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -88,49 +86,34 @@ public class AgentServiceImpl implements AgentService {
         long customerId = customerData.getCustomerId();
         Instant now = Instant.now();
 
-        // Disable all agents that have been dead for more than two file import intervals...
-        int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
-                                              "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND nextPollExpectedAt < ? " +
-                                              "ORDER BY id ",
-                                          customerId, jvmUuid,
-                                          Timestamp.from(now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2)));
-        if (updated > 0) {
-            logger.info("Disabled {} dead agents", updated);
-        }
+        agentDAO.disableDeadAgents(customerId, jvmUuid, now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2));
 
-        Timestamp nextExpectedPollTimestamp = Timestamp.from(now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
-        updated =
-            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE customerId = ? AND jvmUuid = ? ",
-                                Timestamp.from(now), nextExpectedPollTimestamp, customerId, jvmUuid);
-        if (updated == 0) {
-            logger.info("The agent {}:{} has started", customerId, jvmUuid);
+        agentDAO.setAgentTimestamps(customerId, jvmUuid, now, now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
 
-            jdbcTemplate
-                .update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?, ?, ?)",
-                    customerId, jvmUuid, Timestamp.from(now), nextExpectedPollTimestamp, Boolean.TRUE, Boolean.FALSE);
-        } else {
-            logger.debug("The agent {}:{} has polled", customerId, jvmUuid);
-        }
-
-        Integer numOtherEnabledLiveAgents =
-            jdbcTemplate.queryForObject("SELECT COUNT(1) FROM agent_state " +
-                                            "WHERE enabled = TRUE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
-                                        Integer.class, customerId, Timestamp.from(now.minusSeconds(10)), jvmUuid);
+        int numOtherEnabledLiveAgents = agentDAO.getNumOtherAliveAgents(customerId, jvmUuid, now.minusSeconds(10));
 
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
-        boolean enabled = numOtherEnabledLiveAgents < maxNumberOfAgents;
-        if (!enabled) {
+        boolean enabledAgent = numOtherEnabledLiveAgents < maxNumberOfAgents;
+        if (!enabledAgent) {
             logger.warn("Customer {} has already {} live agents (max is {})", customerId, numOtherEnabledLiveAgents, maxNumberOfAgents);
         } else {
             logger.debug("Customer {} now has {} live agents (max is {})", customerId, numOtherEnabledLiveAgents + 1, maxNumberOfAgents);
         }
 
-        CustomerData cd = customerService.registerAgentDataPublication(customerData, now);
-        if (cd.isTrialPeriodExpired(now) && enabled) {
-            enabled = false;
+        CustomerData cd = customerService.registerAgentPoll(customerData, now);
+        if (cd.isTrialPeriodExpired(now)) {
+            enabledAgent = false;
         }
-        jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE jvmUuid = ?", enabled, jvmUuid);
-        return enabled;
+
+        boolean enabledEnvironment = agentDAO.isEnvironmentEnabled(customerId, jvmUuid);
+
+        if (enabledAgent && !enabledEnvironment) {
+            logger.debug("Disabling agent {}:{} since the environment is disabled", customerId, jvmUuid);
+            enabledAgent = false;
+        }
+
+        agentDAO.updateAgentEnabledState(customerId, jvmUuid, enabledAgent);
+        return enabledAgent;
     }
 
     @Override
