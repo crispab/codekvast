@@ -85,6 +85,31 @@
     <div *ngIf="state.data">
         <ngb-tabset [destroyOnHide]="false" type="tabs" justify="start">
             <ngb-tab>
+                <ng-template ngbTabTitle><h5>Environments</h5></ng-template>
+                <ng-template ngbTabContent>
+                    <table class="mt-3 table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Enabled</th>
+                            <th>Updated&nbsp;by</th>
+                            <th>Notes</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let env of state.getEnvironments()">
+                            <td>{{ env.name }}</td>
+                            <td>{{ env.enabled }}</td>
+                            <td>{{ env.updatedBy }}</td>
+                            <td>{{ env.notes }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </ng-template>
+            </ngb-tab>
+
+            <ngb-tab>
                 <ng-template ngbTabTitle><h5>Applications</h5></ng-template>
                 <ng-template ngbTabContent>
                     <table class="mt-3 table table-striped table-bordered">

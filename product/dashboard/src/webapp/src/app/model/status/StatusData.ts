@@ -1,5 +1,6 @@
 import {Agent} from './Agent';
 import {Application} from './Application';
+import {Environment} from './Environment';
 
 export class StatusData {
     // query stuff
@@ -25,6 +26,7 @@ export class StatusData {
     numLiveEnabledAgents: number;
 
     // details
+    environments: Environment[];
     applications: Application[];
     agents: Agent[];
 }

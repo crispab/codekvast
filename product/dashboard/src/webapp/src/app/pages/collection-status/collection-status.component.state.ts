@@ -88,6 +88,10 @@ export class CollectionStatusComponentState {
         return now + ': Communication failure';
     }
 
+    getEnvironments() {
+        return this.data.environments;
+    }
+
     getVisibleApplications() {
         if (this.data.applications) {
             // @formatter:off

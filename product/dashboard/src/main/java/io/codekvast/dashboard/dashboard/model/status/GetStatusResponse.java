@@ -130,6 +130,11 @@ public class GetStatusResponse {
     //--- Details ---------------------------------------------------
 
     /**
+     * The environments this customer has.
+     */
+    private final List<EnvironmentStatusDescriptor> environments;
+
+    /**
      * The applications reporting to this customer account.
      */
     private final List<ApplicationDescriptor2> applications;

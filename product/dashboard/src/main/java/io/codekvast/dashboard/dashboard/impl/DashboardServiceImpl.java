@@ -29,6 +29,7 @@ import io.codekvast.dashboard.dashboard.DashboardService;
 import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.ApplicationDescriptor2;
+import io.codekvast.dashboard.dashboard.model.status.EnvironmentStatusDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.util.TimeService;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
@@ -201,6 +202,7 @@ public class DashboardServiceImpl implements DashboardService {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
 
         PricePlan pp = customerData.getPricePlan();
+        List<EnvironmentStatusDescriptor> environments = getEnvironments(customerId);
         List<ApplicationDescriptor2> applications = getApplications(customerId);
         List<AgentDescriptor> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
 
@@ -241,9 +243,30 @@ public class DashboardServiceImpl implements DashboardService {
                                 .numLiveEnabledAgents((int) agents.stream().filter(AgentDescriptor::isAgentLiveAndEnabled).count())
 
                                 // details
+                                .environments(environments)
                                 .applications(applications)
                                 .agents(agents)
                                 .build();
+    }
+
+    private List<EnvironmentStatusDescriptor> getEnvironments(Long customerId) {
+        List<EnvironmentStatusDescriptor> result = new ArrayList<>();
+        jdbcTemplate.query("SELECT name, enabled, updatedBy, notes FROM environments " +
+                               "WHERE customerId = ? ",
+                           rs -> {
+                               result.add(
+                                   EnvironmentStatusDescriptor.builder()
+                                                              .name(rs.getString("name"))
+                                                              .enabled(rs.getBoolean("enabled"))
+                                                              .updatedBy(rs.getString("updatedBy"))
+                                                              .notes(rs.getString("notes"))
+                                                              .build()
+                               );
+                           },
+                           customerId
+        );
+
+        return result;
     }
 
     private List<ApplicationDescriptor2> getApplications(Long customerId) {
