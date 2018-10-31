@@ -22,6 +22,8 @@
         <option name="value" value="debug" />
       </param>
     </additionalParameters>
-    <method />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

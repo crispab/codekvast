@@ -43,7 +43,7 @@ import java.time.Instant;
  */
 @Component
 @Slf4j
-@Endpoint(id = "lb-health")
+@Endpoint(id = "lbhealth")
 public class LoadBalancerHealthIndicator extends AbstractHealthIndicator {
 
     private static final String IN_OPERATION = "In operation";
@@ -55,7 +55,7 @@ public class LoadBalancerHealthIndicator extends AbstractHealthIndicator {
 
     /**
      * Do <pre><code>
-     * curl -X POST http:/xxx:$managementPort/management/lb-health
+     * curl -X POST http:/xxx:$managementPort/management/lbhealth
      * </code> </pre> to set the service to out-of-service,
      * i.e., <code>http://xxx:$managementPort/management/health</code> will return HTTP status 503.
      *
@@ -70,7 +70,7 @@ public class LoadBalancerHealthIndicator extends AbstractHealthIndicator {
 
     /**
      * Do <pre><code>
-     * curl -X http:/xxx:$managementPort/management/lb-health to get the current service state.
+     * curl -X http:/xxx:$managementPort/management/lbhealth to get the current service state.
      * </code></pre>
      *
      * @return {@value IN_OPERATION} or {@value OUT_OF_SERVICE_SINCE} xxx
@@ -82,7 +82,7 @@ public class LoadBalancerHealthIndicator extends AbstractHealthIndicator {
 
     /**
      * Do <pre><code>
-     * curl -X DELETE http:/xxx:$managementPort/management/lb-health to set the service state to In operation
+     * curl -X DELETE http:/xxx:$managementPort/management/lbhealth to set the service state to In operation
      * </code></pre>
      *
      * @return {@value IN_OPERATION}

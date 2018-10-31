@@ -26,6 +26,7 @@ logging:
     file: build/log/login.log
     level:
         io.codekvast: DEBUG
+    group.web: debug
 
 management:
     endpoints:
@@ -41,7 +42,6 @@ management:
             cache.time-to-live: 1s
     server:
         port: 9080
-        servlet.context-path: /
     metrics:
         web.server.auto-time-requests: true
         export.datadog.enabled: false
@@ -73,10 +73,10 @@ spring:
     flyway:
         table: schema_version
         validate-on-migrate: false
-    groovy.template:
-        suffix: .tpl
-        configuration:
-            auto-new-line: true
-            auto-indent: true
-    http.converters.preferred-json-mapper: gson
+    groovy.template.configuration:
+        auto-new-line: true
+        auto-indent: true
+    http:
+        converters.preferred-json-mapper: gson
+        log-request-details: true
     output.ansi.enabled: detect

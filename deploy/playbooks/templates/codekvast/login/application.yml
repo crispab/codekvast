@@ -56,6 +56,3 @@ spring:
                 client-id: "{{ google.oauth[env].clientId }}"
                 client-secret: "{{ google.oauth[env].clientSecret }}"
                 client-scope: email
-        provider:
-            facebook:
-                user-info-uri: https://graph.facebook.com/me?fields=id,name,email
