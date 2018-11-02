@@ -1,48 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="CompilerConfiguration">
-    <annotationProcessing>
-      <profile default="true" name="Default" enabled="true" />
-    </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="admin_main" target="1.8" />
-      <module name="admin_test" target="1.8" />
-      <module name="agent-model_main" target="1.7" />
-      <module name="agent-model_test" target="1.7" />
-      <module name="common_integrationTest" target="1.8" />
-      <module name="common_main" target="1.8" />
-      <module name="common_test" target="1.8" />
-      <module name="dashboard_integrationTest" target="1.8" />
-      <module name="dashboard_main" target="1.8" />
-      <module name="dashboard_systemTest" target="1.8" />
-      <module name="dashboard_test" target="1.8" />
-      <module name="db-migration_main" target="1.8" />
-      <module name="db-migration_test" target="1.8" />
-      <module name="java-agent_integrationTest" target="1.7" />
-      <module name="java-agent_main" target="1.7" />
-      <module name="java-agent_test" target="1.7" />
-      <module name="jenkins1_main" target="1.8" />
-      <module name="jenkins1_test" target="1.8" />
-      <module name="jenkins2_main" target="1.8" />
-      <module name="jenkins2_test" target="1.8" />
-      <module name="login_main" target="1.8" />
-      <module name="login_test" target="1.8" />
-      <module name="product-agent-model_main" target="1.7" />
-      <module name="sample-concrete-aspect_main" target="1.8" />
-      <module name="sample-concrete-aspect_test" target="1.8" />
-      <module name="sample-gradle-application_main" target="1.7" />
-      <module name="sample-gradle-application_test" target="1.7" />
-      <module name="sample-lib_main" target="1.7" />
-      <module name="sample-lib_test" target="1.7" />
-      <module name="sample-spring-boot-executable-jar_main" target="1.8" />
-      <module name="sample-spring-boot-executable-jar_test" target="1.8" />
-      <module name="swing-app_main" target="1.7" />
-      <module name="swing-app_test" target="1.7" />
-      <module name="testsupport_integrationTest" target="1.8" />
-      <module name="testsupport_main" target="1.8" />
-      <module name="testsupport_test" target="1.8" />
-      <module name="webstart-swing-app_main" target="1.8" />
-      <module name="webstart-swing-app_test" target="1.8" />
-    </bytecodeTargetLevel>
-  </component>
+    <component name="CompilerConfiguration">
+        <annotationProcessing>
+            <profile default="true" name="Default" enabled="true"/>
+        </annotationProcessing>
+        <bytecodeTargetLevel>
+            <module name="codekvast.product.agent-model.main" target="1.7"/>
+            <module name="codekvast.product.agent-model.test" target="1.7"/>
+            <module name="codekvast.product.common.integrationTest" target="1.8"/>
+            <module name="codekvast.product.common.main" target="1.8"/>
+            <module name="codekvast.product.common.test" target="1.8"/>
+            <module name="codekvast.product.dashboard.integrationTest" target="1.8"/>
+            <module name="codekvast.product.dashboard.main" target="1.8"/>
+            <module name="codekvast.product.dashboard.systemTest" target="1.8"/>
+            <module name="codekvast.product.dashboard.test" target="1.8"/>
+            <module name="codekvast.product.db-migration.main" target="1.8"/>
+            <module name="codekvast.product.db-migration.test" target="1.8"/>
+            <module name="codekvast.product.java-agent.integrationTest" target="1.7"/>
+            <module name="codekvast.product.java-agent.main" target="1.7"/>
+            <module name="codekvast.product.java-agent.test" target="1.7"/>
+            <module name="codekvast.product.login.main" target="1.8"/>
+            <module name="codekvast.product.login.test" target="1.8"/>
+            <module name="codekvast.product.testsupport.integrationTest" target="1.8"/>
+            <module name="codekvast.product.testsupport.main" target="1.8"/>
+            <module name="codekvast.product.testsupport.test" target="1.8"/>
+            <module name="codekvast.sample.jenkins1.main" target="1.8"/>
+            <module name="codekvast.sample.jenkins1.test" target="1.8"/>
+            <module name="codekvast.sample.jenkins2.main" target="1.8"/>
+            <module name="codekvast.sample.jenkins2.test" target="1.8"/>
+            <module name="codekvast.sample.sample-concrete-aspect.main" target="1.8"/>
+            <module name="codekvast.sample.sample-concrete-aspect.test" target="1.8"/>
+            <module name="codekvast.sample.sample-gradle-application.main" target="1.7"/>
+            <module name="codekvast.sample.sample-gradle-application.test" target="1.7"/>
+            <module name="codekvast.sample.sample-lib.main" target="1.7"/>
+            <module name="codekvast.sample.sample-lib.test" target="1.7"/>
+            <module name="codekvast.sample.sample-spring-boot-executable-jar.main" target="1.8"/>
+            <module name="codekvast.sample.sample-spring-boot-executable-jar.test" target="1.8"/>
+            <module name="codekvast.sample.swing-app.main" target="1.7"/>
+            <module name="codekvast.sample.swing-app.test" target="1.7"/>
+        </bytecodeTargetLevel>
+    </component>
 </project>

@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.24.5
+
+1. Minimized codekvast-javaagent.jar. Size decreased from 5.2 MB to 3.8 MB.
+
 ## 0.24.4
 
 1. Replaced Nginx with AWS ALB.

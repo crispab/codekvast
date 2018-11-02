@@ -26,6 +26,8 @@
       <option name="TYPE_CASE" value="3" />
       <option name="QUOTE_IDENTIFIER" value="1" />
       <option name="QUERY_TRUE_INDENT" value="false" />
+      <option name="QUERY_ALIGN_ELEMENTS" value="false" />
+      <option name="QUERY_ALIGN_LINE_COMMENTS" value="false" />
       <option name="SET_EL_WRAP" value="0" />
       <option name="SET_EL_COMMA" value="0" />
       <option name="WITH_EL_WRAP" value="0" />

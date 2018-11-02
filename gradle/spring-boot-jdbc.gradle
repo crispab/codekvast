@@ -13,7 +13,6 @@ dependencies {
 
 task startMariadb {
     description 'Starts MariaDB 10 in a Docker container, on port 3306'
-    group 'Backend Development'
 
     outputs.upToDateWhen {
         "docker ps".execute().in.text.contains("codekvast_database")
