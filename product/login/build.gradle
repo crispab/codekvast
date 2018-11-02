@@ -21,8 +21,10 @@ dependencies {
     compile 'com.jayway.jsonpath:json-path:2.4.0'
 
     runtime project(':product:db-migration')
-    runtime 'org.codehaus.groovy:groovy-templates:2.5.3'
-    runtime 'org.codehaus.groovy:groovy:2.4.15'
+
+    def groovyVersion = '2.4.15' // prevent a bug in groovy-templates 2.5.3
+    runtime "org.codehaus.groovy:groovy-templates:$groovyVersion"
+    runtime "org.codehaus.groovy:groovy:$groovyVersion"
 
     testCompile "com.github.tomakehurst:wiremock:$wiremockVersion"
 }

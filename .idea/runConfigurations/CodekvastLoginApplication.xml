@@ -10,7 +10,7 @@
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.login.CodekvastLoginApplication" />
     <option name="ACTIVE_PROFILES" value="dev-secrets,dev-webpack-dev-server" />
     <option name="PROGRAM_PARAMETERS" value="--project.codekvastDisplayVersion=dev" />
-    <option name="WORKING_DIRECTORY" value="file://product/login" />
+    <option name="WORKING_DIRECTORY" value="file://$MODULE_WORKING_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
