@@ -26,22 +26,27 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.login.model.Roles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
-import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
 
 /**
@@ -57,8 +62,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_URL = "/login";
     private final CustomerService customerService;
 
+    private final RestTemplateBuilder restTemplateBuilder;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         //@formatter:off
         http
             .csrf()
@@ -77,12 +85,42 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
             .and()
                 .oauth2Login()
-                    .userInfoEndpoint().userAuthoritiesMapper(userAuthoritiesMapper())
+                    .userInfoEndpoint()
+            .userService(createFacebookCompatibleUserService())
+            .userAuthoritiesMapper(userAuthoritiesMapper())
                 .and()
                     .loginPage(LOGIN_URL)
                     .authorizationEndpoint().baseUri(OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
 
         //@formatter:on
+    }
+
+    /**
+     * This is a work-around for a bug in Facebook's OAuth API.
+     *
+     * If https://graph.facebook.com/v3.2/me is invoked with any Accept header not exactly equal to "application/json"
+     * then it will return "Content-type: text/javascript".
+     *
+     * This will cause the default result extractor inside a default RestTemplate to fail, since it expects "Content-type: application/json"
+     *
+     * See https://developers.facebook.com/support/bugs/2178176915787648/
+     *
+     * TODO: remove Facebook bug work-around.
+     */
+    private DefaultOAuth2UserService createFacebookCompatibleUserService() {
+        RestTemplate restTemplate = restTemplateBuilder.interceptors((ClientHttpRequestInterceptor) (request, body, execution) -> {
+            List<MediaType> accepts = request.getHeaders().getAccept();
+            for (MediaType accept : accepts) {
+                if (accept.equals(MediaType.APPLICATION_JSON_UTF8)) {
+                    request.getHeaders().setAccept(asList(MediaType.APPLICATION_JSON));
+                }
+            }
+            return execution.execute(request, body);
+        }).build();
+
+        DefaultOAuth2UserService userService = new DefaultOAuth2UserService();
+        userService.setRestOperations(restTemplate);
+        return userService;
     }
 
     private GrantedAuthoritiesMapper userAuthoritiesMapper() {
@@ -94,7 +132,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 Object email = null;
                 if (OAuth2UserAuthority.class.isInstance(authority)) {
-                    email = ((OAuth2UserAuthority)authority).getAttributes().get("email");
+                    email = ((OAuth2UserAuthority) authority).getAttributes().get("email");
                 } else {
                     logger.error("Don't know how to extract the email address from a {}", authority.getClass().getName());
                 }
