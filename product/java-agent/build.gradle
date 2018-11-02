@@ -1,4 +1,3 @@
-import java.nio.charset.Charset
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -90,6 +89,9 @@ shadowJar {
         exclude 'org/aspectj/lang/**' // Cannot be relocated, since that would break weaving
     }
 
+    minimize {
+        exclude(dependency('.*:aspectjweaver:.*'))
+    }
 }
 
 task verifyShadowJar {

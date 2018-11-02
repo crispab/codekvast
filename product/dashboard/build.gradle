@@ -8,7 +8,6 @@ description = 'The Codekvast dashboard'
 applicationName = 'codekvast-dashboard'
 archivesBaseName = 'codekvast-dashboard'
 version = codekvastVersion
-group = 'crisp'
 mainClassName = 'io.codekvast.dashboard.CodekvastDashboardApplicationKt'
 
 apply from: "$projectDir/src/webapp/build.gradle"
@@ -48,7 +47,6 @@ bootJar {
 }
 
 run {
-    group "Backend Development"
     // dependsOn startMariadb, ":product:dashboard:frontendWebpack", installDist, generateCodekvastConfig, ':product:java-agent:shadowJar'
     dependsOn startMariadb, ":product:dashboard:frontendWebpack"
 
@@ -64,7 +62,6 @@ run {
 }
 
 bootRun {
-    group "Backend Development"
     dependsOn startMariadb
 
     jvmArgs = run.jvmArgs

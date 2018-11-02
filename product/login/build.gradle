@@ -7,7 +7,6 @@ description = 'The Codekvast Login server'
 applicationName = 'codekvast-login'
 archivesBaseName = 'codekvast-login'
 version = codekvastVersion
-group = 'crisp'
 mainClassName = 'io.codekvast.login.CodekvastLoginApplication'
 
 dependencies {
@@ -29,7 +28,6 @@ dependencies {
 }
 
 run {
-    group "Backend Development"
     dependsOn startMariadb
 
     jvmArgs = [
@@ -43,7 +41,6 @@ run {
 }
 
 bootRun {
-    group "Backend Development"
     dependsOn startMariadb
 
     jvmArgs = run.jvmArgs

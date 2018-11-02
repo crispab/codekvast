@@ -4,8 +4,6 @@ apply plugin: 'jacoco'
 apply from: "$rootDir/gradle/libs.gradle"
 
 uptodate {
-    group "Backend Development"
-
     connectionTimeout 20000
     addExcludedVersionPatterns '.*-alpha.*'
     addExcludedVersionPatterns '.*-beta.*'
