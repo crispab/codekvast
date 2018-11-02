@@ -24,6 +24,8 @@ package io.codekvast.dashboard
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.ComponentScan
+import org.springframework.scheduling.annotation.EnableAsync
+import org.springframework.scheduling.annotation.EnableScheduling
 
 /**
  * The Spring Boot main for codekvast-dashboard,
@@ -32,6 +34,8 @@ import org.springframework.context.annotation.ComponentScan
  */
 @SpringBootApplication
 @ComponentScan(basePackages = ["io.codekvast"])
+@EnableAsync
+@EnableScheduling
 class CodekvastDashboardApplication
 
 fun main(args: Array<String>) {

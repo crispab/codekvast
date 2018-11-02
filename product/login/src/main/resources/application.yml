@@ -45,6 +45,10 @@ management:
     metrics:
         web.server.auto-time-requests: true
         export.datadog.enabled: false
+        tags:
+            service: "codekvast-login"
+            env: dev
+            host: localhost
 
 server:
     port: 8080
