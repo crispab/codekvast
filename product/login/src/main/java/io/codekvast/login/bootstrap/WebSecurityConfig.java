@@ -109,10 +109,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     private DefaultOAuth2UserService createFacebookCompatibleUserService() {
         RestTemplate restTemplate = restTemplateBuilder.interceptors((ClientHttpRequestInterceptor) (request, body, execution) -> {
-            List<MediaType> accepts = request.getHeaders().getAccept();
-            for (MediaType accept : accepts) {
-                if (accept.equals(MediaType.APPLICATION_JSON_UTF8)) {
-                    request.getHeaders().setAccept(asList(MediaType.APPLICATION_JSON));
+            if (request.getURI().getHost().toLowerCase().contains("facebook")) {
+                List<MediaType> accepts = request.getHeaders().getAccept();
+                for (MediaType accept : accepts) {
+                    if (accept.equals(MediaType.APPLICATION_JSON_UTF8)) {
+                        request.getHeaders().setAccept(asList(MediaType.APPLICATION_JSON));
+                    }
                 }
             }
             return execution.execute(request, body);
