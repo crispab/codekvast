@@ -16,6 +16,7 @@
 /.idea/dictionaries/
 /.idea/gradle*.xml
 /.idea/httpRequests/
+/.idea/httpRequests/http-requests-log.http
 /.idea/libraries/
 /.idea/modules.xml
 /.idea/modules/

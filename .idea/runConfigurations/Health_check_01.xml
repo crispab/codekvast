@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Health check 01" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" environment="&lt;No Environment&gt;" path="$PROJECT_DIR$/tools/HTTP-Client/Health check.http" index="2">
+    <method v="2" />
+  </configuration>
+</component>
