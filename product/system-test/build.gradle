@@ -20,10 +20,35 @@ configurations {
     jdbc
 }
 
-ext.systemTestJdbcPort = allocateFreePort()
-ext.systemTestAppPort = allocateFreePort()
-ext.systemTestManagementPort = allocateFreePort()
-ext.systemTestEndpointFile = file("build/systemTestEndpoint.txt")
+ext.jdbcPort = allocateFreePort()
+ext.jdbcUrl = "jdbc:mariadb://localhost:$jdbcPort/codekvast"
+
+ext.endpointFiles = [
+    'dashboard': file("build/dashboardEndpoint.txt"),
+    'login'    : file("build/loginEndpoint.txt")
+]
+
+ext.bootJars = [
+    'dashboard': tasks.getByPath(':product:dashboard:bootJar').outputs.files,
+    'login'    : tasks.getByPath(':product:login:bootJar').outputs.files
+]
+
+ext.launchCommands = [
+    'dashboard': "java -jar ${bootJars['dashboard'].asPath} " +
+        "--server.port=${allocateFreePort()} " +
+        "--management.server.port=${allocateFreePort()} " +
+        "--spring.datasource.url=$jdbcUrl " +
+        "--codekvast.dashboardJwtSecret=secret " +
+        "--logging.file=${buildDir}/dashboard.log ",
+
+    'login'    : "java -jar ${bootJars['login'].asPath} " +
+        "--server.port=${allocateFreePort()} " +
+        "--management.server.port=${allocateFreePort()} " +
+        "--spring.datasource.url=$jdbcUrl " +
+        "--spring.profiles.active=dev-secrets " +
+        "--codekvast.dashboardJwtSecret=secret " +
+        "--logging.file=${buildDir}/login.log "
+]
 
 dependencies {
     testCompileOnly lombok
@@ -42,7 +67,7 @@ dependencies {
     jdbc mariadbDriver
 }
 
-private String startSystemTestEnvironment() {
+def startSystemTestEnvironment() {
 
     logger.lifecycle("Stopping previous system test environments (if any)...")
     doStopSystemTestEnvironment(true)
@@ -52,8 +77,8 @@ private String startSystemTestEnvironment() {
     assert command.execute().waitFor() == 0
 
     command = 'docker run -d --restart=unless-stopped ' +
-        "--name codekvast_systest_$systemTestJdbcPort " +
-        "-p $systemTestJdbcPort:3306 " +
+        "--name codekvast_systest_$jdbcPort " +
+        "-p $jdbcPort:3306 " +
         '-e MYSQL_ROOT_PASSWORD=root ' +
         '-e MYSQL_DATABASE=codekvast ' +
         '-e MYSQL_USER=codekvast ' +
@@ -66,25 +91,14 @@ private String startSystemTestEnvironment() {
     logger.lifecycle(command)
     assert command.execute().waitFor() == 0
 
-    def jdbcUrl = "jdbc:mariadb://localhost:$systemTestJdbcPort/codekvast"
     logger.info("jdbcUrl={}", jdbcUrl)
 
     waitForDatabaseReady(jdbcUrl)
 
-    command = "java " +
-        "-jar ${tasks.getByPath(':product:dashboard:bootJar').outputs.files.asPath} " +
-        "--server.port=$systemTestAppPort " +
-        "--management.server.port=$systemTestManagementPort " +
-        "--spring.datasource.url=$jdbcUrl " +
-        "--codekvast.dashboardJwtSecret=secret " +
-        "--logging.file=${buildDir}/log/systemTest.log "
-
-    launchAppAndWaitForReady(command)
-    systemTestEndpointFile.text = getSystemTestEndpoint()
-    return systemTestEndpointFile.text
+    launchAppsAndWaitForReady()
 }
 
-int allocateFreePort() {
+static int allocateFreePort() {
     ServerSocket socket = null
     try {
         socket = new ServerSocket(0)
@@ -132,10 +146,14 @@ task stopSystemTestEnvironment {
     }
 }
 
-private doStopSystemTestEnvironment(boolean deleteEndpointsFile) {
-    file("src/test/bin/stop-system-test-environment.sh").absolutePath.execute()
-    if (deleteEndpointsFile) {
-        delete systemTestEndpointFile
+private doStopSystemTestEnvironment(boolean deleteEndpointsFiles) {
+    def output = file("src/test/bin/stop-system-test-environment.sh").absolutePath.execute().in.text.trim()
+    if (output) {
+        logger.lifecycle output
+    }
+
+    if (deleteEndpointsFiles) {
+        endpointFiles.each { k, v -> delete v }
     }
 }
 
@@ -143,28 +161,36 @@ task psSystemTestEnvironment {
     description 'Shows the system test environment'
     group 'System test'
     doLast {
-        def endpoint = getSystemTestEndpoint()
-
-        logger.lifecycle("{}", endpoint)
-        if (endpoint.isEmpty()) {
+        def anyMissing = false
+        endpointFiles.each { service, file ->
+            def endpoint = getEndpoint(service)
+            logger.lifecycle("{} @ {}", service, endpoint)
+            if (endpoint.isEmpty()) {
+                anyMissing = true
+            } else {
+                file.text = endpoint
+            }
+        }
+        if (anyMissing) {
             // Remove any dangling MariaDB containers too...
             doStopSystemTestEnvironment(true)
-        } else {
-            systemTestEndpointFile.text = endpoint
         }
     }
 }
 
 test {
-    description 'Runs end-to-end tests against Codekvast Dashboard with MariaDB in a Docker container'
-    dependsOn ':product:dashboard:bootJar', ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
+    description 'Runs end-to-end tests against Codekvast Dashboard and Codekvast Login with MariaDB in a Docker container'
+    dependsOn ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
 
     def foundChromeBinary = locateChromeBinary()
-    assert !foundChromeBinary.isEmpty() : "Cannot find Chrome executable!"
+    assert !foundChromeBinary.isEmpty(): "Cannot find Chrome executable!"
 
     ext.gebEnv = project.findProperty("browser") ?: "chromeHeadless"
 
-    inputs.files tasks.getByPath(":product:dashboard:bootJar").outputs.files
+    bootJars.each { k, v ->
+        inputs.files v
+    }
+
     inputs.property "geb.env", gebEnv
 
     def failures = 0
@@ -179,14 +205,16 @@ test {
         def geckoDriver = tasks.getByPath(':tools:downloadGeckoDriver').outputs.files.asPath
         [chromeDriver, geckoDriver].each { "chmod +x ${it}".execute().waitFor() }
 
-        def endpoint = startSystemTestEnvironment()
+        startSystemTestEnvironment()
+
+        def endpoint = getEndpoint('dashboard')
         logger.lifecycle("Running system tests against {}", endpoint)
 
         logger.lifecycle "Running Geb with -Dgeb.env=$gebEnv, override with -Pbrowser=[chrome|chromeHeadless|firefox]"
         systemProperty "geb.env", gebEnv
         systemProperty "webdriver.chrome.driver", chromeDriver
-        systemProperty "webdriver.gecko.driver",  geckoDriver
-        systemProperty "geb.build.reportsDir", "$reportsDir/systemTest/dumps"
+        systemProperty "webdriver.gecko.driver", geckoDriver
+        systemProperty "geb.build.reportsDir", "$reportsDir/dumps"
         systemProperty 'geb.build.baseUrl', endpoint
 
         systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
@@ -211,39 +239,53 @@ private String locateChromeBinary() {
     }
 }
 
-def launchAppAndWaitForReady(String command) {
-    logger.lifecycle(command)
-    def process = command.execute()
+private String launchAppsAndWaitForReady() {
+    def processes = [:]
+    def notReady = []
+
+    launchCommands.each { service, command ->
+        logger.lifecycle(command)
+        processes[service] = command.execute()
+        notReady << service
+    }
+
     sleep 5000
+    logger.lifecycle("Waiting for ${notReady.collect { "codekvast-$it @ " + getEndpoint(it) }.join(", ")} to become ready...")
 
     int attempt = 1
     int maxAttempts = 60
-    def endpoint = getSystemTestEndpoint()
-    logger.lifecycle("Waiting for {} to become ready...", endpoint)
 
-    while (attempt <= maxAttempts) {
-        assert process.isAlive()
+    while (notReady && attempt <= maxAttempts) {
+        processes.each { service, process ->
+            assert process.isAlive(): "codekvast-$service is dead"
 
-        logger.info("Waiting for {} #{}", endpoint, attempt)
+            def endpoint = getEndpoint(service)
 
-        try {
-            def text = new URL(endpoint).text
-            sleep 2000
-            return
-        } catch (e) {
-            if (attempt < 15) {
-                logger.debug("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
-            } else {
-                logger.lifecycle("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+            logger.info("Waiting for {} #{}", endpoint, attempt)
+
+            try {
+                def text = new URL(endpoint).text
+                sleep 2000
+                endpointFiles[service].text = endpoint
+                notReady.remove(service)
+            } catch (e) {
+                if (attempt < 15) {
+                    logger.debug("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+                } else {
+                    logger.lifecycle("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+                }
             }
         }
         attempt += 1
         sleep(1000)
     }
-    throw new IllegalStateException(endpoint + " did not respond within " + maxAttempts + " seconds")
+    if (notReady) {
+        def endpoints = notReady.collect { getEndpoint(it) }
+        throw new IllegalStateException(endpoints + " did not respond within " + maxAttempts + " seconds")
+    }
 }
 
-private String getSystemTestEndpoint() {
-    return file("src/test/bin/get-system-test-endpoint.sh").absolutePath.execute().in.text.trim()
+private String getEndpoint(String service) {
+    return file("src/test/bin/get-$service-endpoint.sh").absolutePath.execute().in.text.trim()
 }
 
