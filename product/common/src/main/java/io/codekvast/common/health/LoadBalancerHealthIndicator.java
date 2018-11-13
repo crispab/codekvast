@@ -46,9 +46,14 @@ import java.time.Instant;
 @Endpoint(id = "lbhealth")
 public class LoadBalancerHealthIndicator extends AbstractHealthIndicator {
 
-    private static final String IN_OPERATION = "In operation";
-    private static final String OUT_OF_SERVICE = "Out of service";
-    private static final String OUT_OF_SERVICE_SINCE = OUT_OF_SERVICE + " since ";
+    @SuppressWarnings("WeakerAccess") // Referenced by javadoc
+    protected static final String IN_OPERATION = "In operation";
+
+    @SuppressWarnings("WeakerAccess") // Referenced by javadoc
+    protected static final String OUT_OF_SERVICE = "Out of service";
+
+    @SuppressWarnings("WeakerAccess") // Referenced by javadoc
+    protected static final String OUT_OF_SERVICE_SINCE = OUT_OF_SERVICE + " since ";
 
     @Nullable
     private volatile Instant outOfServiceSince = null;
@@ -59,7 +64,7 @@ public class LoadBalancerHealthIndicator extends AbstractHealthIndicator {
      * </code> </pre> to set the service to out-of-service,
      * i.e., <code>http://xxx:$managementPort/management/health</code> will return HTTP status 503.
      *
-     * @return {@value OUT_OF_SERVICE_SINCE} xxx
+     * @return {@value #OUT_OF_SERVICE_SINCE} yyyy-mm-ddThh:MM:ss.sss
      */
     @WriteOperation
     public String outOfService() {
@@ -73,7 +78,7 @@ public class LoadBalancerHealthIndicator extends AbstractHealthIndicator {
      * curl -X http:/xxx:$managementPort/management/lbhealth to get the current service state.
      * </code></pre>
      *
-     * @return {@value IN_OPERATION} or {@value OUT_OF_SERVICE_SINCE} xxx
+     * @return {@value #IN_OPERATION} or {@value #OUT_OF_SERVICE_SINCE} yyyy-mm-ddThh:MM:ss.sss
      */
     @ReadOperation
     public String currentState() {
@@ -85,7 +90,7 @@ public class LoadBalancerHealthIndicator extends AbstractHealthIndicator {
      * curl -X DELETE http:/xxx:$managementPort/management/lbhealth to set the service state to In operation
      * </code></pre>
      *
-     * @return {@value IN_OPERATION}
+     * @return {@value #IN_OPERATION}
      */
     @DeleteOperation
     public String inOperation() {
