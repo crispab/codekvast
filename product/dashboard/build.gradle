@@ -12,7 +12,6 @@ mainClassName = 'io.codekvast.dashboard.CodekvastDashboardApplicationKt'
 
 apply from: "$projectDir/src/webapp/build.gradle"
 apply from: "$projectDir/src/integrationTest/build.gradle"
-apply from: "$projectDir/src/systemTest/build.gradle"
 
 dependencies {
     compile project(':product:agent-model')

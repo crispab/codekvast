@@ -1,15 +1,20 @@
+// --- End-to-end system test -----------------------------------------------------------------------------------
+
 import groovy.sql.Sql
 
 import java.sql.Driver
 import java.sql.DriverManager
 import java.sql.SQLNonTransientConnectionException
 
-// --- End-to-end system test -----------------------------------------------------------------------------------
+apply plugin: 'groovy'
+apply from: "$rootDir/gradle/java.gradle"
+apply plugin: 'io.spring.dependency-management'
 
-testSets {
-    systemTest
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
 }
-check.dependsOn systemTest
 
 configurations {
     jdbc
@@ -21,17 +26,18 @@ ext.systemTestManagementPort = allocateFreePort()
 ext.systemTestEndpointFile = file("build/systemTestEndpoint.txt")
 
 dependencies {
-    systemTestCompileOnly lombok
+    testCompileOnly lombok
 
-    systemTestCompile project(':product:testsupport')
-    systemTestCompile 'org.gebish:geb-spock:2.2'
-    systemTestCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
-    systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
+    testCompile project(':product:common')
+    testCompile project(':product:testsupport')
+    testCompile 'org.gebish:geb-spock:2.2'
+    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+    testCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
-    systemTestRuntime "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
-    systemTestRuntime "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
-    systemTestRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
-    systemTestRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+    testRuntime "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
+    testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
     jdbc mariadbDriver
 }
@@ -66,7 +72,7 @@ private String startSystemTestEnvironment() {
     waitForDatabaseReady(jdbcUrl)
 
     command = "java " +
-        "-jar $bootJar.outputs.files.asPath " +
+        "-jar ${tasks.getByPath(':product:dashboard:bootJar').outputs.files.asPath} " +
         "--server.port=$systemTestAppPort " +
         "--management.server.port=$systemTestManagementPort " +
         "--spring.datasource.url=$jdbcUrl " +
@@ -127,7 +133,7 @@ task stopSystemTestEnvironment {
 }
 
 private doStopSystemTestEnvironment(boolean deleteEndpointsFile) {
-    file("src/systemTest/stop-system-test-environment.sh").absolutePath.execute()
+    file("src/test/bin/stop-system-test-environment.sh").absolutePath.execute()
     if (deleteEndpointsFile) {
         delete systemTestEndpointFile
     }
@@ -149,22 +155,17 @@ task psSystemTestEnvironment {
     }
 }
 
-systemTest {
+test {
     description 'Runs end-to-end tests against Codekvast Dashboard with MariaDB in a Docker container'
-    group 'System test'
-    dependsOn test, frontendTest, integrationTest, systemTestClasses, bootJar, ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
+    dependsOn ':product:dashboard:bootJar', ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
 
     def foundChromeBinary = locateChromeBinary()
     assert !foundChromeBinary.isEmpty() : "Cannot find Chrome executable!"
 
     ext.gebEnv = project.findProperty("browser") ?: "chromeHeadless"
 
-    inputs.dir file("src/systemTest")
-    inputs.files bootJar.outputs.files
+    inputs.files tasks.getByPath(":product:dashboard:bootJar").outputs.files
     inputs.property "geb.env", gebEnv
-
-    outputs.dir file("build/reports/systemTest")
-    outputs.dir file("build/test-results/systemTest")
 
     def failures = 0
 
@@ -243,6 +244,6 @@ def launchAppAndWaitForReady(String command) {
 }
 
 private String getSystemTestEndpoint() {
-    return file("src/systemTest/get-system-test-endpoint.sh").absolutePath.execute().in.text.trim()
+    return file("src/test/bin/get-system-test-endpoint.sh").absolutePath.execute().in.text.trim()
 }
 

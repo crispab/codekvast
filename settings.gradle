@@ -9,6 +9,7 @@ include ':product:dist'
 include ':product:docs'
 include ':product:java-agent'
 include ':product:login'
+include ':product:system-test'
 include ':product:testsupport'
 
 include ':tools'

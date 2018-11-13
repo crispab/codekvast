@@ -12,7 +12,6 @@
       <module name="common_test" target="1.8" />
       <module name="dashboard_integrationTest" target="1.8" />
       <module name="dashboard_main" target="1.8" />
-      <module name="dashboard_systemTest" target="1.8" />
       <module name="dashboard_test" target="1.8" />
       <module name="db-migration_main" target="1.8" />
       <module name="db-migration_test" target="1.8" />
@@ -35,6 +34,7 @@
       <module name="sample-spring-boot-executable-jar_test" target="1.8" />
       <module name="swing-app_main" target="1.7" />
       <module name="swing-app_test" target="1.7" />
+      <module name="system-test" target="1.8" />
       <module name="testsupport_integrationTest" target="1.8" />
       <module name="testsupport_main" target="1.8" />
       <module name="testsupport_test" target="1.8" />
