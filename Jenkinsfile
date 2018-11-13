@@ -12,12 +12,12 @@ node {
             }
 
             stage('Compile Java') {
-                sh "./gradlew --console=plain classes testClasses integrationTestClasses systemTestClasses"
+                sh "./gradlew --console=plain classes testClasses integrationTestClasses"
             }
 
             stage('Java unit test') {
                 try {
-                    sh './gradlew --console=plain test'
+                    sh './gradlew --console=plain test --exclude-task :product:system-test:test'
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
@@ -54,11 +54,11 @@ node {
 
             stage('System test') {
                 try {
-                    sh './gradlew --console=plain systemTest'
+                    sh './gradlew --console=plain :product:system-test:test'
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
-                    sh "find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch"
-                    junit '**/build/test-results/systemTest/*.xml'
+                    sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
+                    junit '**/build/test-results/test/*.xml'
                 }
             }
 
