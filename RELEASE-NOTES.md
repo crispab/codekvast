@@ -1,5 +1,13 @@
 # Codekvast Release Notes
 
+## 0.25.0
+
+1. Upgraded to Spring Boot 2.1.0, Kotlin 1.3.0, aspectj-weaver 1.9.2, Lombok 1.18.4 and Flyway 5.2.1.
+
+## 0.24.5
+
+1. Minimized codekvast-javaagent.jar. Size decreased from 5.2 MB to 3.8 MB.
+
 ## 0.24.4
 
 1. Replaced Nginx with AWS ALB.

@@ -1,0 +1,291 @@
+// --- End-to-end system test -----------------------------------------------------------------------------------
+
+import groovy.sql.Sql
+
+import java.sql.Driver
+import java.sql.DriverManager
+import java.sql.SQLNonTransientConnectionException
+
+apply plugin: 'groovy'
+apply from: "$rootDir/gradle/java.gradle"
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
+
+configurations {
+    jdbc
+}
+
+ext.jdbcPort = allocateFreePort()
+ext.jdbcUrl = "jdbc:mariadb://localhost:$jdbcPort/codekvast"
+
+ext.endpointFiles = [
+    'dashboard': file("build/dashboardEndpoint.txt"),
+    'login'    : file("build/loginEndpoint.txt")
+]
+
+ext.bootJars = [
+    'dashboard': tasks.getByPath(':product:dashboard:bootJar').outputs.files,
+    'login'    : tasks.getByPath(':product:login:bootJar').outputs.files
+]
+
+ext.launchCommands = [
+    'dashboard': "java -jar ${bootJars['dashboard'].asPath} " +
+        "--server.port=${allocateFreePort()} " +
+        "--management.server.port=${allocateFreePort()} " +
+        "--spring.datasource.url=$jdbcUrl " +
+        "--codekvast.dashboardJwtSecret=secret " +
+        "--logging.file=${buildDir}/dashboard.log ",
+
+    'login'    : "java -jar ${bootJars['login'].asPath} " +
+        "--server.port=${allocateFreePort()} " +
+        "--management.server.port=${allocateFreePort()} " +
+        "--spring.datasource.url=$jdbcUrl " +
+        "--spring.profiles.active=dev-secrets " +
+        "--codekvast.dashboardJwtSecret=secret " +
+        "--logging.file=${buildDir}/login.log "
+]
+
+dependencies {
+    testCompileOnly lombok
+
+    testCompile project(':product:common')
+    testCompile project(':product:testsupport')
+    testCompile 'org.gebish:geb-spock:2.2'
+    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+    testCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
+
+    testRuntime "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
+    testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+
+    jdbc mariadbDriver
+}
+
+def startSystemTestEnvironment() {
+
+    logger.lifecycle("Stopping previous system test environments (if any)...")
+    doStopSystemTestEnvironment(true)
+
+    def command = 'docker pull mariadb:10'
+    logger.lifecycle(command)
+    assert command.execute().waitFor() == 0
+
+    command = 'docker run -d --restart=unless-stopped ' +
+        "--name codekvast_systest_$jdbcPort " +
+        "-p $jdbcPort:3306 " +
+        '-e MYSQL_ROOT_PASSWORD=root ' +
+        '-e MYSQL_DATABASE=codekvast ' +
+        '-e MYSQL_USER=codekvast ' +
+        '-e MYSQL_PASSWORD=codekvast ' +
+        '-e TERM=xterm-256color ' +
+        'mariadb:10 ' +
+        '--character-set-server=utf8 ' +
+        '--collation-server=utf8_general_ci ' +
+        '--default-storage-engine=innodb '
+    logger.lifecycle(command)
+    assert command.execute().waitFor() == 0
+
+    logger.info("jdbcUrl={}", jdbcUrl)
+
+    waitForDatabaseReady(jdbcUrl)
+
+    launchAppsAndWaitForReady()
+}
+
+static int allocateFreePort() {
+    ServerSocket socket = null
+    try {
+        socket = new ServerSocket(0)
+        return socket.getLocalPort()
+    } finally {
+        socket.close()
+    }
+}
+
+def waitForDatabaseReady(jdbcUrl) {
+    URLClassLoader loader = GroovyObject.class.classLoader
+    configurations.jdbc.each { File file ->
+        loader.addURL(file.toURI().toURL())
+    }
+    Class driver = loader.loadClass('org.mariadb.jdbc.Driver')
+    Driver instance = driver.newInstance()
+    DriverManager.registerDriver(instance)
+
+    logger.lifecycle("Waiting for {} to become ready...", jdbcUrl)
+    int attempt = 1
+    while (attempt <= 60) {
+        try {
+            logger.info("Waiting for {} #{}", jdbcUrl, attempt)
+            def sql = Sql.newInstance(jdbcUrl, 'codekvast', 'codekvast')
+
+            sql.eachRow('SHOW TABLES') { row ->
+                logger.debug("row={}", row[0])
+            }
+            return
+        } catch (SQLNonTransientConnectionException e) {
+            logger.debug("Exception=" + e)
+
+            attempt += 1
+            sleep(1000)
+        }
+    }
+}
+
+task stopSystemTestEnvironment {
+    description 'Stop system test environment'
+    group 'System test'
+
+    doLast {
+        doStopSystemTestEnvironment(true)
+    }
+}
+
+private doStopSystemTestEnvironment(boolean deleteEndpointsFiles) {
+    def output = file("src/test/bin/stop-system-test-environment.sh").absolutePath.execute().in.text.trim()
+    if (output) {
+        logger.lifecycle output
+    }
+
+    if (deleteEndpointsFiles) {
+        endpointFiles.each { k, v -> delete v }
+    }
+}
+
+task psSystemTestEnvironment {
+    description 'Shows the system test environment'
+    group 'System test'
+    doLast {
+        def anyMissing = false
+        endpointFiles.each { service, file ->
+            def endpoint = getEndpoint(service)
+            logger.lifecycle("{} @ {}", service, endpoint)
+            if (endpoint.isEmpty()) {
+                anyMissing = true
+            } else {
+                file.text = endpoint
+            }
+        }
+        if (anyMissing) {
+            // Remove any dangling MariaDB containers too...
+            doStopSystemTestEnvironment(true)
+        }
+    }
+}
+
+test {
+    description 'Runs end-to-end tests against Codekvast Dashboard and Codekvast Login with MariaDB in a Docker container'
+    dependsOn ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
+
+    def foundChromeBinary = locateChromeBinary()
+    assert !foundChromeBinary.isEmpty(): "Cannot find Chrome executable!"
+
+    ext.gebEnv = project.findProperty("browser") ?: "chromeHeadless"
+
+    bootJars.each { k, v ->
+        inputs.files v
+    }
+
+    inputs.property "geb.env", gebEnv
+
+    def failures = 0
+
+    afterTest { descriptor, result ->
+        logger.debug("test={}, result={}", descriptor, result)
+        failures += result.failedTestCount
+    }
+
+    doFirst {
+        def chromeDriver = tasks.getByPath(':tools:downloadChromeDriver').outputs.files.asPath
+        def geckoDriver = tasks.getByPath(':tools:downloadGeckoDriver').outputs.files.asPath
+        [chromeDriver, geckoDriver].each { "chmod +x ${it}".execute().waitFor() }
+
+        startSystemTestEnvironment()
+
+        def endpoint = getEndpoint('dashboard')
+        logger.lifecycle("Running system tests against {}", endpoint)
+
+        logger.lifecycle "Running Geb with -Dgeb.env=$gebEnv, override with -Pbrowser=[chrome|chromeHeadless|firefox]"
+        systemProperty "geb.env", gebEnv
+        systemProperty "webdriver.chrome.driver", chromeDriver
+        systemProperty "webdriver.gecko.driver", geckoDriver
+        systemProperty "geb.build.reportsDir", "$reportsDir/dumps"
+        systemProperty 'geb.build.baseUrl', endpoint
+
+        systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
+        environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
+    }
+
+    doLast {
+        if (failures == 0) {
+            doStopSystemTestEnvironment(false)
+        } else {
+            logger.lifecycle("Since there were failures, the system test environment is still running at {}", endpoint)
+        }
+    }
+}
+
+private String locateChromeBinary() {
+    if (System.properties['os.name'] == 'Mac OS X') {
+        def binary = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+        return binary.canExecute() ? binary : null
+    } else {
+        return "which google-chrome".execute().in.text.trim()
+    }
+}
+
+private String launchAppsAndWaitForReady() {
+    def processes = [:]
+    def notReady = []
+
+    launchCommands.each { service, command ->
+        logger.lifecycle(command)
+        processes[service] = command.execute()
+        notReady << service
+    }
+
+    sleep 5000
+    logger.lifecycle("Waiting for ${notReady.collect { "codekvast-$it @ " + getEndpoint(it) }.join(", ")} to become ready...")
+
+    int attempt = 1
+    int maxAttempts = 60
+
+    while (notReady && attempt <= maxAttempts) {
+        processes.each { service, process ->
+            assert process.isAlive(): "codekvast-$service is dead"
+
+            def endpoint = getEndpoint(service)
+
+            logger.info("Waiting for {} #{}", endpoint, attempt)
+
+            try {
+                def text = new URL(endpoint).text
+                sleep 2000
+                endpointFiles[service].text = endpoint
+                notReady.remove(service)
+            } catch (e) {
+                if (attempt < 15) {
+                    logger.debug("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+                } else {
+                    logger.lifecycle("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+                }
+            }
+        }
+        attempt += 1
+        sleep(1000)
+    }
+    if (notReady) {
+        def endpoints = notReady.collect { getEndpoint(it) }
+        throw new IllegalStateException(endpoints + " did not respond within " + maxAttempts + " seconds")
+    }
+}
+
+private String getEndpoint(String service) {
+    return file("src/test/bin/get-$service-endpoint.sh").absolutePath.execute().in.text.trim()
+}
+

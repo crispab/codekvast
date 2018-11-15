@@ -10,7 +10,6 @@ declare AWS_EC2="aws --profile codekvast --region ${region} ec2"
 
 ${AWS_EC2} describe-instances --filter "Name=tag:Env,Values=staging" \
      | awk '/InstanceId/{print $2}' | tr -d '",' | while read instance; do
-     echo "Starting instance ${instance}..."
-    ${AWS_EC2} start-instances --instance-ids ${instance}
+    ${AWS_EC2} start-instances --instance-ids ${instance} | jq ".StartingInstances[] | {instanceId: .InstanceId, currentState: .PreviousState.Name, newState: .CurrentState.Name}"
 done
 

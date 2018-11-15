@@ -29,6 +29,7 @@ import io.codekvast.dashboard.dashboard.DashboardService;
 import io.codekvast.dashboard.dashboard.model.methods.*;
 import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.ApplicationDescriptor2;
+import io.codekvast.dashboard.dashboard.model.status.EnvironmentStatusDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.util.TimeService;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
@@ -91,25 +92,24 @@ public class DashboardServiceImpl implements DashboardService {
         params.addValue("onlyInvokedAfterMillis", request.getOnlyInvokedAfterMillis());
         params.addValue("onlyInvokedBeforeMillis", request.getOnlyInvokedBeforeMillis());
 
-        String whereClause = "i.customerId = :customerId AND ";
-
+        String whereClause = "";
         if (request.getApplications() != null && !request.getApplications().isEmpty()) {
             params.addValue("applicationIds", translateNamesToIds("applications", request.getApplications()));
-            whereClause += "i.applicationId IN (:applicationIds) AND ";
+            whereClause += " AND i.applicationId IN (:applicationIds)";
         }
         if (request.getEnvironments() != null && !request.getEnvironments().isEmpty()) {
             params.addValue("environmentIds", translateNamesToIds("environments", request.getEnvironments()));
-            whereClause += "i.environmentId IN (:environmentIds) AND ";
+            whereClause += " AND i.environmentId IN (:environmentIds)";
         }
         params.addValue("signature", request.getNormalizedSignature());
-        whereClause += "m.signature LIKE :signature ";
+        whereClause += " AND m.signature LIKE :signature ";
 
         String sql = "SELECT\n" +
             "    m.id, m.signature, MAX(i.status) AS status, " +
             "    ((TO_SECONDS(:now) - TO_SECONDS(MIN(j.startedAt))) DIV 86400) AS collectedDays,\n" +
             "    MAX(i.invokedAtMillis) AS lastInvokedAtMillis\n" +
             "FROM invocations i, methods m, jvms j\n" +
-            "WHERE i.methodId = m.id AND i.jvmId = j.id AND j.garbage = FALSE AND " + whereClause +
+            "WHERE i.methodId = m.id AND i.jvmId = j.id AND j.garbage = FALSE AND i.customerId = :customerId" + whereClause +
             "GROUP BY m.signature\n" +
             "HAVING collectedDays >= :minCollectedDays " +
             "   AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n" +
@@ -201,6 +201,7 @@ public class DashboardServiceImpl implements DashboardService {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
 
         PricePlan pp = customerData.getPricePlan();
+        List<EnvironmentStatusDescriptor> environments = getEnvironments(customerId);
         List<ApplicationDescriptor2> applications = getApplications(customerId);
         List<AgentDescriptor> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
 
@@ -241,9 +242,30 @@ public class DashboardServiceImpl implements DashboardService {
                                 .numLiveEnabledAgents((int) agents.stream().filter(AgentDescriptor::isAgentLiveAndEnabled).count())
 
                                 // details
+                                .environments(environments)
                                 .applications(applications)
                                 .agents(agents)
                                 .build();
+    }
+
+    private List<EnvironmentStatusDescriptor> getEnvironments(Long customerId) {
+        List<EnvironmentStatusDescriptor> result = new ArrayList<>();
+        jdbcTemplate.query("SELECT name, enabled, updatedBy, notes FROM environments " +
+                               "WHERE customerId = ? ",
+                           rs -> {
+                               result.add(
+                                   EnvironmentStatusDescriptor.builder()
+                                                              .name(rs.getString("name"))
+                                                              .enabled(rs.getBoolean("enabled"))
+                                                              .updatedBy(rs.getString("updatedBy"))
+                                                              .notes(rs.getString("notes"))
+                                                              .build()
+                               );
+                           },
+                           customerId
+        );
+
+        return result;
     }
 
     private List<ApplicationDescriptor2> getApplications(Long customerId) {

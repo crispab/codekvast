@@ -1,27 +1,6 @@
 [*]
-charset=utf-8
-end_of_line=lf
-insert_final_newline=false
-indent_style=space
-indent_size=4
-
-[{.eslintrc,.babelrc,jest.config,.stylelintrc,*.bowerrc,*.jsb3,*.jsb2,*.json}]
-indent_style=space
-indent_size=2
-
-[{*.ddl,*.sql}]
-indent_style=space
-indent_size=2
-
-[{*.yml,*.yaml}]
-indent_style=space
-indent_size=2
-
-[{rake,rails,rcov,spec,spork,cucumber,capfile,gemfile,rakefile,guardfile,isolate,vagrantfile,*.thor,*.rb,*.rake,*.rbw,*.ru,*.jbuilder,*.gemspec}]
-indent_style=space
-indent_size=2
-
-[tslint.json]
-indent_style=space
-indent_size=2
-
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4

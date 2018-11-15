@@ -125,14 +125,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CustomerData registerAgentDataPublication(CustomerData customerData, Instant publishedAt) {
+    public CustomerData registerAgentPoll(CustomerData customerData, Instant polledAt) {
         final CustomerData result;
 
         if (customerData.getPricePlan().getMaxCollectionPeriodDays() > 0
             && customerData.getTrialPeriodEndsAt() == null) {
-            result = startTrialPeriod(customerData, publishedAt);
+            result = startTrialPeriod(customerData, polledAt);
         } else if (customerData.getCollectionStartedAt() == null) {
-            result = recordCollectionStarted(customerData, publishedAt);
+            result = recordCollectionStarted(customerData, polledAt);
         } else {
             result = customerData;
         }
@@ -319,7 +319,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(rollbackFor = Exception.class)
     public void updateAppDetails(String appName, String contactEmail, String licenseKey) {
         int count = jdbcTemplate.update("UPDATE customers SET name = ?, contactEmail = ? WHERE licenseKey = ? ",
-                            appName, contactEmail, licenseKey);
+                                        appName, contactEmail, licenseKey);
         if (count > 0) {
             logger.debug("Assigned appName='{}' for licenseKey {}", appName, licenseKey);
         } else {
@@ -337,9 +337,10 @@ public class CustomerServiceImpl implements CustomerService {
         Map<String, Object> result = jdbcTemplate.queryForMap("SELECT " +
                                                                   "c.id, c.name, c.source, c.plan, c.createdAt, c.collectionStartedAt, " +
                                                                   "c.trialPeriodEndsAt, c.notes AS customerNotes, " +
-                                                                  "ppo.createdBy, ppo.note AS pricePlanNote, ppo.maxMethods, ppo.maxNumberOfAgents, " +
-                                                                  "ppo.publishIntervalSeconds, ppo.pollIntervalSeconds, " +
-                                                                  "ppo.retryIntervalSeconds, ppo.maxCollectionPeriodDays " +
+                                                                  "ppo.createdBy, ppo.note AS pricePlanNote, ppo.maxMethods, " +
+                                                                  "ppo.maxNumberOfAgents, ppo.publishIntervalSeconds, " +
+                                                                  "ppo.pollIntervalSeconds, ppo.retryIntervalSeconds, " +
+                                                                  "ppo.maxCollectionPeriodDays " +
                                                                   "FROM customers c LEFT JOIN price_plan_overrides ppo " +
                                                                   "ON ppo.customerId = c.id " +
                                                                   "WHERE " + where_clause, identifier);

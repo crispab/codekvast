@@ -19,29 +19,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.bootstrap;
+package io.codekvast.dashboard.dashboard.model.status;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import lombok.*;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@Configuration
-@RequiredArgsConstructor
-public class MetricsConfig {
+@Data
+@Setter(AccessLevel.NONE)
+@Builder
+@EqualsAndHashCode(of = {"name"})
+public class EnvironmentStatusDescriptor {
+    @NonNull
+    private final String name;
 
-    private final CodekvastCommonSettings settings;
+    private final boolean enabled;
 
-    @Bean
-    public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
-        return registry -> registry.config().commonTags(
-            "service", settings.getApplicationName(),
-            "env", settings.getEnvironment(),
-            "host", settings.getDnsCname());
-    }
+    @Nullable
+    private final String updatedBy;
 
+    @Nullable
+    private final String notes;
 }

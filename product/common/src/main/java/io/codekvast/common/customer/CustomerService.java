@@ -98,16 +98,16 @@ public interface CustomerService {
     int countMethods(long customerId);
 
     /**
-     * Register that an agent has published data.
+     * Register that an agent has polled.
      *
      * It might result in the start of a trial period, if this is the first time and the customer has a price plan with a limitation on
      * maxCollectionDays.
      *
      * @param customerData The customer's data
-     * @param publishedAt  The instant the data was published.
+     * @param polledAt     The instant the agent polled.
      * @return An updated customerData should there have been any changes. Does never return null.
      */
-    CustomerData registerAgentDataPublication(CustomerData customerData, Instant publishedAt);
+    CustomerData registerAgentPoll(CustomerData customerData, Instant polledAt);
 
     /**
      * Register that a user has logged in.

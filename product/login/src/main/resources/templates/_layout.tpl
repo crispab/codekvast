@@ -2,9 +2,9 @@ yieldUnescaped '<!DOCTYPE html>'; newLine()
 html {
     comment " Codekvast Login version ${settings.displayVersion} "; newLine()
     head {
-        meta(charset: 'utf-8') newLine()
-        meta(name: 'viewport', content: 'width=device-width, initial-scale=1.0, shrink-to-fit=no') newLine()
-        title("Codekvast - $title") newLine()
+        meta(charset: 'utf-8'); newLine()
+        meta(name: 'viewport', content: 'width=device-width, initial-scale=1.0, shrink-to-fit=no'); newLine()
+        title("Codekvast - $title"); newLine()
 
         link(rel: 'icon', href: '/favicon.ico', type: 'image/ico'); newLine()
 

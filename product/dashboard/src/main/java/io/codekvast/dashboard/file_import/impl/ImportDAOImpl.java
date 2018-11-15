@@ -39,6 +39,7 @@ import java.time.Instant;
 import java.util.*;
 
 import static io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
+import static java.lang.Boolean.TRUE;
 import static java.sql.Types.BOOLEAN;
 import static java.util.Optional.ofNullable;
 
@@ -92,10 +93,10 @@ public class ImportDAOImpl implements ImportDAO {
         int updated = jdbcTemplate.update("UPDATE environments SET createdAt = LEAST(createdAt, ?) " +
                                               "WHERE customerId = ? AND name = ?", createdAt, customerId, name);
         if (updated != 0) {
-            logger.trace("Updated environment {}", name);
+            logger.trace("Updated environment {}:{}", customerId, name);
         } else {
-            jdbcTemplate.update("INSERT INTO environments(customerId, name, createdAt) VALUES (?, ?, ?)", customerId, name, createdAt);
-            logger.trace("Inserted environment {} {} {}", customerId, name, createdAt);
+            jdbcTemplate.update("INSERT INTO environments(customerId, name, createdAt, enabled) VALUES (?, ?, ?, ?)", customerId, name, createdAt, TRUE);
+            logger.info("New environment {}:{} appeared at {}", customerId, name, createdAt);
         }
 
         Long result = jdbcTemplate

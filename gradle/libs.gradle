@@ -1,17 +1,17 @@
 ext {
-    aspectjVersion = '1.9.1'
-    flywayVersion = '5.2.0'
+    aspectjVersion = '1.9.2'
+    flywayVersion = '5.2.1'
     gsonVersion = '2.8.5'
     jacocoVersion = '0.8.2'
-    seleniumVersion = '3.14.0'
-    springBootVersion = '2.0.6.RELEASE'
+    seleniumVersion = '3.141.5'
+    springBootVersion = '2.1.0.RELEASE'
     springfoxVersion = '2.9.2'
     wiremockVersion = '2.19.0'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
     logback = 'ch.qos.logback:logback-classic:1.2.3'
-    lombok = 'org.projectlombok:lombok:1.18.2'
+    lombok = 'org.projectlombok:lombok:1.18.4'
     mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.3.0'
     slf4jApi = 'org.slf4j:slf4j-api:1.7.25'
     testFrameworks = [

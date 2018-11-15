@@ -5,8 +5,6 @@
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="admin_main" target="1.8" />
-      <module name="admin_test" target="1.8" />
       <module name="agent-model_main" target="1.7" />
       <module name="agent-model_test" target="1.7" />
       <module name="common_integrationTest" target="1.8" />
@@ -14,7 +12,6 @@
       <module name="common_test" target="1.8" />
       <module name="dashboard_integrationTest" target="1.8" />
       <module name="dashboard_main" target="1.8" />
-      <module name="dashboard_systemTest" target="1.8" />
       <module name="dashboard_test" target="1.8" />
       <module name="db-migration_main" target="1.8" />
       <module name="db-migration_test" target="1.8" />
@@ -27,7 +24,6 @@
       <module name="jenkins2_test" target="1.8" />
       <module name="login_main" target="1.8" />
       <module name="login_test" target="1.8" />
-      <module name="product-agent-model_main" target="1.7" />
       <module name="sample-concrete-aspect_main" target="1.8" />
       <module name="sample-concrete-aspect_test" target="1.8" />
       <module name="sample-gradle-application_main" target="1.7" />
@@ -38,11 +34,12 @@
       <module name="sample-spring-boot-executable-jar_test" target="1.8" />
       <module name="swing-app_main" target="1.7" />
       <module name="swing-app_test" target="1.7" />
+      <module name="system-test" target="1.8" />
+      <module name="system-test_main" target="1.8" />
+      <module name="system-test_test" target="1.8" />
       <module name="testsupport_integrationTest" target="1.8" />
       <module name="testsupport_main" target="1.8" />
       <module name="testsupport_test" target="1.8" />
-      <module name="webstart-swing-app_main" target="1.8" />
-      <module name="webstart-swing-app_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

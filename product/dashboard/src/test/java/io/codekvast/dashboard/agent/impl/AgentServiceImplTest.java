@@ -11,12 +11,13 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.time.Instant;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -24,8 +25,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AgentServiceImplTest {
 
@@ -33,7 +33,7 @@ public class AgentServiceImplTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Mock
-    private JdbcTemplate jdbcTemplate;
+    private AgentDAO agentDAO;
 
     @Mock
     private CustomerService customerService;
@@ -50,7 +50,7 @@ public class AgentServiceImplTest {
         settings.setQueuePath(temporaryFolder.getRoot());
         settings.setQueuePathPollIntervalSeconds(60);
 
-        service = new AgentServiceImpl(settings, jdbcTemplate, customerService);
+        service = new AgentServiceImpl(settings, customerService, agentDAO);
 
         setupCustomerData(null, null);
     }
@@ -58,7 +58,8 @@ public class AgentServiceImplTest {
     @Test
     public void should_return_enabled_publishers_when_below_agent_limit_no_trial_period() {
         // given
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), any(), anyString())).thenReturn(1);
+        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
+        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
@@ -69,6 +70,8 @@ public class AgentServiceImplTest {
 
         assertThat(response.getInvocationDataPublisherName(), is("http"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
+
+        verify(agentDAO).updateAgentEnabledState(1L, request.getJvmUuid(), true);
     }
 
     @Test
@@ -76,7 +79,8 @@ public class AgentServiceImplTest {
         // given
         Instant now = Instant.now();
         setupCustomerData(now.minus(10, DAYS), now.plus(10, DAYS));
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), any(), anyString())).thenReturn(1);
+        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
+        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
@@ -94,7 +98,8 @@ public class AgentServiceImplTest {
         // given
         Instant now = Instant.now();
         setupCustomerData(now.minus(10, DAYS), now.minus(1, DAYS));
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), any(), anyString())).thenReturn(1);
+        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
+        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
@@ -110,7 +115,25 @@ public class AgentServiceImplTest {
     @Test
     public void should_return_disabled_publishers_when_above_agent_limit_no_trial_period() {
         // given
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyLong(), any(), anyString())).thenReturn(10);
+        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(10);
+        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
+
+        // when
+        GetConfigResponse1 response = service.getConfig(request);
+
+        // then
+        assertThat(response.getCodeBasePublisherName(), is("http"));
+        assertThat(response.getCodeBasePublisherConfig(), is("enabled=false"));
+
+        assertThat(response.getInvocationDataPublisherName(), is("http"));
+        assertThat(response.getInvocationDataPublisherConfig(), is("enabled=false"));
+    }
+
+    @Test
+    public void should_return_disabled_publishers_when_below_agent_limit_disabled_environment() {
+        // given
+        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
+        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(FALSE);
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
@@ -127,7 +150,8 @@ public class AgentServiceImplTest {
     public void should_have_checked_licenseKey() throws Exception {
         // given
         int publicationSize = 4711;
-        doThrow(new LicenseViolationException("stub")).when(customerService).assertPublicationSize(any(CustomerData.class), eq(publicationSize));
+        doThrow(new LicenseViolationException("stub")).when(customerService)
+                                                      .assertPublicationSize(any(CustomerData.class), eq(publicationSize));
 
         // when
         service.savePublication(AgentService.PublicationType.CODEBASE, "key", publicationSize, null);
@@ -183,7 +207,7 @@ public class AgentServiceImplTest {
                                                 .build();
 
         when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
-        when(customerService.registerAgentDataPublication(any(CustomerData.class), any(Instant.class))).thenReturn(customerData);
+        when(customerService.registerAgentPoll(any(CustomerData.class), any(Instant.class))).thenReturn(customerData);
     }
 
 }

@@ -4,7 +4,7 @@ DELETE FROM invocations;
 
 INSERT INTO applications(id, customerId, name) VALUES (5, 1, 'app5');
 
-INSERT INTO environments(id, customerId, name) VALUES (5, 1, 'env5');
+INSERT INTO environments(id, customerId, name, enabled) VALUES (5, 1, 'env5', TRUE);
 
 INSERT INTO jvms(id, customerId, applicationId, applicationVersion, environmentId, uuid, methodVisibility, packages, excludePackages,
                  computerId, hostname, agentVersion, tags, garbage)

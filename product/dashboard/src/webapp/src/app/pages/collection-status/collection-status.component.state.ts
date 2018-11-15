@@ -60,18 +60,6 @@ export class CollectionStatusComponentState {
         return this.autoRefresh ? 'Pause auto-refresh' : 'Resume auto-refresh';
     }
 
-    private startAutoRefresh() {
-        let timer = TimerObservable.create(0, this.refreshIntervalSeconds * 1000);
-        this.timerSubscription = timer.subscribe((tick: number) => {
-            console.log('[ck dashboard] Doing auto-refresh #%o', tick);
-            this.refreshNow();
-        });
-    }
-
-    private stopAutoRefresh() {
-        this.timerSubscription.unsubscribe();
-    }
-
     updateRefreshTimer() {
         this.refreshIntervalSeconds = Math.max(10, this.refreshIntervalSeconds);
         console.log('[ck dashboard] New refreshIntervalSeconds: %o', this.refreshIntervalSeconds);
@@ -100,21 +88,29 @@ export class CollectionStatusComponentState {
         return now + ': Communication failure';
     }
 
+    getEnvironments() {
+        return this.data.environments;
+    }
+
     getVisibleApplications() {
         if (this.data.applications) {
+            // @formatter:off
             return this.data.applications.filter(a =>
                 `${a.appName}`.toLowerCase().indexOf(this.applicationFilter.toLowerCase()) >= 0
                 && a.environment.toLowerCase().indexOf(this.environmentFilter.toLowerCase()) >= 0);
+            // @formatter:on
         }
         return null;
     }
 
     getFilteredAgents() {
         if (this.data.agents) {
+            // @formatter:off
             return this.data.agents.filter(a =>
                 `${a.appName} ${a.appVersion}`.toLowerCase().indexOf(this.applicationFilter.toLowerCase()) >= 0
                 && a.environment.toLowerCase().indexOf(this.environmentFilter.toLowerCase()) >= 0
                 && a.hostname.toLowerCase().indexOf(this.hostnameFilter.toLowerCase()) >= 0);
+            // @formatter:on
         }
         return null;
     }
@@ -189,6 +185,18 @@ export class CollectionStatusComponentState {
         if (this.data.agents) {
             this.data.agents.filter(a => a.selected && !a.agentAlive).forEach(a => this.deleteAgent(a));
         }
+    }
+
+    private startAutoRefresh() {
+        let timer = TimerObservable.create(0, this.refreshIntervalSeconds * 1000);
+        this.timerSubscription = timer.subscribe((tick: number) => {
+            console.log('[ck dashboard] Doing auto-refresh #%o', tick);
+            this.refreshNow();
+        });
+    }
+
+    private stopAutoRefresh() {
+        this.timerSubscription.unsubscribe();
     }
 
     private deleteAgent(agent: Agent) {

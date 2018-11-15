@@ -28,6 +28,9 @@ logging:
         springfox: WARN
 
 management:
+    endpoint:
+        health:
+            show-details: "ALWAYS"
     endpoints:
         jmx.domain: CodekvastDashboard
         web:
@@ -35,10 +38,13 @@ management:
             exposure.include: '*'
     server:
         port: 9081
-        servlet.importContext-path: /
     metrics:
         web.server.auto-time-requests: true
         export.datadog.enabled: false
+        tags:
+            service: "codekvast-dashboard"
+            env: dev
+            host: localhost
 
 server:
     compression:
@@ -64,10 +70,21 @@ spring:
     flyway:
         table: schema_version
         validate-on-migrate: false
-    http.converters.preferred-json-mapper: gson
+    http:
+        converters.preferred-json-mapper: gson
+        log-request-details: true
     output.ansi.enabled: detect
     servlet:
         multipart:
             max-file-size: 100MB
             max-request-size: 100MB
+    task:
+        execution:
+            pool:
+                core-size: 1
+                max-size: 5
+                queue-capacity: 100
+            thread-name-prefix: 'Codekvast task-'
+        scheduling.pool.size: 5
+
 springfox.documentation.swagger.v2.path: /api-docs

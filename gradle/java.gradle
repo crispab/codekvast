@@ -4,8 +4,6 @@ apply plugin: 'jacoco'
 apply from: "$rootDir/gradle/libs.gradle"
 
 uptodate {
-    group "Backend Development"
-
     connectionTimeout 20000
     addExcludedVersionPatterns '.*-alpha.*'
     addExcludedVersionPatterns '.*-beta.*'
@@ -43,17 +41,6 @@ configurations.forEach { it ->
 
         from config
         into "$buildDir/deps/$configName"
-    }
-}
-
-configurations.all {
-    resolutionStrategy {
-
-        eachDependency { details ->
-            if (details.requested.name == 'groovy-all') {
-                details.useTarget group: details.requested.group, name: 'groovy', version: details.requested.version
-            }
-        }
     }
 }
 

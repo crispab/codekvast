@@ -26,24 +26,34 @@ logging:
     file: build/log/login.log
     level:
         io.codekvast: DEBUG
+    group.web: debug
 
 management:
     endpoints:
-        jmx.domain: CodekvastLogin
+        enabled-by-default: true
+        jmx:
+            domain: CodekvastLogin
         web:
             base-path: /management
             exposure.include: '*'
+    endpoint:
+        health:
+            show-details: "ALWAYS"
+            cache.time-to-live: 1s
     server:
         port: 9080
-        servlet.importContext-path: /
     metrics:
         web.server.auto-time-requests: true
         export.datadog.enabled: false
+        tags:
+            service: "codekvast-login"
+            env: dev
+            host: localhost
 
 server:
     port: 8080
     servlet:
-        importContext-path: /
+        context-path: /
         session:
             cookie:
                 max-age: 10m
@@ -67,10 +77,10 @@ spring:
     flyway:
         table: schema_version
         validate-on-migrate: false
-    groovy.template:
-        suffix: .tpl
-        configuration:
-            auto-new-line: true
-            auto-indent: true
-    http.converters.preferred-json-mapper: gson
+    groovy.template.configuration:
+        auto-new-line: true
+        auto-indent: true
+    http:
+        converters.preferred-json-mapper: gson
+        log-request-details: true
     output.ansi.enabled: detect

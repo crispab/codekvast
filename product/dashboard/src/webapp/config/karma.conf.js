@@ -23,12 +23,12 @@ module.exports = function (config) {
         frameworks: ['jasmine', 'source-map-support'],
         logLevel: config.LOG_INFO,
         port: 9876,
-        preprocessors: { './config/karma-test-shim.js': ['webpack', 'sourcemap']},
+        preprocessors: {'./config/karma-test-shim.js': ['webpack', 'sourcemap']},
         reporters: ['mocha', 'junit', 'coverage'],
         singleRun: true,
         webpack: webpackConfig,
-        webpackMiddleware: { stats: 'errors-only'},
-        webpackServer: { noInfo: true},
+        webpackMiddleware: {stats: 'errors-only'},
+        webpackServer: {noInfo: true},
 
         junitReporter: {
             outputDir: '../../build/test-results/frontendTest',

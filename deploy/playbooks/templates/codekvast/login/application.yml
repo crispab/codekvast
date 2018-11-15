@@ -26,14 +26,18 @@ management:
         beans.enabled: false
         conditions.enabled: false
         mappings.enabled: false
-    metrics.export.datadog:
-        api-key: "{{ datadog_api_key }}"
-        enabled: true
-        step: PT60S
+    metrics:
+        tags:
+            service: "codekvast-{{ service_name }}"
+            env: "{{ ec2_tag_Env }}"
+            host: "{{ ec2_tag_CNAME1 }}"
+        export.datadog:
+            api-key: "{{ datadog_api_key }}"
+            enabled: true
+            step: PT60S
 
 server:
     port: "{{ service_port }}"
-    servlet.session.cookie.name: "{{ settings.session.cookie.name }}"
     undertow.accesslog:
         dir: "/var/log/codekvast/{{ service_name }}/"
         prefix: access.
@@ -57,6 +61,3 @@ spring:
                 client-id: "{{ google.oauth[env].clientId }}"
                 client-secret: "{{ google.oauth[env].clientSecret }}"
                 client-scope: email
-        provider:
-            facebook:
-                user-info-uri: https://graph.facebook.com/me?fields=id,name,email
