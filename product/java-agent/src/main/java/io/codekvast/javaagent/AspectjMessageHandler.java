@@ -35,7 +35,7 @@ import static org.aspectj.bridge.IMessage.WEAVEINFO;
 @SuppressWarnings("MethodReturnAlwaysConstant")
 @Log(topic = "io.codekvast.aspectjweaver")
 public class AspectjMessageHandler implements IMessageHandler {
-    public static final String LOGGER_NAME = "";
+    public static final String LOGGER_NAME = "io.codekvast.aspectjweaver";
 
     @Override
     public boolean handleMessage(IMessage message) throws AbortException {
