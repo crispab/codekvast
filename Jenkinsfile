@@ -56,6 +56,8 @@ node {
                 try {
                     sh './gradlew --console=plain :product:system-test:test'
                 } finally {
+                    archiveArtifacts '**/system-test/build/*.log'
+
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
                     junit '**/build/test-results/test/*.xml'
@@ -106,7 +108,7 @@ node {
 
                 echo "Running tools/uptodate-report.sh"
                 sh 'tools/uptodate-report.sh'
-                archiveArtifacts 'build/reports/**, product/system-test/build/*.log'
+                archiveArtifacts 'build/reports/**'
             }
         }
         slackNotification 'good', "Build finished", startedAt
