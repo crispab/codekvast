@@ -45,7 +45,7 @@ ext.launchCommands = [
         "--server.port=${allocateFreePort()} " +
         "--management.server.port=${allocateFreePort()} " +
         "--spring.datasource.url=$jdbcUrl " +
-        "--spring.profiles.active=dev-secrets " +
+        "--spring.profiles.active=system-test " +
         "--codekvast.dashboardJwtSecret=secret " +
         "--logging.file=${buildDir}/system-test-login.log "
 ]

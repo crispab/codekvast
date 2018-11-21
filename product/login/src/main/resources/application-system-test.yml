@@ -1,0 +1,25 @@
+#---------------------------------------------------------
+# Activate with --spring.profiles.active=dev-secrets
+# This file is encrypted by git-crypt.
+# It is only used when testing in localhost.
+#---------------------------------------------------------
+spring.security.oauth2.client:
+    registration:
+        facebook:
+            client-id: 000000000000000
+            client-secret: 00000000000000000000000000000000
+            client-scope: email
+
+codekvast:
+    cipherSecret: '0000000000000000000000=='
+    herokuOAuthClientId: 'codekvast'
+    herokuOAuthClientSecret: '00000000-0000-0000-0000-000000000000'
+
+management.metrics.export.datadog:
+    api_key: '00000000000000000000000000000000'
+    enabled: false
+    step: PT10S
+
+spring:
+    application:
+        name: codekvast-login
