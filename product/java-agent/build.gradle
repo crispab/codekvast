@@ -28,7 +28,7 @@ dependencies {
 
     compile project(":product:agent-model")
     compile 'com.squareup.okhttp3:okhttp:3.12.0'
-    compile 'com.google.guava:guava:20.0'
+    compile 'com.google.guava:guava:20.0' // The latest version that works with Java 7.
     compile "com.google.code.gson:gson:$gsonVersion"
     compile aspectjWeaver
 
@@ -129,7 +129,7 @@ task verifyShadowJar {
             }
         }
 
-        assert shadowJarFile.length() < 6_000_000 // bytes, it is currently approx. 5.3 MB
+        assert shadowJarFile.length() < 4_100_000 // bytes, it is currently approx. 3.8 MB
         timestampFile.parentFile.mkdirs()
         timestampFile.text = "${java.time.Instant.now()}\n"
     }
