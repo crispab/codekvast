@@ -39,7 +39,7 @@ ext.launchCommands = [
         "--management.server.port=${allocateFreePort()} " +
         "--spring.datasource.url=$jdbcUrl " +
         "--codekvast.dashboardJwtSecret=secret " +
-        "--logging.file=${buildDir}/dashboard.log ",
+        "--logging.file=${buildDir}/system-test-dashboard.log ",
 
     'login'    : "java -jar ${bootJars['login'].asPath} " +
         "--server.port=${allocateFreePort()} " +
@@ -47,7 +47,7 @@ ext.launchCommands = [
         "--spring.datasource.url=$jdbcUrl " +
         "--spring.profiles.active=dev-secrets " +
         "--codekvast.dashboardJwtSecret=secret " +
-        "--logging.file=${buildDir}/login.log "
+        "--logging.file=${buildDir}/system-test-login.log "
 ]
 
 dependencies {

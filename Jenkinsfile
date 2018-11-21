@@ -106,7 +106,7 @@ node {
 
                 echo "Running tools/uptodate-report.sh"
                 sh 'tools/uptodate-report.sh'
-                archiveArtifacts 'build/reports/**'
+                archiveArtifacts 'build/reports/**, product/system-test/build/*.log'
             }
         }
         slackNotification 'good', "Build finished", startedAt
