@@ -25,17 +25,23 @@
       <option name="KEYWORD_CASE" value="0" />
       <option name="TYPE_CASE" value="3" />
       <option name="QUOTE_IDENTIFIER" value="1" />
+      <option name="QUERY_EL_COMMA" value="0" />
       <option name="QUERY_TRUE_INDENT" value="false" />
       <option name="QUERY_ALIGN_ELEMENTS" value="false" />
       <option name="QUERY_ALIGN_LINE_COMMENTS" value="false" />
+      <option name="INSERT_EL_COMMA" value="2" />
       <option name="SET_EL_WRAP" value="0" />
       <option name="SET_EL_COMMA" value="0" />
       <option name="WITH_EL_WRAP" value="0" />
       <option name="WITH_EL_COMMA" value="0" />
       <option name="SELECT_EL_WRAP" value="3" />
+      <option name="SELECT_EL_COMMA" value="2" />
       <option name="FROM_EL_WRAP" value="2" />
+      <option name="FROM_EL_COMMA" value="2" />
+      <option name="FROM_PLACE_ON" value="10" />
       <option name="WHERE_EL_WRAP" value="3" />
       <option name="WHERE_EL_BOUND" value="2" />
+      <option name="ORDER_EL_COMMA" value="2" />
       <option name="TABLE_OPENING" value="1" />
       <option name="TABLE_CONTENT" value="2" />
       <option name="TABLE_CLOSING" value="3" />
