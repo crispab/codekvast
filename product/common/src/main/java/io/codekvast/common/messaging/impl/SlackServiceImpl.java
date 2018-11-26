@@ -43,7 +43,7 @@ import java.time.Instant;
  * @author olle.hallin@crisp.se
  */
 @Service
-@DependsOn("defaultValidator") // Prevent an exception in notifyShutdown()
+@DependsOn({"defaultValidator", "commonMetricsService"}) // Prevent an exception in notifyShutdown()
 @RequiredArgsConstructor
 @Slf4j
 public class SlackServiceImpl implements SlackService, ApplicationListener<ApplicationReadyEvent> {
