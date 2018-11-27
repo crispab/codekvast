@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author olle.hallin@crisp.se
  */
-@Component
+@Component("commonMetricsService")
 @RequiredArgsConstructor
 public class CommonMetricsServiceImpl implements CommonMetricsService {
 

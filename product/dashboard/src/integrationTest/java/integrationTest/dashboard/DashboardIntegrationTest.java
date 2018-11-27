@@ -370,6 +370,13 @@ public class DashboardIntegrationTest {
 
     @Test
     public void should_import_codeBasePublication2() {
+        // given
+        assertThat(countRowsInTable("applications"), is(0));
+        assertThat(countRowsInTable("environments"), is(0));
+        assertThat(countRowsInTable("jvms"), is(0));
+        assertThat(countRowsInTable("methods"), is(0));
+        assertThat(countRowsInTable("invocations"), is(0));
+
         //@formatter:off
         CodeBasePublication2 publication = CodeBasePublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
@@ -377,39 +384,81 @@ public class DashboardIntegrationTest {
             .build();
         //@formatter:on
 
+        // when
         codeBaseImporter.importPublication(publication);
+
+        // then
+        assertThat(countRowsInTable("applications WHERE name = '" + publication.getCommonData().getAppName() + "'"), is(1));
+        assertThat(countRowsInTable("environments WHERE name = '" + publication.getCommonData().getEnvironment() + "'"), is(1));
+        assertThat(countRowsInTable("jvms WHERE uuid = '" + publication.getCommonData().getJvmUuid() + "'"), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = '" + publication.getEntries().iterator().next().getSignature() + "'"), is(1));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
     }
 
     @Test
     public void should_import_codeBasePublication2_after_invocationDataPublication() {
+        // given
+        assertThat(countRowsInTable("applications"), is(0));
+        assertThat(countRowsInTable("environments"), is(0));
+        assertThat(countRowsInTable("jvms"), is(0));
+        assertThat(countRowsInTable("methods"), is(0));
+        assertThat(countRowsInTable("invocations"), is(0));
+
         //@formatter:off
         CodeBasePublication2 codeBasePublication = CodeBasePublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
             .entries(Arrays.asList(CodeBaseEntry2.sampleCodeBaseEntry()))
             .build();
 
+        long intervalStartedAtMillis = System.currentTimeMillis();
+
         InvocationDataPublication2 invocationDataPublication = InvocationDataPublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .recordingIntervalStartedAtMillis(System.currentTimeMillis())
+            .recordingIntervalStartedAtMillis(intervalStartedAtMillis)
             .invocations(codeBasePublication.getEntries().stream().map(CodeBaseEntry2::getSignature).collect(Collectors.toSet()))
             .build();
         //@formatter:on
 
+        // when
         invocationDataImporter.importPublication(invocationDataPublication);
         codeBaseImporter.importPublication(codeBasePublication);
+
+        // then
+        assertThat(countRowsInTable("applications WHERE name = '" + codeBasePublication.getCommonData().getAppName() + "'"), is(1));
+        assertThat(countRowsInTable("environments WHERE name = '" + codeBasePublication.getCommonData().getEnvironment() + "'"), is(1));
+        assertThat(countRowsInTable("jvms WHERE uuid = '" + codeBasePublication.getCommonData().getJvmUuid() + "'"), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = '" + codeBasePublication.getEntries().iterator().next().getSignature() + "'"), is(1));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = " + intervalStartedAtMillis), is(1));
     }
 
     @Test
     public void should_import_invocationDataPublication() {
+        // given
+        assertThat(countRowsInTable("applications"), is(0));
+        assertThat(countRowsInTable("environments"), is(0));
+        assertThat(countRowsInTable("jvms"), is(0));
+        assertThat(countRowsInTable("methods"), is(0));
+        assertThat(countRowsInTable("invocations"), is(0));
+
+        long intervalStartedAtMillis = System.currentTimeMillis();
+
         //@formatter:off
         InvocationDataPublication2 publication = InvocationDataPublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .recordingIntervalStartedAtMillis(System.currentTimeMillis())
+            .recordingIntervalStartedAtMillis(intervalStartedAtMillis)
             .invocations(Collections.singleton("signature"))
             .build();
         //@formatter:on
 
+        // when
         invocationDataImporter.importPublication(publication);
+
+        // then
+        assertThat(countRowsInTable("applications WHERE name = '" + publication.getCommonData().getAppName() + "'"), is(1));
+        assertThat(countRowsInTable("environments WHERE name = '" + publication.getCommonData().getEnvironment() + "'"), is(1));
+        assertThat(countRowsInTable("jvms WHERE uuid = '" + publication.getCommonData().getJvmUuid() + "'"), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = 'signature'"), is(1));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = " + intervalStartedAtMillis), is(1));
     }
 
     @Test
@@ -560,14 +609,14 @@ public class DashboardIntegrationTest {
                                                                 .hostname("hostname1")
                                                                 .jvmId(1L)
                                                                 .methodVisibility("public")
-                                                                .nextPollExpectedAtMillis(cutMillis(timestamps.plusOneMinute))
+                                                                .nextPollExpectedAtMillis(cutMillis(timestamps.inOneMinute))
                                                                 .nextPublicationExpectedAtMillis(cutMillis(
-                                                                    Timestamp.from(timestamps.minusTenMinutes.toInstant().plusSeconds(
+                                                                    Timestamp.from(timestamps.tenMinutesAgo.toInstant().plusSeconds(
                                                                         PricePlanDefaults.DEMO.getPublishIntervalSeconds()))))
                                                                 .packages("com.foobar1")
-                                                                .pollReceivedAtMillis(cutMillis(timestamps.minusTenMinutes))
-                                                                .publishedAtMillis(cutMillis(timestamps.minusTwoMinutes))
-                                                                .startedAtMillis(cutMillis(timestamps.minusThreeDaysPlus))
+                                                                .pollReceivedAtMillis(cutMillis(timestamps.tenMinutesAgo))
+                                                                .publishedAtMillis(cutMillis(timestamps.twoMinutesAgo))
+                                                                .startedAtMillis(cutMillis(timestamps.almostThreeDaysAgo))
                                                                 .tags("tag1=t1,tag2=t2")
                                                                 .build()));
 
@@ -628,6 +677,9 @@ public class DashboardIntegrationTest {
 
         // when
         dashboardService.deleteAgent(1L, 1L);
+
+        // then
+        // TODO: assert database contents
     }
 
     @Test
@@ -638,6 +690,9 @@ public class DashboardIntegrationTest {
 
         // when
         dashboardService.deleteAgent(1L, 1L);
+
+        // then
+        // TODO: assert database contents
     }
 
     @Test
@@ -693,34 +748,34 @@ public class DashboardIntegrationTest {
     }
 
     private class Timestamps {
-        Timestamp minusThreeDaysPlus;
-        Timestamp minusTenMinutes;
-        Timestamp minusTwoMinutes;
-        Timestamp plusOneMinute;
+        Timestamp almostThreeDaysAgo;
+        Timestamp tenMinutesAgo;
+        Timestamp twoMinutesAgo;
+        Timestamp inOneMinute;
 
         Timestamps invoke() {
             // Set the timestamps from Java. It's impossible to write time-zone agnostic code in a static sql script invoked by @Sql.
 
             Instant now = Instant.now();
-            minusThreeDaysPlus = Timestamp.from(now.minus(3, DAYS).minus(5, HOURS));
-            minusTenMinutes = Timestamp.from(now.minus(10, MINUTES));
-            minusTwoMinutes = Timestamp.from(now.minus(2, MINUTES));
-            plusOneMinute = Timestamp.from(now.plus(1, MINUTES));
+            almostThreeDaysAgo = Timestamp.from(now.minus(3, DAYS).minus(5, HOURS));
+            tenMinutesAgo = Timestamp.from(now.minus(10, MINUTES));
+            twoMinutesAgo = Timestamp.from(now.minus(2, MINUTES));
+            inOneMinute = Timestamp.from(now.plus(1, MINUTES));
 
             jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                                minusTenMinutes, plusOneMinute, TRUE, "uuid1");
+                                tenMinutesAgo, inOneMinute, TRUE, "uuid1");
 
             jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                                minusTenMinutes, plusOneMinute, FALSE, "uuid2");
+                                tenMinutesAgo, inOneMinute, FALSE, "uuid2");
 
             jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                                minusTenMinutes, minusTwoMinutes, TRUE, "uuid3");
+                                tenMinutesAgo, twoMinutesAgo, TRUE, "uuid3");
 
             jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                                minusTenMinutes, minusTwoMinutes, FALSE, "uuid4");
+                                tenMinutesAgo, twoMinutesAgo, FALSE, "uuid4");
 
-            jdbcTemplate.update("UPDATE jvms SET startedAt = ?, publishedAt = ?", minusTenMinutes, minusTwoMinutes);
-            jdbcTemplate.update("UPDATE jvms SET startedAt = ? WHERE uuid = ?", minusThreeDaysPlus, "uuid1");
+            jdbcTemplate.update("UPDATE jvms SET startedAt = ?, publishedAt = ?", tenMinutesAgo, twoMinutesAgo);
+            jdbcTemplate.update("UPDATE jvms SET startedAt = ? WHERE uuid = ?", almostThreeDaysAgo, "uuid1");
             return this;
         }
     }
