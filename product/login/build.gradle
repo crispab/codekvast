@@ -22,9 +22,10 @@ dependencies {
 
     runtime project(':product:db-migration')
 
-    def groovyVersion = '2.4.15' // prevent a bug in groovy-templates 2.5.3
+    def groovyVersion = '2.4.15' // prevent a bug in groovy-templates 2.5.4
     runtime "org.codehaus.groovy:groovy-templates:$groovyVersion"
     runtime "org.codehaus.groovy:groovy:$groovyVersion"
+    runtime "org.codehaus.groovy:groovy-xml:$groovyVersion"
 
     testCompile "com.github.tomakehurst:wiremock:$wiremockVersion"
 }
