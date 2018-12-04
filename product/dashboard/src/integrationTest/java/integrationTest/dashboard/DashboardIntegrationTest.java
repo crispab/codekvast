@@ -1,6 +1,5 @@
 package integrationTest.dashboard;
 
-import integrationTest.dashboard.testdata.TestDataGenerator;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.CustomerService.LoginRequest;
@@ -62,7 +61,7 @@ import static org.junit.Assume.assumeTrue;
  */
 @SuppressWarnings({"SpringAutowiredFieldsWarningInspection", "ClassWithTooManyFields"})
 @SpringBootTest(
-    classes = {CodekvastDashboardApplication.class, TestDataGenerator.class},
+    classes = {CodekvastDashboardApplication.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationTest")
 @Transactional(rollbackFor = Exception.class)
@@ -133,9 +132,6 @@ public class DashboardIntegrationTest {
 
     @Inject
     private WeedingTask weedingTask;
-
-    @Inject
-    private TestDataGenerator testDataGenerator;
 
     @Before
     public void beforeTest() {
@@ -280,7 +276,7 @@ public class DashboardIntegrationTest {
     public void should_handle_register_login_twice() {
 
         // given
-        jdbcTemplate.update("DELETE FROM users");
+        jdbcTemplate.update(" DELETE FROM users");
 
         // when
         customerService.registerLogin(LoginRequest.builder()
@@ -391,7 +387,8 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("applications WHERE name = '" + publication.getCommonData().getAppName() + "'"), is(1));
         assertThat(countRowsInTable("environments WHERE name = '" + publication.getCommonData().getEnvironment() + "'"), is(1));
         assertThat(countRowsInTable("jvms WHERE uuid = '" + publication.getCommonData().getJvmUuid() + "'"), is(1));
-        assertThat(countRowsInTable("methods WHERE signature = '" + publication.getEntries().iterator().next().getSignature() + "'"), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = '" + publication.getEntries().iterator().next().getSignature() + "'"),
+                   is(1));
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
     }
 
@@ -427,7 +424,9 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("applications WHERE name = '" + codeBasePublication.getCommonData().getAppName() + "'"), is(1));
         assertThat(countRowsInTable("environments WHERE name = '" + codeBasePublication.getCommonData().getEnvironment() + "'"), is(1));
         assertThat(countRowsInTable("jvms WHERE uuid = '" + codeBasePublication.getCommonData().getJvmUuid() + "'"), is(1));
-        assertThat(countRowsInTable("methods WHERE signature = '" + codeBasePublication.getEntries().iterator().next().getSignature() + "'"), is(1));
+        assertThat(
+            countRowsInTable("methods WHERE signature = '" + codeBasePublication.getEntries().iterator().next().getSignature() + "'"),
+            is(1));
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = " + intervalStartedAtMillis), is(1));
     }
 
@@ -673,26 +672,34 @@ public class DashboardIntegrationTest {
     @Sql(scripts = "/sql/base-data.sql")
     public void should_ignore_to_delete_agent_when_invalid_customerId() {
         // given
+        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
+        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
+
         setSecurityContextCustomerId(4711L);
 
         // when
         dashboardService.deleteAgent(1L, 1L);
 
         // then
-        // TODO: assert database contents
+        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
+        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
     }
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
     public void should_ignore_to_delete_agent_when_null_customerId() {
         // given
+        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
+        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
+
         setSecurityContextCustomerId(null);
 
         // when
         dashboardService.deleteAgent(1L, 1L);
 
         // then
-        // TODO: assert database contents
+        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
+        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
     }
 
     @Test

@@ -17,8 +17,8 @@ dependencies {
     compile project(':product:agent-model')
     compile project(':product:common')
     compile "com.google.code.gson:gson:$gsonVersion"
-    compile 'org.springframework.boot:spring-boot-starter-security'
-
+    compile 'org.springframework.retry:spring-retry:1.2.2.RELEASE'
+    
     runtime project(':product:db-migration')
 }
 
