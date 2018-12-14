@@ -21,10 +21,10 @@ function find_gradlew()
 
 GRADLEW=$( find_gradlew `pwd` )
 # if gradle wrapper exists use it, otherwise use gradle from system path
-[[ -f "$GRADLEW" ]] && CMD="$GRADLEW" || CMD="$HOME/.sdkman/bin/gradle"
+[[ -f "$GRADLEW" ]] && CMD="$GRADLEW" || CMD="$HOME/.sdkman/candidates/gradle/current/bin/gradle"
 
 [[ -f "$CMD" ]] || CMD="/usr/bin/gradle"
 
-[[ -f "$CMD" ]] || { echo "Cannot find neither gradlew, $HOME/.sdkman/bin/gradle nor /usr/bin/gradle"; exit 1; }
+[[ -f "$CMD" ]] || { echo "Cannot find neither gradlew, $HOME/.sdkman/candidates/gradle/current/bin/gradle nor /usr/bin/gradle"; exit 1; }
 
 ${CMD} "$@"
