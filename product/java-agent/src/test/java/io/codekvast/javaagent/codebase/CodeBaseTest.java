@@ -72,7 +72,7 @@ public class CodeBaseTest {
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
 
         // then
-        assertThat(scannedClasses, is(2));
+        assertThat(scannedClasses, is(1));
         assertThat(codeBase.getSignatures(), hasSize(2));
         assertThatCodeBaseContains(codeBase, "InClassesOnly");
         assertThatCodeBaseNotContains(codeBase, "SampleApp");
@@ -96,7 +96,7 @@ public class CodeBaseTest {
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
 
         // then
-        assertThat(scannedClasses, is(15));
+        assertThat(scannedClasses, is(14));
         assertThat(codeBase.getSignatures(), hasSize(37));
         assertThatCodeBaseNotContains(codeBase, "InClassesOnly");
         assertThatCodeBaseContains(codeBase, "SampleApp");
@@ -120,7 +120,7 @@ public class CodeBaseTest {
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
 
         // then
-        assertThat(scannedClasses, is(16));
+        assertThat(scannedClasses, is(15));
         assertThat(codeBase.getSignatures(), hasSize(39));
         assertThatCodeBaseContains(codeBase, "InClassesOnly");
         assertThatCodeBaseContains(codeBase, "SampleApp");
@@ -144,7 +144,7 @@ public class CodeBaseTest {
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
 
         // then
-        assertThat(scannedClasses, is(16));
+        assertThat(scannedClasses, is(15));
 
         assertThat(codeBase.getSignatures(), hasSize(39));
         assertThatCodeBaseContains(codeBase, "InClassesOnly");
@@ -166,7 +166,7 @@ public class CodeBaseTest {
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
 
         // then
-        assertThat(scannedClasses, is(16));
+        assertThat(scannedClasses, is(15));
         assertThat(codeBase.getSignatures(), hasSize(39));
         assertThatCodeBaseContains(codeBase, "InClassesOnly");
         assertThatCodeBaseContains(codeBase, "SampleApp");
@@ -188,7 +188,7 @@ public class CodeBaseTest {
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
 
         // then
-        assertThat(scannedClasses, is(16));
+        assertThat(scannedClasses, is(15));
         assertThat(codeBase.getSignatures(), hasSize(39));
         assertThatCodeBaseContains(codeBase, "InClassesOnly");
         assertThatCodeBaseContains(codeBase, "SampleApp");
@@ -208,7 +208,7 @@ public class CodeBaseTest {
         int scannedClasses = new CodeBaseScanner().scanSignatures(codeBase);
 
         // then
-        assertThat(scannedClasses, is(7));
+        assertThat(scannedClasses, is(6));
         CodeBaseFingerprint fingerprint = codeBase.getFingerprint();
         assertThat(fingerprint.getNumClassFiles(), is(0));
         assertThat(fingerprint.getNumJarFiles(), is(1));

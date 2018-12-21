@@ -2,7 +2,7 @@ ext {
     aspectjVersion = '1.9.2'
     flywayVersion = '5.2.3'
     gsonVersion = '2.8.5'
-    jacocoVersion = '0.8.2'
+    // TODO: jacocoVersion = '0.8.2'
     seleniumVersion = '3.141.59'
     springBootVersion = '2.1.1.RELEASE'
     springfoxVersion = '2.9.2'

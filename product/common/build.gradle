@@ -37,7 +37,8 @@ dependencies {
     compile 'io.micrometer:micrometer-registry-datadog'
 
     runtime 'net.logstash.logback:logstash-logback-encoder:5.2'
-
+    runtime 'javax.xml.bind:jaxb-api:2.3.1'
+    
     testCompile lombok
     testCompile testFrameworks
     testRuntime logback

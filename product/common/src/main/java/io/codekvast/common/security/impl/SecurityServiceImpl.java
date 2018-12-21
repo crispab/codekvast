@@ -50,6 +50,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -59,7 +61,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Collections.singleton;
-import static javax.xml.bind.DatatypeConverter.printHexBinary;
 
 /**
  * @author olle.hallin@crisp.se
@@ -93,7 +94,7 @@ public class SecurityServiceImpl implements SecurityService {
                                         .jwtExpirationHours(settings.getDashboardJwtExpirationHours())
                                         .jwtSecret(secret)
                                         .build();
-        this.jwtSecret = secret.getBytes("UTF-8");
+        this.jwtSecret = secret.getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -188,8 +189,8 @@ public class SecurityServiceImpl implements SecurityService {
     String makeHerokuSsoToken(String externalId, long timestampSeconds, String salt) {
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
 
-        return printHexBinary(
-            sha1.digest(String.format("%s:%s:%d", externalId, salt, timestampSeconds).getBytes())).toLowerCase();
+        byte[] digest = sha1.digest(String.format("%s:%s:%d", externalId, salt, timestampSeconds).getBytes());
+        return String.format("%x", new BigInteger(1, digest));
     }
 
     @Override
@@ -244,7 +245,6 @@ public class SecurityServiceImpl implements SecurityService {
             return Date.from(Instant.now().plus(duration));
         }
 
-        @SneakyThrows(UnsupportedEncodingException.class)
         public String createWebappToken(Long customerId, WebappCredentials credentials) {
             return Jwts.builder()
                        .setId(Long.toString(customerId))
@@ -253,7 +253,7 @@ public class SecurityServiceImpl implements SecurityService {
                        .setExpiration(calculateExpirationDate())
                        .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
                        .claim(JWT_CLAIM_SOURCE, credentials.getSource())
-                       .signWith(signatureAlgorithm, jwtSecret.getBytes("UTF-8"))
+                       .signWith(signatureAlgorithm, jwtSecret.getBytes(StandardCharsets.UTF_8))
                        .compact();
         }
     }

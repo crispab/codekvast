@@ -24,14 +24,13 @@ package io.codekvast.javaagent.codebase;
 import io.codekvast.javaagent.config.AgentConfig;
 import lombok.*;
 import lombok.extern.java.Log;
+import org.apache.commons.codec.binary.Base64;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.Set;
 import java.util.TreeSet;
-
-import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 
 /**
  * An immutable fingerprint of a code base. Used for comparing different code bases for equality.
@@ -107,7 +106,7 @@ public class CodeBaseFingerprint {
                     numJarFiles += 1;
                 }
             }
-            return new CodeBaseFingerprint(numClassFiles, numJarFiles, printBase64Binary(md.digest()));
+            return new CodeBaseFingerprint(numClassFiles, numJarFiles, new Base64().encodeToString(md.digest()));
         }
     }
 }
