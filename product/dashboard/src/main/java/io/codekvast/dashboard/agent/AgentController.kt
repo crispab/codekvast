@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.agent
 
 import io.codekvast.common.customer.LicenseViolationException
+import io.codekvast.dashboard.agent.AgentService.PublicationType
 import io.codekvast.dashboard.agent.AgentService.PublicationType.CODEBASE
 import io.codekvast.dashboard.agent.AgentService.PublicationType.INVOCATIONS
 import io.codekvast.dashboard.util.LoggingUtils.humanReadableByteCount
@@ -34,7 +35,6 @@ import org.springframework.http.MediaType.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.io.IOException
 import javax.inject.Inject
 import javax.validation.Valid
 
@@ -66,12 +66,11 @@ class AgentController @Inject constructor(private val agentService: AgentService
     }
 
     @PostMapping(value = [V1_UPLOAD_CODEBASE])
-    @Throws(IOException::class)
     fun uploadCodeBase1(
-            @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
-            @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
-            @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
-            @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
+        @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
+        @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
+        @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
+        @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
 
         saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file)
 
@@ -79,12 +78,11 @@ class AgentController @Inject constructor(private val agentService: AgentService
     }
 
     @PostMapping(value = [V2_UPLOAD_CODEBASE])
-    @Throws(IOException::class)
     fun uploadCodeBase2(
-            @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
-            @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
-            @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
-            @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
+        @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
+        @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
+        @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
+        @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
 
         saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file)
 
@@ -92,12 +90,11 @@ class AgentController @Inject constructor(private val agentService: AgentService
     }
 
     @PostMapping(value = [V1_UPLOAD_INVOCATION_DATA])
-    @Throws(IOException::class)
     fun uploadInvocationData1(
-            @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
-            @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
-            @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
-            @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
+        @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
+        @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
+        @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
+        @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
 
         saveUploadedPublication(INVOCATIONS, licenseKey, fingerprint, publicationSize, file)
 
@@ -105,28 +102,27 @@ class AgentController @Inject constructor(private val agentService: AgentService
     }
 
     @PostMapping(value = [V2_UPLOAD_INVOCATION_DATA])
-    @Throws(IOException::class)
     fun uploadInvocationData2(
-            @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
-            @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
-            @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
-            @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
+        @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
+        @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
+        @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
+        @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
 
         saveUploadedPublication(INVOCATIONS, licenseKey, fingerprint, publicationSize, file)
 
         return "OK"
     }
 
-    @Throws(IOException::class)
-    private fun saveUploadedPublication(publicationType: AgentService.PublicationType, licenseKey: String, fingerprint: String,
-                                        publicationSize: Int, file: MultipartFile) {
+    private fun saveUploadedPublication(publicationType: PublicationType,
+                                        licenseKey: String,
+                                        fingerprint: String,
+                                        publicationSize: Int,
+                                        file: MultipartFile) {
 
         logger.debug("Received {} ({} {}, {}) with licenseKey={}, fingerprint={}",
-                file.originalFilename, publicationSize, publicationType,
-                humanReadableByteCount(file.size), licenseKey, fingerprint)
+            file.originalFilename, publicationSize, publicationType, humanReadableByteCount(file.size), licenseKey, fingerprint)
 
         agentService.savePublication(publicationType, licenseKey, publicationSize, file.inputStream)
     }
 
 }
-

@@ -6,6 +6,7 @@ import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentController;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
+import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +20,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * @author olle.hallin@crisp.se
@@ -55,10 +57,16 @@ public class AgentControllerIntegrationTest {
     @Test
     public void should_accept_post_to_agentPollConfig() throws Exception {
         GetConfigRequest1 request = GetConfigRequest1.sample();
+        when(agentService.getConfig(request)).thenReturn(GetConfigResponse1.sample().toBuilder()
+                                                                           .codeBasePublisherName("foobar")
+                                                                           .build());
+
         mvc.perform(post(V1_POLL_CONFIG)
                         .accept(APPLICATION_JSON_UTF8)
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(objectMapper.writeValueAsString(request)))
-           .andExpect(status().isOk());
+           .andExpect(status().isOk())
+           .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+           .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
     }
 }
