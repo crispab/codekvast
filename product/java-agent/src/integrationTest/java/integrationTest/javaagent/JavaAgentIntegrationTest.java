@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class JavaAgentIntegrationTest {
 
-    private final String jacocoAgent = System.getProperty("integrationTest.jacocoAgent");
+    // TODO: private final String jacocoAgent = System.getProperty("integrationTest.jacocoAgent");
     private final String codekvastAgent = System.getProperty("integrationTest.codekvastAgent");
     private final String classpath = System.getProperty("integrationTest.classpath");
 
@@ -64,7 +64,7 @@ public class JavaAgentIntegrationTest {
         // when
 
         // then
-        assertThat(jacocoAgent, notNullValue());
+        // TODO: assertThat(jacocoAgent, notNullValue());
         assertThat(codekvastAgent, notNullValue());
         assertThat(classpath, notNullValue());
     }
@@ -129,7 +129,7 @@ public class JavaAgentIntegrationTest {
         String cp = classpath.endsWith(":") ? classpath.substring(0, classpath.length()-2) : classpath;
         List<String> command = new ArrayList<>(
             Arrays.asList("java",
-                          "-javaagent:" + jacocoAgent,
+                          // TODO: "-javaagent:" + jacocoAgent,
                           "-javaagent:" + codekvastAgent,
                           "-cp", cp,
                           "-Djava.util.logging.config.file=src/integrationTest/resources/logging.properties",
