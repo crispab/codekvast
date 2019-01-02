@@ -30,7 +30,6 @@ dependencies {
     compile "com.google.code.gson:gson:$gsonVersion"
     compile 'com.google.guava:guava:20.0' // The latest version that works with Java 7.
     compile 'com.squareup.okhttp3:okhttp:3.12.0'
-    compile 'commons-codec:commons-codec:1.11'
     compile aspectjWeaver
     
     testCompile lombok
@@ -84,7 +83,6 @@ shadowJar {
     relocate 'javax.validation', 'ck.javax.validation'
     relocate 'okhttp3', 'ck.okhttp3'
     relocate 'okio', 'ck.okio'
-    relocate 'org.apache', 'ck.org.apache'
     relocate 'org.checkerframework', 'ck.org.checkerframework'
 
     relocate('org.aspectj', 'ck.org.aspectj') {
@@ -102,6 +100,7 @@ task verifyShadowJar {
 
     def timestampFile = file("$buildDir/${name}.timestamp")
     inputs.files shadowJar.outputs.files
+    inputs.files file("build.gradle")
     outputs.file timestampFile
 
     doLast {
@@ -109,7 +108,6 @@ task verifyShadowJar {
         logger.info("Verifying relocations in {}", shadowJarFile)
 
         ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(shadowJarFile)))
-        // InputStreamReader reader = new InputStreamReader(zipInputStream, Charset.forName("UTF-8"))
 
         ZipEntry zipEntry
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -131,7 +129,7 @@ task verifyShadowJar {
             }
         }
 
-        assert shadowJarFile.length() < 4_200_000 // bytes, it is currently approx. 4.1 MB
+        assert shadowJarFile.length() < 4_100_000 // bytes, it is currently approx. 4.0 MB
         timestampFile.parentFile.mkdirs()
         timestampFile.text = "${java.time.Instant.now()}\n"
     }
