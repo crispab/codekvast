@@ -49,8 +49,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -83,7 +83,7 @@ public class SecurityServiceImpl implements SecurityService {
     private byte[] jwtSecret;
 
     @PostConstruct
-    public void postConstruct() throws UnsupportedEncodingException {
+    public void postConstruct() {
         String secret = settings.getDashboardJwtSecret();
         if (secret == null) {
             secret = "";
