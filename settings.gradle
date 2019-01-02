@@ -20,7 +20,7 @@ include ':sample:sample-gradle-application'
 include ':sample:sample-spring-boot-executable-jar'
 include ':sample:sample-lib'
 include ':sample:swing-app'
-include ':sample:sample-concrete-aspect'
+// TODO: include ':sample:sample-concrete-aspect'
 
 buildCache {
     local(DirectoryBuildCache) {

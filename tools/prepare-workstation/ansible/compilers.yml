@@ -7,6 +7,7 @@
     -   role: comcast.sdkman
         sdkman_install_packages:
             - { candidate: java, version: '11.0.1-open' }
+            - { candidate: java, version: '8.0.192-zulu' }
             - { candidate: java, version: '7.0.201-zulu' }
         sdkman_defaults:
             java: '11.0.1-open'

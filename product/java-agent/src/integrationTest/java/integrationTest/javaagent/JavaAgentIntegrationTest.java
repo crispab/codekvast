@@ -127,8 +127,12 @@ public class JavaAgentIntegrationTest {
 
     private List<String> buildJavaCommand(String configPath) {
         String cp = classpath.endsWith(":") ? classpath.substring(0, classpath.length()-2) : classpath;
+
+        // See <root>/tools/prepare-workstation/install-compilers.sh
+        String java = String.format("%s/.sdkman/candidates/java/%s/bin/java", System.getenv("HOME"), "7.0.201-zulu");
+
         List<String> command = new ArrayList<>(
-            Arrays.asList("java",
+            Arrays.asList(java,
                           // TODO: "-javaagent:" + jacocoAgent,
                           "-javaagent:" + codekvastAgent,
                           "-cp", cp,

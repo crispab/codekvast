@@ -16,6 +16,7 @@ apply plugin: 'io.spring.dependency-management'
 
 version = '1.0.0'
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -26,8 +27,8 @@ configurations {
 }
 
 dependencies {
-    annotationProcessor 'org.projectlombok:lombok:1.16.16'
-    compileOnly 'org.projectlombok:lombok:1.16.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+    compileOnly 'org.projectlombok:lombok:1.18.4'
 
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile project(":sample:sample-lib")
@@ -73,7 +74,10 @@ task launchExecutableJar(type: Exec, dependsOn: [bootJar, generateCodekvastConfi
     description "Launches the executable jar produced by bootJar"
     group "Application"
 
-    executable "java"
+    def jdkVersion = '8.0.192-zulu' // TODO: Make it work with java 11.0.1-open
+
+    // See <rootDir>/tools/prepare-workstation/install-compilers.sh
+    executable "${System.getenv('HOME')}/.sdkman/candidates/java/${jdkVersion}/bin/java"
 
     // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
