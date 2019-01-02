@@ -16,7 +16,6 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 
-import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,7 +41,7 @@ public class SecurityServiceImplTest {
     private SecurityServiceImpl securityService;
 
     @Before
-    public void beforeTest() throws UnsupportedEncodingException {
+    public void beforeTest() {
         MockitoAnnotations.initMocks(this);
         securityService = new SecurityServiceImpl(settings, customerService, jdbcTemplate);
         securityService.postConstruct();
@@ -95,7 +94,7 @@ public class SecurityServiceImplTest {
     @Test(expected = BadCredentialsException.class)
     public void should_reject_Heroku_SSO_when_invalid_token() {
         // given
-        Long timestampSeconds = Instant.now().getEpochSecond();
+        long timestampSeconds = Instant.now().getEpochSecond();
         String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
         // when
@@ -108,7 +107,7 @@ public class SecurityServiceImplTest {
     @Test(expected = NonceExpiredException.class)
     public void should_reject_Heroku_SSO_when_valid_token_too_old_timestamp() {
         // given
-        Long timestampSeconds = Instant.now().getEpochSecond();
+        long timestampSeconds = Instant.now().getEpochSecond();
         String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
         // when
@@ -121,7 +120,7 @@ public class SecurityServiceImplTest {
     @Test(expected = NonceExpiredException.class)
     public void should_reject_Heroku_SSO_when_valid_token_too_new_timestamp() {
         // given
-        Long timestampSeconds = Instant.now().getEpochSecond();
+        long timestampSeconds = Instant.now().getEpochSecond();
         String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
         // when
