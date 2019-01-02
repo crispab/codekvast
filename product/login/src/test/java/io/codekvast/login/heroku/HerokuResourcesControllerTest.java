@@ -28,12 +28,24 @@ public class HerokuResourcesControllerTest {
     private HerokuResourcesController controller;
 
     @Test(expected = BadCredentialsException.class)
-    public void should_reject_invalid_basic_auth() {
+    public void should_reject_malformed_basic_auth() {
         // given
         when(settings.getHerokuApiPassword()).thenReturn("password");
 
         // when
         controller.validateBasicAuth("foobar");
+
+        // then
+        // exception!
+    }
+
+    @Test(expected = BadCredentialsException.class)
+    public void should_reject_invalid_basic_auth() {
+        // given
+        when(settings.getHerokuApiPassword()).thenReturn("password");
+
+        // when
+        controller.validateBasicAuth("Basic foobar");
 
         // then
         // exception!
