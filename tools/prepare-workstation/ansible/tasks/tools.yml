@@ -1,13 +1,4 @@
 ---
-- name: Install OpenJDK 11
-  package: name={{ item }} state=present
-  with_items:
-  - openjdk-11-jdk
-  - openjdk-11-source
-  - openjdk-11-doc
-
-# TODO: Remove OpenJDK 8 ?
-
 - name: Install git and curl
   package: name={{ item }} state=present
   with_items:
