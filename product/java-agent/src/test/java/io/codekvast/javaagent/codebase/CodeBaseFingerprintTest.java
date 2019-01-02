@@ -10,7 +10,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -79,7 +78,7 @@ public class CodeBaseFingerprintTest {
 
         // then
         assertThat(fp1.getNumFiles(), is(0));
-        assertThat(fp1.getSha256(), is("eLOcAEeBUbujF8chETZte9+arWfYgCOFJ+pld5EmcUI="));
+        assertThat(fp1.getSha256(), is("78b39c00478151bba317c72111366d7bdf9aad67d880238527ea657791267142"));
     }
 
     @Test

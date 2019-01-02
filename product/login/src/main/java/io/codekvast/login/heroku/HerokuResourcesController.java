@@ -42,9 +42,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -107,16 +108,16 @@ public class HerokuResourcesController {
         return ResponseEntity.ok("{}");
     }
 
-    private void validateBasicAuth(String authentication) throws BadCredentialsException {
+    void validateBasicAuth(String authentication) throws BadCredentialsException {
         logger.debug("authentication={}", authentication);
 
         // The password is defined in <rootDir>/deploy/vars/secrets.yml, and it has been pushed to Heroku by means
         // of <rootDir>/deploy/push-addon-manifest-to-heroku.sh
 
         String credentials = "codekvast:" + settings.getHerokuApiPassword();
-        String expected = "Basic " + DatatypeConverter.printBase64Binary(credentials.getBytes());
-
-        if (!authentication.equals(expected)) {
+        String expected = "Basic " + new String(Base64.getEncoder().encode(credentials.getBytes()), StandardCharsets.UTF_8);
+        String normalizedAuth = authentication.replaceAll("^[Bb][Aa][Ss][Ii][Cc] ", "Basic ");
+        if (!normalizedAuth.equals(expected)) {
             throw new BadCredentialsException("Invalid credentials: " + authentication);
         }
     }

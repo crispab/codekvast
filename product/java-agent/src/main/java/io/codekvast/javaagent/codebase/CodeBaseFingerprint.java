@@ -24,9 +24,9 @@ package io.codekvast.javaagent.codebase;
 import io.codekvast.javaagent.config.AgentConfig;
 import lombok.*;
 import lombok.extern.java.Log;
-import org.apache.commons.codec.binary.Base64;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.Set;
@@ -106,7 +106,8 @@ public class CodeBaseFingerprint {
                     numJarFiles += 1;
                 }
             }
-            return new CodeBaseFingerprint(numClassFiles, numJarFiles, new Base64().encodeToString(md.digest()));
+            val digest = String.format("%x", new BigInteger(1, md.digest()));
+            return new CodeBaseFingerprint(numClassFiles, numJarFiles, digest);
         }
     }
 }
