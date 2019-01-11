@@ -17,7 +17,7 @@ dependencies {
     compile project(':product:agent-model')
     compile project(':product:common')
     compile "com.google.code.gson:gson:$gsonVersion"
-    compile 'org.springframework.retry:spring-retry:1.2.2.RELEASE'
+    compile 'org.springframework.retry:spring-retry:1.2.3.RELEASE'
     
     runtime project(':product:db-migration')
 }
