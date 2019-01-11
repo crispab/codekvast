@@ -155,7 +155,6 @@ public class SecurityServiceImplTest {
     @Getter
     private static class CodekvastCommonSettingsForTestImpl implements CodekvastCommonSettings {
 
-        // Example data from https://devcenter.heroku.com/articles/add-on-single-sign-on
         private String dashboardJwtSecret = "secret";
         private Long dashboardJwtExpirationHours = 1L;
 

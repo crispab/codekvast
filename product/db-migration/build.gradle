@@ -1,6 +1,6 @@
 description = "Codekvast database schema migrations"
 
-apply from: "$rootDir/gradle/java-8.gradle"
+apply from: "$rootDir/gradle/java-11.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 
 archivesBaseName = "codekvast-db-migration"

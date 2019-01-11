@@ -1,6 +1,6 @@
 description = "Common utilities that can be used from any application"
 
-apply from: "$rootDir/gradle/java-8.gradle"
+apply from: "$rootDir/gradle/java-11.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.unbroken-dome.test-sets'
