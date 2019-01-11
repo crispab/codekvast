@@ -47,6 +47,7 @@ public class CipherUtils {
      * @param plainText The string to encrypt
      * @param key       The UTF-8 encoded string containing the encryption key.
      * @return A Base64-encoded encrypted version of the plain text.
+     * @throws CipherException When failed to encrypt.
      */
     public static String encrypt(String plainText, String key) throws CipherException {
         try {
@@ -65,6 +66,7 @@ public class CipherUtils {
      * @param cipherText The string to decrypt. It comes from {@link #encrypt(String, String)}.
      * @param key        The UTF-8 encoded string containing the encryption key.
      * @return The plain text.
+     * @throws CipherException When failed to decrypt.
      */
     public static String decrypt(String cipherText, String key) throws CipherException {
         try {

@@ -81,6 +81,7 @@ public class MethodDescriptor1 {
 
     /**
      * Assigns values to all computed fields.
+     * @return this
      */
     public MethodDescriptor1 computeFields() {
         this.collectedSinceMillis =

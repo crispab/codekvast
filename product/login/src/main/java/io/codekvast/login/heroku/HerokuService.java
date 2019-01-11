@@ -63,6 +63,7 @@ public interface HerokuService {
      *
      * @param customerId The customerId
      * @return A valid access token. Returns null if not possible to refresh an expired access token.
+     * @throws CipherException When failed to encrypt the access token.
      */
     String getAccessTokenFor(Long customerId) throws CipherException;
 
