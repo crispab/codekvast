@@ -1,11 +1,11 @@
 package io.codekvast.common.security.impl;
 
+import io.codekvast.common.bootstrap.CodekvastCommonSettingsForTestImpl;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.customer.PricePlanDefaults;
-import lombok.Getter;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -152,18 +152,4 @@ public class SecurityServiceImplTest {
         assertThat(securityService.getCustomerId(), is(4711L));
     }
 
-    @Getter
-    private static class CodekvastCommonSettingsForTestImpl implements CodekvastCommonSettings {
-
-        private String dashboardJwtSecret = "secret";
-        private Long dashboardJwtExpirationHours = 1L;
-
-        // not used in test
-        private String applicationName = null;
-        private String displayVersion = null;
-        private String dnsCname = null;
-        private String environment = null;
-        private String slackWebHookToken = null;
-        private String slackWebHookUrl = null;
-    }
 }

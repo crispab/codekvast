@@ -515,7 +515,7 @@ public class DashboardIntegrationTest {
     @Sql(scripts = "/sql/base-data.sql")
     public void should_getConfig_for_enabled_agent() {
         // given
-        new Timestamps().invoke();
+        new Timestamps(jdbcTemplate).invoke();
 
         // when
         GetConfigResponse1 response = agentService.getConfig(
@@ -539,7 +539,7 @@ public class DashboardIntegrationTest {
     @Sql(scripts = "/sql/base-data.sql")
     public void should_getConfig_for_disabled_agent() {
         // given
-        new Timestamps().invoke();
+        new Timestamps(jdbcTemplate).invoke();
 
         // when
         GetConfigResponse1 response = agentService.getConfig(
@@ -580,7 +580,7 @@ public class DashboardIntegrationTest {
     @Sql(scripts = "/sql/base-data.sql")
     public void should_getStatus_correctly() {
         // given
-        Timestamps timestamps = new Timestamps().invoke();
+        Timestamps timestamps = new Timestamps(jdbcTemplate).invoke();
         setSecurityContextCustomerId(1L);
 
         // when
@@ -608,14 +608,14 @@ public class DashboardIntegrationTest {
                                                                 .hostname("hostname1")
                                                                 .jvmId(1L)
                                                                 .methodVisibility("public")
-                                                                .nextPollExpectedAtMillis(cutMillis(timestamps.inOneMinute))
+                                                                .nextPollExpectedAtMillis(cutMillis(timestamps.getInOneMinute()))
                                                                 .nextPublicationExpectedAtMillis(cutMillis(
-                                                                    Timestamp.from(timestamps.tenMinutesAgo.toInstant().plusSeconds(
+                                                                    Timestamp.from(timestamps.getTenMinutesAgo().toInstant().plusSeconds(
                                                                         PricePlanDefaults.DEMO.getPublishIntervalSeconds()))))
                                                                 .packages("com.foobar1")
-                                                                .pollReceivedAtMillis(cutMillis(timestamps.tenMinutesAgo))
-                                                                .publishedAtMillis(cutMillis(timestamps.twoMinutesAgo))
-                                                                .startedAtMillis(cutMillis(timestamps.almostThreeDaysAgo))
+                                                                .pollReceivedAtMillis(cutMillis(timestamps.getTenMinutesAgo()))
+                                                                .publishedAtMillis(cutMillis(timestamps.getTwoMinutesAgo()))
+                                                                .startedAtMillis(cutMillis(timestamps.getAlmostThreeDaysAgo()))
                                                                 .tags("tag1=t1,tag2=t2")
                                                                 .build()));
 
@@ -754,36 +754,4 @@ public class DashboardIntegrationTest {
         return JdbcTestUtils.countRowsInTable(jdbcTemplate, tableName);
     }
 
-    private class Timestamps {
-        Timestamp almostThreeDaysAgo;
-        Timestamp tenMinutesAgo;
-        Timestamp twoMinutesAgo;
-        Timestamp inOneMinute;
-
-        Timestamps invoke() {
-            // Set the timestamps from Java. It's impossible to write time-zone agnostic code in a static sql script invoked by @Sql.
-
-            Instant now = Instant.now();
-            almostThreeDaysAgo = Timestamp.from(now.minus(3, DAYS).minus(5, HOURS));
-            tenMinutesAgo = Timestamp.from(now.minus(10, MINUTES));
-            twoMinutesAgo = Timestamp.from(now.minus(2, MINUTES));
-            inOneMinute = Timestamp.from(now.plus(1, MINUTES));
-
-            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                                tenMinutesAgo, inOneMinute, TRUE, "uuid1");
-
-            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                                tenMinutesAgo, inOneMinute, FALSE, "uuid2");
-
-            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                                tenMinutesAgo, twoMinutesAgo, TRUE, "uuid3");
-
-            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                                tenMinutesAgo, twoMinutesAgo, FALSE, "uuid4");
-
-            jdbcTemplate.update("UPDATE jvms SET startedAt = ?, publishedAt = ?", tenMinutesAgo, twoMinutesAgo);
-            jdbcTemplate.update("UPDATE jvms SET startedAt = ? WHERE uuid = ?", almostThreeDaysAgo, "uuid1");
-            return this;
-        }
-    }
 }

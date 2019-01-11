@@ -44,4 +44,5 @@ dependencies {
     testRuntime logback
 
     integrationTestCompileOnly lombok
+    integrationTestCompile sourceSets.test.output
 }
