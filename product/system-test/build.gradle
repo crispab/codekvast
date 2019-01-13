@@ -55,8 +55,9 @@ dependencies {
 
     testCompile project(':product:common')
     testCompile project(':product:testsupport')
+    testCompile "org.codehaus.groovy:groovy-all"
     testCompile 'org.gebish:geb-spock:2.2'
-    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
     testCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
     testRuntime "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
@@ -65,6 +66,19 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
     jdbc mariadbDriver
+}
+
+configurations.all {
+    resolutionStrategy {
+
+        failOnVersionConflict()
+
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'org.codehaus.groovy') {
+                details.useVersion '2.5.5'
+            }
+        }
+    }
 }
 
 def startSystemTestEnvironment() {
