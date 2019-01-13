@@ -1,8 +1,7 @@
 buildscript {
     dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.2'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.9.2'
         classpath 'com.github.jruby-gradle:jruby-gradle-plugin:0.1.5'
-        classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.6'
     }
 }
 
@@ -11,7 +10,8 @@ apply plugin: 'com.github.jruby-gradle.base'
 apply from: "$rootDir/gradle/libs.gradle"
 
 dependencies {
-    gems 'rubygems:asciidoctor-diagram:1.2.0'
+    asciidoctor 'org.asciidoctor:asciidoctorj-diagram:1.5.11'
+    asciidoctor 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.16'
 }
 
 description = "Home for the Codekvast documentation, which built by asciidoctor"
@@ -22,7 +22,7 @@ asciidoctor {
     requires = ['asciidoctor-diagram']
     gemPath = jrubyPrepareGems.outputDir
     backends "html5"
-    // backends "pdf"
+    backends "pdf"
 
     sources {
         include '**/*.adoc'
