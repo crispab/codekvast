@@ -1,6 +1,7 @@
 ---
 - name: Create Datadog config directory for Codekvast
   file: path=/etc/datadog-agent/conf.d/codekvast.d state=directory
+  tags: datadog
 
 - name: Copy config fragments to Datadog config directory
   template: src=datadog/{{ item.src }} dest=/etc/datadog-agent/conf.d/codekvast.d/{{ item.dest }}
@@ -9,6 +10,7 @@
     dest: 0-logs.fragment
   - src: service.fragment.yml
     dest: "{{ service_name }}.fragment"
+  tags: datadog
 
 - name: Assemble the Datadog config file
   assemble:
@@ -16,6 +18,7 @@
     regexp: "\\.fragment$"
     dest: /etc/datadog-agent/conf.d/codekvast.d/conf.yaml
   notify: restart datadog-agent
+  tags: datadog
 
 - name: Lookup the private DNS name for the database server
   set_fact: database_dns_names="{{ groups[database_group_name]|map('extract', hostvars, 'ec2_private_dns_name')|list }}"
