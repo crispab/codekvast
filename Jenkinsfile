@@ -9,6 +9,7 @@ node {
                 printenv | sort
                 tools/prepare-workstation/install-compilers.sh
                 source $HOME/.sdkman/bin/sdkman-init.sh
+                which javac
                 tools/real-clean-workspace.sh
                 """
             }
