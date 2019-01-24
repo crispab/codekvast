@@ -44,10 +44,10 @@ Web pages (i.e., http://www.codekvast.io) lives in the Git repo `https://github.
 
 ## Development environment
 
-There is a Bash script that prepares the development environment.
+There are a couple of Bash scripts that prepares the development environment.
 
-It works for Ubuntu, and is called `tools/prepare-workstation/run.sh`.
-It uses Ansible for setting up the workstation so that it works for Codekvast.
+They work for Ubuntu, and are called `tools/prepare-workstation/install-compilers.sh` and `tools/prepare-workstation/run.sh`.
+They use Bash and Ansible for setting up the workstation so that it works for Codekvast.
 
 If you run some other OS or prefer to do it by hand, here are the requirements:
 

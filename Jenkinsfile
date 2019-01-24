@@ -7,6 +7,7 @@ node {
                 checkout scm
                 sh """
                 printenv | sort
+                tools/prepare-workstation/install-compilers.sh
                 tools/real-clean-workspace.sh
                 """
             }
