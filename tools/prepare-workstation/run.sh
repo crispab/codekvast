@@ -15,6 +15,9 @@ if [ "$(grep ppa.launchpad.net/ansible/ansible /etc/apt/sources.list.d/ansible*.
 fi
 
 cd $(dirname $0)/ansible
+
 sudo chown root.root ~/.netrc
+trap "sudo chown ${USER}.$(id -gn ${USER}) ~/.netrc" EXIT
+
+ansible-playbook -i inventory compilers.yml $*
 sudo ansible-playbook -i inventory playbook.yml -e "actual_username=${USER}" $*
-sudo chown ${USER}.$(id -gn ${USER}) ~/.netrc

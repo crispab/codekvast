@@ -60,9 +60,11 @@ You must be added as trusted developer by `git-crypt add-gpg-user` to access the
 
 ### JDK and Node.js
 
-Java 8 is required. OpenJDK is recommended.
+SDKMAN is required.
 
-Node.js 8+, NPM 3.10+ and Chrome are required.
+In SDKMAN, the Java versions that are required are defined by `gradle.properties`.
+
+Node.js 8+, NPM 3.10+ and Yarn 1.13+ are required. Chrome and Firefox are downloaded on demand for executing system tests.
 
 git-crypt is required for deploying to the cloud.
 

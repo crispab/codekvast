@@ -11,3 +11,6 @@
             - { candidate: java, version: '7.0.201-zulu' }
         sdkman_defaults:
             java: '11.0.1-open'
+        tags:
+        - compilers
+        - sdkman

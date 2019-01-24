@@ -152,6 +152,7 @@ integrationTest {
     systemProperty 'integrationTest.codekvastAgent', shadowJar.outputs.files.asPath
     // TODO: systemProperty 'integrationTest.jacocoAgent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"
     systemProperty 'integrationTest.classpath', "build/classes/java/integrationTest/:$configurations.sampleappRuntime.asPath"
+    systemProperty 'integrationTest.javaVersion', sdkmanJavaVersion_7
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

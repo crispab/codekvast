@@ -32,6 +32,7 @@ public class JavaAgentIntegrationTest {
     // TODO: private final String jacocoAgent = System.getProperty("integrationTest.jacocoAgent");
     private final String codekvastAgent = System.getProperty("integrationTest.codekvastAgent");
     private final String classpath = System.getProperty("integrationTest.classpath");
+    private final String javaVersion = System.getProperty("integrationTest.javaVersion");
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
@@ -128,8 +129,7 @@ public class JavaAgentIntegrationTest {
     private List<String> buildJavaCommand(String configPath) {
         String cp = classpath.endsWith(":") ? classpath.substring(0, classpath.length()-2) : classpath;
 
-        // See <root>/tools/prepare-workstation/install-compilers.sh
-        String java = String.format("%s/.sdkman/candidates/java/%s/bin/java", System.getenv("HOME"), "7.0.201-zulu");
+        String java = String.format("%s/.sdkman/candidates/java/%s/bin/java", System.getenv("HOME"), javaVersion);
 
         List<String> command = new ArrayList<>(
             Arrays.asList(java,

@@ -7,18 +7,17 @@ configurations {
 
 dependencies {
     codekvastagent project(path: ":product:java-agent", configuration: 'shadow')
-//    tomcatEndorsed "org.slf4j:slf4j-jdk14:1.7.7"
 }
 
 defaultTasks 'run'
 
-ext.tomcatVersion = "7.0.92"
-ext.tomcatDownloadUrl = "http://downloads.codekvast.io/apache-tomcat-${tomcatVersion}.zip"
-ext.tomcatDir = file("$buildDir/tomcat")
-ext.catalinaBase = new File(tomcatDir, "apache-tomcat-${tomcatVersion}")
-ext.catalinaWebapps = new File(catalinaBase, "webapps")
-
-ext.jenkinsDownloadUrl = "http://downloads.codekvast.io/jenkins-${jenkinsVersion}.war"
+def javaVersion = sdkmanJavaVersion_8
+def tomcatVersion = "7.0.92"
+def tomcatDownloadUrl = "http://downloads.codekvast.io/apache-tomcat-${tomcatVersion}.zip"
+def tomcatDir = file("$buildDir/tomcat")
+def catalinaBase = new File(tomcatDir, "apache-tomcat-${tomcatVersion}")
+def catalinaWebapps = new File(catalinaBase, "webapps")
+def jenkinsDownloadUrl = "http://downloads.codekvast.io/jenkins-${jenkinsVersion}.war"
 
 task installJenkinsInTomcat7 {
     def downloadDir = file("$rootDir/.tmp/download")
@@ -26,6 +25,7 @@ task installJenkinsInTomcat7 {
 
     dependsOn ':product:java-agent:shadowJar'
 
+    inputs.property "javaVersion", javaVersion
     inputs.property "tomcatVersion", tomcatVersion
     inputs.property "tomcat", tomcatDownloadUrl
     inputs.property "jenkinsVersion", jenkinsVersion
@@ -147,10 +147,11 @@ io.codekvast.javaagent.level = FINE
 codekvastAgent = $codekvastAgent
 -------------------------"""
         setenvFile.text = """
-export JDK_JAVA_OPTIONS=\"--add-opens=java.base/java.sql=ALL-UNNAMED\"
-export CATALINA_OPTS=\"-javaagent:$codekvastAgent -Dcodekvast.configuration=$generateCodekvastConfig.configFile\"
-export LOGGING_CONFIG=\"-Djava.util.logging.config.file=$loggingProperties\"
-export LOGGING_MANAGER=\"-Djava.util.logging.manager=java.util.logging.LogManager\"
+JAVA_HOME=${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}
+JDK_JAVA_OPTIONS=\"--add-opens=java.base/java.sql=ALL-UNNAMED\"
+CATALINA_OPTS=\"-javaagent:$codekvastAgent -Dcodekvast.configuration=$generateCodekvastConfig.configFile\"
+LOGGING_CONFIG=\"-Djava.util.logging.config.file=$loggingProperties\"
+LOGGING_MANAGER=\"-Djava.util.logging.manager=java.util.logging.LogManager\"
 """
     }
 }
