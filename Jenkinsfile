@@ -14,8 +14,9 @@ node {
                 ls -l gradle.properties
                 pwd
                 """
-                // Now the workspace is populated
+
                 gradlew = buildGradlewCommand('gradle.properties')
+                println "gradlew=$gradlew"
             }
 
             stage('Compile Java') {
@@ -145,5 +146,11 @@ def buildGradlewCommand(String filename) {
     new File(System.getenv('WORKSPACE'), filename).withInputStream {
         properties.load(it)
     }
-    return "env JAVA_HOME=${System.getenv('HOME')}/.sdkman/candidates/java/${properties.sdkmanJavaDefault} ./gradlew --console=plain"
+    def result = "env JAVA_HOME=${System.getenv('HOME')}/.sdkman/candidates/java/${properties.sdkmanJavaDefault} ./gradlew --console=plain"
+    println """
+
+    $result
+
+    """
+    return result
 }
