@@ -20,7 +20,7 @@ node {
 
             stage('Java unit test') {
                 try {
-                    sh "$gradlw test --exclude-task :product:system-test:test"
+                    sh "$gradle test --exclude-task :product:system-test:test"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
