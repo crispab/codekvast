@@ -3,14 +3,23 @@
     connection: local
     become: no
 
+    vars:
+        defaultJavaVersion: "{{ lookup('ini', 'sdkmanJavaDefault type=properties file=../../../gradle.properties') }}"
+
+    pre_tasks:
+        - name: Extract Java versions to install from <rootDir>/gradle.properties
+          shell: grep sdkmanJavaVersion_ ../../../gradle.properties | awk '{print $3}'
+          register: javaVersions
+
+        - set_fact:
+            packages: "{{ packages|default([]) + [{'candidate': 'java', 'version': item }] }}"
+          with_items: "{{ javaVersions.stdout_lines }}"
+
     roles:
     -   role: comcast.sdkman
-        sdkman_install_packages:
-            - { candidate: java, version: '11.0.1-open' }
-            - { candidate: java, version: '8.0.192-zulu' }
-            - { candidate: java, version: '7.0.201-zulu' }
+        sdkman_install_packages: "{{ packages }}"
         sdkman_defaults:
-            java: '11.0.1-open'
+            java: "{{ defaultJavaVersion }}"
         tags:
         - compilers
         - sdkman
