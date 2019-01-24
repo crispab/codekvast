@@ -23,7 +23,7 @@ node {
                     sh "$gradle test --exclude-task :product:system-test:test"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
-                    sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
+                    sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs --no-run-if-empty touch"
                     junit '**/build/test-results/test/*.xml'
                 }
             }
@@ -33,7 +33,7 @@ node {
                     sh "$gradle frontendTest"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
-                    sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs touch"
+                    sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs --no-run-if-empty touch"
                     junit '**/build/test-results/frontendTest/*.xml'
 
                     publishHTML([allowMissing: true,
@@ -50,7 +50,7 @@ node {
                     sh "$gradle integrationTest"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
-                    sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs touch"
+                    sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs --no-run-if-empty touch"
                     junit '**/build/test-results/integrationTest/*.xml'
                 }
             }
@@ -62,7 +62,7 @@ node {
                     archiveArtifacts '**/system-test/build/*.log'
 
                     // Prevent junit publisher to fail if Gradle has skipped the test
-                    sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
+                    sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs --no-run-if-empty touch"
                     junit '**/build/test-results/test/*.xml'
                 }
             }
