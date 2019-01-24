@@ -138,7 +138,7 @@ def slackNotification(color, message, startedAt) {
 
 def buildGradleCommand() {
     def properties = new Properties();
-    def propertiesFile = new File('gradle.properties')
+    def propertiesFile = new File('./gradle.properties')
     propertiesFile.withInputStream {
         properties.load(it)
     }
