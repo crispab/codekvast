@@ -1,6 +1,5 @@
 slackNotification null, 'Build Started', null
 def startedAt = java.time.Instant.now()
-def gradlew = "to-be-defined"
 
 node {
     try {
@@ -14,18 +13,15 @@ node {
                 ls -l gradle.properties
                 pwd
                 """
-
-                gradlew = buildGradlewCommand('gradle.properties')
-                println "gradlew=$gradlew"
             }
 
             stage('Compile Java') {
-                sh "$gradlew classes testClasses integrationTestClasses"
+                sh "./.gradlew classes testClasses integrationTestClasses"
             }
 
             stage('Java unit test') {
                 try {
-                    sh "$gradlew test --exclude-task :product:system-test:test"
+                    sh "./.gradlew test --exclude-task :product:system-test:test"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs --no-run-if-empty touch"
@@ -35,7 +31,7 @@ node {
 
             stage('TypeScript unit test') {
                 try {
-                    sh "$gradlew frontendTest"
+                    sh "./.gradlew frontendTest"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs --no-run-if-empty touch"
@@ -52,7 +48,7 @@ node {
 
             stage('Integration test') {
                 try {
-                    sh "$gradlew integrationTest"
+                    sh "./.gradlew integrationTest"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs --no-run-if-empty touch"
@@ -62,7 +58,7 @@ node {
 
             stage('System test') {
                 try {
-                    sh "$gradlew :product:system-test:test"
+                    sh "./.gradlew :product:system-test:test"
                 } finally {
                     archiveArtifacts '**/system-test/build/*.log'
 
@@ -73,7 +69,7 @@ node {
             }
 
             stage('Documentation & reports') {
-                sh "$gradlew -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc"
+                sh "./.gradlew -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc"
 
                 publishHTML([allowMissing: true,
                     alwaysLinkToLastBuild: true,
@@ -139,18 +135,4 @@ def slackNotification(color, message, startedAt) {
     def duration = startedAt == null ? "" : " in ${prettyDuration(java.time.Duration.between(startedAt, java.time.Instant.now()))}"
     def console = "${env.BUILD_URL}/console".replace('//console', '/console')
     slackSend color: color, message: "${java.time.LocalDateTime.now()} ${message}${duration} ${console}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
-}
-
-def buildGradlewCommand(String filename) {
-    def properties = new Properties();
-    new File(System.getenv('WORKSPACE'), filename).withInputStream {
-        properties.load(it)
-    }
-    def result = "env JAVA_HOME=${System.getenv('HOME')}/.sdkman/candidates/java/${properties.sdkmanJavaDefault} ./gradlew --console=plain"
-    println """
-
-    $result
-
-    """
-    return result
 }
