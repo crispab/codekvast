@@ -33,15 +33,18 @@ ext.bootJars = [
     'login'    : tasks.getByPath(':product:login:bootJar').outputs.files
 ]
 
+def javaHome = System.getenv("JAVA_HOME")
+def java = javaHome ? "$javaHome/bin/java" : "java"
+
 ext.launchCommands = [
-    'dashboard': "java -jar ${bootJars['dashboard'].asPath} " +
+    'dashboard': "$java -jar ${bootJars['dashboard'].asPath} " +
         "--server.port=${allocateFreePort()} " +
         "--management.server.port=${allocateFreePort()} " +
         "--spring.datasource.url=$jdbcUrl " +
         "--codekvast.dashboardJwtSecret=secret " +
         "--logging.file=${buildDir}/system-test-dashboard.log ",
 
-    'login'    : "java -jar ${bootJars['login'].asPath} " +
+    'login'    : "$java -jar ${bootJars['login'].asPath} " +
         "--server.port=${allocateFreePort()} " +
         "--management.server.port=${allocateFreePort()} " +
         "--spring.datasource.url=$jdbcUrl " +

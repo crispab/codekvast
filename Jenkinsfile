@@ -8,7 +8,7 @@ node {
                 sh """
                 printenv | sort
                 tools/prepare-workstation/install-compilers.sh
-                tools/real-clean-workspace.sh
+                // tools/real-clean-workspace.sh
                 """
             }
 
