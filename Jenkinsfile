@@ -68,7 +68,7 @@ node {
             }
 
             stage('Documentation & reports') {
-                sh '$gradle -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
+                sh "$gradle -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc"
 
                 publishHTML([allowMissing: true,
                     alwaysLinkToLastBuild: true,
