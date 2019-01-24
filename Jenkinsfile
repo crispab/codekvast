@@ -12,6 +12,7 @@ node {
                 tools/prepare-workstation/install-compilers.sh
                 # tools/real-clean-workspace.sh
                 ls -l gradle.properties
+                pwd
                 """
                 // Now the workspace is populated
                 gradlew = buildGradlewCommand('gradle.properties')
@@ -141,7 +142,7 @@ def slackNotification(color, message, startedAt) {
 
 def buildGradlewCommand(String filename) {
     def properties = new Properties();
-    new File(filename).withInputStream {
+    new File(System.getenv('WORKSPACE'), filename).withInputStream {
         properties.load(it)
     }
     return "env JAVA_HOME=${System.getenv('HOME')}/.sdkman/candidates/java/${properties.sdkmanJavaDefault} ./gradlew --console=plain"
