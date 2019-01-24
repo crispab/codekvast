@@ -24,6 +24,6 @@ sdk default java $(grep sdkmanJavaDefault ../../gradle.properties | awk '{print 
 sdk list java
 
 if test -f $HOME/.sdkman/etc/config${configBackupSuffix}; then
-    echo "Restoring $HOME/.sdkman/etc/config ..."
     mv -f $HOME/.sdkman/etc/config${configBackupSuffix} $HOME/.sdkman/etc/config
+    echo "Restored $HOME/.sdkman/etc/config"
 fi
