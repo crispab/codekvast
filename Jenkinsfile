@@ -12,7 +12,7 @@ node {
                 """
             }
 
-            withEnv(["JAVA_HOME=System.getenv('HOME')/.sdkman/candidates/java/11.0.2-open"]) {
+            withEnv(["JAVA_HOME=${System.getenv('HOME')}/.sdkman/candidates/java/11.0.2-open"]) {
                 stage('Compile Java') {
                     sh "./gradlew --console=plain classes testClasses integrationTestClasses"
                 }
