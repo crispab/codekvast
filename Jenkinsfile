@@ -8,6 +8,7 @@ node {
                 sh """
                 printenv | sort
                 tools/prepare-workstation/install-compilers.sh
+                source $HOME/.sdkman/bin/sdkman-init.sh
                 tools/real-clean-workspace.sh
                 """
             }
