@@ -12,15 +12,13 @@ node {
                 """
             }
 
-            def gradle = buildGradleCommand()
-
             stage('Compile Java') {
-                sh "$gradle classes testClasses integrationTestClasses"
+                sh "$gradle() classes testClasses integrationTestClasses"
             }
 
             stage('Java unit test') {
                 try {
-                    sh "$gradle test --exclude-task :product:system-test:test"
+                    sh "$gradle() test --exclude-task :product:system-test:test"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs --no-run-if-empty touch"
@@ -30,7 +28,7 @@ node {
 
             stage('TypeScript unit test') {
                 try {
-                    sh "$gradle frontendTest"
+                    sh "$gradle() frontendTest"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs --no-run-if-empty touch"
@@ -47,7 +45,7 @@ node {
 
             stage('Integration test') {
                 try {
-                    sh "$gradle integrationTest"
+                    sh "$gradle() integrationTest"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs --no-run-if-empty touch"
@@ -57,7 +55,7 @@ node {
 
             stage('System test') {
                 try {
-                    sh "$gradle :product:system-test:test"
+                    sh "$gradle() :product:system-test:test"
                 } finally {
                     archiveArtifacts '**/system-test/build/*.log'
 
@@ -68,7 +66,7 @@ node {
             }
 
             stage('Documentation & reports') {
-                sh "$gradle -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc"
+                sh "$gradle() -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc"
 
                 publishHTML([allowMissing: true,
                     alwaysLinkToLastBuild: true,
@@ -136,9 +134,9 @@ def slackNotification(color, message, startedAt) {
     slackSend color: color, message: "${java.time.LocalDateTime.now()} ${message}${duration} ${console}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
 
-def buildGradleCommand() {
+def gradle() {
     def properties = new Properties();
-    def propertiesFile = new File('./gradle.properties')
+    def propertiesFile = new File('gradle.properties')
     propertiesFile.withInputStream {
         properties.load(it)
     }
