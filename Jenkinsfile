@@ -12,7 +12,7 @@ node {
                 """
             }
 
-            def gradle = "env JAVA_HOME=${System.getenv('HOME')}/.sdkman/candidates/java/11.0.2-open ./gradlew --console=plain"
+            def gradle = buildGradleCommand()
 
             stage('Compile Java') {
                 sh "$gradle classes testClasses integrationTestClasses"
@@ -134,4 +134,13 @@ def slackNotification(color, message, startedAt) {
     def duration = startedAt == null ? "" : " in ${prettyDuration(java.time.Duration.between(startedAt, java.time.Instant.now()))}"
     def console = "${env.BUILD_URL}/console".replace('//console', '/console')
     slackSend color: color, message: "${java.time.LocalDateTime.now()} ${message}${duration} ${console}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+}
+
+def buildGradleCommand() {
+    def properties = new Properties();
+    def propertiesFile = new File('gradle.properties')
+    propertiesFile.withInputStream {
+        properties.load(it)
+    }
+    "env JAVA_HOME=${System.getenv('HOME')}/.sdkman/candidates/java/${properties.sdkmanJavaDefault} ./gradlew --console=plain"
 }
