@@ -50,7 +50,7 @@ run {
     dependsOn startMariadb, ":product:dashboard:frontendWebpack"
 
     jvmArgs = [
-        '-ea',
+        '-enableassertions',
         // "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
     ]
 

@@ -44,7 +44,7 @@ excludePackages = sample.lib.excluded
 methodVisibility = all
 packages = sample. , foo.bar.
 tags = development, sample
-bridgeAspectjMessagesToJUL = true
+# bridgeAspectjMessagesToJUL = true
 environment = Gradle
 
 # serverUrl = https://api-staging.codekvast.io
@@ -59,7 +59,8 @@ run {
     dependsOn installDist, generateCodekvastConfig, ':product:java-agent:shadowJar'
 
     jvmArgs = [
-            "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
-            "-javaagent:$configurations.codekvastagent.asPath"
+        "-javaagent:$configurations.codekvastagent.asPath",
+        "--add-modules=java.sql",
+        "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
     ]
 }

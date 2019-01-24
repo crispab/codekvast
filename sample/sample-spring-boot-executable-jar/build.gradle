@@ -71,20 +71,21 @@ httpProxyPort = 4711
 processResources.dependsOn generateCodekvastConfig
 
 task launchExecutableJar(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:java-agent:shadowJar"] ) {
-    description "Launches the executable jar produced by bootJar"
-    group "Application"
+    def jdkVersion = '11.0.1-open'
 
-    def jdkVersion = '8.0.192-zulu' // TODO: Make it work with java 11.0.1-open
+    description "Launches the executable jar produced by bootJar with OpenJDK " + jdkVersion
+    group "Application"
 
     // See <rootDir>/tools/prepare-workstation/install-compilers.sh
     executable "${System.getenv('HOME')}/.sdkman/candidates/java/${jdkVersion}/bin/java"
 
     // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
-    args "-javaagent:${configurations.codekvastagent.asPath}"
-    args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
-
     args "-jar", "build/libs/${archivesBaseName}-${version}.jar"
+
+    args "-javaagent:${configurations.codekvastagent.asPath}"
+    args "--add-modules=java.sql"
+    args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
 }
 
 task run {
