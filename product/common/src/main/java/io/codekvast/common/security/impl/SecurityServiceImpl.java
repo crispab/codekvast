@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018 Hallin Information Technology AB
+ * Copyright (c) 2015-2019 Hallin Information Technology AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,6 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -59,7 +60,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Collections.singleton;
-import static javax.xml.bind.DatatypeConverter.printHexBinary;
 
 /**
  * @author olle.hallin@crisp.se
@@ -188,8 +188,8 @@ public class SecurityServiceImpl implements SecurityService {
     String makeHerokuSsoToken(String externalId, long timestampSeconds, String salt) {
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
 
-        return printHexBinary(
-            sha1.digest(String.format("%s:%s:%d", externalId, salt, timestampSeconds).getBytes())).toLowerCase();
+        byte[] digest = sha1.digest(String.format("%s:%s:%d", externalId, salt, timestampSeconds).getBytes());
+        return String.format("%x", new BigInteger(1, digest));
     }
 
     @Override

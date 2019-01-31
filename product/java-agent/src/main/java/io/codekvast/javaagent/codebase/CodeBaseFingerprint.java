@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018 Hallin Information Technology AB
+ * Copyright (c) 2015-2019 Hallin Information Technology AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,11 @@ import lombok.*;
 import lombok.extern.java.Log;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.Set;
 import java.util.TreeSet;
-
-import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 
 /**
  * An immutable fingerprint of a code base. Used for comparing different code bases for equality.
@@ -107,7 +106,8 @@ public class CodeBaseFingerprint {
                     numJarFiles += 1;
                 }
             }
-            return new CodeBaseFingerprint(numClassFiles, numJarFiles, printBase64Binary(md.digest()));
+            val digest = String.format("%x", new BigInteger(1, md.digest()));
+            return new CodeBaseFingerprint(numClassFiles, numJarFiles, digest);
         }
     }
 }

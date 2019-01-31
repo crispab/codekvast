@@ -31,7 +31,6 @@ public class AgentControllerTest {
     @Mock
     private AgentService agentService;
 
-    @InjectMocks
     private AgentController agentController;
 
     private MockMvc mockMvc;
@@ -41,14 +40,10 @@ public class AgentControllerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        agentController = new AgentController(agentService);
         this.mockMvc = MockMvcBuilders.standaloneSetup(agentController)
                                       .setMessageConverters(new GsonHttpMessageConverter(), new StringHttpMessageConverter())
                                       .build();
-    }
-
-    @Test
-    public void should_have_mocks_injected() {
-        agentController.getConfig1(GetConfigRequest1.sample());
     }
 
     @Test
