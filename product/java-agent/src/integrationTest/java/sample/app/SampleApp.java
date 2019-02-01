@@ -19,6 +19,7 @@ public class SampleApp {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        logger.info(String.format("%s starts on Java %s", SampleApp.class.getSimpleName(), System.getProperty("java.version")));
         logger.info("2+2=" + new SampleApp().add(2, 2));
         Thread.sleep(1_500L);
         logger.info("Exit");

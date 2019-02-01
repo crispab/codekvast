@@ -20,8 +20,8 @@ dependencies {
 
     runtime logback
 
-    // codekvastagent project(path: ":product:java-agent", configuration: 'shadow')
-    codekvastagent "io.codekvast:codekvast-agent:0.24.0"
+    codekvastagent project(path: ":product:java-agent", configuration: 'shadow')
+    // codekvastagent "io.codekvast:codekvast-agent:0.24.0"
 }
 
 task generateCodekvastConfig {
@@ -44,7 +44,7 @@ excludePackages = sample.lib.excluded
 methodVisibility = all
 packages = sample. , foo.bar.
 tags = development, sample
-# bridgeAspectjMessagesToJUL = true
+bridgeAspectjMessagesToJUL = false
 environment = Gradle
 
 # serverUrl = https://api-staging.codekvast.io
@@ -60,7 +60,6 @@ run {
 
     jvmArgs = [
         "-javaagent:$configurations.codekvastagent.asPath",
-        "--add-modules=java.sql",
         "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
     ]
 }

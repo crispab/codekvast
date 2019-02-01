@@ -59,7 +59,7 @@ excludePackages = sample.lib.excluded
 methodVisibility = all
 packages = sample. , foo.bar.
 tags = development, sample
-bridgeAspectjMessagesToJUL = true
+bridgeAspectjMessagesToJUL = false
 environment = Gradle
 
 # serverUrl = https://api-staging.codekvast.io
@@ -72,20 +72,19 @@ httpProxyPort = 4711
 processResources.dependsOn generateCodekvastConfig
 
 task launchExecutableJar(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:java-agent:shadowJar"] ) {
-    def javaVersion = sdkmanJavaVersion_11
+    def javaVersion = sdkmanJavaVersion_10
 
     description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
     group "Application"
 
     executable "${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}/bin/java"
-
     // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
+    args "-javaagent:${configurations.codekvastagent.asPath}"
+    args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
 
     args "-jar", "build/libs/${archivesBaseName}-${version}.jar"
-
-    args "-javaagent:${configurations.codekvastagent.asPath}"
-    args "--add-modules=java.sql"
-    args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
+    args "--logging.level.root=INFO"
+    args "--logging.level.io.codekvast=DEBUG"
 }
 
 task run {

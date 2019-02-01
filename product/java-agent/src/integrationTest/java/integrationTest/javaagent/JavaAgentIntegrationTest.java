@@ -43,18 +43,21 @@ public class JavaAgentIntegrationTest {
 
     private static File agentConfigFile;
 
-    @Parameterized.Parameters(name = "JVM version = {0}")
-    public static List<String> testParameters() {
+    @Parameterized.Parameters(name = "JVM version = {0}, agent enabled={1}")
+    public static List<Object[]> testParameters() {
         // The streams API is not available in Java 7!
-        List<String> result = new ArrayList<>();
+        List<Object[]> result = new ArrayList<>();
         for (String version : javaVersions.split(",")) {
-            result.add(version.trim());
+            result.add(new Object[]{version.trim(), false});
+            result.add(new Object[]{version.trim(), true});
         }
         return result;
     }
 
     // Is injected from testParameters()
     private final String javaVersion;
+
+    private final Boolean agentEnabled;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -91,16 +94,16 @@ public class JavaAgentIntegrationTest {
     }
 
     @Test
-    public void should_collect_data_when_valid_config_specified() throws Exception {
+    public void should_weave_and_upload_data_when_enabled() throws Exception {
         // given
         givenThat(post(V1_POLL_CONFIG)
                       .willReturn(okJson(gson.toJson(
                           GetConfigResponse1.builder()
                                             .codeBasePublisherName("http")
-                                            .codeBasePublisherConfig("enabled=true")
+                                            .codeBasePublisherConfig("enabled=" + agentEnabled)
                                             .customerId(1L)
                                             .invocationDataPublisherName("http")
-                                            .invocationDataPublisherConfig("enabled=true")
+                                            .invocationDataPublisherConfig("enabled=" + agentEnabled)
                                             .configPollIntervalSeconds(1)
                                             .configPollRetryIntervalSeconds(1)
                                             .codeBasePublisherCheckIntervalSeconds(1)
@@ -116,19 +119,24 @@ public class JavaAgentIntegrationTest {
 
         // when
         String stdout = ProcessUtils.executeCommand(command);
-        System.out.printf("stdout = %n%s%n", stdout);
+        System.out.printf("stdout = %n%s%n%n", stdout);
 
         // then
         assertThat(stdout, containsString("Found " + agentConfigFile.getAbsolutePath()));
         assertThat(stdout, containsString("[INFO] " + AspectjMessageHandler.LOGGER_NAME));
         assertThat(stdout, containsString("AspectJ Weaver Version "));
         assertThat(stdout, containsString("[INFO] sample.app.SampleApp - 2+2=4"));
-        assertThat(stdout, containsString("Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));
+        assertThat(stdout, containsString("define aspect io.codekvast.javaagent.MethodExecutionAspect"));
+        assertThat(stdout, containsString("Join point 'method-execution(int sample.app.SampleApp.add(int, int))'"));
+        assertThat(stdout, containsString("Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))'"));
         assertThat(stdout, containsString("Codekvast shutdown completed in "));
 
         verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
-        verify(postRequestedFor(urlEqualTo(V2_UPLOAD_CODEBASE)));
-        verify(postRequestedFor(urlEqualTo(V2_UPLOAD_INVOCATION_DATA)));
+
+        if (agentEnabled) {
+            verify(postRequestedFor(urlEqualTo(V2_UPLOAD_CODEBASE)));
+            verify(postRequestedFor(urlEqualTo(V2_UPLOAD_INVOCATION_DATA)));
+        }
 
         assertThat(stdout, not(containsString("error")));
         assertThat(stdout, not(containsString("[SEVERE]")));
