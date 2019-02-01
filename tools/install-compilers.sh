@@ -15,12 +15,16 @@ fi
 
 set -e
 cd $(dirname $0)
-awk '/sdkmanJavaVersion_/ {print $3}' ../../gradle.properties |while read version; do
-    echo sdk install java $version
-    sdk install java $version
+awk '/sdkmanJavaVersion_/ {print $3}' ../gradle.properties |while read version; do
+    if test -x $HOME/.sdkman/candidates/java/${version}/bin/javac; then
+        echo JavaSDK ${version} already installed
+    else
+        echo sdk install java ${version}
+        sdk install java ${version}
+    fi
 done
 
-sdk default java $(grep sdkmanJavaDefault ../../gradle.properties | awk '{print $3}')
+sdk default java $(grep sdkmanJavaDefault ../gradle.properties | awk '{print $3}')
 sdk list java
 
 if test -f $HOME/.sdkman/etc/config${configBackupSuffix}; then

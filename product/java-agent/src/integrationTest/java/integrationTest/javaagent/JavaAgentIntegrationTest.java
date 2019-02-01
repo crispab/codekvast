@@ -8,11 +8,12 @@ import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.testsupport.ProcessUtils;
-import org.junit.Before;
-import org.junit.Rule;
+import lombok.RequiredArgsConstructor;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,23 +27,42 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public class JavaAgentIntegrationTest {
 
     // TODO: private final String jacocoAgent = System.getProperty("integrationTest.jacocoAgent");
-    private final String codekvastAgent = System.getProperty("integrationTest.codekvastAgent");
-    private final String classpath = System.getProperty("integrationTest.classpath");
-    private final String javaVersion = System.getProperty("integrationTest.javaVersion");
+    private static final String codekvastAgent = System.getProperty("integrationTest.codekvastAgent");
+    private static final String classpath = System.getProperty("integrationTest.classpath");
+    private static final String javaVersions = System.getProperty("integrationTest.javaVersions");
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
+    @ClassRule
+    public static WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
 
-    private final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
-    private File agentConfigFile;
+    private static File agentConfigFile;
 
-    @Before
-    public void setUp() throws Exception {
+    @Parameterized.Parameters(name = "JVM version = {0}")
+    public static List<String> testParameters() {
+        // The streams API is not available in Java 7!
+        List<String> result = new ArrayList<>();
+        for (String version : javaVersions.split(",")) {
+            result.add(version.trim());
+        }
+        return result;
+    }
+
+    // Is injected from testParameters()
+    private final String javaVersion;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        // TODO: assertThat(jacocoAgent, notNullValue());
+        assertThat(codekvastAgent, notNullValue());
+        assertThat(classpath, notNullValue());
+        assertThat(javaVersions, notNullValue());
+
         AgentConfig agentConfig = AgentConfigFactory.createTemplateConfig().toBuilder()
                                                     .serverUrl("http://localhost:" + wireMockRule.port())
                                                     .appName("SampleApp")
@@ -56,18 +76,6 @@ public class JavaAgentIntegrationTest {
                                                     .build();
         agentConfigFile = FileUtils.serializeToFile(agentConfig, "codekvast", ".conf.ser");
         agentConfigFile.deleteOnExit();
-    }
-
-    @Test
-    public void should_have_been_invoked_correctly() {
-        // given
-
-        // when
-
-        // then
-        // TODO: assertThat(jacocoAgent, notNullValue());
-        assertThat(codekvastAgent, notNullValue());
-        assertThat(classpath, notNullValue());
     }
 
     @Test
