@@ -72,7 +72,7 @@ httpProxyPort = 4711
 processResources.dependsOn generateCodekvastConfig
 
 task launchExecutableJar(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:java-agent:shadowJar"] ) {
-    def javaVersion = sdkmanJavaVersion_10
+    def javaVersion = sdkmanJavaVersion_11
 
     description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
     group "Application"

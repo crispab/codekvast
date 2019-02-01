@@ -14,7 +14,6 @@ version = codekvastVersion
 
 configurations {
     // TODO: jacocoagent
-    sampleappRuntime
 }
 
 testSets {
@@ -61,7 +60,7 @@ shadowJar {
             "Implementation-Version": codekvastDisplayVersion,
             "Premain-Class": "io.codekvast.javaagent.CodekvastAgent",
             "Specification-Version": codekvastVersion,
-            "Boot-Class-Path": archivesBaseName + "-" + codekvastVersion + ".jar"
+            "Automatic-Module-Name": "io.codekvast.javaagent"
         )
     }
 
@@ -151,8 +150,8 @@ integrationTest {
 
     systemProperty 'integrationTest.codekvastAgent', shadowJar.outputs.files.asPath
     // TODO: systemProperty 'integrationTest.jacocoAgent', "${configurations.jacocoagent.asPath}=destfile=${buildDir}/jacoco/integrationTest2.exec,output=file,dumponexit=true"
-    systemProperty 'integrationTest.classpath', "build/classes/java/integrationTest/:$configurations.sampleappRuntime.asPath"
-    systemProperty 'integrationTest.javaVersions', "${sdkmanJavaVersion_7}, ${sdkmanJavaVersion_8}, ${sdkmanJavaVersion_9}, ${sdkmanJavaVersion_10}"
+    systemProperty 'integrationTest.classpath', "build/classes/java/integrationTest"
+    systemProperty 'integrationTest.javaVersions', "${sdkmanJavaVersion_7}, ${sdkmanJavaVersion_8}, ${sdkmanJavaVersion_9}, ${sdkmanJavaVersion_10}, ${sdkmanJavaVersion_11}"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
