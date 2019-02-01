@@ -95,6 +95,10 @@ public class CodekvastAgent {
         initialize(config);
 
         if (config != null) {
+            // Suppress errors from class loaders that does not see codekvast-javaagent.jar
+            System.setProperty("aj.weaving.loadersToSkip", "sun.misc.Launcher$ExtClassLoader,jdk.internal.loader.ClassLoaders$PlatformClassLoader");
+
+            // Weave io.codekvast.javaagent.MethodExecutionAgent
             org.aspectj.weaver.loadtime.Agent.premain(args, instrumentation);
         }
     }

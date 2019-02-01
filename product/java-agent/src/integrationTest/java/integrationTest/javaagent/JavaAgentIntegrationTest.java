@@ -73,7 +73,7 @@ public class JavaAgentIntegrationTest {
                                                     .aspectjOptions("-verbose -showWeaveInfo")
                                                     .packages("sample")
                                                     .codeBase("build/classes/java/integrationTest")
-                                                    .bridgeAspectjMessagesToJUL(false)
+                                                    .bridgeAspectjMessagesToJUL(true)
                                                     .schedulerInitialDelayMillis(0)
                                                     .schedulerIntervalMillis(100)
                                                     .build();
@@ -119,22 +119,20 @@ public class JavaAgentIntegrationTest {
 
         // when
         String stdout = ProcessUtils.executeCommand(command);
-        System.out.printf("stdout = %n%s%n%n", stdout);
+        System.out.printf("stdout from the JVM is%n--------------------------------------------------%n%s%n--------------------------------------------------%n%n", stdout);
 
         // then
         assertThat(stdout, containsString("Found " + agentConfigFile.getAbsolutePath()));
+        assertThat(stdout, containsString("[INFO] " + AspectjMessageHandler.LOGGER_NAME));
         assertThat(stdout, containsString("AspectJ Weaver Version "));
+        assertThat(stdout, containsString("no longer creating weavers for these classloaders"));
         assertThat(stdout, containsString("[INFO] sample.app.SampleApp - 2+2=4"));
         assertThat(stdout, containsString("define aspect io.codekvast.javaagent.MethodExecutionAspect"));
         assertThat(stdout, containsString("Join point 'method-execution(int sample.app.SampleApp.add(int, int))'"));
         assertThat(stdout, containsString("Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))'"));
         assertThat(stdout, containsString("Codekvast shutdown completed in "));
-
-        // Remove all rows logged by ExtClassLoader and PlatformClassLoader
-        String stdoutExceptCertainClassLoaders = stdout.replaceAll("\\[(ExtClassLoader|PlatformClassLoader)@[0-9a-f]+\\].*", "");
-
-        assertThat(stdoutExceptCertainClassLoaders, not(containsString("error")));
-        assertThat(stdoutExceptCertainClassLoaders, not(containsString("[SEVERE]")));
+        assertThat(stdout, not(containsString("error")));
+        assertThat(stdout, not(containsString("[SEVERE]")));
 
         verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
 
