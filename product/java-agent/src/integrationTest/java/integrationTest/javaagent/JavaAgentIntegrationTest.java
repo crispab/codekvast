@@ -9,7 +9,7 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.testsupport.ProcessUtils;
 import lombok.RequiredArgsConstructor;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +25,8 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 @RunWith(Parameterized.class)
@@ -41,26 +43,35 @@ public class JavaAgentIntegrationTest {
 
     private static final Gson gson = new Gson();
 
-    private static File agentConfigFile;
-
-    @Parameterized.Parameters(name = "JVM version = {0}, agent enabled={1}")
+    @Parameterized.Parameters(name = "JVM={0}, config defined={1}, enabled by config={2}, enabled by server={3}")
     public static List<Object[]> testParameters() {
         // The streams API is not available in Java 7!
         List<Object[]> result = new ArrayList<>();
         for (String version : javaVersions.split(",")) {
-            result.add(new Object[]{version.trim(), false});
-            result.add(new Object[]{version.trim(), true});
+            String v = version.trim();
+            if (v.startsWith("7")) {
+                // Test missing config and disabled by config only once.
+                // We only need to test this once, since CodekvastAgent.premain() will exit immediately before any Java version-specific
+                // code is executed.
+                result.add(new Object[]{v, false, true, true});
+                result.add(new Object[]{v, true, false, true});
+            }
+            // Test weaving and uploading for all versions
+            result.add(new Object[]{v, true, true, true});
         }
         return result;
     }
 
     // Is injected from testParameters()
     private final String javaVersion;
+    private final Boolean definedConfig;
+    private final Boolean agentEnabledByConfig;
+    private final Boolean agentEnabledByServer;
 
-    private final Boolean agentEnabled;
+    private File agentConfigFile;
 
-    @BeforeClass
-    public static void beforeClass() throws Exception {
+    @Before
+    public void beforeTest() throws Exception {
         // TODO: assertThat(jacocoAgent, notNullValue());
         assertThat(codekvastAgent, notNullValue());
         assertThat(classpath, notNullValue());
@@ -71,6 +82,7 @@ public class JavaAgentIntegrationTest {
                                                     .appName("SampleApp")
                                                     .appVersion("literal 1.0")
                                                     .aspectjOptions("-verbose -showWeaveInfo")
+                                                    .enabled(agentEnabledByConfig)
                                                     .packages("sample")
                                                     .methodVisibility("protected")
                                                     .excludePackages("sample.app.excluded")
@@ -85,27 +97,47 @@ public class JavaAgentIntegrationTest {
 
     @Test
     public void should_not_start_when_no_config() throws Exception {
+        assumeFalse(definedConfig);
+
         // given
         List<String> command = buildJavaCommand(null);
 
         // when
-        String result = ProcessUtils.executeCommand(command);
+        String stdout = ProcessUtils.executeCommand(command);
 
         // then
-        assertThat(result, containsString("No configuration file found, Codekvast will not start"));
+        assertThat(stdout, containsString("No configuration file found, Codekvast will not start"));
+        assertSampleAppOutput(stdout);
+    }
+
+    @Test
+    public void should_not_start_when_disabled_by_config() throws Exception {
+        assumeFalse(agentEnabledByConfig);
+
+        // given
+        List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
+
+        // when
+        String stdout = ProcessUtils.executeCommand(command);
+
+        // then
+        assertThat(stdout, containsString("Codekvast is disabled"));
+        assertSampleAppOutput(stdout);
     }
 
     @Test
     public void should_weave_and_call_server() throws Exception {
+        assumeTrue(definedConfig && agentEnabledByConfig);
+
         // given
         givenThat(post(V1_POLL_CONFIG)
                       .willReturn(okJson(gson.toJson(
                           GetConfigResponse1.builder()
                                             .codeBasePublisherName("http")
-                                            .codeBasePublisherConfig("enabled=" + agentEnabled)
+                                            .codeBasePublisherConfig("enabled=" + agentEnabledByServer)
                                             .customerId(1L)
                                             .invocationDataPublisherName("http")
-                                            .invocationDataPublisherConfig("enabled=" + agentEnabled)
+                                            .invocationDataPublisherConfig("enabled=" + agentEnabledByServer)
                                             .configPollIntervalSeconds(1)
                                             .configPollRetryIntervalSeconds(1)
                                             .codeBasePublisherCheckIntervalSeconds(1)
@@ -127,7 +159,6 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, containsString("Found " + agentConfigFile.getAbsolutePath()));
         assertThat(stdout, containsString("[INFO] " + AspectjMessageHandler.LOGGER_NAME));
         assertThat(stdout, containsString("AspectJ Weaver Version "));
-        assertThat(stdout, containsString("[INFO] sample.app.SampleApp - 2+2=4"));
         assertThat(stdout, containsString("define aspect io.codekvast.javaagent.MethodExecutionAspect"));
         assertThat(stdout, containsString("Join point 'constructor-execution(void sample.app.SampleApp.<init>())'"));
         assertThat(stdout, containsString("Join point 'method-execution(int sample.app.SampleApp.add(int, int))'"));
@@ -138,16 +169,24 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, not(containsString("error")));
         assertThat(stdout, not(containsString("[SEVERE]")));
         if (atLeastJava9()) {
-            assertThat(stdout, containsString("no longer creating weavers for these classloaders: [jdk.internal.loader.ClassLoaders$PlatformClassLoader]"));
+            assertThat(stdout, containsString(
+                "no longer creating weavers for these classloaders: [jdk.internal.loader.ClassLoaders$PlatformClassLoader]"));
         }
+        assertSampleAppOutput(stdout);
 
         verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
 
-        if (agentEnabled) {
+        if (agentEnabledByServer) {
             verify(postRequestedFor(urlEqualTo(V2_UPLOAD_CODEBASE)));
             verify(postRequestedFor(urlEqualTo(V2_UPLOAD_INVOCATION_DATA)));
         }
 
+    }
+
+    private void assertSampleAppOutput(String stdout) {
+        assertThat(stdout, containsString("[INFO] sample.app.SampleApp - SampleApp starts"));
+        assertThat(stdout, containsString("[INFO] sample.app.SampleApp - 2+2=4"));
+        assertThat(stdout, containsString("[INFO] sample.app.SampleApp - Exit"));
     }
 
     private boolean atLeastJava9() {
