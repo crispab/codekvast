@@ -2,7 +2,7 @@
 
 ## 0.26.0
 
-1. Upgraded to Java 11
+1. Upgraded server apps to Java 11. The agent supports running on Java 7, 8, 9, 10 and 11.
 
 ## 0.25.0
 
