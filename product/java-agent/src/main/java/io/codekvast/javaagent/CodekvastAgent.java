@@ -36,10 +36,14 @@ import org.aspectj.bridge.Constants;
 
 import java.io.File;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * This is the Java javaagent that hooks up Codekvast to the app.
@@ -95,9 +99,6 @@ public class CodekvastAgent {
         initialize(config);
 
         if (config != null) {
-            // Suppress errors from class loaders that does not see codekvast-javaagent.jar
-            System.setProperty("aj.weaving.loadersToSkip", "sun.misc.Launcher$ExtClassLoader,jdk.internal.loader.ClassLoaders$PlatformClassLoader");
-
             // Weave io.codekvast.javaagent.MethodExecutionAgent
             org.aspectj.weaver.loadtime.Agent.premain(args, instrumentation);
         }
@@ -123,21 +124,28 @@ public class CodekvastAgent {
             return;
         }
 
-        InvocationRegistry.initialize(config);
+        try {
+            defineAspectjLoadTimeWeaverConfig(config);
 
-        defineAspectjLoadTimeWeaverConfig(config);
+            InvocationRegistry.initialize(config);
 
-        scheduler = new Scheduler(config,
-                                  new ConfigPollerImpl(config),
-                                  new CodeBasePublisherFactoryImpl(),
-                                  new InvocationDataPublisherFactoryImpl(),
-                                  new SystemClockImpl())
-            .start();
+            scheduler = new Scheduler(config,
+                                      new ConfigPollerImpl(config),
+                                      new CodeBasePublisherFactoryImpl(),
+                                      new InvocationDataPublisherFactoryImpl(),
+                                      new SystemClockImpl())
+                .start();
 
-        Runtime.getRuntime().addShutdownHook(new MyShutdownHook());
+            Runtime.getRuntime().addShutdownHook(new MyShutdownHook());
 
-        logger.info(String.format("%s is ready to detect used code in %s %s within %s.", NAME, config.getAppName(),
-                                  config.getResolvedAppVersion(), getPrettyPackages(config)));
+            logger.info(String.format("%s is ready to detect used code in %s %s within %s.", NAME, config.getAppName(),
+                                      config.getResolvedAppVersion(), getPrettyPackages(config)));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,
+                       String.format("%1$s could not add generated META-INF/aop.xml to the system class loader. %1$s will not start", NAME),
+                       e);
+        }
+
     }
 
     private static String getPrettyPackages(AgentConfig config) {
@@ -145,29 +153,17 @@ public class CodekvastAgent {
         return prefixes.size() == 1 ? "package " + prefixes.get(0) : "packages " + prefixes.toString();
     }
 
-    private static void defineAspectjLoadTimeWeaverConfig(AgentConfig config) {
-        try {
-            Class.forName("org.aspectj.bridge.Constants");
-
-            System.setProperty(ASPECTJ_WEAVER_CONFIGURATION,
-                               createAopXml(config) + ";" +
-                                   Constants.AOP_USER_XML + ";" +
-                                   Constants.AOP_AJC_XML + ";" +
-                                   Constants.AOP_OSGI_XML);
-
-            logger.fine(ASPECTJ_WEAVER_CONFIGURATION + "=" + System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
-        } catch (ClassNotFoundException e) {
-            logger.warning("Not using AspectJ load-time weaving.");
-        }
-    }
-
     /**
      * Creates a concrete implementation of the AbstractMethodExecutionAspect, using the packages for specifying the abstract
      * pointcut 'scope'.
      *
-     * @return A file URI to a temporary aop-ajc.xml file.
+     * It does this by creating a temporary directory, and in that directory a META-INF/aop.xml.
+     *
+     * Adds the containing META-INF/ to the system class loader, where it will be picked up by the Aspectj Weaver.
+     * If running under Java 9+, it will instead set some system properties recognized by AspectJ, to make
+     * it load the generated aop.xml.
      */
-    private static String createAopXml(AgentConfig config) {
+    private static void defineAspectjLoadTimeWeaverConfig(AgentConfig config) throws Exception {
         String messageHandlerClass = config.isBridgeAspectjMessagesToJUL()
             ? String.format("-XmessageHandlerClass:%s ", AspectjMessageHandler.class.getName())
             : "";
@@ -193,9 +189,42 @@ public class CodekvastAgent {
             getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(),
                                       "io.codekvast.javaagent", "ck"));
         logger.finest("aop.xml=" + xml);
-        File file = config.getAspectFile();
-        FileUtils.writeToFile(xml, file);
-        return "file:" + file.getAbsolutePath();
+
+        createAopXmlAndMakeItVisibleToAspectjWeaver(xml);
+    }
+
+    private static void createAopXmlAndMakeItVisibleToAspectjWeaver(String xml) throws Exception {
+        File tmpDir = File.createTempFile("codekvast-", ".tmp");
+        // tmpDir is now a file with a unique name. Delete it, so that the name can be reused as a directory name.
+        tmpDir.delete();
+
+        File aopXml = new File(tmpDir, "META-INF/aop.xml");
+        aopXml.deleteOnExit();
+        logger.info("META-INF/aop.xml = " + aopXml.getAbsolutePath());
+
+        FileUtils.writeToFile(xml, aopXml);
+
+        makeAopXmlVisibleToAspectjWeaver(tmpDir, aopXml);
+    }
+
+    private static void makeAopXmlVisibleToAspectjWeaver(File dir, File aopXml) throws Exception {
+        try {
+            URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+            Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+            method.setAccessible(true);
+            method.invoke(systemClassLoader, dir.toURI().toURL());
+        } catch (ClassCastException e) {
+            logger.fine("Running on Java 9+. Not possible to augment system class loader. Setting AspectJ system properties instead.");
+
+            // Make aop.xml visible to AspectJ Weaver by prepending the search path with an absolute file: URL
+            System.setProperty(ASPECTJ_WEAVER_CONFIGURATION,
+                               "file:" + aopXml.getAbsolutePath() + ";" +
+                                   Constants.AOP_USER_XML + ";" +
+                                   Constants.AOP_AJC_XML + ";" +
+                                   Constants.AOP_OSGI_XML);
+            // Prevent the PlatformClassLoader from trying to load the aspect (since it is defined in a child class loader)...
+            System.setProperty("aj.weaving.loadersToSkip", "jdk.internal.loader.ClassLoaders$PlatformClassLoader");
+        }
     }
 
     private static String getIncludeExcludeElements(String element, List<String> packages, String... extraPrefixes) {

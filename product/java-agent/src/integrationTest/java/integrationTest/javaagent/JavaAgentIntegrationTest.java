@@ -125,7 +125,9 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, containsString("Found " + agentConfigFile.getAbsolutePath()));
         assertThat(stdout, containsString("[INFO] " + AspectjMessageHandler.LOGGER_NAME));
         assertThat(stdout, containsString("AspectJ Weaver Version "));
-        assertThat(stdout, containsString("no longer creating weavers for these classloaders"));
+        if (java9OrLater()) {
+            assertThat(stdout, containsString("no longer creating weavers for these classloaders"));
+        }
         assertThat(stdout, containsString("[INFO] sample.app.SampleApp - 2+2=4"));
         assertThat(stdout, containsString("define aspect io.codekvast.javaagent.MethodExecutionAspect"));
         assertThat(stdout, containsString("Join point 'method-execution(int sample.app.SampleApp.add(int, int))'"));
@@ -141,6 +143,10 @@ public class JavaAgentIntegrationTest {
             verify(postRequestedFor(urlEqualTo(V2_UPLOAD_INVOCATION_DATA)));
         }
 
+    }
+
+    private boolean java9OrLater() {
+        return !javaVersion.startsWith("7") && !javaVersion.startsWith("8");
     }
 
     private List<String> buildJavaCommand(String configPath) {
