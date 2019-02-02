@@ -3,6 +3,7 @@
 ## 0.26.0
 
 1. Upgraded server apps to Java 11. The agent supports running on Java 7, 8, 9, 10 and 11.
+2. Added "enabled" field to agent config.
 
 ## 0.25.0
 
