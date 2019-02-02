@@ -15,6 +15,10 @@ public class SampleApp {
     }
 
     public int add(int p1, int p2) {
+        return privateAdd(p1, p2);
+    }
+
+    private int privateAdd(int p1, int p2) {
         return p1 + p2;
     }
 

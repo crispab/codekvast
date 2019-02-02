@@ -98,19 +98,26 @@ public class CodekvastAgent {
 
         initialize(config);
 
-        if (config != null) {
+        if (shouldStart(config)) {
             // Weave io.codekvast.javaagent.MethodExecutionAgent
             org.aspectj.weaver.loadtime.Agent.premain(args, instrumentation);
+        } else if (config != null) {
+            logger.info(String.format("%s is disabled", NAME));
         }
+    }
+
+    private static boolean shouldStart(AgentConfig config) {
+        return config != null && config.isEnabled();
     }
 
     /**
      * Initializes CodekvastAgent. Before this method has been invoked, no method invocations are recorded.
      *
-     * @param config The configuration object. May be null, in which case Codekvast is disabled.
+     * @param config The configuration object. May be null, in which case Codekvast is disabled. Also, if config.isEnabled() == false,
+     *               Codekvast is disabled.
      */
     public static void initialize(AgentConfig config) {
-        if (config == null) {
+        if (!shouldStart(config)) {
             if (scheduler != null) {
                 scheduler.shutdown();
                 scheduler = null;

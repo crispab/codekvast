@@ -54,6 +54,8 @@ public class AgentConfig implements Serializable {
     public static final String INVOCATIONS_BASENAME = "invocations.dat";
     public static final String JVM_BASENAME = "jvm.dat";
 
+    private boolean enabled;
+
     @NonNull
     private String licenseKey;
 

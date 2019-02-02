@@ -34,6 +34,7 @@ import java.util.Properties;
  */
 public class AgentConfigFactory {
 
+    private static final boolean DEFAULT_ENABLED = true;
     private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL = false;
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_ENVIRONMENT = "<default>";
@@ -118,6 +119,7 @@ public class AgentConfigFactory {
                               ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToJUL",
                                                                   DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL))
                           .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
+                          .enabled(ConfigUtils.getOptionalBooleanValue(props, "enabled", DEFAULT_ENABLED))
                           .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
                           .excludePackages(ConfigUtils.getOptionalStringValue(props, "excludePackages", ""))
                           .httpConnectTimeoutSeconds(
@@ -194,6 +196,7 @@ public class AgentConfigFactory {
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                           .bridgeAspectjMessagesToJUL(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL)
                           .codeBase(UNSPECIFIED)
+                          .enabled(DEFAULT_ENABLED)
                           .environment(DEFAULT_ENVIRONMENT)
                           .excludePackages("")
                           .httpConnectTimeoutSeconds(DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS)

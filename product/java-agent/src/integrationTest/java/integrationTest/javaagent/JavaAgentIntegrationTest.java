@@ -72,6 +72,8 @@ public class JavaAgentIntegrationTest {
                                                     .appVersion("literal 1.0")
                                                     .aspectjOptions("-verbose -showWeaveInfo")
                                                     .packages("sample")
+                                                    .methodVisibility("protected")
+                                                    .excludePackages("sample.app.excluded")
                                                     .codeBase("build/classes/java/integrationTest")
                                                     .bridgeAspectjMessagesToJUL(true)
                                                     .schedulerInitialDelayMillis(0)
@@ -125,16 +127,19 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, containsString("Found " + agentConfigFile.getAbsolutePath()));
         assertThat(stdout, containsString("[INFO] " + AspectjMessageHandler.LOGGER_NAME));
         assertThat(stdout, containsString("AspectJ Weaver Version "));
-        if (java9OrLater()) {
-            assertThat(stdout, containsString("no longer creating weavers for these classloaders"));
-        }
         assertThat(stdout, containsString("[INFO] sample.app.SampleApp - 2+2=4"));
         assertThat(stdout, containsString("define aspect io.codekvast.javaagent.MethodExecutionAspect"));
+        assertThat(stdout, containsString("Join point 'constructor-execution(void sample.app.SampleApp.<init>())'"));
         assertThat(stdout, containsString("Join point 'method-execution(int sample.app.SampleApp.add(int, int))'"));
         assertThat(stdout, containsString("Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))'"));
+        assertThat(stdout, not(containsString("Join point 'method-execution(int sample.app.SampleApp.privateAdd(int, int))'")));
+        assertThat(stdout, not(containsString("Join point 'method-execution(void sample.app.excluded.NotTrackedClass.doSomething())'")));
         assertThat(stdout, containsString("Codekvast shutdown completed in "));
         assertThat(stdout, not(containsString("error")));
         assertThat(stdout, not(containsString("[SEVERE]")));
+        if (atLeastJava9()) {
+            assertThat(stdout, containsString("no longer creating weavers for these classloaders: [jdk.internal.loader.ClassLoaders$PlatformClassLoader]"));
+        }
 
         verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
 
@@ -145,7 +150,7 @@ public class JavaAgentIntegrationTest {
 
     }
 
-    private boolean java9OrLater() {
+    private boolean atLeastJava9() {
         return !javaVersion.startsWith("7") && !javaVersion.startsWith("8");
     }
 
