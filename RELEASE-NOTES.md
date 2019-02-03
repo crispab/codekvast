@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 1.0.0
+
+1. Corrected a bug in codekvast-javaagent: now it deletes /tmp/codekvast-nnn/META-INF/aop.xml on JVM termination.
+
 ## 0.26.0
 
 1. Upgraded server apps to Java 11. The agent supports running on Java 7, 8, 9, 10 and 11.
