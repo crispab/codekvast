@@ -7,7 +7,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
@@ -24,7 +23,7 @@ public class AgentConfigTest {
 
     @After
     public void afterTest() {
-        System.clearProperty(AgentConfigLocator.SYSPROP_OPTS);
+        System.clearProperty(AgentConfigFactory.SYSPROP_OPTS);
     }
 
     @Test
@@ -39,7 +38,7 @@ public class AgentConfigTest {
 
     @Test
     public void testParseConfigFilePathWithSyspropAndCmdLineOverride() {
-        System.setProperty(AgentConfigLocator.SYSPROP_OPTS, "codeBase=/path/to/$appName");
+        System.setProperty(AgentConfigFactory.SYSPROP_OPTS, "codeBase=/path/to/$appName");
         AgentConfig config = AgentConfigFactory.parseAgentConfig(
             classpathResourceAsFile("/incomplete-agent-config.conf"),
             "appName=some-app-name;appVersion=version;");

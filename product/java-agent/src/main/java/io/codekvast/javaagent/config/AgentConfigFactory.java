@@ -26,13 +26,14 @@ import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.SignatureUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Properties;
 
 /**
  * A factory for {@link AgentConfig} objects.
  */
 public class AgentConfigFactory {
+
+    static final String SYSPROP_OPTS = "codekvast.options";
 
     private static final boolean DEFAULT_ENABLED = true;
     private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL = false;
@@ -56,16 +57,6 @@ public class AgentConfigFactory {
     private static final String UNSPECIFIED = "unspecified";
     private static final String TAGS_KEY = "tags";
     private static final String TRIAL_LICENSE_KEY = "";
-    private static final File DEFAULT_ASPECT_FILE;
-
-    static {
-        try {
-            DEFAULT_ASPECT_FILE = File.createTempFile("codekvast-", "-aop.xml");
-            DEFAULT_ASPECT_FILE.deleteOnExit();
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot create codekvast-aop.xml", e);
-        }
-    }
 
     private AgentConfigFactory() {
     }
@@ -86,7 +77,7 @@ public class AgentConfigFactory {
         try {
             Properties props = FileUtils.readPropertiesFrom(file);
 
-            parseOverrides(props, System.getProperty(AgentConfigLocator.SYSPROP_OPTS));
+            parseOverrides(props, System.getProperty(SYSPROP_OPTS));
             parseOverrides(props, cmdLineArgs);
             if (prependSystemPropertiesToTags) {
                 doPrependSystemPropertiesToTags(props);
@@ -100,9 +91,9 @@ public class AgentConfigFactory {
 
     private static void parseOverrides(Properties props, String args) {
         if (args != null) {
-            String overrides[] = args.split(OVERRIDE_SEPARATOR);
+            String[] overrides = args.split(OVERRIDE_SEPARATOR);
             for (String override : overrides) {
-                String parts[] = override.split("=");
+                String[] parts = override.split("=");
                 props.setProperty(parts[0].trim(), parts[1].trim());
             }
         }
@@ -113,7 +104,6 @@ public class AgentConfigFactory {
         return AgentConfig.builder()
                           .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                           .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
-                          .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                           .bridgeAspectjMessagesToJUL(
                               ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToJUL",
@@ -192,7 +182,6 @@ public class AgentConfigFactory {
         return AgentConfig.builder()
                           .appName(UNSPECIFIED)
                           .appVersion(UNSPECIFIED)
-                          .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                           .bridgeAspectjMessagesToJUL(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL)
                           .codeBase(UNSPECIFIED)

@@ -99,9 +99,6 @@ public class AgentConfig implements Serializable {
     private int schedulerInitialDelayMillis;
     private int schedulerIntervalMillis;
 
-    @NonNull
-    private File aspectFile;
-
     private String resolvedAppVersion;
 
     private transient OkHttpClient httpClient;

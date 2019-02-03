@@ -22,16 +22,38 @@ import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.*;
 import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public class JavaAgentIntegrationTest {
+
+    @RequiredArgsConstructor
+    enum AgentState {
+        NO_CONFIG(false),
+        NOT_FOUND_CONFIG(false),
+        DISABLED_IN_CONFIG(false),
+        ENABLED_IN_CONFIG_BUT_DISABLED_IN_SERVER(true),
+        ENABLED_IN_CONFIG_AND_SERVER(true);
+
+        final boolean shouldStart;
+    }
+
+    @RequiredArgsConstructor
+    private static class TestConfig {
+        private final String javaVersion;
+        private final AgentState agentState;
+
+        @Override
+        public String toString() {
+            return "JVM=" + javaVersion + ", agentState=" + agentState;
+        }
+    }
 
     // TODO: private final String jacocoAgent = System.getProperty("integrationTest.jacocoAgent");
     private static final String codekvastAgent = System.getProperty("integrationTest.codekvastAgent");
@@ -43,30 +65,29 @@ public class JavaAgentIntegrationTest {
 
     private static final Gson gson = new Gson();
 
-    @Parameterized.Parameters(name = "JVM={0}, config defined={1}, enabled by config={2}, enabled by server={3}")
-    public static List<Object[]> testParameters() {
+    @Parameterized.Parameters(name = "{0}")
+    public static List<TestConfig> testParameters() {
         // The streams API is not available in Java 7!
-        List<Object[]> result = new ArrayList<>();
+        List<TestConfig> result = new ArrayList<>();
         for (String version : javaVersions.split(",")) {
             String v = version.trim();
             if (v.startsWith("7")) {
                 // Test missing config and disabled by config only once.
                 // We only need to test this once, since CodekvastAgent.premain() will exit immediately before any Java version-specific
                 // code is executed.
-                result.add(new Object[]{v, false, true, true});
-                result.add(new Object[]{v, true, false, true});
+                result.add(new TestConfig(v, NO_CONFIG));
+                result.add(new TestConfig(v, NOT_FOUND_CONFIG));
+                result.add(new TestConfig(v, DISABLED_IN_CONFIG));
+                result.add(new TestConfig(v, ENABLED_IN_CONFIG_BUT_DISABLED_IN_SERVER));
             }
             // Test weaving and uploading for all versions
-            result.add(new Object[]{v, true, true, true});
+            result.add(new TestConfig(v, ENABLED_IN_CONFIG_AND_SERVER));
         }
         return result;
     }
 
     // Is injected from testParameters()
-    private final String javaVersion;
-    private final Boolean definedConfig;
-    private final Boolean agentEnabledByConfig;
-    private final Boolean agentEnabledByServer;
+    private final TestConfig testConfig;
 
     private File agentConfigFile;
 
@@ -82,7 +103,7 @@ public class JavaAgentIntegrationTest {
                                                     .appName("SampleApp")
                                                     .appVersion("literal 1.0")
                                                     .aspectjOptions("-verbose -showWeaveInfo")
-                                                    .enabled(agentEnabledByConfig)
+                                                    .enabled(testConfig.agentState.shouldStart)
                                                     .packages("sample")
                                                     .methodVisibility("protected")
                                                     .excludePackages("sample.app.excluded")
@@ -97,7 +118,7 @@ public class JavaAgentIntegrationTest {
 
     @Test
     public void should_not_start_when_no_config() throws Exception {
-        assumeFalse(definedConfig);
+        assumeTrue(testConfig.agentState == NO_CONFIG);
 
         // given
         List<String> command = buildJavaCommand(null);
@@ -111,8 +132,24 @@ public class JavaAgentIntegrationTest {
     }
 
     @Test
-    public void should_not_start_when_disabled_by_config() throws Exception {
-        assumeFalse(agentEnabledByConfig);
+    public void should_not_start_when_not_found_config() throws Exception {
+        assumeTrue(testConfig.agentState == NOT_FOUND_CONFIG);
+
+        // given
+        List<String> command = buildJavaCommand("foobar");
+
+        // when
+        String stdout = ProcessUtils.executeCommand(command);
+
+        // then
+        assertThat(stdout, containsString("Looking for foobar"));
+        assertThat(stdout, containsString("No configuration file found, Codekvast will not start"));
+        assertSampleAppOutput(stdout);
+    }
+
+    @Test
+    public void should_not_start_when_disabled_in_config() throws Exception {
+        assumeTrue(testConfig.agentState == DISABLED_IN_CONFIG);
 
         // given
         List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
@@ -127,17 +164,19 @@ public class JavaAgentIntegrationTest {
 
     @Test
     public void should_weave_and_call_server() throws Exception {
-        assumeTrue(definedConfig && agentEnabledByConfig);
+        assumeTrue(testConfig.agentState.shouldStart);
 
         // given
+        boolean enabledByServer = testConfig.agentState == ENABLED_IN_CONFIG_AND_SERVER;
+
         givenThat(post(V1_POLL_CONFIG)
                       .willReturn(okJson(gson.toJson(
                           GetConfigResponse1.builder()
                                             .codeBasePublisherName("http")
-                                            .codeBasePublisherConfig("enabled=" + agentEnabledByServer)
+                                            .codeBasePublisherConfig("enabled=" + enabledByServer)
                                             .customerId(1L)
                                             .invocationDataPublisherName("http")
-                                            .invocationDataPublisherConfig("enabled=" + agentEnabledByServer)
+                                            .invocationDataPublisherConfig("enabled=" + enabledByServer)
                                             .configPollIntervalSeconds(1)
                                             .configPollRetryIntervalSeconds(1)
                                             .codeBasePublisherCheckIntervalSeconds(1)
@@ -176,7 +215,7 @@ public class JavaAgentIntegrationTest {
 
         verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
 
-        if (agentEnabledByServer) {
+        if (enabledByServer) {
             verify(postRequestedFor(urlEqualTo(V2_UPLOAD_CODEBASE)));
             verify(postRequestedFor(urlEqualTo(V2_UPLOAD_INVOCATION_DATA)));
         }
@@ -190,13 +229,14 @@ public class JavaAgentIntegrationTest {
     }
 
     private boolean atLeastJava9() {
-        return !javaVersion.startsWith("7") && !javaVersion.startsWith("8");
+        String v = testConfig.javaVersion;
+        return !v.startsWith("7") && !v.startsWith("8");
     }
 
     private List<String> buildJavaCommand(String configPath) {
         String cp = classpath.endsWith(":") ? classpath.substring(0, classpath.length()-2) : classpath;
 
-        String java = String.format("%s/.sdkman/candidates/java/%s/bin/java", System.getenv("HOME"), javaVersion);
+        String java = String.format("%s/.sdkman/candidates/java/%s/bin/java", System.getenv("HOME"), testConfig.javaVersion);
 
         List<String> command = new ArrayList<>(
             Arrays.asList(java,

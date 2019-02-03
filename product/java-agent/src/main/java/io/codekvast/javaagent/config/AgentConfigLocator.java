@@ -42,7 +42,6 @@ public class AgentConfigLocator {
     private static final String SYSPROP_CATALINA_BASE = "catalina.base";
     private static final String SYSPROP_CATALINA_HOME = "catalina.home";
     static final String SYSPROP_CONFIG = "codekvast.configuration";
-    static final String SYSPROP_OPTS = "codekvast.options";
 
     private AgentConfigLocator() {
     }
