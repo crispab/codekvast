@@ -201,17 +201,21 @@ public class CodekvastAgent {
     }
 
     private static void createAopXmlAndMakeItVisibleToAspectjWeaver(String xml) throws Exception {
-        File tmpDir = File.createTempFile("codekvast-", ".tmp");
+        File tmpDir = File.createTempFile("codekvast-", "");
         // tmpDir is now a file with a unique name. Delete it, so that the name can be reused as a directory name.
         tmpDir.delete();
 
         File aopXml = new File(tmpDir, "META-INF/aop.xml");
-        aopXml.deleteOnExit();
+
         logger.info("META-INF/aop.xml = " + aopXml.getAbsolutePath());
 
         FileUtils.writeToFile(xml, aopXml);
 
         makeAopXmlVisibleToAspectjWeaver(tmpDir, aopXml);
+
+        tmpDir.deleteOnExit();
+        aopXml.getParentFile().deleteOnExit();
+        aopXml.deleteOnExit();
     }
 
     private static void makeAopXmlVisibleToAspectjWeaver(File dir, File aopXml) throws Exception {
