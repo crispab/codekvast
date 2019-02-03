@@ -91,6 +91,9 @@ public class AgentConfig implements Serializable {
     @NonNull
     private String tags;
 
+    @NonNull
+    private String hostname;
+
     private int httpConnectTimeoutSeconds;
     private int httpReadTimeoutSeconds;
     private int httpWriteTimeoutSeconds;
@@ -112,7 +115,7 @@ public class AgentConfig implements Serializable {
     }
 
     public List<File> getCodeBaseFiles() {
-        return ConfigUtils.getCommaSeparatedFileValues(codeBase, false);
+        return ConfigUtils.getCommaSeparatedFileValues(codeBase);
     }
 
     public MethodAnalyzer getMethodAnalyzer() {
@@ -172,7 +175,7 @@ public class AgentConfig implements Serializable {
             .computerId(Constants.COMPUTER_ID)
             .environment(getEnvironment())
             .excludePackages(getNormalizedExcludePackages())
-            .hostname(Constants.HOST_NAME)
+            .hostname(getHostname())
             .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
             .jvmUuid(Constants.JVM_UUID)
             .methodVisibility(getNormalizedMethodVisibility())

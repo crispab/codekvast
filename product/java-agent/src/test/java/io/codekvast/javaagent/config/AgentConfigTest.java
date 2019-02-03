@@ -1,5 +1,6 @@
 package io.codekvast.javaagent.config;
 
+import io.codekvast.javaagent.util.Constants;
 import lombok.SneakyThrows;
 import okhttp3.OkHttpClient;
 import org.hamcrest.CoreMatchers;
@@ -32,6 +33,7 @@ public class AgentConfigTest {
         assertThat(config, not(is(config2)));
         assertThat(config.getAppName(), is("appName1"));
         assertThat(config.isEnabled(), is(true));
+        assertThat(config.getHostname(), is("some-hostname"));
         assertThat(config2.getAppName(), is("appName2"));
         assertThat(config2.isEnabled(), is(false));
     }
@@ -45,6 +47,7 @@ public class AgentConfigTest {
         assertThat(config.getAppName(), is("some-app-name"));
         assertThat(config.getAppVersion(), is("version"));
         assertThat(config.getCodeBase(), is("/path/to/some-app-name"));
+        assertThat(config.getHostname(), is(Constants.HOST_NAME));
     }
 
     @Test

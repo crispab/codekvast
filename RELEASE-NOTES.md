@@ -3,6 +3,9 @@
 ## 1.0.0
 
 1. Corrected a bug in codekvast-javaagent: now it deletes /tmp/codekvast-nnn/META-INF/aop.xml on JVM termination.
+2. Added "hostname" field to agent config.
+3. Changed the way the agent's codekvast.conf is located: if one of -Dcodekvast.configuration or CODEKVAST_CONFIG is specified,
+   no automatic locations are examined. This makes it possible to disable the agent without editing or moving the config file.
 
 ## 0.26.0
 

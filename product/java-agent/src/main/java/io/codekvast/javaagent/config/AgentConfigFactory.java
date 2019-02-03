@@ -22,6 +22,7 @@
 package io.codekvast.javaagent.config;
 
 import io.codekvast.javaagent.util.ConfigUtils;
+import io.codekvast.javaagent.util.Constants;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.SignatureUtils;
 
@@ -123,6 +124,7 @@ public class AgentConfigFactory {
                           .httpWriteTimeoutSeconds(
                               ConfigUtils
                                   .getOptionalIntValue(props, "httpWriteTimeoutSeconds", DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS))
+                          .hostname(ConfigUtils.getOptionalStringValue(props, "hostname", Constants.HOST_NAME))
                           .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
                           .methodVisibility(
                               ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
@@ -188,6 +190,7 @@ public class AgentConfigFactory {
                           .enabled(DEFAULT_ENABLED)
                           .environment(DEFAULT_ENVIRONMENT)
                           .excludePackages("")
+                          .hostname(Constants.HOST_NAME)
                           .httpConnectTimeoutSeconds(DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS)
                           .httpProxyHost(DEFAULT_HTTP_PROXY_HOST)
                           .httpProxyPort(DEFAULT_HTTP_PROXY_PORT)

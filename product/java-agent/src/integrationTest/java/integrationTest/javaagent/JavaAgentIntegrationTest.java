@@ -142,8 +142,9 @@ public class JavaAgentIntegrationTest {
         String stdout = ProcessUtils.executeCommand(command);
 
         // then
-        assertThat(stdout, containsString("Looking for foobar"));
-        assertThat(stdout, containsString("No configuration file found, Codekvast will not start"));
+        assertThat(stdout, containsString("Trying foobar"));
+        assertThat(stdout, containsString("Invalid value of -Dcodekvast.configuration or CODEKVAST_CONFIG: foobar"));
+        assertThat(stdout, containsString("Codekvast will not start"));
         assertSampleAppOutput(stdout);
     }
 

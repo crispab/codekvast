@@ -34,19 +34,15 @@ public class AgentConfigLocatorTest {
 
     @Test
     public void should_handle_invalid_file() {
-        System.setProperty(AgentConfigLocator.SYSPROP_CONFIG, "src/test/resources/codekvast1.conf-FOOBAR");
+        String location = "src/test/resources/codekvast1.conf-FOOBAR";
+        System.setProperty(AgentConfigLocator.SYSPROP_CONFIG, location);
         assertThat(AgentConfigLocator.locateConfig(), nullValue());
-        outputCapture.expect(containsString("No configuration file found"));
+        outputCapture.expect(containsString("Invalid value of"));
+        outputCapture.expect(containsString(location));
     }
 
     @Test
-    public void should_handle_valid_conf_directory() {
-        System.setProperty(AgentConfigLocator.SYSPROP_CONFIG, "src/test/resources/agentConfigLocatorTest/conf");
-        assertThat(AgentConfigLocator.locateConfig(), not(nullValue()));
-    }
-
-    @Test
-    public void should_handle_no_hints_given() {
+    public void should_handle_no_explicits_given() {
         assertThat(AgentConfigLocator.locateConfig(), nullValue());
         outputCapture.expect(containsString("[WARNING] " + AgentConfigLocator.class.getName()));
         outputCapture.expect(containsString("No configuration file found"));
