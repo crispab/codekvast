@@ -578,6 +578,18 @@ public class DashboardIntegrationTest {
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
+    public void unknown_agent_environment_should_have_null_name() {
+        assertThat(agentDAO.getEnvironmentName(4711L, "foobar"), is(nullValue()));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_get_known_agent_environment_name() {
+        assertThat(agentDAO.getEnvironmentName(1L, "uuid1"), is("env1"));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
     public void should_getStatus_correctly() {
         // given
         Timestamps timestamps = new Timestamps(jdbcTemplate).invoke();

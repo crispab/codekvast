@@ -69,6 +69,15 @@ public interface AgentDAO {
     boolean isEnvironmentEnabled(long customerId, String thisJvmUuid);
 
     /**
+     * Retrieves the name of the environment a certain JVM executes in. Used for logging purposes.
+     *
+     * @param customerId  The customer ID.
+     * @param thisJvmUuid The JVM UUID of this (the polling) agent.
+     * @return The name of the environment. Returns null of unknown environment.
+     */
+    String getEnvironmentName(long customerId, String thisJvmUuid);
+
+    /**
      * At the end of the poll, the result that is returned to the agent should also be stored in the database so that
      * the count of live, enabled agents can be computed when the next agent polls.
      *
