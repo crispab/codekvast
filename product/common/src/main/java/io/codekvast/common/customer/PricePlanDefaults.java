@@ -37,8 +37,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PricePlanDefaults {
-    DEMO(25_000, 1, 5, 5, 5, -1),
-    TEST(25_000, 3, 7200, 600, 60, 30);
+    DEMO(25_000, 1, 5, 5, 5, -1, 30),
+    TEST(25_000, 3, 7200, 600, 60, 60, 30);
 
     private final int maxMethods;
     private final int maxNumberOfAgents;
@@ -46,6 +46,7 @@ public enum PricePlanDefaults {
     private final int pollIntervalSeconds;
     private final int retryIntervalSeconds;
     private final int maxCollectionPeriodDays;
+    private final int retentionPeriodDays;
 
     public static PricePlanDefaults fromDatabaseName(String planName) {
         return PricePlanDefaults.valueOf(planName.toUpperCase());

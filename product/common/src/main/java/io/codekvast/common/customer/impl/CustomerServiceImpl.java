@@ -340,7 +340,7 @@ public class CustomerServiceImpl implements CustomerService {
                                                                   "ppo.createdBy, ppo.note AS pricePlanNote, ppo.maxMethods, " +
                                                                   "ppo.maxNumberOfAgents, ppo.publishIntervalSeconds, " +
                                                                   "ppo.pollIntervalSeconds, ppo.retryIntervalSeconds, " +
-                                                                  "ppo.maxCollectionPeriodDays " +
+                                                                  "ppo.maxCollectionPeriodDays, ppo.retentionPeriodDays " +
                                                                   "FROM customers c LEFT JOIN price_plan_overrides ppo " +
                                                                   "ON ppo.customerId = c.id " +
                                                                   "WHERE " + where_clause, identifier);
@@ -372,6 +372,8 @@ public class CustomerServiceImpl implements CustomerService {
                                         .retryIntervalSeconds(getOrDefault(result, "retryIntervalSeconds", ppd.getRetryIntervalSeconds()))
                                         .maxCollectionPeriodDays(
                                             getOrDefault(result, "maxCollectionPeriodDays", ppd.getMaxCollectionPeriodDays()))
+                                        .retentionPeriodDays(
+                                            getOrDefault(result, "retentionPeriodDays", ppd.getRetentionPeriodDays()))
                                         .build())
                            .build();
     }
