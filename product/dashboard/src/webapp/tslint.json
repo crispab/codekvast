@@ -1,4 +1,7 @@
 {
+    "rulesDirectory": [
+        "node_modules/rxjs-tslint"
+    ],
     "rules": {
         "class-name": true,
         "comment-format": [
@@ -60,6 +63,10 @@
             "single"
         ],
         "radix": true,
+        "rxjs-collapse-imports": true,
+        "rxjs-pipeable-operators-only": true,
+        "rxjs-no-static-observable-methods": true,
+        "rxjs-proper-imports": true,
         "semicolon": true,
         "triple-equals": [
             true,
