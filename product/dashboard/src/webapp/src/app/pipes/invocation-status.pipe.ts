@@ -1,19 +1,18 @@
 import {Injectable, Pipe, PipeTransform} from '@angular/core';
-import {isArray, isString} from 'util';
 
 @Pipe({name: 'ckInvocationStatus'}) @Injectable()
 export class InvocationStatusPipe implements PipeTransform {
 
     transform(value: any): string {
-        if (isString(value)) {
+        if (typeof value === 'string') {
             return this.prettyPrint(value);
         }
-        if (isArray(value)) {
+        if (Array.isArray(value)) {
             return value.sort().map((v: any) => {
-                return isString(v) ? this.prettyPrint(v) : v;
-            }).join(', ')
+                return typeof v === 'string' ? this.prettyPrint(v) : v == null ? null : v.toString();
+            }).join(', ');
         }
-        return value;
+        return value == null ? null : value.toString();
     }
 
     private prettyPrint(v: string) {
