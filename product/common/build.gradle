@@ -25,10 +25,10 @@ dependencies {
     compileOnly lombok
 
     compile slf4jApi
-    compile 'com.github.seratch:jslack:1.1.6'
+    compile 'com.github.seratch:jslack:1.1.7'
     compile 'io.jsonwebtoken:jjwt:0.9.1'
     compile 'javax.servlet:javax.servlet-api'
-    compile 'org.jetbrains:annotations:16.0.3'
+    compile 'org.jetbrains:annotations:17.0.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-logging'
@@ -36,7 +36,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-actuator-autoconfigure'
     compile 'io.micrometer:micrometer-registry-datadog'
 
-    runtime 'net.logstash.logback:logstash-logback-encoder:5.2'
+    runtime 'net.logstash.logback:logstash-logback-encoder:5.3'
     runtime 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
 
     testCompile lombok
