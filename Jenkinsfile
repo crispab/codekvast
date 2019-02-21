@@ -9,8 +9,7 @@ node {
                 sh """
                 printenv | sort
                 tools/install-compilers.sh
-                # tools/real-clean-workspace.sh
-                ls -l gradle.properties
+                tools/real-clean-workspace.sh
                 pwd
                 """
             }
