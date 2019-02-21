@@ -109,10 +109,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@ng-bootstrap/ng-bootstrap@3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-3.3.0.tgz#160cd72184cb99e293a788cf2710fc98c4d5cb58"
-  integrity sha512-dwGptpWKe5BOw/WTOI1GTtG1xLLUKkMrzR1kjc236pj4hh4RBL3aYo4PZEagEH0orLRAM0xARVhMJmjaaPyT4g==
+"@ng-bootstrap/ng-bootstrap@4.0.4":
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-4.0.4.tgz#19bf7e2bdab59e9c359b353633a5a2336410b9a5"
+  integrity sha512-77wXARMgUA0VdOAnctOlmdkeTRLESTrFpxHY8jy48FKy7DOogcq+Fs0QCBiufi5YSu8m+rmlKtoeZ8Yg9YEsbQ==
   dependencies:
     tslib "^1.9.0"
 
@@ -7127,17 +7127,12 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@3.1.6:
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.1.6.tgz#b6543a83cfc8c2befb3f4c8fba6896f5b0c9be68"
-  integrity sha512-tDMYfVtvpb96msS1lDX9MEdHrW4yOuZ4Kdc4Him9oU796XldPYF/t2+uKoX0BBa0hXXwDlqYQbXY5Rzjzc5hBA==
-
 typescript@3.2.4:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.4.tgz#c585cb952912263d915b462726ce244ba510ef3d"
   integrity sha512-0RNDbSdEokBeEAkgNbxJ+BLwSManFy9TeXz8uW+48j/xhEXv1ePME60olyzw2XzUqUBNAYFeJadIqAgNqIACwg==
 
-typescript@>=2.8.3:
+typescript@3.3.3, typescript@>=2.8.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.3.3.tgz#f1657fc7daa27e1a8930758ace9ae8da31403221"
   integrity sha512-Y21Xqe54TBVp+VDSNbuDYdGw0BpoR/Q6wo/+35M8PAU0vipahnyduJWirxxdxjsAkS7hue53x2zp8gz7F05u0A==
