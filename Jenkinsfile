@@ -28,9 +28,19 @@ node {
                 }
             }
 
-            stage('TypeScript unit test') {
+            stage('Integration test') {
                 try {
-                    sh "./.gradlew frontendTest"
+                    sh "./.gradlew integrationTest"
+                } finally {
+                    // Prevent junit publisher to fail if Gradle has skipped the test
+                    sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs --no-run-if-empty touch"
+                    junit '**/build/test-results/integrationTest/*.xml'
+                }
+            }
+
+            stage('Frontend webpack') {
+                try {
+                    sh "./.gradlew :product:dashboard:frontendWebpack"
                 } finally {
                     // Prevent junit publisher to fail if Gradle has skipped the test
                     sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs --no-run-if-empty touch"
@@ -42,16 +52,6 @@ node {
                         reportDir: 'product/dashboard/build/reports/frontend-coverage',
                         reportFiles: 'index.html',
                         reportName: 'Frontend Coverage Report'])
-                }
-            }
-
-            stage('Integration test') {
-                try {
-                    sh "./.gradlew integrationTest"
-                } finally {
-                    // Prevent junit publisher to fail if Gradle has skipped the test
-                    sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs --no-run-if-empty touch"
-                    junit '**/build/test-results/integrationTest/*.xml'
                 }
             }
 
