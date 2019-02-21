@@ -7,6 +7,7 @@
 3. Changed the way the agent's codekvast.conf is located: if one of -Dcodekvast.configuration or CODEKVAST_CONFIG is specified,
    no automatic locations are examined. This makes it possible to disable the agent without editing or moving the config file.
 4. Upgraded to Spring Boot 2.1.3, Angular 7.2.6, TypeScript 3.3.3
+5. Added support for Basic proxy authentication in codekvast-agent.
 
 ## 0.26.0
 

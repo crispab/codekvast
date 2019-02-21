@@ -43,6 +43,8 @@ public class AgentConfigFactory {
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final String DEFAULT_SERVER_URL = "http://localhost:8081";
     private static final String DEFAULT_HTTP_PROXY_HOST = null;
+    private static final String DEFAULT_HTTP_PROXY_USERNAME = null;
+    private static final String DEFAULT_HTTP_PROXY_PASSWORD = null;
     private static final int DEFAULT_HTTP_PROXY_PORT = 3128;
     private static final int DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS = 10;
     private static final int DEFAULT_HTTP_READ_TIMEOUT_SECONDS = 10;
@@ -118,6 +120,8 @@ public class AgentConfigFactory {
                                                               DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS))
                           .httpProxyHost(ConfigUtils.getOptionalStringValue(props, "httpProxyHost", DEFAULT_HTTP_PROXY_HOST))
                           .httpProxyPort(ConfigUtils.getOptionalIntValue(props, "httpProxyPort", DEFAULT_HTTP_PROXY_PORT))
+                          .httpProxyUsername(ConfigUtils.getOptionalStringValue(props, "httpProxyUsername", DEFAULT_HTTP_PROXY_USERNAME))
+                          .httpProxyPassword(ConfigUtils.getOptionalStringValue(props, "httpProxyPassword", DEFAULT_HTTP_PROXY_PASSWORD))
                           .httpReadTimeoutSeconds(
                               ConfigUtils
                                   .getOptionalIntValue(props, "httpReadTimeoutSeconds", DEFAULT_HTTP_READ_TIMEOUT_SECONDS))
@@ -194,6 +198,8 @@ public class AgentConfigFactory {
                           .httpConnectTimeoutSeconds(DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS)
                           .httpProxyHost(DEFAULT_HTTP_PROXY_HOST)
                           .httpProxyPort(DEFAULT_HTTP_PROXY_PORT)
+                          .httpProxyUsername(DEFAULT_HTTP_PROXY_USERNAME)
+                          .httpProxyPassword(DEFAULT_HTTP_PROXY_PASSWORD)
                           .httpReadTimeoutSeconds(DEFAULT_HTTP_READ_TIMEOUT_SECONDS)
                           .httpWriteTimeoutSeconds(DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS)
                           .licenseKey(TRIAL_LICENSE_KEY)

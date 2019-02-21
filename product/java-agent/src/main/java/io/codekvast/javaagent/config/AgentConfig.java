@@ -26,7 +26,7 @@ import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.util.ConfigUtils;
 import io.codekvast.javaagent.util.Constants;
 import lombok.*;
-import okhttp3.OkHttpClient;
+import okhttp3.*;
 
 import java.io.File;
 import java.io.Serializable;
@@ -99,6 +99,8 @@ public class AgentConfig implements Serializable {
     private int httpWriteTimeoutSeconds;
     private String httpProxyHost;
     private int httpProxyPort;
+    private String httpProxyUsername;
+    private String httpProxyPassword;
     private int schedulerInitialDelayMillis;
     private int schedulerIntervalMillis;
 
@@ -144,12 +146,21 @@ public class AgentConfig implements Serializable {
     public OkHttpClient getHttpClient() {
         if (httpClient == null) {
             validate();
-            httpClient = new OkHttpClient.Builder()
+            OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(httpConnectTimeoutSeconds, TimeUnit.SECONDS)
                 .writeTimeout(httpWriteTimeoutSeconds, TimeUnit.SECONDS)
-                .readTimeout(httpReadTimeoutSeconds, TimeUnit.SECONDS)
-                .proxy(createHttpProxy())
-                .build();
+                .readTimeout(httpReadTimeoutSeconds, TimeUnit.SECONDS);
+
+            Proxy proxy = createHttpProxy();
+            if (proxy != null) {
+                builder.proxy(proxy);
+            }
+
+            Authenticator proxyAuthenticator = createProxyAuthenticator();
+            if (proxyAuthenticator != null) {
+                builder.proxyAuthenticator(proxyAuthenticator);
+            }
+            httpClient = builder.build();
         }
         return httpClient;
     }
@@ -159,6 +170,18 @@ public class AgentConfig implements Serializable {
             return null;
         }
         return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpProxyHost, httpProxyPort));
+    }
+
+    private Authenticator createProxyAuthenticator() {
+        if (httpProxyHost == null || httpProxyHost.trim().isEmpty()) {
+            return null;
+        }
+
+        if (httpProxyUsername == null || httpProxyUsername.trim().isEmpty()) {
+            return null;
+        }
+
+        return new ProxyAuthenticator();
     }
 
     public String getFilenamePrefix(@NonNull String prefix) {
@@ -198,5 +221,13 @@ public class AgentConfig implements Serializable {
             throw new IllegalArgumentException("Illegal httpProxyPort " + httpProxyPort + ": must be a positive integer");
         }
         return this;
+    }
+
+    private class ProxyAuthenticator implements Authenticator {
+        @Override
+        public Request authenticate(Route route, Response response) {
+            String credential = Credentials.basic(httpProxyUsername, httpProxyPassword == null ? "" : httpProxyPassword);
+            return response.request().newBuilder().header("Proxy-Authorization", credential).build();
+        }
     }
 }

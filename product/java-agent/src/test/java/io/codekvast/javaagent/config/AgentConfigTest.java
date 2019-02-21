@@ -2,6 +2,7 @@ package io.codekvast.javaagent.config;
 
 import io.codekvast.javaagent.util.Constants;
 import lombok.SneakyThrows;
+import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
@@ -63,10 +64,13 @@ public class AgentConfigTest {
 
     @Test
     public void should_create_http_client_without_httpProxy() {
-        AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
+        AgentConfig config = AgentConfigFactory.createSampleAgentConfig().toBuilder().httpProxyUsername("proxyUsername").build();
         OkHttpClient httpClient = config.getHttpClient();
         assertThat(httpClient, not(nullValue()));
         assertThat(httpClient.proxy(), nullValue());
+
+        Authenticator authenticator = httpClient.proxyAuthenticator();
+        assertThat(authenticator, is(Authenticator.NONE));
     }
 
     @Test
@@ -81,6 +85,8 @@ public class AgentConfigTest {
         assertThat(proxy.type(), is(Proxy.Type.HTTP));
         assertThat(proxy.address(), CoreMatchers.<SocketAddress>is(new InetSocketAddress("foo", 3128)));
 
+        Authenticator authenticator = httpClient.proxyAuthenticator();
+        assertThat(authenticator, is(Authenticator.NONE));
     }
 
     @Test
@@ -96,6 +102,34 @@ public class AgentConfigTest {
         assertThat(proxy.type(), is(Proxy.Type.HTTP));
         assertThat(proxy.address(), CoreMatchers.<SocketAddress>is(new InetSocketAddress("foo", 4711)));
 
+    }
+
+    @Test
+    public void should_accept_httpProxyHost_proxyUsername_and_proxyPassword() {
+        AgentConfig config = AgentConfigFactory.createSampleAgentConfig().toBuilder()
+                                               .httpProxyHost("foo")
+                                               .httpProxyUsername("username")
+                                               .httpProxyPassword("password")
+                                               .build();
+        OkHttpClient httpClient = config.getHttpClient();
+        assertThat(httpClient, not(nullValue()));
+
+        Authenticator authenticator = httpClient.proxyAuthenticator();
+        assertThat(authenticator, not(is(Authenticator.NONE)));
+    }
+
+    @Test
+    public void should_accept_httpProxyHost_proxyUsername_but_no_proxyPassword() {
+        AgentConfig config = AgentConfigFactory.createSampleAgentConfig().toBuilder()
+                                               .httpProxyHost("foo")
+                                               .httpProxyUsername("username")
+                                               .httpProxyPassword(null)
+                                               .build();
+        OkHttpClient httpClient = config.getHttpClient();
+        assertThat(httpClient, not(nullValue()));
+
+        Authenticator authenticator = httpClient.proxyAuthenticator();
+        assertThat(authenticator, not(is(Authenticator.NONE)));
     }
 
     @Test
