@@ -23,7 +23,7 @@ package io.codekvast.login.bootstrap;
 
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
-import io.codekvast.login.model.Roles;
+import io.codekvast.common.security.Roles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
