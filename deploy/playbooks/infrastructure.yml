@@ -13,62 +13,39 @@
 
   vars:
     static_web_sites:
+#    - name: 'test.codekvast.io'
+#      region: 'eu-central-1'
+#      env: 'staging'
     - name: 'downloads.codekvast.io'
       region: 'eu-central-1'
+    - name: 'www.codekvast.io'
+      region: 'eu-central-1'
+    - name: 'codekvast.io'
+      region: 'eu-central-1'
+      viewer_protocol_policy: 'allow-all'
+      redirect_to: 'https://www.codekvast.io'
 
+    cloudfront_zone_id: 'Z2FDTNDATAQYW2'
     route53:
         zone_id:
             cloudfront: 'Z2FDTNDATAQYW2'
-            s3site: 'Z21DNDUVLTQW6Q'
-    cloudfront:
-        www_codekvast_io:
-          value: 'dq5hv2bblmsd.cloudfront.net'
 
-    dns_records:
-    - name: 'codekvast.io'
-      type: A
-      alias: True
-      value: "dq5hv2bblmsd.cloudfront.net"
-      alias_zone_id: "{{ route53.zone_id.cloudfront }}"
-      owner: 'Codekvast site'
-    - name: 'codekvast.io'
-      type: AAAA
-      alias: True
-      value: "dq5hv2bblmsd.cloudfront.net"
-      alias_zone_id: "{{ route53.zone_id.cloudfront }}"
-      owner: 'Codekvast site'
-    - name: 'www.codekvast.io'
-      type: A
-      alias: True
-      value: "dq5hv2bblmsd.cloudfront.net"
-      alias_zone_id: "{{ route53.zone_id.cloudfront }}"
-      owner: 'Codekvast site'
-    - name: 'www.codekvast.io'
-      type: AAAA
-      alias: True
-      value: "dq5hv2bblmsd.cloudfront.net"
-      alias_zone_id: "{{ route53.zone_id.cloudfront }}"
-      owner: 'Codekvast site'
+    other_dns_records:
     - name: '_d60ed2fdbf07f3f631a87cbe4b31da89.codekvast.io'
       value: '_1f2bc564036706f4ddbb398053c86ab4.acm-validations.aws'
-      ttl: 86400
       owner: 'AWS Certificate Manager'
     - name: 'lgjaccttx36w4jfk5vwoxqqbiq6lfydj._domainkey.codekvast.io'
       value: 'lgjaccttx36w4jfk5vwoxqqbiq6lfydj.dkim.amazonses.com'
-      ttl: 86400
       owner: 'AWS Simple Email Services'
     - name: 'u2mxpq6jjxgvyvybo7m5lbat4ioquvze._domainkey.codekvast.io'
       value: 'u2mxpq6jjxgvyvybo7m5lbat4ioquvze.dkim.amazonses.com'
-      ttl: 86400
       owner: 'AWS Simple Email Services'
     - name: 'wxob5eurnqsq5fkhny42wt77p2u5ex2h._domainkey.codekvast.io'
       value: 'wxob5eurnqsq5fkhny42wt77p2u5ex2h.dkim.amazonses.com'
-      ttl: 86400
       owner: 'AWS Simple Email Services'
     - name: '_amazonses.codekvast.io'
       type: TXT
       value: '"ANhwmN6zcU+GrPdkurz7p3HwZiQBRlnqsH5k/23s/CY="'
-      ttl: 86400
       owner: 'AWS Simple Email Services'
 
   tasks:
@@ -86,12 +63,12 @@
       label: "{{ item.name }}"
     tags: static-web-sites
 
-  - name: Configure S3 buckets for static websites
+  - name: Enable S3 support for static websites
     s3_website:
       profile: codekvast
       region: "{{ item.region }}"
       name: "{{ item.name }}"
-      suffix: index.html
+      redirect_all_requests: "{{ item.redirect_to | default(omit) }}"
       state: present
     connection: local
     with_items: "{{ static_web_sites }}"
@@ -105,19 +82,20 @@
       region: "{{ item.region }}"
       alias: "{{ item.name }}"
       ipv6_enabled: yes
+      price_class: 'PriceClass_100'
       origins:
-          -   id: "S3-{{ item.name }}"
-              domain_name: "{{ item.name }}.s3-website.{{ item.region }}.amazonaws.com"
-              custom_origin_config:
-                origin_protocol_policy: "http-only"
-      purge_aliases: yes
-      viewer_certificate:
-          acm_certificate_arn: "{{ ssl_certificates['us-east-1'] }}"
+          - id: "S3-{{ item.name }}"
+            domain_name: "{{ item.name }}.s3-website.{{ item.region }}.amazonaws.com"
+            custom_origin_config:
+              origin_protocol_policy: "http-only"
+#      viewer_certificate:
+#          cloud_front_default_certificate: False
+#          acm_certificate_arn: "{{ ssl_certificates['us-east-1'] }}"
       default_cache_behavior:
           viewer_protocol_policy: 'redirect-to-https'
       tags:
         Owner: Codekvast
-        Env: prod
+        Env: "{{ item.env | default('prod') }}"
     connection: local
     with_items: "{{ static_web_sites }}"
     loop_control:
@@ -128,7 +106,7 @@
   - debug: var=cf
     tags: static-web-sites
 
-  - name: Create DNS aliases for static websites
+  - name: Create DNS aliases for CloudFront distributions
     route53:
       profile: codekvast # in ~/.boto
       zone: codekvast.io
@@ -136,7 +114,7 @@
       overwrite: yes
       type: "{{ item[0] }}"
       alias: True
-      alias_hosted_zone_id: "{{ route53.zone_id.cloudfront }}"
+      alias_hosted_zone_id: "{{ cloudfront_zone_id }}"
       record: "{{ item[1].item.name }}"
       value: "{{ item[1].domain_name }}"
       ttl: 7200
@@ -148,22 +126,22 @@
         label: "{{ item[0] }}: {{ item[1].item.name }} -> {{ item[1].domain_name }}"
     tags: static-web-sites
 
-  - name: Create static DNS records
+  - name: Create other DNS records
     route53:
       profile: codekvast # in ~/.boto
       zone: codekvast.io
       command: "{{ item.command | default('create') }}"
       overwrite: yes
       record: "{{ item.name }}"
-      ttl: "{{ item.ttl | default('7200') }}"
+      ttl: 86400
       type: "{{ item.type | default('CNAME') }}"
       value: "{{ item.value }}"
       alias: "{{ item.alias | default(False) }}"
       alias_hosted_zone_id: "{{ item.alias_zone_id | default(None) }}"
     connection: local
-    with_items: "{{ dns_records }}"
+    with_items: "{{ other_dns_records }}"
     loop_control:
-      label: "{{ item.name }}"
+      label: "{{ item.type | default('CNAME') }} {{ item.name }} -> {{ item.value }}"
     tags: dns
 
   - name: Create AWS stacks
