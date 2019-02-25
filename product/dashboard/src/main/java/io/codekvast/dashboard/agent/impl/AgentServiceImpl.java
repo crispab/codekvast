@@ -108,7 +108,8 @@ public class AgentServiceImpl implements AgentService {
         boolean enabledEnvironment = agentDAO.isEnvironmentEnabled(customerId, jvmUuid);
 
         if (enabledAgent && !enabledEnvironment) {
-            logger.debug("Disabling agent {}:{} since the environment is disabled", customerId, jvmUuid);
+            String envName = agentDAO.getEnvironmentName(customerId, jvmUuid);
+            logger.debug("Disabling agent {}:{} since the environment '{}' is disabled", customerId, jvmUuid, envName);
             enabledAgent = false;
         }
 

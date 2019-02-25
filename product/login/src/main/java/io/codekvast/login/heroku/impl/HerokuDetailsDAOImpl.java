@@ -124,7 +124,8 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateAccessToken(Long customerId, String accessToken, Instant expiresAt) throws CipherException {
-        int updated = jdbcTemplate.update("UPDATE heroku_details SET accessToken = ? AND expiresAt = ? WHERE customerId = ?",
+        logger.debug("Saving Heroku accessToken for customer {}, expiresAt {}", customerId, expiresAt);
+        int updated = jdbcTemplate.update("UPDATE heroku_details SET accessToken = ?, expiresAt = ? WHERE customerId = ?",
                                           CipherUtils.encrypt(accessToken, settings.getCipherSecret()),
                                           Timestamp.from(expiresAt), customerId);
         if (updated == 0) {

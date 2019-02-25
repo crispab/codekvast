@@ -11,7 +11,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. git-crypt
 1. Gradle 
 1. Inkscape (SVG graphics)
-1. Java 8
+1. Java 7 and 11
 1. Kotlin
 1. Lombok
 1. MariaDB 10+ (Codekvast Dashboard)
@@ -44,10 +44,10 @@ Web pages (i.e., http://www.codekvast.io) lives in the Git repo `https://github.
 
 ## Development environment
 
-There is a Bash script that prepares the development environment.
+There are a couple of Bash scripts that prepares the development environment.
 
-It works for Ubuntu, and is called `tools/prepare-workstation/run.sh`.
-It uses Ansible for setting up the workstation so that it works for Codekvast.
+They work for Ubuntu, and are called `tools/install-compilers.sh` and `tools/prepare-workstation/run.sh`.
+They use Bash and Ansible for setting up the workstation so that it works for Codekvast.
 
 If you run some other OS or prefer to do it by hand, here are the requirements:
 
@@ -60,9 +60,11 @@ You must be added as trusted developer by `git-crypt add-gpg-user` to access the
 
 ### JDK and Node.js
 
-Java 8 is required. OpenJDK is recommended.
+SDKMAN is required.
 
-Node.js 8+, NPM 3.10+ and Chrome are required.
+In SDKMAN, the Java versions that are required are defined by `gradle.properties`.
+
+Node.js 8+, NPM 3.10+ and Yarn 1.13+ are required. Chrome and Firefox are downloaded on demand for executing system tests.
 
 git-crypt is required for deploying to the cloud.
 

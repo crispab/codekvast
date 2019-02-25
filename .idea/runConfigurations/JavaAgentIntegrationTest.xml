@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="JavaAgentIntegrationTest" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+    <module name="java-agent_integrationTest" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="integrationTest.javaagent.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="ALTERNATIVE_JRE_PATH" value="$USER_HOME$/.sdkman/candidates/java/11.0.2-open" />
+    <option name="PACKAGE_NAME" value="integrationTest.javaagent" />
+    <option name="MAIN_CLASS_NAME" value="integrationTest.javaagent.JavaAgentIntegrationTest" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <option name="VM_PARAMETERS" value="-ea -Djava.util.logging.config.file=src/integrationTest/resources/logging.properties -DintegrationTest.codekvastAgent=build/libs/codekvast-javaagent-0.26.0.jar -DintegrationTest.classpath=build/classes/java/integrationTest -DintegrationTest.javaVersions=7.0.201-zulu,11.0.2-zulu" />
+    <option name="PARAMETERS" value="" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

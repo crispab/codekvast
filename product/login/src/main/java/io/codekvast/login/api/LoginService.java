@@ -21,7 +21,7 @@
  */
 package io.codekvast.login.api;
 
-import io.codekvast.login.model.Roles;
+import io.codekvast.common.security.Roles;
 import io.codekvast.login.model.User;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;

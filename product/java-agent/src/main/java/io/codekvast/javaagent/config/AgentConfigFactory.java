@@ -22,11 +22,11 @@
 package io.codekvast.javaagent.config;
 
 import io.codekvast.javaagent.util.ConfigUtils;
+import io.codekvast.javaagent.util.Constants;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.SignatureUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -34,12 +34,17 @@ import java.util.Properties;
  */
 public class AgentConfigFactory {
 
+    static final String SYSPROP_OPTS = "codekvast.options";
+
+    private static final boolean DEFAULT_ENABLED = true;
     private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL = false;
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_ENVIRONMENT = "<default>";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final String DEFAULT_SERVER_URL = "http://localhost:8081";
     private static final String DEFAULT_HTTP_PROXY_HOST = null;
+    private static final String DEFAULT_HTTP_PROXY_USERNAME = null;
+    private static final String DEFAULT_HTTP_PROXY_PASSWORD = null;
     private static final int DEFAULT_HTTP_PROXY_PORT = 3128;
     private static final int DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS = 10;
     private static final int DEFAULT_HTTP_READ_TIMEOUT_SECONDS = 10;
@@ -55,16 +60,6 @@ public class AgentConfigFactory {
     private static final String UNSPECIFIED = "unspecified";
     private static final String TAGS_KEY = "tags";
     private static final String TRIAL_LICENSE_KEY = "";
-    private static final File DEFAULT_ASPECT_FILE;
-
-    static {
-        try {
-            DEFAULT_ASPECT_FILE = File.createTempFile("codekvast-", "-aop.xml");
-            DEFAULT_ASPECT_FILE.deleteOnExit();
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot create codekvast-aop.xml", e);
-        }
-    }
 
     private AgentConfigFactory() {
     }
@@ -85,7 +80,7 @@ public class AgentConfigFactory {
         try {
             Properties props = FileUtils.readPropertiesFrom(file);
 
-            parseOverrides(props, System.getProperty(AgentConfigLocator.SYSPROP_OPTS));
+            parseOverrides(props, System.getProperty(SYSPROP_OPTS));
             parseOverrides(props, cmdLineArgs);
             if (prependSystemPropertiesToTags) {
                 doPrependSystemPropertiesToTags(props);
@@ -99,9 +94,9 @@ public class AgentConfigFactory {
 
     private static void parseOverrides(Properties props, String args) {
         if (args != null) {
-            String overrides[] = args.split(OVERRIDE_SEPARATOR);
+            String[] overrides = args.split(OVERRIDE_SEPARATOR);
             for (String override : overrides) {
-                String parts[] = override.split("=");
+                String[] parts = override.split("=");
                 props.setProperty(parts[0].trim(), parts[1].trim());
             }
         }
@@ -112,12 +107,12 @@ public class AgentConfigFactory {
         return AgentConfig.builder()
                           .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                           .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
-                          .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                           .bridgeAspectjMessagesToJUL(
                               ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToJUL",
                                                                   DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL))
                           .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
+                          .enabled(ConfigUtils.getOptionalBooleanValue(props, "enabled", DEFAULT_ENABLED))
                           .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
                           .excludePackages(ConfigUtils.getOptionalStringValue(props, "excludePackages", ""))
                           .httpConnectTimeoutSeconds(
@@ -125,12 +120,15 @@ public class AgentConfigFactory {
                                                               DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS))
                           .httpProxyHost(ConfigUtils.getOptionalStringValue(props, "httpProxyHost", DEFAULT_HTTP_PROXY_HOST))
                           .httpProxyPort(ConfigUtils.getOptionalIntValue(props, "httpProxyPort", DEFAULT_HTTP_PROXY_PORT))
+                          .httpProxyUsername(ConfigUtils.getOptionalStringValue(props, "httpProxyUsername", DEFAULT_HTTP_PROXY_USERNAME))
+                          .httpProxyPassword(ConfigUtils.getOptionalStringValue(props, "httpProxyPassword", DEFAULT_HTTP_PROXY_PASSWORD))
                           .httpReadTimeoutSeconds(
                               ConfigUtils
                                   .getOptionalIntValue(props, "httpReadTimeoutSeconds", DEFAULT_HTTP_READ_TIMEOUT_SECONDS))
                           .httpWriteTimeoutSeconds(
                               ConfigUtils
                                   .getOptionalIntValue(props, "httpWriteTimeoutSeconds", DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS))
+                          .hostname(ConfigUtils.getOptionalStringValue(props, "hostname", Constants.HOST_NAME))
                           .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
                           .methodVisibility(
                               ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
@@ -190,15 +188,18 @@ public class AgentConfigFactory {
         return AgentConfig.builder()
                           .appName(UNSPECIFIED)
                           .appVersion(UNSPECIFIED)
-                          .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                           .bridgeAspectjMessagesToJUL(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL)
                           .codeBase(UNSPECIFIED)
+                          .enabled(DEFAULT_ENABLED)
                           .environment(DEFAULT_ENVIRONMENT)
                           .excludePackages("")
+                          .hostname(Constants.HOST_NAME)
                           .httpConnectTimeoutSeconds(DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS)
                           .httpProxyHost(DEFAULT_HTTP_PROXY_HOST)
                           .httpProxyPort(DEFAULT_HTTP_PROXY_PORT)
+                          .httpProxyUsername(DEFAULT_HTTP_PROXY_USERNAME)
+                          .httpProxyPassword(DEFAULT_HTTP_PROXY_PASSWORD)
                           .httpReadTimeoutSeconds(DEFAULT_HTTP_READ_TIMEOUT_SECONDS)
                           .httpWriteTimeoutSeconds(DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS)
                           .licenseKey(TRIAL_LICENSE_KEY)

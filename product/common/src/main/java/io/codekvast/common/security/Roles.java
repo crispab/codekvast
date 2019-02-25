@@ -19,9 +19,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.model;
+package io.codekvast.common.security;
 
 /**
+ * Corresponds 1-to-1 to rows in role_names.
+ *
  * @author olle.hallin@crisp.se
  */
 public interface Roles {

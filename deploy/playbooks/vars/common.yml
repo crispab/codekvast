@@ -21,9 +21,9 @@ aws_stacks:
     cidr_base: "10.0"
     state: present
     app_cnames:
-    - api
-    - login
-    - dashboard
+    - 'api'
+    - 'login'
+    - 'dashboard'
     db_cname: 'db'
     backend_count_a: 1
     backend_count_b: 1

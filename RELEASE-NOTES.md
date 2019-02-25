@@ -1,5 +1,19 @@
 # Codekvast Release Notes
 
+## 1.0.0
+
+1. Corrected a bug in codekvast-javaagent: now it deletes /tmp/codekvast-nnn/META-INF/aop.xml on JVM termination.
+2. Added "hostname" field to agent config.
+3. Changed the way the agent's codekvast.conf is located: if one of -Dcodekvast.configuration or CODEKVAST_CONFIG is specified,
+   no automatic locations are examined. This makes it possible to disable the agent without editing or moving the config file.
+4. Upgraded to Spring Boot 2.1.3, Angular 7.2.6, TypeScript 3.3.3
+5. Added support for Basic proxy authentication in codekvast-agent.
+
+## 0.26.0
+
+1. Upgraded server apps to Java 11. The agent supports running on Java 7, 8, 9, 10 and 11.
+2. Added "enabled" field to agent config.
+
 ## 0.25.0
 
 1. Upgraded to Spring Boot 2.1.1, Kotlin 1.3.0, aspectj-weaver 1.9.2, Lombok 1.18.4 and Flyway 5.2.3.

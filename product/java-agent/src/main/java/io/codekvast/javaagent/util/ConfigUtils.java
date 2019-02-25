@@ -129,15 +129,11 @@ public final class ConfigUtils {
         return value;
     }
 
-    public static List<File> getCommaSeparatedFileValues(String uriValues, boolean removeTrailingSlashes) {
+    public static List<File> getCommaSeparatedFileValues(String uriValues) {
         List<File> result = new ArrayList<>();
         String[] parts = uriValues.split("[;,]");
         for (String value : parts) {
-            value = value.trim();
-            if (removeTrailingSlashes && value.endsWith("/")) {
-                value = value.substring(0, value.length() - 1);
-            }
-            result.add(new File(value));
+            result.add(new File(value.trim()));
         }
         return result;
     }

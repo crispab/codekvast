@@ -1,10 +1,9 @@
 package integrationTest.common;
 
-import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import io.codekvast.common.bootstrap.CodekvastCommonSettingsForTestImpl;
 import io.codekvast.common.messaging.SlackService;
 import io.codekvast.common.messaging.impl.SlackServiceImpl;
 import io.codekvast.common.metrics.CommonMetricsService;
-import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -59,15 +58,4 @@ public class SlackServiceIntegrationTest {
         slackService.sendNotification("`" + getClass().getName() + "` says _Hello, World!_", SlackService.Channel.BUILDS);
     }
 
-    @Data
-    private static class CodekvastCommonSettingsForTestImpl implements CodekvastCommonSettings {
-        private String applicationName;
-        private String displayVersion;
-        private String dnsCname;
-        private String environment;
-        private String slackWebHookToken;
-        private String slackWebHookUrl;
-        private String dashboardJwtSecret;
-        private Long dashboardJwtExpirationHours;
-    }
 }

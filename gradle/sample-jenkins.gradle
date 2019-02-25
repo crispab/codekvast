@@ -2,34 +2,34 @@ apply plugin: 'java'
 apply from: "$rootDir/gradle/libs.gradle"
 
 configurations {
-    tomcatEndorsed
+    codekvastagent
 }
 
 dependencies {
-    tomcatEndorsed project(path: ":product:java-agent", configuration: 'shadow')
-    tomcatEndorsed "org.slf4j:slf4j-jdk14:1.7.7"
+    codekvastagent project(path: ":product:java-agent", configuration: 'shadow')
 }
 
 defaultTasks 'run'
 
-ext.tomcatDownloadUrl = "http://downloads.codekvast.io/apache-tomcat-${tomcatVersion}.zip"
-ext.tomcatDir = file("$buildDir/tomcat")
-ext.catalinaBase = new File(tomcatDir, "apache-tomcat-${tomcatVersion}")
-ext.catalinaEndorsed = new File(catalinaBase, "endorsed")
-ext.catalinaWebapps = new File(catalinaBase, "webapps")
+def javaVersion = sdkmanJavaVersion_8
+def tomcatVersion = "7.0.92"
+def tomcatDownloadUrl = "http://downloads.codekvast.io/apache-tomcat-${tomcatVersion}.zip"
+def tomcatDir = file("$buildDir/tomcat")
+def catalinaBase = new File(tomcatDir, "apache-tomcat-${tomcatVersion}")
+def catalinaWebapps = new File(catalinaBase, "webapps")
+def jenkinsDownloadUrl = "http://downloads.codekvast.io/jenkins-${jenkinsVersion}.war"
 
-ext.jenkinsDownloadUrl = "http://downloads.codekvast.io/jenkins-${jenkinsVersion}.war"
-
-task installJenkinsInTomcat7 {
+task installJenkinsWarInTomcat {
     def downloadDir = file("$rootDir/.tmp/download")
     def jenkinsDir = new File(catalinaWebapps, "jenkins")
 
     dependsOn ':product:java-agent:shadowJar'
 
+    inputs.property "javaVersion", javaVersion
     inputs.property "tomcatVersion", tomcatVersion
-    inputs.property "tomcat", tomcatDownloadUrl
+    inputs.property "tomcatDownloadUrl", tomcatDownloadUrl
     inputs.property "jenkinsVersion", jenkinsVersion
-    inputs.property "jenkins", jenkinsDownloadUrl
+    inputs.property "jenkinsDownloadUrl", jenkinsDownloadUrl
     inputs.files file("build.gradle")
     outputs.dir tomcatDir
 
@@ -50,7 +50,7 @@ task installJenkinsInTomcat7 {
             from zipTree("$downloadDir/apache-tomcat-${tomcatVersion}.zip")
             into tomcatDir
         }
-        exec { commandLine "chmod", "+x", "$catalinaBase/bin/catalina.sh" }
+        "chmod +x $catalinaBase/bin/catalina.sh".execute().waitFor()
 
         logger.lifecycle "Setting HTTP port $tomcatPort..."
         def serverXml = file("$catalinaBase/conf/server.xml")
@@ -79,17 +79,6 @@ task installJenkinsInTomcat7 {
     }
 }
 
-task installTomcatEndorsed(type: Sync) {
-    from configurations.tomcatEndorsed
-    into catalinaEndorsed
-}
-
-task cleanCatalinaEndorsed {
-    doLast {
-        delete catalinaEndorsed
-    }
-}
-
 task generateCodekvastConfig {
     group "Build"
     description "Generates a codekvast.conf for test"
@@ -105,8 +94,9 @@ task generateCodekvastConfig {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Codekvast against Jenkins in Tomcat
 #aspectjOptions = -verbose -showWeaveInfo
+bridgeAspectjMessagesToJUL = false
 appVersion = manifest jenkins-cli.jar Jenkins-CLI-Version
-codeBase = $catalinaBase/webapps/jenkins, $catalinaBase/lib, ${System.properties['user.home']}/.jenkins/plugins
+codeBase = $catalinaBase/webapps/jenkins, $catalinaBase/lib, ${System.getenv("HOME")}/.jenkins/plugins
 methodVisibility = private
 packages = hudson, jenkins
 tags = development, sample
@@ -120,16 +110,17 @@ environment = Gradle
 processResources.dependsOn generateCodekvastConfig
 
 task generateTomcatSetenvSh {
-    description = "Generates a setenv.sh in \$CATALINA_HOME/bin that hooks up Codekvast"
+    description = "Generates a \$CATALINA_HOME/bin/setenv.sh that sets JAVA_HOME and hooks up Codekvast"
     group = "build"
-    dependsOn installJenkinsInTomcat7, generateCodekvastConfig, installTomcatEndorsed
+
+    dependsOn installJenkinsWarInTomcat, generateCodekvastConfig
     def setenvFile = file("$catalinaBase/bin/setenv.sh")
 
     inputs.files file("build.gradle")
     outputs.file setenvFile
 
     doLast {
-        def codekvastAgent = file(catalinaEndorsed).listFiles().find { it.name.contains('codekvast') }
+        def codekvastAgent = configurations.codekvastagent.asPath
         def loggingProperties = file("$buildDir/logging.properties")
         def logFile = file("$buildDir/log/tomcat.log")
         logFile.parentFile.mkdirs()
@@ -155,12 +146,13 @@ io.codekvast.javaagent.level = FINE
         }
 
         println """---------------------------
-codekvastAgent = .${codekvastAgent.absolutePath - projectDir.absolutePath}
+codekvastAgent = $codekvastAgent
 -------------------------"""
         setenvFile.text = """
-CATALINA_OPTS=\"-Dcodekvast.configuration=$generateCodekvastConfig.configFile -javaagent:$codekvastAgent\"
-LOGGING_CONFIG=\"-Djava.util.logging.config.file=$loggingProperties\"
-LOGGING_MANAGER=\"-Djava.util.logging.manager=java.util.logging.LogManager\"
+JAVA_HOME=${System.getenv('HOME')}/.sdkman/candidates/java/$javaVersion
+CATALINA_OPTS="-javaagent:$codekvastAgent -Dcodekvast.configuration=$generateCodekvastConfig.configFile"
+LOGGING_CONFIG="-Djava.util.logging.config.file=$loggingProperties"
+LOGGING_MANAGER="-Djava.util.logging.manager=java.util.logging.LogManager"
 """
     }
 }
@@ -174,4 +166,3 @@ task run(type: Exec) {
     // Illustrate that config can be injected from environment variables
     environment['CODEKVAST_APP_NAME']='Jenkins'
 }
-

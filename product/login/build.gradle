@@ -34,7 +34,7 @@ run {
     dependsOn startMariadb
 
     jvmArgs = [
-        '-ea',
+        '-enableassertions',
     ]
 
     args = [

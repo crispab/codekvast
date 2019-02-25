@@ -36,49 +36,54 @@ private GString buildChromeDriverName() {
 }
 
 task downloadChromeDriver {
-    description = "Downloads Chromedriver from downloads.codekvast.io to be used by web driver tests in other modules"
+    description = "Downloads $chromeDriver from downloads.codekvast.io to be used by web driver tests in other modules"
     group "Test support"
 
     def downloadDir = file("$rootDir/.tmp/download")
-    def chromeDriverDownloadUrl = "http://downloads.codekvast.io/${chromeDriver}"
-    def dest = file("$downloadDir/$chromeDriver")
+    def downloadUrl = "http://downloads.codekvast.io/${chromeDriver}"
+    def destFile = file("$downloadDir/$chromeDriver")
 
-    inputs.property "chromeDriver", chromeDriver
-    outputs.file dest
+    inputs.property "downloadUrl", downloadUrl
+    outputs.file destFile
 
     doLast {
         downloadDir.mkdirs()
 
-        logger.lifecycle "Downloading $chromeDriverDownloadUrl ..."
+        logger.lifecycle "Downloading $downloadUrl ..."
         ant.get(
-            src: chromeDriverDownloadUrl,
-            dest: dest,
+            src: downloadUrl,
+            dest: destFile,
             usetimestamp: true,
             verbose: true
         )
+        "chmod +x $destFile".execute().waitFor()
     }
 }
+build.dependsOn downloadChromeDriver
 
 task downloadGeckoDriver {
-    description = "Downloads Geckodriver from downloads.codekvast.io to be used by web driver tests in other modules"
+    description = "Downloads $geckoDriver from downloads.codekvast.io to be used by web driver tests in other modules"
     group "Test support"
 
     def downloadDir = file("$rootDir/.tmp/download")
-    def geckoDriverDownloadUrl = "http://downloads.codekvast.io/${geckoDriver}"
-    def dest = file("$downloadDir/$geckoDriver")
+    def downloadUrl = "http://downloads.codekvast.io/${geckoDriver}"
+    def destFile = file("$downloadDir/$geckoDriver")
 
-    inputs.property "geckoDriver", geckoDriver
-    outputs.file dest
+    inputs.property "downloadUrl", downloadUrl
+    outputs.file destFile
 
     doLast {
         downloadDir.mkdirs()
 
-        logger.lifecycle "Downloading $geckoDriverDownloadUrl ..."
+        logger.lifecycle "Downloading $downloadUrl ..."
         ant.get(
-            src: geckoDriverDownloadUrl,
-            dest: dest,
+            src: downloadUrl,
+            dest: destFile,
             usetimestamp: true,
             verbose: true
         )
+
+        "chmod +x $destFile".execute().waitFor()
     }
 }
+build.dependsOn downloadGeckoDriver

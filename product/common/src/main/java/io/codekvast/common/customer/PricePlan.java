@@ -53,6 +53,7 @@ public class PricePlan {
     private final int pollIntervalSeconds;
     private final int retryIntervalSeconds;
     private final int maxCollectionPeriodDays;
+    private final int retentionPeriodDays;
 
     public static PricePlan of(PricePlanDefaults ppd) {
         return PricePlan.builder()
@@ -65,6 +66,7 @@ public class PricePlan {
                         .pollIntervalSeconds(ppd.getPollIntervalSeconds())
                         .retryIntervalSeconds(ppd.getRetryIntervalSeconds())
                         .maxCollectionPeriodDays(ppd.getMaxCollectionPeriodDays())
+                        .retentionPeriodDays(ppd.getRetentionPeriodDays())
                         .build();
     }
 }

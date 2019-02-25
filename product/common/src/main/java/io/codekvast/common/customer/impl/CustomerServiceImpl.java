@@ -24,6 +24,7 @@ package io.codekvast.common.customer.impl;
 import io.codekvast.common.customer.*;
 import io.codekvast.common.messaging.SlackService;
 import io.codekvast.common.metrics.CommonMetricsService;
+import io.codekvast.common.security.Roles;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -300,7 +301,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    @Secured("ROLES_ADMIN")
+    @Secured(Roles.ADMIN)
     public List<CustomerData> getCustomerData() {
         List<CustomerData> result = new ArrayList<>();
 
@@ -340,7 +341,7 @@ public class CustomerServiceImpl implements CustomerService {
                                                                   "ppo.createdBy, ppo.note AS pricePlanNote, ppo.maxMethods, " +
                                                                   "ppo.maxNumberOfAgents, ppo.publishIntervalSeconds, " +
                                                                   "ppo.pollIntervalSeconds, ppo.retryIntervalSeconds, " +
-                                                                  "ppo.maxCollectionPeriodDays " +
+                                                                  "ppo.maxCollectionPeriodDays, ppo.retentionPeriodDays " +
                                                                   "FROM customers c LEFT JOIN price_plan_overrides ppo " +
                                                                   "ON ppo.customerId = c.id " +
                                                                   "WHERE " + where_clause, identifier);
@@ -372,6 +373,8 @@ public class CustomerServiceImpl implements CustomerService {
                                         .retryIntervalSeconds(getOrDefault(result, "retryIntervalSeconds", ppd.getRetryIntervalSeconds()))
                                         .maxCollectionPeriodDays(
                                             getOrDefault(result, "maxCollectionPeriodDays", ppd.getMaxCollectionPeriodDays()))
+                                        .retentionPeriodDays(
+                                            getOrDefault(result, "retentionPeriodDays", ppd.getRetentionPeriodDays()))
                                         .build())
                            .build();
     }

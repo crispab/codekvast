@@ -148,7 +148,7 @@ public interface CustomerService {
     List<String> getRoleNamesByUserEmail(String email);
 
     /**
-     * Get a list of all CustomerData.
+     * @return A list of all CustomerData. Does never return null.
      */
     List<CustomerData> getCustomerData();
 

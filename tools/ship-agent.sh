@@ -5,10 +5,10 @@ source $(dirname $0)/.build-common.sh
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 
 echo "Checking that we have Bintray credentials..."
-if [ -n "$BINTRAY_USER" -a -n "$BINTRAY_KEY" ]; then
+if [[ -n "$BINTRAY_USER" && -n "$BINTRAY_KEY" ]]; then
     echo "Environment variables BINTRAY_USER and BINTRAY_KEY are defined"
 else
-    if [ ! -e  ${GRADLE_PROPERTIES} ]; then
+    if [[ ! -e  ${GRADLE_PROPERTIES} ]]; then
         echo "$GRADLE_PROPERTIES is missing and BINTRAY_USER and/or BINTRAY_KEY is undefined"
         exit 1
     fi
@@ -32,7 +32,7 @@ git status --porcelain --branch | egrep --quiet '^## master\.\.\.origin/master' 
     exit 2
 }
 
-if [ ${NUM_DIRTY_FILES} -gt 0 ]; then
+if [[ ${NUM_DIRTY_FILES} -gt 0 ]]; then
     echo "The Git workspace is not clean. Git status:"
     git status --short --branch
     exit 2
@@ -50,7 +50,7 @@ echo -n "Everything looks fine.
 About to build and publish ${COMMITTED_VERSION}.
 Are you sure [N/y]? "
 read answer
-if [ "${answer}" != 'y' ]; then
+if [[ "${answer}" != 'y' ]]; then
     echo "Nothing done."
     exit 4
 fi

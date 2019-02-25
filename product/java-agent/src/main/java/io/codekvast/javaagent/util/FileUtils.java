@@ -105,21 +105,6 @@ public final class FileUtils {
         }
     }
 
-    static File expandPlaceholders(File file) {
-        if (file == null) {
-            return null;
-        }
-
-        String name = file.getName().replace("#hostname#", Constants.HOST_NAME).replace("#timestamp#", getTimestamp());
-
-        File parentFile = file.getParentFile();
-        return parentFile == null ? new File(name) : new File(parentFile, name);
-    }
-
-    private static String getTimestamp() {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
-    }
-
     @SuppressWarnings("SameParameterValue")
     public static File serializeToFile(Object object, String prefix, String suffix) throws IOException {
         long startedAt = System.currentTimeMillis();

@@ -29,7 +29,7 @@ import io.codekvast.login.heroku.HerokuDetailsDAO;
 import io.codekvast.login.heroku.HerokuException;
 import io.codekvast.login.heroku.HerokuService;
 import io.codekvast.login.heroku.model.*;
-import io.codekvast.login.model.Roles;
+import io.codekvast.common.security.Roles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;

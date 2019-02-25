@@ -49,8 +49,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -83,7 +83,7 @@ public class SecurityServiceImpl implements SecurityService {
     private byte[] jwtSecret;
 
     @PostConstruct
-    public void postConstruct() throws UnsupportedEncodingException {
+    public void postConstruct() {
         String secret = settings.getDashboardJwtSecret();
         if (secret == null) {
             secret = "";
@@ -93,7 +93,7 @@ public class SecurityServiceImpl implements SecurityService {
                                         .jwtExpirationHours(settings.getDashboardJwtExpirationHours())
                                         .jwtSecret(secret)
                                         .build();
-        this.jwtSecret = secret.getBytes("UTF-8");
+        this.jwtSecret = secret.getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -244,7 +244,6 @@ public class SecurityServiceImpl implements SecurityService {
             return Date.from(Instant.now().plus(duration));
         }
 
-        @SneakyThrows(UnsupportedEncodingException.class)
         public String createWebappToken(Long customerId, WebappCredentials credentials) {
             return Jwts.builder()
                        .setId(Long.toString(customerId))
@@ -253,7 +252,7 @@ public class SecurityServiceImpl implements SecurityService {
                        .setExpiration(calculateExpirationDate())
                        .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
                        .claim(JWT_CLAIM_SOURCE, credentials.getSource())
-                       .signWith(signatureAlgorithm, jwtSecret.getBytes("UTF-8"))
+                       .signWith(signatureAlgorithm, jwtSecret.getBytes(StandardCharsets.UTF_8))
                        .compact();
         }
     }

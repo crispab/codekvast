@@ -30,7 +30,8 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 /**
  * @author olle.hallin@crisp.se
@@ -95,7 +96,16 @@ public class AgentDAOImpl implements AgentDAO {
     }
 
     @Override
+    public String getEnvironmentName(long customerId, String thisJvmUuid) {
+        List<String> list = jdbcTemplate.queryForList("SELECT name FROM environments e, jvms j " +
+                                                          "WHERE e.customerId = ? AND e.id = j.environmentId AND j.uuid = ? ",
+                                                      String.class, customerId, thisJvmUuid);
+        // If this is the first poll, return null.
+        return list.isEmpty() ? null : list.get(0);
+    }
+    @Override
     public void updateAgentEnabledState(long customerId, String thisJvmUuid, boolean enabled) {
         jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ?", enabled, customerId, thisJvmUuid);
     }
+
 }

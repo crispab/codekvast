@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.3.RELEASE")
     }
 }
 
@@ -16,6 +16,7 @@ apply plugin: 'io.spring.dependency-management'
 
 version = '1.0.0'
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -26,8 +27,8 @@ configurations {
 }
 
 dependencies {
-    annotationProcessor 'org.projectlombok:lombok:1.16.16'
-    compileOnly 'org.projectlombok:lombok:1.16.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+    compileOnly 'org.projectlombok:lombok:1.18.4'
 
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile project(":sample:sample-lib")
@@ -58,7 +59,8 @@ excludePackages = sample.lib.excluded
 methodVisibility = all
 packages = sample. , foo.bar.
 tags = development, sample
-bridgeAspectjMessagesToJUL = true
+bridgeAspectjMessagesToJUL = false
+environment = Gradle
 
 # serverUrl = https://api-staging.codekvast.io
 httpProxyHost =   
@@ -70,17 +72,19 @@ httpProxyPort = 4711
 processResources.dependsOn generateCodekvastConfig
 
 task launchExecutableJar(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:java-agent:shadowJar"] ) {
-    description "Launches the executable jar produced by bootJar"
+    def javaVersion = sdkmanJavaVersion_11
+
+    description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
     group "Application"
 
-    executable "java"
-
+    executable "${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}/bin/java"
     // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
-
     args "-javaagent:${configurations.codekvastagent.asPath}"
     args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
 
     args "-jar", "build/libs/${archivesBaseName}-${version}.jar"
+    args "--logging.level.root=INFO"
+    args "--logging.level.io.codekvast=DEBUG"
 }
 
 task run {

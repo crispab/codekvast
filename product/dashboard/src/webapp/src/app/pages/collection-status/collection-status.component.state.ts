@@ -1,10 +1,8 @@
 import {AgePipe} from '../../pipes/age.pipe';
 import {DashboardApiService} from '../../services/dashboard-api.service';
 import {StatusData} from '../../model/status/StatusData';
-import {Subscription} from 'rxjs';
-import {TimerObservable} from 'rxjs/observable/TimerObservable';
+import {Subscription, timer} from 'rxjs';
 import {Agent} from '../../model/status/Agent';
-import {isNullOrUndefined} from 'util';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 export class CollectionStatusComponentState {
@@ -153,7 +151,10 @@ export class CollectionStatusComponentState {
                 this.toggleAutoRefresh();
             }
             this.getVisibleAgents()
-                .forEach(a => a.selected = this.selectAllTerminatedAgents && !a.agentAlive && isNullOrUndefined(a.deletionState));
+                .forEach(
+                    a => a.selected = this.selectAllTerminatedAgents
+                        && !a.agentAlive
+                        && (a.deletionState === null || a.deletionState === undefined));
         }
     }
 
@@ -188,8 +189,7 @@ export class CollectionStatusComponentState {
     }
 
     private startAutoRefresh() {
-        let timer = TimerObservable.create(0, this.refreshIntervalSeconds * 1000);
-        this.timerSubscription = timer.subscribe((tick: number) => {
+        this.timerSubscription = timer(0, this.refreshIntervalSeconds * 1000).subscribe((tick: number) => {
             console.log('[ck dashboard] Doing auto-refresh #%o', tick);
             this.refreshNow();
         });

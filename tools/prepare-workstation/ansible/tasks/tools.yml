@@ -1,11 +1,4 @@
 ---
-- name: Install OpenJDK
-  package: name={{ item }} state=present
-  with_items:
-  - openjdk-8-jdk
-  - openjdk-8-source
-  - openjdk-8-doc
-
 - name: Install git and curl
   package: name={{ item }} state=present
   with_items:
