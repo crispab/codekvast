@@ -1,3 +1,0 @@
-plugins { id "org.jbake.site" version "1.2.0" }
-
-build.dependsOn bake
