@@ -19,7 +19,7 @@ exports.handler = function(event, context, callback) {
       emailKeyPrefix: "inbox/",
       forwardMapping: {
         "support@codekvast.io": [
-          "codekvast-support@hit.se"
+          "codekvast-support@hit.se" // NOTE: This email address must be validated in the SES console!
         ]
       }
     }
