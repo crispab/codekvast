@@ -39,19 +39,21 @@ node {
             }
 
             stage('Frontend webpack') {
-                try {
-                    sh "./.gradlew :product:dashboard:frontendWebpack"
-                } finally {
-                    // Prevent junit publisher to fail if Gradle has skipped the test
-                    sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs --no-run-if-empty touch"
-                    junit '**/build/test-results/frontendTest/*.xml'
+                lock('Codekvast-webpack') {
+                    try {
+                        sh "./.gradlew :product:dashboard:frontendWebpack"
+                    } finally {
+                        // Prevent junit publisher to fail if Gradle has skipped the test
+                        sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs --no-run-if-empty touch"
+                        junit '**/build/test-results/frontendTest/*.xml'
 
-                    publishHTML([allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'product/dashboard/build/reports/frontend-coverage',
-                        reportFiles: 'index.html',
-                        reportName: 'Frontend Coverage Report'])
+                        publishHTML([allowMissing: true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'product/dashboard/build/reports/frontend-coverage',
+                            reportFiles: 'index.html',
+                            reportName: 'Frontend Coverage Report'])
+                    }
                 }
             }
 
