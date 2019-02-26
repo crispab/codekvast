@@ -32,7 +32,7 @@ Codekvast is released under the MIT license.
 
 ### Pre-built binaries
 
-Pre-built binaries, and the User Manual are available for download from [downloads.codekvast.io](http://downloads.codekvast.io).
+Pre-built binaries, and the User Manual are available for download from [downloads.codekvast.io](https://downloads.codekvast.io).
 
 * codekvast-agent-x.x.x.zip contains the *Codekvast Agent* as well as a sample `codekvast.conf`.
 

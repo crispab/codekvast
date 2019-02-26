@@ -2,29 +2,29 @@
 #-----------------------------------------------------------------------------------------------------------
 # Playbook that makes a backup of the production database to S3 and then restores it to the staging database
 #-----------------------------------------------------------------------------------------------------------
-- name: Make extra production database backup
-  hosts: tag_Name_Codekvast_default_prod_database
-  user: ubuntu
+- name:   Make extra production database backup
+  hosts:  tag_Name_Codekvast_default_prod_database
+  user:   ubuntu
   become: yes
 
   tasks:
-  - name: "Making an extra database backup of {{ ec2_tag_CNAME }}"
+  - name:  "Making an extra database backup of {{ ec2_tag_CNAME }}"
     shell: /root/mariadb-backup extra
 
-- name: Restore extra production database
-  hosts: tag_Name_Codekvast_default_staging_database
-  user: ubuntu
+- name:   Restore extra production database
+  hosts:  tag_Name_Codekvast_default_staging_database
+  user:   ubuntu
   become: yes
 
   vars:
-    mysql_backup_dir: '/var/backups/mariadb'
-    s3_bucket: "s3://io.codekvast.default.prod.backup"
-    tarball: "mariadb-backup-extra.tar.gz"
+      mysql_backup_dir: '/var/backups/mariadb'
+      s3_bucket:        "s3://io.codekvast.default.prod.backup"
+      tarball:          "mariadb-backup-extra.tar.gz"
 
   tasks:
 
-  - name: "Fetching {{ s3_bucket }}/{{ tarball }} to {{ ec2_tag_CNAME }}:{{ mysql_backup_dir }}"
+  - name:  "Fetching {{ s3_bucket }}/{{ tarball }} to {{ ec2_tag_CNAME }}:{{ mysql_backup_dir }}"
     shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ tarball }} {{ mysql_backup_dir }}"
 
-  - name: "Restoring {{ mysql_backup_dir }}/{{ tarball }} in {{ ec2_tag_CNAME }}"
+  - name:  "Restoring {{ mysql_backup_dir }}/{{ tarball }} in {{ ec2_tag_CNAME }}"
     shell: "/root/mariadb-restore {{ mysql_backup_dir }}/{{ tarball }} --yes"

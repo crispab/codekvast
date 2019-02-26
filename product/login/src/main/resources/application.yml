@@ -6,24 +6,24 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 codekvast:
-    cipherSecret: someCipherSecret
-    dashboardBaseUrl: http://localhost:8081
+    cipherSecret:                someCipherSecret
+    dashboardBaseUrl:            http://localhost:8081
     dashboardJwtExpirationHours: 168
-    dashboardJwtSecret: secret
-    dnsCname: localhost
-    environment: dev
-    herokuOAuthBaseUrl: https://id.heroku.com
-    herokuApiBaseUrl: https://api.heroku.com
-    herokuApiPassword: herokuApiPassword
-    herokuApiSsoSalt: herokuApiSsoSalt
-    herokuCodekvastUrl: http://localhost:8080
-    herokuOAuthClientId: herokuOAuthClientId
-    herokuOAuthClientSecret: herokuOAuthClientSecret
+    dashboardJwtSecret:          secret
+    dnsCname:                    localhost
+    environment:                 dev
+    herokuOAuthBaseUrl:          https://id.heroku.com
+    herokuApiBaseUrl:            https://api.heroku.com
+    herokuApiPassword:           herokuApiPassword
+    herokuApiSsoSalt:            herokuApiSsoSalt
+    herokuCodekvastUrl:          http://localhost:8080
+    herokuOAuthClientId:         herokuOAuthClientId
+    herokuOAuthClientSecret:     herokuOAuthClientSecret
     slackWebHookToken:
-    slackWebHookUrl: https://hooks.slack.com/services
+    slackWebHookUrl:             https://hooks.slack.com/services
 
 logging:
-    file: build/log/login.log
+    file:      build/log/login.log
     level:
         io.codekvast: DEBUG
     group.web: debug
@@ -34,24 +34,24 @@ management:
         jmx:
             domain: CodekvastLogin
         web:
-            base-path: /management
+            base-path:        /management
             exposure.include: '*'
     endpoint:
         health:
-            show-details: "ALWAYS"
+            show-details:       "ALWAYS"
             cache.time-to-live: 1s
     server:
         port: 9080
     metrics:
         web.server.auto-time-requests: true
-        export.datadog.enabled: false
+        export.datadog.enabled:        false
         tags:
             service: "codekvast-login"
-            env: dev
-            host: localhost
+            env:     dev
+            host:    localhost
 
 server:
-    port: 8080
+    port:                8080
     servlet:
         context-path: /
         session:
@@ -60,27 +60,27 @@ server:
             persistent: false
     undertow:
         accesslog:
-            dir: build/log
+            dir:     build/log
             enabled: true
             pattern: combined
-            prefix: access.
+            prefix:  access.
     use-forward-headers: true
 
 spring:
-    application.name: Codekvast Login
+    application.name:    Codekvast Login
     datasource:
         hikari:
             connection-test-query: SELECT 1 FROM DUAL
         password: codekvast
-        url: jdbc:mariadb://localhost/codekvast
+        url:      jdbc:mariadb://localhost/codekvast
         username: codekvast
     flyway:
-        table: schema_version
+        table:               schema_version
         validate-on-migrate: false
     groovy.template.configuration:
         auto-new-line: true
-        auto-indent: true
+        auto-indent:   true
     http:
         converters.preferred-json-mapper: gson
-        log-request-details: true
+        log-request-details:              true
     output.ansi.enabled: detect

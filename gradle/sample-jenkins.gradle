@@ -13,11 +13,11 @@ defaultTasks 'run'
 
 def javaVersion = sdkmanJavaVersion_8
 def tomcatVersion = "7.0.92"
-def tomcatDownloadUrl = "http://downloads.codekvast.io/apache-tomcat-${tomcatVersion}.zip"
+def tomcatDownloadUrl = "https://downloads.codekvast.io/apache-tomcat-${tomcatVersion}.zip"
 def tomcatDir = file("$buildDir/tomcat")
 def catalinaBase = new File(tomcatDir, "apache-tomcat-${tomcatVersion}")
 def catalinaWebapps = new File(catalinaBase, "webapps")
-def jenkinsDownloadUrl = "http://downloads.codekvast.io/jenkins-${jenkinsVersion}.war"
+def jenkinsDownloadUrl = "https://downloads.codekvast.io/jenkins-${jenkinsVersion}.war"
 
 task installJenkinsWarInTomcat {
     def downloadDir = file("$rootDir/.tmp/download")
@@ -39,10 +39,10 @@ task installJenkinsWarInTomcat {
 
         logger.lifecycle "Downloading $tomcatDownloadUrl ..."
         ant.get(
-                src: tomcatDownloadUrl,
-                dest: downloadDir,
-                usetimestamp: true,
-                verbose: true
+            src: tomcatDownloadUrl,
+            dest: downloadDir,
+            usetimestamp: true,
+            verbose: true
         )
 
         logger.lifecycle "Unpacking Tomcat into $tomcatDir ..."
@@ -58,10 +58,10 @@ task installJenkinsWarInTomcat {
 
         logger.lifecycle "Downloading $jenkinsDownloadUrl into $downloadDir ..."
         ant.get(
-                src: jenkinsDownloadUrl,
-                dest: downloadDir,
-                usetimestamp: true,
-                verbose: true
+            src: jenkinsDownloadUrl,
+            dest: downloadDir,
+            usetimestamp: true,
+            verbose: true
         )
 
         logger.lifecycle "Copying jenkins.war into $catalinaWebapps ..."
@@ -164,5 +164,5 @@ task run(type: Exec) {
     commandLine "$catalinaBase/bin/catalina.sh", "run"
 
     // Illustrate that config can be injected from environment variables
-    environment['CODEKVAST_APP_NAME']='Jenkins'
+    environment['CODEKVAST_APP_NAME'] = 'Jenkins'
 }

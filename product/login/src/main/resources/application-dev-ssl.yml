@@ -1,6 +1,6 @@
 server:
     port: 8443
     ssl:
-        key-alias: localhost
-        key-store: classpath:dev/localhost.pkcs12
+        key-alias:          localhost
+        key-store:          classpath:dev/localhost.pkcs12
         key-store-password: secret

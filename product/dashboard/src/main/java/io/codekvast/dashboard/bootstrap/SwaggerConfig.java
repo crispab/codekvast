@@ -75,8 +75,8 @@ public class SwaggerConfig {
         return new ApiInfo(settings.getApplicationName(),
                            description,
                            settings.getDisplayVersion(),
-                           "http://www.codekvast.io/pages/terms-of-service.html",
-                           new Contact("Codekvast", "http://www.codekvast.io", "codekvast-support@hit.se"),
+                           "https://www.codekvast.io/pages/terms-of-service.html",
+                           new Contact("Codekvast", "https://www.codekvast.io", "codekvast-support@hit.se"),
                            "Licensed under the MIT license",
                            "https://opensource.org/licenses/MIT",
                            new ArrayList<>());
