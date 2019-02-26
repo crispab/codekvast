@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowSESPuts-1551170070948",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ses.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::mailbox.codekvast.io/*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:Referer": "186662504461"
+                }
+            }
+        }
+    ]
+}
