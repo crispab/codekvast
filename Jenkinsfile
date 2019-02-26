@@ -39,7 +39,7 @@ node {
             }
 
             stage('Frontend webpack') {
-                lock("Codekvast-${System.getenv('BRANCH_NAME')}-webpack") {
+                lock("Codekvast-${env.BRANCH_NAME}-webpack") {
                     try {
                         sh "./.gradlew :product:dashboard:frontendWebpack"
                     } finally {
