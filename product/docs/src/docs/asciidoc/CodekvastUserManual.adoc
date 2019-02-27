@@ -109,7 +109,7 @@ in a web interface. It also offers a REST interface to facilitate IDE plugin dev
 
 == Configuration
 
-See http://www.codekvast.io
+See https://www.codekvast.io/getting-started.html
 
 == Usage hints
 [[use-in-production]]

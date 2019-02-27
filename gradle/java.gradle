@@ -17,8 +17,8 @@ uptodate {
 jar {
     manifest {
         attributes(
-                "Implementation-Title": archivesBaseName,
-                "Implementation-Version": codekvastDisplayVersion
+            "Implementation-Title": archivesBaseName,
+            "Implementation-Version": codekvastDisplayVersion
         )
     }
 }
@@ -71,6 +71,6 @@ configurations.forEach { it ->
 
 // TODO: Run javadoc on delomboked code
 javadoc {
-    title  "Codekvast version $codekvastDisplayVersion"
+    title "Codekvast version $codekvastDisplayVersion"
     failOnError = false
 }

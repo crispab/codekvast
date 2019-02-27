@@ -49,9 +49,9 @@ html {
                     div(id: 'cookieConsentAlert', class: 'alert alert-warning alert-dismissible fade show', role: 'alert') {
                         p {
                             yield('This site uses cookies to deliver our services. By using our site, you acknowledge that you have read and understand our ')
-                            a(href: 'http://www.codekvast.io/pages/privacy-policy.html', target: '_new', 'Privacy Policy')
+                            a(href: 'https://www.codekvast.io/pages/privacy-policy.html', target: '_new', 'Privacy Policy')
                             yield(' and our ')
-                            a(href: 'http://www.codekvast.io/pages/terms-of-service.html', target: '_new', 'Terms of Service')
+                            a(href: 'https://www.codekvast.io/pages/terms-of-service.html', target: '_new', 'Terms of Service')
                             yield('. Your use of Codekvast services is subject to this policy and terms.')
                         }
 
@@ -67,10 +67,10 @@ html {
             footer(class: 'bg-info small') {
                 ul(class: 'nav justify-content-end mr-1') {
                     li(class: 'nav-item px-3') {
-                        a(class: 'btn btn-info', href: 'http://www.codekvast.io', target: '_new', 'Latest News')
+                        a(class: 'btn btn-info', href: 'https://www.codekvast.io', target: '_new', 'Latest News')
                     }
                     li(class: 'nav-item px-3') {
-                        a(class: 'btn btn-info', href: 'http://www.codekvast.io/pages/privacy-policy.html', target: '_new', 'Privacy Policy')
+                        a(class: 'btn btn-info', href: 'https://www.codekvast.io/pages/privacy-policy.html', target: '_new', 'Privacy Policy')
                     }
                     li(class: 'nav-item px-3') {
                         span(class: 'btn disabled') {

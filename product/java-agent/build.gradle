@@ -208,7 +208,7 @@ bintray {
         repo = 'maven-repo'
         name = 'codekvast-agent'
         desc = 'The javaagent part of Codekvast.'
-        websiteUrl = 'http://www.codekvast.io'
+        websiteUrl = 'https://www.codekvast.io'
         vcsUrl = 'https://github.com/crispab/codekvast.git'
         issueTrackerUrl = 'https://github.com/crispab/codekvast/issues'
         licenses = ['MIT']

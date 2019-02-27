@@ -68,6 +68,10 @@
     <XML>
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
+    <yaml>
+      <option name="ALIGN_VALUES_PROPERTIES" value="1" />
+      <option name="INDENT_SEQUENCE_VALUE" value="false" />
+    </yaml>
     <codeStyleSettings language="JAVA">
       <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
       <option name="INDENT_CASE_FROM_SWITCH" value="false" />
@@ -374,11 +378,6 @@
       <option name="DOWHILE_BRACE_FORCE" value="3" />
       <option name="WHILE_BRACE_FORCE" value="3" />
       <option name="FOR_BRACE_FORCE" value="3" />
-    </codeStyleSettings>
-    <codeStyleSettings language="yaml">
-      <indentOptions>
-        <option name="INDENT_SIZE" value="4" />
-      </indentOptions>
     </codeStyleSettings>
   </code_scheme>
 </component>

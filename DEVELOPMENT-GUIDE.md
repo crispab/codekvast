@@ -40,7 +40,7 @@ See `man git-crypt`, `git-crypt help add-gpg-user` and `git-crypt help unlock`.
 
 ## Web site
 
-Web pages (i.e., http://www.codekvast.io) lives in the Git repo `https://github.com/crispab/codekvast-site`.
+Web pages (i.e., https://www.codekvast.io) lives in the Git repo `https://github.com/crispab/codekvast-site`.
 
 ## Development environment
 
@@ -110,7 +110,7 @@ The pipeline is defined by `Jenkinsfile`.
 To access http://jenkins.crisp.se you need to be either a Member or an Outside collaborator of https://github.com/orgs/crispab/people.
 
 ## Software publishing
-Codekvast Agent is published to http://downloads.codekvast.io as well as to jcenter.
+Codekvast Agent is published to https://downloads.codekvast.io as well as to jcenter.
 
 You execute the publishing by executing `tools/ship-agent.sh` in the root of the project.
 

@@ -40,7 +40,7 @@ task downloadChromeDriver {
     group "Test support"
 
     def downloadDir = file("$rootDir/.tmp/download")
-    def downloadUrl = "http://downloads.codekvast.io/${chromeDriver}"
+    def downloadUrl = "https://downloads.codekvast.io/${chromeDriver}"
     def destFile = file("$downloadDir/$chromeDriver")
 
     inputs.property "downloadUrl", downloadUrl
@@ -66,7 +66,7 @@ task downloadGeckoDriver {
     group "Test support"
 
     def downloadDir = file("$rootDir/.tmp/download")
-    def downloadUrl = "http://downloads.codekvast.io/${geckoDriver}"
+    def downloadUrl = "https://downloads.codekvast.io/${geckoDriver}"
     def destFile = file("$downloadDir/$geckoDriver")
 
     inputs.property "downloadUrl", downloadUrl

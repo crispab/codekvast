@@ -88,6 +88,7 @@
             domain_name: "{{ item.name }}.s3-website.{{ item.region }}.amazonaws.com"
             custom_origin_config:
               origin_protocol_policy: "http-only"
+# TODO: Make this work. Currently (2019-02-23) this causes a 500 Server Side error in the AWS API.
 #      viewer_certificate:
 #          cloud_front_default_certificate: False
 #          acm_certificate_arn: "{{ ssl_certificates['us-east-1'] }}"
@@ -150,3 +151,41 @@
     loop_control:
       loop_var: stack
     tags: infra
+
+  - name: Create S3 buckets for incoming mail
+    s3_bucket:
+        profile: codekvast
+        region: "eu-central-1"
+        name: "mailbox.codekvast.io"
+        policy: "{{ lookup('file', 's3-mailbox.json') }}"
+        tags:
+            Owner: Codekvast
+    connection: local
+    tags: email
+
+  - name: Run 'npm install' for aws-ses-forwarder
+    shell: npm install chdir="files/aws-ses-forwarder"
+    connection: local
+    tags: email
+
+  - name: Create aws-ses-forwarder.zip
+    archive:
+        path: "files/aws-ses-forwarder/"
+        dest: /tmp/aws-ses-forwarder.zip
+        format: zip
+    connection: local
+    tags: email
+
+  - name: Install email forwarder lambda
+    lambda:
+        profile: codekvast
+        region: "eu-west-1"
+        name: "mail-forwarder"
+        role: "arn:aws:iam::186662504461:role/Mail-forwarder"
+        handler: "index.handler"
+        runtime: "nodejs8.10"
+        zip_file: "/tmp/aws-ses-forwarder.zip"
+        tags:
+            Owner: Codekvast
+    connection: local
+    tags: email

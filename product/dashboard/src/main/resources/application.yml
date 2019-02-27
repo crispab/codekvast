@@ -6,26 +6,26 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 codekvast:
-    dashboardBaseUrl: http://localhost:8081
-    dashboardJwtExpirationHours: 168
-    dashboardJwtSecret: secret
+    dashboardBaseUrl:               http://localhost:8081
+    dashboardJwtExpirationHours:    168
+    dashboardJwtSecret:             secret
     dataWeedingInitialDelaySeconds: 600
-    dataWeedingIntervalSeconds: 3600
-    deleteImportedFiles: true
-    dnsCname: localhost
-    environment: dev
-    fileImportInitialDelaySeconds: 5
-    fileImportIntervalSeconds: 60
-    loginBaseUrl: http://localhost:8080
-    queuePath: /tmp/codekvast
-    slackWebHookToken: ''
-    slackWebHookUrl: https://hooks.slack.com/services
+    dataWeedingIntervalSeconds:     3600
+    deleteImportedFiles:            true
+    dnsCname:                       localhost
+    environment:                    dev
+    fileImportInitialDelaySeconds:  5
+    fileImportIntervalSeconds:      60
+    loginBaseUrl:                   http://localhost:8080
+    queuePath:                      /tmp/codekvast
+    slackWebHookToken:              ''
+    slackWebHookUrl:                https://hooks.slack.com/services
 
 logging:
     file: build/log/dashboard.log
     level:
         io.codekvast: DEBUG
-        springfox: WARN
+        springfox:    WARN
 
 management:
     endpoint:
@@ -34,55 +34,55 @@ management:
     endpoints:
         jmx.domain: CodekvastDashboard
         web:
-            base-path: /management
+            base-path:        /management
             exposure.include: '*'
     server:
         port: 9081
     metrics:
         web.server.auto-time-requests: true
-        export.datadog.enabled: false
+        export.datadog.enabled:        false
         tags:
             service: "codekvast-dashboard"
-            env: dev
-            host: localhost
+            env:     dev
+            host:    localhost
 
 server:
     compression:
-        enabled: true
+        enabled:    true
         mime-types: application/json,application/javascript,text/html,text/xml,text/plain,text/css
-    port: 8081
+    port:                8081
     undertow:
         accesslog:
-            dir: build/log
+            dir:     build/log
             enabled: true
             pattern: combined
-            prefix: access.
+            prefix:  access.
     use-forward-headers: true
 
 spring:
-    application.name: Codekvast Dashboard
+    application.name:    Codekvast Dashboard
     datasource:
         hikari:
             connection-test-query: SELECT 1 FROM DUAL
         password: codekvast
-        url: jdbc:mariadb://localhost/codekvast
+        url:      jdbc:mariadb://localhost/codekvast
         username: codekvast
     flyway:
-        table: schema_version
+        table:               schema_version
         validate-on-migrate: false
     http:
         converters.preferred-json-mapper: gson
-        log-request-details: true
+        log-request-details:              true
     output.ansi.enabled: detect
     servlet:
         multipart:
-            max-file-size: 100MB
+            max-file-size:    100MB
             max-request-size: 100MB
     task:
         execution:
             pool:
-                core-size: 1
-                max-size: 5
+                core-size:      1
+                max-size:       5
                 queue-capacity: 100
             thread-name-prefix: 'Codekvast task-'
         scheduling.pool.size: 5
