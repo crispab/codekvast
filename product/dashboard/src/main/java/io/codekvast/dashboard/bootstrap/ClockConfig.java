@@ -19,18 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.util
+package io.codekvast.dashboard.bootstrap;
 
-import java.time.Instant
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.time.Clock;
 
 /**
- * Strategy for getting current time.
- *
  * @author olle.hallin@crisp.se
  */
-interface TimeService {
+@Configuration
+public class ClockConfig {
 
-    fun currentTimeMillis(): Long
-
-    fun now(): Instant
+    @Bean
+    public Clock clock() {
+        return Clock.systemUTC();
+    }
 }

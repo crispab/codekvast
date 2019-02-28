@@ -32,8 +32,8 @@ import static java.lang.String.format;
 public class LoggingUtils {
 
     /**
-     * Converts a number of bytes to a human readable string. Example: 12345 i converted to "12,3 kB" It uses the default locale for
-     * formatting the float.
+     * Converts a number of bytes to a human readable string. Example: 12345 is converted to "12,3 kB".
+     * It uses the default locale for formatting the float.
      *
      * @param bytes The byte count
      * @return A human readable string rounded to one decimal.

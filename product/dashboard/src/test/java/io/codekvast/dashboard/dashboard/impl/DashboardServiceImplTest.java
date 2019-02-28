@@ -7,7 +7,6 @@ import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.common.security.CustomerIdProvider;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
-import io.codekvast.dashboard.util.TimeService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -15,7 +14,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.MILLIS;
@@ -44,19 +45,15 @@ public class DashboardServiceImplTest {
     @Mock
     private CustomerIdProvider customerIdProvider;
 
-    @Mock
-    private TimeService timeService;
-
-    private Instant now = Instant.now();
+    private final Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
+    private final Instant now = clock.instant();
 
     private DashboardServiceImpl dashboardService;
 
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        dashboardService = new DashboardServiceImpl(jdbcTemplate, namedParameterJdbcTemplate, customerIdProvider, customerService, timeService);
-        when(timeService.now()).thenReturn(now);
-        when(timeService.currentTimeMillis()).thenReturn(now.toEpochMilli());
+        dashboardService = new DashboardServiceImpl(jdbcTemplate, namedParameterJdbcTemplate, customerIdProvider, customerService, clock);
     }
 
     @Test
@@ -70,7 +67,7 @@ public class DashboardServiceImplTest {
         CustomerData customerData = CustomerData.builder()
                                                 .customerId(1L)
                                                 .customerName("customerName")
-                                                .pricePlan(PricePlan.of(ppd))
+                                                .pricePlan(PricePlan.of(ppd).toBuilder().retentionPeriodDays(-1).build())
                                                 .source("source")
                                                 .collectionStartedAt(collectionStartedAt)
                                                 .trialPeriodEndsAt(trialPeriodEndsAt)
@@ -113,7 +110,7 @@ public class DashboardServiceImplTest {
         CustomerData customerData = CustomerData.builder()
                                                 .customerId(1L)
                                                 .customerName("customerName")
-                                                .pricePlan(PricePlan.of(ppd))
+                                                .pricePlan(PricePlan.of(ppd).toBuilder().retentionPeriodDays(-1).build())
                                                 .source("source")
                                                 .collectionStartedAt(collectionStartedAt)
                                                 .trialPeriodEndsAt(trialPeriodEndsAt)

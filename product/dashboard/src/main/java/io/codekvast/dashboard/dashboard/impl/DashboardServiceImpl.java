@@ -31,7 +31,6 @@ import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.ApplicationDescriptor2;
 import io.codekvast.dashboard.dashboard.model.status.EnvironmentStatusDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
-import io.codekvast.dashboard.util.TimeService;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +49,7 @@ import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -79,16 +79,19 @@ public class DashboardServiceImpl implements DashboardService {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final CustomerIdProvider customerIdProvider;
     private final CustomerService customerService;
-    private final TimeService timeService;
+    private final Clock clock;
 
     @Override
     @Transactional(readOnly = true)
     public GetMethodsResponse2 getMethods2(@Valid GetMethodsRequest request) {
-        long startedAt = timeService.currentTimeMillis();
+        long startedAt = clock.millis();
+        Long customerId = customerIdProvider.getCustomerId();
+        PricePlan pricePlan = customerService.getCustomerDataByCustomerId(customerId).getPricePlan();
+
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("customerId", customerIdProvider.getCustomerId());
+        params.addValue("customerId", customerId);
         params.addValue("minCollectedDays", request.getMinCollectedDays());
-        params.addValue("now", new Timestamp(timeService.currentTimeMillis()));
+        params.addValue("now", new Timestamp(clock.millis()));
         params.addValue("onlyInvokedAfterMillis", request.getOnlyInvokedAfterMillis());
         params.addValue("onlyInvokedBeforeMillis", request.getOnlyInvokedBeforeMillis());
 
@@ -141,14 +144,14 @@ public class DashboardServiceImpl implements DashboardService {
                                  .id(rs.getLong("id"))
                                  .signature(signature)
                                  .trackedPercent(status.isTracked() ? 100 : 0)
-                                 .collectedDays(rs.getInt("collectedDays"))
-                                 .lastInvokedAtMillis(rs.getLong("lastInvokedAtMillis"))
+                                 .collectedDays(pricePlan.adjustCollectedDays(rs.getInt("collectedDays")))
+                                 .lastInvokedAtMillis(pricePlan.adjustTimestampMillis(rs.getLong("lastInvokedAtMillis"), clock))
                                  .build());
 
         });
 
 
-        long queryTimeMillis = timeService.currentTimeMillis() - startedAt;
+        long queryTimeMillis = clock.millis() - startedAt;
         logger.debug("Processed {} in {} ms.", request, queryTimeMillis);
 
         return GetMethodsResponse2.builder()
@@ -174,6 +177,9 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional(readOnly = true)
     public Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId) {
+        Long customerId = customerIdProvider.getCustomerId();
+        PricePlan pricePlan = customerService.getCustomerDataByCustomerId(customerId).getPricePlan();
+
         GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
                                                      .maxResults(1)
                                                      .suppressUntrackedMethods(false)
@@ -185,7 +191,8 @@ public class DashboardServiceImpl implements DashboardService {
         params.addValue("customerId", customerIdProvider.getCustomerId());
         params.addValue("methodId", methodId);
 
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = :methodId", false);
+        MethodDescriptorRowCallbackHandler rowCallbackHandler =
+            new MethodDescriptorRowCallbackHandler("m.id = :methodId", false, pricePlan);
 
         namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
 
@@ -195,17 +202,17 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional(readOnly = true)
     public GetStatusResponse getStatus() {
-        long startedAt = timeService.currentTimeMillis();
+        long startedAt = clock.millis();
 
         Long customerId = customerIdProvider.getCustomerId();
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
 
-        PricePlan pp = customerData.getPricePlan();
+        PricePlan pricePlan = customerData.getPricePlan();
         List<EnvironmentStatusDescriptor> environments = getEnvironments(customerId);
-        List<ApplicationDescriptor2> applications = getApplications(customerId);
-        List<AgentDescriptor> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
+        List<ApplicationDescriptor2> applications = getApplications(customerId, pricePlan);
+        List<AgentDescriptor> agents = getAgents(customerId, pricePlan.getPublishIntervalSeconds());
 
-        Instant now = timeService.now();
+        Instant now = clock.instant();
         Instant collectionStartedAt = customerData.getCollectionStartedAt();
         Instant trialPeriodEndsAt = customerData.getTrialPeriodEndsAt();
         Duration trialPeriodDuration =
@@ -217,21 +224,22 @@ public class DashboardServiceImpl implements DashboardService {
 
         long dayInMillis = 24 * 60 * 60 * 1000L;
         Integer collectedDays =
-            collectionStartedAt == null ? null : Math.toIntExact(Duration.between(collectionStartedAt, now).toMillis() / dayInMillis);
+            collectionStartedAt == null ? null :
+                pricePlan.adjustCollectedDays(Math.toIntExact(Duration.between(collectionStartedAt, now).toMillis() / dayInMillis));
 
         return GetStatusResponse.builder()
                                 // query stuff
                                 .timestamp(startedAt)
-                                .queryTimeMillis(timeService.currentTimeMillis() - startedAt)
+                                .queryTimeMillis(clock.millis() - startedAt)
 
                                 // price plan stuff
-                                .pricePlan(pp.getName())
-                                .collectionResolutionSeconds(pp.getPublishIntervalSeconds())
-                                .maxNumberOfAgents(pp.getMaxNumberOfAgents())
-                                .maxNumberOfMethods(pp.getMaxMethods())
+                                .pricePlan(pricePlan.getName())
+                                .collectionResolutionSeconds(pricePlan.getPublishIntervalSeconds())
+                                .maxNumberOfAgents(pricePlan.getMaxNumberOfAgents())
+                                .maxNumberOfMethods(pricePlan.getMaxMethods())
 
                                 // actual values
-                                .collectedSinceMillis(collectionStartedAt == null ? null : collectionStartedAt.toEpochMilli())
+                                .collectedSinceMillis(pricePlan.adjustInstantToMillis(collectionStartedAt, clock))
                                 .trialPeriodEndsAtMillis(trialPeriodEndsAt == null ? null : trialPeriodEndsAt.toEpochMilli())
                                 .trialPeriodExpired(customerData.isTrialPeriodExpired(now))
                                 .trialPeriodPercent(trialPeriodPercent)
@@ -268,7 +276,7 @@ public class DashboardServiceImpl implements DashboardService {
         return result;
     }
 
-    private List<ApplicationDescriptor2> getApplications(Long customerId) {
+    private List<ApplicationDescriptor2> getApplications(Long customerId, PricePlan pricePlan) {
         List<ApplicationDescriptor2> result = new ArrayList<>();
 
         jdbcTemplate.query(
@@ -285,8 +293,10 @@ public class DashboardServiceImpl implements DashboardService {
                     ApplicationDescriptor2.builder()
                                           .appName(rs.getString("appName"))
                                           .environment(rs.getString("envName"))
-                                          .collectedSinceMillis(rs.getTimestamp("collectedSince").getTime())
-                                          .collectedToMillis(rs.getTimestamp("collectedTo").getTime())
+                                          .collectedSinceMillis(
+                                              pricePlan.adjustTimestampMillis(rs.getTimestamp("collectedSince").getTime(), clock))
+                                          .collectedToMillis(
+                                              pricePlan.adjustTimestampMillis(rs.getTimestamp("collectedTo").getTime(), clock))
                                           .build().computeFields());
             }, customerId);
 
@@ -348,7 +358,7 @@ public class DashboardServiceImpl implements DashboardService {
                 Timestamp nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt");
                 Timestamp publishedAt = rs.getTimestamp("publishedAt");
                 boolean isAlive =
-                    nextPollExpectedAt != null && nextPollExpectedAt.after(Timestamp.from(timeService.now().minusSeconds(60)));
+                    nextPollExpectedAt != null && nextPollExpectedAt.after(Timestamp.from(clock.instant().minusSeconds(60)));
                 Instant nextPublicationExpectedAt = lastPolledAt.toInstant().plusSeconds(publishIntervalSeconds);
 
                 result.add(
@@ -380,6 +390,7 @@ public class DashboardServiceImpl implements DashboardService {
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
         private final String whereClause;
         private final boolean suppressSyntheticMethods;
+        private final PricePlan pricePlan;
 
         private final List<MethodDescriptor1> result = new ArrayList<>();
 
@@ -388,9 +399,11 @@ public class DashboardServiceImpl implements DashboardService {
         @Getter
         private int rowCount;
 
-        private MethodDescriptorRowCallbackHandler(String whereClause, boolean suppressSyntheticMethods) {
+        private MethodDescriptorRowCallbackHandler(String whereClause, boolean suppressSyntheticMethods,
+                                                   PricePlan pricePlan) {
             this.whereClause = whereClause;
             this.suppressSyntheticMethods = suppressSyntheticMethods;
+            this.pricePlan = pricePlan;
             queryState = new QueryState(-1L);
         }
 
@@ -438,9 +451,9 @@ public class DashboardServiceImpl implements DashboardService {
             }
 
             queryState.countRow();
-            long startedAt = rs.getTimestamp("startedAt").getTime();
-            long publishedAt = rs.getTimestamp("publishedAt").getTime();
-            long invokedAtMillis = rs.getLong("invokedAtMillis");
+            long startedAt = pricePlan.adjustTimestampMillis(rs.getTimestamp("startedAt").getTime(), clock);
+            long publishedAt = pricePlan.adjustTimestampMillis(rs.getTimestamp("publishedAt").getTime(), clock);
+            long invokedAtMillis = pricePlan.adjustTimestampMillis(rs.getLong("invokedAtMillis"), clock);
 
             MethodDescriptor1.MethodDescriptor1Builder builder = queryState.getBuilder();
             String appName = rs.getString("appName");

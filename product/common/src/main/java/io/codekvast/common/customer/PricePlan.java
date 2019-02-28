@@ -25,6 +25,11 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.time.Clock;
+import java.time.Instant;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+
 /**
  * The resolved price plan. Contains values from the table price_plan_overrides.
  *
@@ -36,7 +41,7 @@ import lombok.Value;
  * @see "https://addons.heroku.com/provider/addons/codekvast/plans"
  */
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class PricePlan {
 
     @NonNull
@@ -54,6 +59,72 @@ public class PricePlan {
     private final int retryIntervalSeconds;
     private final int maxCollectionPeriodDays;
     private final int retentionPeriodDays;
+
+    /**
+     * Adjusts the number of collected days with respect to the retention period.
+     * If the retention period is defined (i.e., positive) then return the minimum value of the parameter and the retention period.
+     *
+     * @param realCollectedDays The real value of collectedDays. May be null.
+     * @return The value to present to the user (or null).
+     */
+    public Integer adjustCollectedDays(Integer realCollectedDays) {
+        if (realCollectedDays == null || retentionPeriodDays < 0) {
+            return realCollectedDays;
+        }
+        return Math.min(realCollectedDays, retentionPeriodDays);
+    }
+
+    /**
+     * Adjusts an instant with respect to the retention period.
+     *
+     * If a retention period is defined, the the returned instant will not be
+     * before the start of the retention period.
+     *
+     * @param realInstant The real instant (or null).
+     * @param clock       The clock to use when calculating beginning of the retention period.
+     * @return The value to present to the user.
+     */
+    public Instant adjustInstant(Instant realInstant, Clock clock) {
+        if (realInstant == null || retentionPeriodDays < 0) {
+            return realInstant;
+        }
+
+        Instant retentionPeriodStart = clock.instant().minus(retentionPeriodDays, DAYS);
+        return realInstant.isBefore(retentionPeriodStart) ? retentionPeriodStart : realInstant;
+    }
+
+    /**
+     * Adjusts an instant with respect to the retention period.
+     *
+     * If a retention period is defined, the the returned instant will not be
+     * before the start of the retention period.
+     *
+     * @param realInstant The real instant. May be null.
+     * @param clock       The clock to use when calculating beginning of the retention period.
+     * @return The value to present to the user (or null).
+     */
+    public Long adjustInstantToMillis(Instant realInstant, Clock clock) {
+        Instant instant = adjustInstant(realInstant, clock);
+        return instant == null ? null : instant.toEpochMilli();
+    }
+
+    /**
+     * Adjusts an instant with respect to the retention period.
+     *
+     * If a retention period is defined, the the returned instant will not be
+     * before the start of the retention period.
+     *
+     * @param realTimestampMillis The real instant. May be null.
+     * @param clock               The clock to use when calculating beginning of the retention period.
+     * @return The value to present to the user (or null).
+     */
+    public Long adjustTimestampMillis(Long realTimestampMillis, Clock clock) {
+        if (realTimestampMillis == null || realTimestampMillis == 0L || retentionPeriodDays < 0) {
+            return realTimestampMillis;
+        }
+        long retentionPeriodStart = clock.instant().minus(retentionPeriodDays, DAYS).toEpochMilli();
+        return realTimestampMillis < retentionPeriodStart ? retentionPeriodStart : realTimestampMillis;
+    }
 
     public static PricePlan of(PricePlanDefaults ppd) {
         return PricePlan.builder()
