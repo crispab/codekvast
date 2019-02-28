@@ -5,7 +5,7 @@
     "collectionResolutionSeconds": 5,
     "maxNumberOfAgents": 1,
     "maxNumberOfMethods": 25000,
-    "maxCollectionPeriodDays": -1,
+    "trialPeriodDays": -1,
     "numMethods": 17797,
     "collectedSinceMillis": 1499109644000,
     "collectedDays": 0,

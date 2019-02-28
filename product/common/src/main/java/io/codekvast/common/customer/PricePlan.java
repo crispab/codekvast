@@ -54,11 +54,11 @@ public class PricePlan {
     // These are the effective values to use
     private final int maxMethods;
     private final int maxNumberOfAgents;
-    private final int publishIntervalSeconds;
     private final int pollIntervalSeconds;
-    private final int retryIntervalSeconds;
-    private final int maxCollectionPeriodDays;
+    private final int publishIntervalSeconds;
     private final int retentionPeriodDays;
+    private final int retryIntervalSeconds;
+    private final int trialPeriodDays;
 
     /**
      * Adjusts the number of collected days with respect to the retention period.
@@ -128,16 +128,16 @@ public class PricePlan {
 
     public static PricePlan of(PricePlanDefaults ppd) {
         return PricePlan.builder()
-                        .name(ppd.name())
-                        .overrideBy(null)
-                        .note(null)
                         .maxMethods(ppd.getMaxMethods())
                         .maxNumberOfAgents(ppd.getMaxNumberOfAgents())
-                        .publishIntervalSeconds(ppd.getPublishIntervalSeconds())
+                        .name(ppd.name())
+                        .note(null)
+                        .overrideBy(null)
                         .pollIntervalSeconds(ppd.getPollIntervalSeconds())
-                        .retryIntervalSeconds(ppd.getRetryIntervalSeconds())
-                        .maxCollectionPeriodDays(ppd.getMaxCollectionPeriodDays())
+                        .publishIntervalSeconds(ppd.getPublishIntervalSeconds())
                         .retentionPeriodDays(ppd.getRetentionPeriodDays())
+                        .retryIntervalSeconds(ppd.getRetryIntervalSeconds())
+                        .trialPeriodDays(ppd.getTrialPeriodDays())
                         .build();
     }
 }

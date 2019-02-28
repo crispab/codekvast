@@ -45,7 +45,7 @@ public enum PricePlanDefaults {
     private final int publishIntervalSeconds;
     private final int pollIntervalSeconds;
     private final int retryIntervalSeconds;
-    private final int maxCollectionPeriodDays;
+    private final int trialPeriodDays;
     private final int retentionPeriodDays;
 
     public static PricePlanDefaults fromDatabaseName(String planName) {

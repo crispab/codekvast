@@ -87,7 +87,7 @@ export class MethodsComponentState {
         return {
             'fas': visible,
             'fa-ellipsis-h': visible
-        }
+        };
     }
 
     sortBySignature() {

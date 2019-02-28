@@ -129,7 +129,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerData registerAgentPoll(CustomerData customerData, Instant polledAt) {
         final CustomerData result;
 
-        if (customerData.getPricePlan().getMaxCollectionPeriodDays() > 0
+        if (customerData.getPricePlan().getTrialPeriodDays() > 0
             && customerData.getTrialPeriodEndsAt() == null) {
             result = startTrialPeriod(customerData, polledAt);
         } else if (customerData.getCollectionStartedAt() == null) {
@@ -145,7 +145,7 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerData startTrialPeriod(CustomerData customerData, Instant instant) {
         CustomerData result = customerData.toBuilder()
                                           .collectionStartedAt(instant)
-                                          .trialPeriodEndsAt(instant.plus(customerData.getPricePlan().getMaxCollectionPeriodDays(), DAYS))
+                                          .trialPeriodEndsAt(instant.plus(customerData.getPricePlan().getTrialPeriodDays(), DAYS))
                                           .build();
 
         int updated = jdbcTemplate.update("UPDATE customers SET updatedAt = ?, collectionStartedAt = ?, trialPeriodEndsAt = ? " +
@@ -341,7 +341,7 @@ public class CustomerServiceImpl implements CustomerService {
                                                                   "ppo.createdBy, ppo.note AS pricePlanNote, ppo.maxMethods, " +
                                                                   "ppo.maxNumberOfAgents, ppo.publishIntervalSeconds, " +
                                                                   "ppo.pollIntervalSeconds, ppo.retryIntervalSeconds, " +
-                                                                  "ppo.maxCollectionPeriodDays, ppo.retentionPeriodDays " +
+                                                                  "ppo.trialPeriodDays, ppo.retentionPeriodDays " +
                                                                   "FROM customers c LEFT JOIN price_plan_overrides ppo " +
                                                                   "ON ppo.customerId = c.id " +
                                                                   "WHERE " + where_clause, identifier);
@@ -371,8 +371,8 @@ public class CustomerServiceImpl implements CustomerService {
                                         .publishIntervalSeconds(
                                             getOrDefault(result, "publishIntervalSeconds", ppd.getPublishIntervalSeconds()))
                                         .retryIntervalSeconds(getOrDefault(result, "retryIntervalSeconds", ppd.getRetryIntervalSeconds()))
-                                        .maxCollectionPeriodDays(
-                                            getOrDefault(result, "maxCollectionPeriodDays", ppd.getMaxCollectionPeriodDays()))
+                                        .trialPeriodDays(
+                                            getOrDefault(result, "trialPeriodDays", ppd.getTrialPeriodDays()))
                                         .retentionPeriodDays(
                                             getOrDefault(result, "retentionPeriodDays", ppd.getRetentionPeriodDays()))
                                         .build())
