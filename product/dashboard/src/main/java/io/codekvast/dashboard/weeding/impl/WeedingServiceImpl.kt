@@ -33,6 +33,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.text.*
 
 /**
  * Service that keeps the database tidy by removing child-less rows in methods, applications and environments.
@@ -53,41 +54,47 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
         val invocationsBefore = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Int::class.java)!!
         val deletedJvms = jdbcTemplate.update("DELETE FROM jvms WHERE garbage = TRUE ")
+        var deletedMethods = 0
+        var deletedApplications = 0
+        var deletedEnvironments = 0
+        var deletedInvocations = 0
 
         if (deletedJvms > 0) {
             val invocationsAfter = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Int::class.java)!!
-            val deletedInvocations = invocationsBefore - invocationsAfter
+            deletedInvocations = invocationsBefore - invocationsAfter
 
-            logger.debug("Deleted {} garbage jvms rows, which cascaded to approx. {} invocation rows", deletedJvms, deletedInvocations)
-
-            val deletedMethods = jdbcTemplate.update("""
+            deletedMethods = jdbcTemplate.update("""
                 DELETE m FROM methods AS m
                 LEFT JOIN invocations AS i ON m.id = i.methodId
                 WHERE i.methodId IS NULL""")
 
-            val deletedApplications = jdbcTemplate.update("""
+            deletedApplications = jdbcTemplate.update("""
                 DELETE a FROM applications AS a
                 LEFT JOIN jvms AS j ON a.id = j.applicationId
                 WHERE j.applicationId IS NULL""")
 
-            val deletedEnvironments = jdbcTemplate.update("""
+            deletedEnvironments = jdbcTemplate.update("""
                 DELETE e FROM environments AS e
                 LEFT JOIN jvms AS j ON e.id = j.environmentId
                 WHERE j.environmentId IS NULL""")
-            logger.debug("Deleted {} unreferenced methods, {} empty applications and {} empty environments", deletedMethods, deletedApplications, deletedEnvironments)
         }
 
-        val deletedAgentStates = jdbcTemplate.update("DELETE FROM agent_state WHERE garbage = TRUE ")
+        val deletedAgents = jdbcTemplate.update("DELETE FROM agent_state WHERE garbage = TRUE ")
 
-        if (deletedJvms + deletedAgentStates > 0) {
-            logger.info("Data weeding: {} jvms rows and {} agent_state rows deleted in {}.", deletedJvms, deletedAgentStates, Duration.between(startedAt, Instant.now()))
+        val deletedRows = deletedAgents + deletedJvms + deletedMethods + deletedApplications + deletedEnvironments + deletedInvocations
+        if (deletedRows > 0) {
+            logger.info(String.format("Deleted %,d database rows (%,d agents, %,d JVMs, %,d methods, %,d applications, %,d environments and %,d invocations) in %s.",
+                deletedRows, deletedAgents, deletedJvms, deletedMethods, deletedApplications, deletedEnvironments, deletedInvocations,
+                Duration.between(startedAt, Instant.now())))
         } else {
-            logger.debug("Data weeding: Found nothing to delete")
+            logger.debug("Found nothing to delete")
         }
     }
 
     @Transactional(rollbackFor = [Exception::class])
     override fun findWeedingCandidates() {
+        val startedAt = Instant.now()
+        var sum = 0
         for (cd in customerService.customerData) {
             val retentionPeriodDays = cd.pricePlan.retentionPeriodDays
             if (retentionPeriodDays > 0) {
@@ -95,25 +102,25 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 val retentionPeriodStart = now.minus(retentionPeriodDays.toLong(), ChronoUnit.DAYS)
                 val deadIfNotPolledAfter = now.minus(5, ChronoUnit.MINUTES)
                 logger.debug("Finding dead agents and JVMs for customer {} which are older than {} days", cd.customerId, retentionPeriodDays)
-                var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND createdAt < ? AND lastPolledAt < ?",
+
+                var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND createdAt < ? AND lastPolledAt < ? AND garbage = FALSE ",
                     cd.customerId, Timestamp.from(retentionPeriodStart), Timestamp.from(deadIfNotPolledAfter))
                 if (count == 0) {
-                    logger.debug("Found no dead agents for customer {}", cd.customerId)
+                    logger.debug("Found no garbage agents for customer {}", cd.customerId)
                 } else {
-                    logger.info("Marked {} agents as garbage for customer {}", count, cd.customerId)
-
-                    count = jdbcTemplate.update("""
-                        UPDATE jvms SET garbage = TRUE
-                        WHERE uuid IN (
-                            SELECT jvmUuid FROM agent_state WHERE customerId = ? AND garbage = TRUE
-                        )""",
-                        cd.customerId)
-                    if (count == 0) {
-                        logger.debug("Found no dead JVMs for customer {}", cd.customerId)
-                    } else
-                        logger.info("Marked {} JVMs as garbage for customer {}", count, cd.customerId)
+                    logger.debug("Marked {} agents as garbage for customer {}", count, cd.customerId)
                 }
+                sum += count
+
+                count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? AND garbage = FALSE ",
+                    cd.customerId, Timestamp.from(retentionPeriodStart))
+                if (count == 0) {
+                    logger.debug("Found no garbage JVMs for customer {}", cd.customerId)
+                } else
+                    logger.debug("Marked {} JVMs as garbage for customer {}", count, cd.customerId)
+                sum += count
             }
         }
+        logger.debug("{} weeding candidates identified in {}", sum, Duration.between(startedAt, Instant.now()))
     }
 }
