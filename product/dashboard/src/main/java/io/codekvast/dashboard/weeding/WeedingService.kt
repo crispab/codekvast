@@ -29,4 +29,9 @@ interface WeedingService {
      * Performs data weeding. It removes redundant data from the database, to keep it from growing unbounded.
      */
     fun performDataWeeding()
+
+    /**
+     * Finds dead agents and JVMs which are older than the retention period, and sets their garbage flag to true.
+     */
+    fun findWeedingCandidates()
 }

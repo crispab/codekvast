@@ -44,6 +44,7 @@ class WeedingTask
         val oldThreadName = Thread.currentThread().name
         Thread.currentThread().name = "Codekvast Data Weeder"
         try {
+            weedingService.findWeedingCandidates()
             weedingService.performDataWeeding()
         } catch (e: CannotAcquireLockException) {
             logger.warn("Could not perform data weeding: $e")
