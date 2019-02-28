@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum PricePlanDefaults {
     DEMO(25_000, 1, 5, 5, 5, -1, 30),
-    TEST(25_000, 3, 7200, 600, 60, 60, 30);
+    TEST(25_000, 3, 7200, 600, 60, 60, 14);
 
     private final int maxMethods;
     private final int maxNumberOfAgents;
