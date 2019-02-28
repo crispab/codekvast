@@ -222,11 +222,6 @@ public class DashboardServiceImpl implements DashboardService {
         Integer trialPeriodPercent = trialPeriodProgress == null ? null :
             Math.min(100, Math.toIntExact(trialPeriodProgress.toMillis() * 100L / trialPeriodDuration.toMillis()));
 
-        long dayInMillis = 24 * 60 * 60 * 1000L;
-        Integer collectedDays =
-            collectionStartedAt == null ? null :
-                pricePlan.adjustCollectedDays(Math.toIntExact(Duration.between(collectionStartedAt, now).toMillis() / dayInMillis));
-
         return GetStatusResponse.builder()
                                 // query stuff
                                 .timestamp(startedAt)
@@ -234,6 +229,7 @@ public class DashboardServiceImpl implements DashboardService {
 
                                 // price plan stuff
                                 .pricePlan(pricePlan.getName())
+                                .retentionPeriodDays(pricePlan.getRetentionPeriodDays())
                                 .collectionResolutionSeconds(pricePlan.getPublishIntervalSeconds())
                                 .maxNumberOfAgents(pricePlan.getMaxNumberOfAgents())
                                 .maxNumberOfMethods(pricePlan.getMaxMethods())
@@ -243,7 +239,6 @@ public class DashboardServiceImpl implements DashboardService {
                                 .trialPeriodEndsAtMillis(trialPeriodEndsAt == null ? null : trialPeriodEndsAt.toEpochMilli())
                                 .trialPeriodExpired(customerData.isTrialPeriodExpired(now))
                                 .trialPeriodPercent(trialPeriodPercent)
-                                .collectedDays(collectedDays)
                                 .numMethods(customerService.countMethods(customerId))
                                 .numAgents(agents.size())
                                 .numLiveAgents((int) agents.stream().filter(AgentDescriptor::isAgentAlive).count())
@@ -297,7 +292,7 @@ public class DashboardServiceImpl implements DashboardService {
                                               pricePlan.adjustTimestampMillis(rs.getTimestamp("collectedSince").getTime(), clock))
                                           .collectedToMillis(
                                               pricePlan.adjustTimestampMillis(rs.getTimestamp("collectedTo").getTime(), clock))
-                                          .build().computeFields());
+                                          .build());
             }, customerId);
 
         return result;

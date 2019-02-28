@@ -48,13 +48,4 @@ public class ApplicationDescriptor2 {
      */
     @NonNull
     private final Long collectedToMillis;
-
-    // Computed fields to make it usable with Gson, which only serializes fields.
-    private int collectedDays;
-
-    public ApplicationDescriptor2 computeFields() {
-        int oneDayInMillis = 24 * 60 * 60 * 1000;
-        this.collectedDays = Math.toIntExact((collectedToMillis - collectedSinceMillis) / oneDayInMillis);
-        return this;
-    }
 }

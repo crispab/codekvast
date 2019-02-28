@@ -26,6 +26,10 @@
                         </ngb-progressbar>
                     </td>
                 </tr>
+                <tr *ngIf="state.data.retentionPeriodDays > 0">
+                    <td>Retention period:</td>
+                    <td>{{ state.data.retentionPeriodDays }} days</td>
+                </tr>
                 <tr>
                     <td>Collected since:</td>
                     <td>{{ state.data.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
@@ -126,7 +130,6 @@
                                        placeholder="Filter by env">
                             </th>
                             <th class="align-top">Collected since</th>
-                            <th class="align-top">Collected days</th>
                             <th class="align-top">Data received at</th>
                         </tr>
                         </thead>
@@ -135,7 +138,6 @@
                             <td>{{ app.appName }}</td>
                             <td>{{ app.environment }}</td>
                             <td>{{ app.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
-                            <td>{{ app.collectedDays }}</td>
                             <td>{{ app.collectedToMillis | ckAge:settings.dateFormat }}</td>
                         </tr>
                         </tbody>

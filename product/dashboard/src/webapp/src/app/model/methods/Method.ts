@@ -2,7 +2,6 @@ import {Environment} from './Environment';
 import {Application} from './Application';
 
 export class Method {
-    collectedDays: number;
     collectedInEnvironments: Environment[];
     collectedSinceMillis: number;
     collectedToMillis: number;

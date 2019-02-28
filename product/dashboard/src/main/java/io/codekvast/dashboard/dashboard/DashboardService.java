@@ -21,7 +21,10 @@
  */
 package io.codekvast.dashboard.dashboard;
 
-import io.codekvast.dashboard.dashboard.model.methods.*;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse2;
+import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor1;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 
 import javax.validation.Valid;
@@ -44,7 +47,6 @@ public interface DashboardService {
      * @param request The request parameters.
      * @return A response object. Does never return null.
      */
-    @NotNull
     GetMethodsResponse2 getMethods2(@Valid GetMethodsRequest request);
 
     /**
@@ -58,17 +60,15 @@ public interface DashboardService {
     /**
      * Retrieve status for the authenticated customer.
      *
-     * @return A status object.
+     * @return A status object. Does never return null.
      */
-    @NotNull
     GetStatusResponse getStatus();
 
     /**
      * Get data to use in the search methods form.
      *
-     * @return A GetMethodsFormData object.
+     * @return A GetMethodsFormData object. Does never return null.
      */
-    @NotNull
     GetMethodsFormData getMethodsFormData();
 
     /**

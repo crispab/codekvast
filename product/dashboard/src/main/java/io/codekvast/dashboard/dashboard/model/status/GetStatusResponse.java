@@ -57,6 +57,12 @@ public class GetStatusResponse {
     private final String pricePlan;
 
     /**
+     * Which retention period does the price plan specify?
+     */
+    @NonNull
+    private final Integer retentionPeriodDays;
+
+    /**
      * Which collection resolution does the price plan specify?
      */
     @NonNull
@@ -102,12 +108,6 @@ public class GetStatusResponse {
      * Null if no data yet has been collected.
      */
     private final Long collectedSinceMillis;
-
-    /**
-     * How long has this customer been using Codekvast?
-     * Null if no data yet has been collected.
-     */
-    private final Integer collectedDays;
 
     /**
      * How many agents has ever attempted to deliver data to Codekvast?

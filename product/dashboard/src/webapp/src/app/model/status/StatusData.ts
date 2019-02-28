@@ -9,6 +9,7 @@ export class StatusData {
 
     // price plan stuff
     pricePlan: string;
+    retentionPeriodDays: number;
     collectionResolutionSeconds: number;
     maxNumberOfAgents: number;
     maxNumberOfMethods: number;
@@ -17,7 +18,6 @@ export class StatusData {
     // actual values
     numMethods: number;
     collectedSinceMillis: number;
-    collectedDays: number;
     trialPeriodPercent: number;
     trialPeriodExpired: boolean;
 

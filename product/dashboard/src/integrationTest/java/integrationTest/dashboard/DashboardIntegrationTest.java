@@ -634,7 +634,6 @@ public class DashboardIntegrationTest {
         assertThat(status.getNumMethods(), is(10));
 
         assertThat(status.getCollectedSinceMillis(), is(nullValue()));
-        assertThat(status.getCollectedDays(), is(nullValue()));
     }
 
     @Test
