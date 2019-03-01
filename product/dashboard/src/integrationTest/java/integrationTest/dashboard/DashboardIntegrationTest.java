@@ -714,8 +714,7 @@ public class DashboardIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/sql/base-data.sql", "/sql/weedable-data.sql"})
-    @Ignore("TODO: fix broken test")
+    @Sql(scripts = {"/sql/base-data.sql", "/sql/garbage-data.sql"})
     public void should_perform_dataWeeding() {
 
         // given
@@ -730,12 +729,35 @@ public class DashboardIntegrationTest {
         weedingTask.performDataWeeding();
 
         // then
-        assertThat(countRowsInTable("invocations"), is(1));// TODO: fix broken test
+        assertThat(countRowsInTable("invocations"), is(1));
         assertThat(countRowsInTable("applications"), is(4));
         assertThat(countRowsInTable("environments"), is(4));
         assertThat(countRowsInTable("methods"), is(1));
         assertThat(countRowsInTable("jvms"), is(4));
         assertThat(countRowsInTable("agent_state"), is(4));
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/base-data.sql", "/sql/weedable-data.sql"})
+    public void should_find_weeding_candidates() {
+
+        // given
+        assertThat(countRowsInTable("applications"), not(is(0)));
+        assertThat(countRowsInTable("environments"), not(is(0)));
+        assertThat(countRowsInTable("methods"), not(is(0)));
+        assertThat(countRowsInTable("jvms"), is(4));
+        assertThat(countRowsInTable("agent_state"), is(4));
+
+        // when
+        weedingTask.performDataWeeding();
+
+        // then
+        assertThat(countRowsInTable("invocations"), is(0));
+        assertThat(countRowsInTable("applications"), is(0));
+        assertThat(countRowsInTable("environments"), is(0));
+        assertThat(countRowsInTable("methods"), is(0));
+        assertThat(countRowsInTable("jvms"), is(0));
+        assertThat(countRowsInTable("agent_state"), is(0));
     }
 
     private void assertAgentEnabled(String jvmUuid, Boolean expectedEnabled) {
