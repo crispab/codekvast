@@ -23,6 +23,8 @@ package io.codekvast.dashboard.util;
 
 import lombok.experimental.UtilityClass;
 
+import java.time.Duration;
+
 import static java.lang.String.format;
 
 /**
@@ -47,4 +49,10 @@ public class LoggingUtils {
         return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
     }
 
+    public static String humanReadableDuration(Duration duration) {
+        return duration.toString()
+                       .substring(2)
+                       .replaceAll("(\\d[HMS])(?!$)", "$1 ")
+                       .toLowerCase();
+    }
 }

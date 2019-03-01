@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.weeding.impl
 
 import io.codekvast.common.customer.CustomerService
+import io.codekvast.dashboard.util.LoggingUtils
 import io.codekvast.dashboard.weeding.WeedingService
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
@@ -85,7 +86,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         if (deletedRows > 0) {
             logger.info(String.format("Deleted %,d database rows (%,d agents, %,d JVMs, %,d methods, %,d applications, %,d environments and %,d invocations) in %s.",
                 deletedRows, deletedAgents, deletedJvms, deletedMethods, deletedApplications, deletedEnvironments, deletedInvocations,
-                Duration.between(startedAt, Instant.now())))
+                LoggingUtils.humanReadableDuration(Duration.between(startedAt, Instant.now()))))
         } else {
             logger.debug("Found nothing to delete")
         }
@@ -121,6 +122,6 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 sum += count
             }
         }
-        logger.debug("{} weeding candidates identified in {}", sum, Duration.between(startedAt, Instant.now()))
+        logger.debug("{} weeding candidates identified in {}", sum, LoggingUtils.humanReadableDuration(Duration.between(startedAt, Instant.now())))
     }
 }
