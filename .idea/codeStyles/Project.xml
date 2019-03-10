@@ -27,6 +27,8 @@
       <option name="QUOTE_IDENTIFIER" value="1" />
       <option name="QUERY_SECTION_1ST_WORD_ALIGN" value="2" />
       <option name="QUERY_TRUE_INDENT" value="false" />
+      <option name="QUERY_ALIGN_ELEMENTS" value="false" />
+      <option name="QUERY_ALIGN_LINE_COMMENTS" value="false" />
       <option name="INSERT_INTO_NL" value="2" />
       <option name="INSERT_EL_WRAP" value="2" />
       <option name="INSERT_EL_COMMA" value="2" />
@@ -34,7 +36,7 @@
       <option name="SET_EL_COMMA" value="0" />
       <option name="WITH_EL_WRAP" value="0" />
       <option name="WITH_EL_COMMA" value="0" />
-      <option name="SELECT_EL_WRAP" value="2" />
+      <option name="SELECT_EL_WRAP" value="3" />
       <option name="SELECT_EL_COMMA" value="2" />
       <option name="FROM_EL_WRAP" value="2" />
       <option name="FROM_EL_COMMA" value="2" />
@@ -52,7 +54,6 @@
       <option name="POST_OPT_ALIGN" value="false" />
       <option name="ROUTINE_ARG_COMMA" value="2" />
       <option name="ROUTINE_ARG_ALIGN_TYPES" value="true" />
-      <option name="IMP_COMMON_KEEP_BLANK_LINES_IN_CODE" value="1" />
       <option name="IMP_DECLARE_EL_WRAP" value="1" />
       <option name="IMP_IF_THEN_WRAP_THEN" value="true" />
       <option name="CORTEGE_SPACE_BEFORE_L_PAREN" value="false" />

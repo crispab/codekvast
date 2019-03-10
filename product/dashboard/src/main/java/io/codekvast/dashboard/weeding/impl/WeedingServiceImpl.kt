@@ -109,7 +109,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 if (count == 0) {
                     logger.debug("Found no garbage agents for customer {}", cd.customerId)
                 } else {
-                    logger.debug("Marked {} agents as garbage for customer {}", count, cd.customerId)
+                    logger.info("Marked {} agents as garbage for customer {}", count, cd.customerId)
                 }
                 sum += count
 
@@ -117,8 +117,9 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                     cd.customerId, Timestamp.from(retentionPeriodStart))
                 if (count == 0) {
                     logger.debug("Found no garbage JVMs for customer {}", cd.customerId)
-                } else
-                    logger.debug("Marked {} JVMs as garbage for customer {}", count, cd.customerId)
+                } else {
+                    logger.info("Marked {} JVMs as garbage for customer {}", count, cd.customerId)
+                }
                 sum += count
             }
         }
