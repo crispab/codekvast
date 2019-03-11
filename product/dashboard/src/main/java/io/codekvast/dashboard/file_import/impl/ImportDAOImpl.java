@@ -39,6 +39,7 @@ import java.time.Instant;
 import java.util.*;
 
 import static io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.sql.Types.BOOLEAN;
 import static java.util.Optional.ofNullable;
@@ -72,12 +73,12 @@ public class ImportDAOImpl implements ImportDAO {
         } else {
             jdbcTemplate.update("INSERT INTO applications(customerId, name, createdAt) VALUES (?, ?, ?)",
                                 customerId, name, createdAt);
-            logger.trace("Inserted application {} {} {}", customerId, name, createdAt);
+            logger.info("Imported new application: customerId={}, name='{}', createdAt={}", customerId, name, createdAt);
         }
 
         Long result = jdbcTemplate
             .queryForObject("SELECT id FROM applications WHERE customerId = ? AND name = ?", Long.class, customerId, name);
-        logger.debug("Application {}:{} has id {}", customerId, name, result);
+        logger.debug("Application {}:'{}' has id {}", customerId, name, result);
         return result;
     }
 
@@ -93,15 +94,15 @@ public class ImportDAOImpl implements ImportDAO {
         int updated = jdbcTemplate.update("UPDATE environments SET createdAt = LEAST(createdAt, ?) " +
                                               "WHERE customerId = ? AND name = ?", createdAt, customerId, name);
         if (updated != 0) {
-            logger.trace("Updated environment {}:{}", customerId, name);
+            logger.trace("Updated environment {}:'{}'", customerId, name);
         } else {
             jdbcTemplate.update("INSERT INTO environments(customerId, name, createdAt, enabled) VALUES (?, ?, ?, ?)", customerId, name, createdAt, TRUE);
-            logger.info("New environment {}:{} appeared at {}", customerId, name, createdAt);
+            logger.info("Imported new environment: customerId={}, name='{}', createdAt={}", customerId, name, createdAt);
         }
 
         Long result = jdbcTemplate
             .queryForObject("SELECT id FROM environments WHERE customerId = ? AND name = ?", Long.class, customerId, name);
-        logger.debug("Environment {}:{} has id {}", customerId, name, result);
+        logger.debug("Environment {}:'{}' has id {}", customerId, name, result);
         return result;
     }
 
@@ -111,8 +112,8 @@ public class ImportDAOImpl implements ImportDAO {
         long customerId = data.getCustomerId();
         Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
 
-        int updated = jdbcTemplate.update("UPDATE jvms SET codeBaseFingerprint = ?, publishedAt = ? WHERE uuid = ?",
-                                          data.getCodeBaseFingerprint(), publishedAt, data.getJvmUuid());
+        int updated = jdbcTemplate.update("UPDATE jvms SET codeBaseFingerprint = ?, publishedAt = ?, garbage = ? WHERE uuid = ?",
+                                          data.getCodeBaseFingerprint(), publishedAt, FALSE, data.getJvmUuid());
         if (updated != 0) {
             logger.trace("Updated JVM {}", data.getJvmUuid());
         } else {
@@ -124,14 +125,14 @@ public class ImportDAOImpl implements ImportDAO {
                 customerId, applicationId, data.getAppVersion(), environmentId, data.getJvmUuid(), data.getCodeBaseFingerprint(),
                 new Timestamp(data.getJvmStartedAtMillis()), publishedAt, data.getMethodVisibility(), data.getPackages().toString(),
                 data.getExcludePackages().toString(), data.getComputerId(), data.getHostname(), data.getAgentVersion(), data.getTags(),
-                Boolean.FALSE);
-            logger.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
-                         Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
+                FALSE);
+            logger.info("Imported new JVM: customerId={}, applicationId={}, environmentId={}, jvmUUid='{}', startedAt={}", customerId, applicationId,
+                        environmentId, data.getJvmUuid(), Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }
 
         Long result = jdbcTemplate.queryForObject("SELECT id FROM jvms WHERE uuid = ?", Long.class, data.getJvmUuid());
 
-        logger.debug("JVM with uuid {} has id {}", data.getJvmUuid(), result);
+        logger.debug("JVM with uuid '{}' has id {}", data.getJvmUuid(), result);
         return result;
     }
 

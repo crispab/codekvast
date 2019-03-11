@@ -51,10 +51,8 @@ public class AgentDAOImpl implements AgentDAO {
                                               "ORDER BY id ",
                                           customerId, thisJvmUuid, Timestamp.from(nextPollExpectedBefore));
         if (updated > 0) {
-            logger.info("Disabled {} dead agents", updated);
+            logger.info("Disabled {} dead agents for customer {}", updated, customerId);
         }
-
-
     }
 
     @Override
@@ -62,18 +60,18 @@ public class AgentDAOImpl implements AgentDAO {
         Timestamp nextExpectedPollTimestamp = Timestamp.from(nextExpectedPollAt);
 
         int updated =
-            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE customerId = ? AND jvmUuid = ? ",
-                                Timestamp.from(thisPollAt), nextExpectedPollTimestamp, customerId, thisJvmUuid);
+            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = ? WHERE customerId = ? AND jvmUuid = ? ",
+                                Timestamp.from(thisPollAt), nextExpectedPollTimestamp, FALSE, customerId, thisJvmUuid);
         if (updated == 0) {
-            logger.info("The agent {}:{} has started", customerId, thisJvmUuid);
-
             jdbcTemplate
                 .update(
                     "INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?," +
                         " ?, ?)",
                     customerId, thisJvmUuid, Timestamp.from(thisPollAt), nextExpectedPollTimestamp, TRUE, FALSE);
+
+            logger.info("The agent {}:'{}' has started", customerId, thisJvmUuid);
         } else {
-            logger.debug("The agent {}:{} has polled", customerId, thisJvmUuid);
+            logger.debug("The agent {}:'{}' has polled", customerId, thisJvmUuid);
         }
 
     }
@@ -103,6 +101,7 @@ public class AgentDAOImpl implements AgentDAO {
         // If this is the first poll, return null.
         return list.isEmpty() ? null : list.get(0);
     }
+
     @Override
     public void updateAgentEnabledState(long customerId, String thisJvmUuid, boolean enabled) {
         jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ?", enabled, customerId, thisJvmUuid);
