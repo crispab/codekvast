@@ -311,7 +311,7 @@ public class CustomerServiceImpl implements CustomerService {
             result.add(getCustomerDataByCustomerId(customerId));
         }
 
-        logger.debug("Found {} customers", result.size());
+        logger.trace("Found {} customers", result.size());
         result.sort(Comparator.comparing(CustomerData::getCustomerName));
         return result;
     }

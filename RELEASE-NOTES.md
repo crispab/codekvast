@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 1.0.1
+
+1. Replace Server Error 500 caused by RequestRejectedException with a simple 404.
+
 ## 1.0.0
 
 1. Corrected a bug in codekvast-javaagent: now it deletes /tmp/codekvast-nnn/META-INF/aop.xml on JVM termination.

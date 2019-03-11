@@ -107,7 +107,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND createdAt < ? AND lastPolledAt < ? AND garbage = FALSE ",
                     cd.customerId, Timestamp.from(retentionPeriodStart), Timestamp.from(deadIfNotPolledAfter))
                 if (count == 0) {
-                    logger.debug("Found no garbage agents for customer {}", cd.customerId)
+                    logger.debug("Found no dead agents for customer {}", cd.customerId)
                 } else {
                     logger.info("Marked {} agents as garbage for customer {}", count, cd.customerId)
                 }
@@ -116,7 +116,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? AND garbage = FALSE ",
                     cd.customerId, Timestamp.from(retentionPeriodStart))
                 if (count == 0) {
-                    logger.debug("Found no garbage JVMs for customer {}", cd.customerId)
+                    logger.debug("Found no dead JVMs for customer {}", cd.customerId)
                 } else {
                     logger.info("Marked {} JVMs as garbage for customer {}", count, cd.customerId)
                 }
