@@ -5,6 +5,7 @@
 1. Replace Server Error 500 caused by RequestRejectedException with a simple 404.
 2. Bug fix: eliminating methods in search results that haven't been tracked long enough.
 3. Removed the possibility to delete terminated agents from the dashboard UI (it is now automatic, based on the retention period).
+4. Includes retentionPeriodDays in 'Tracked For' popup.
 
 ## 1.0.0
 

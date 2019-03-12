@@ -169,7 +169,10 @@
 
                             <ng-template #collectedDaysPopover>
                                 <p>Only include methods in the search results that have been tracked by Codekvast for
-                                    <b>at least {{ state.req.minCollectedDays }} days</b>.</p>
+                                    <b>at least {{ state.req.minCollectedDays }} days</b>.
+                                </p>
+                                <p *ngIf="state.retentionPeriodDays > 0">Codekvast applies a data retention period
+                                    of {{ state.retentionPeriodDays }} days, so setting this value to something higher is useless.</p>
                             </ng-template>
                         </div>
 

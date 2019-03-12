@@ -33,7 +33,7 @@ export class MethodsComponent implements OnInit {
 
     communicationFailure() {
         let now = this.agePipe.transform(new Date(), this.settings.dateFormat);
-        return now + ': Communication failure'
+        return now + ': Communication failure';
     }
 
     gotoMethodDetail(id: number): void {

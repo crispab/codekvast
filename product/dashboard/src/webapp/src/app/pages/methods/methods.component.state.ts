@@ -29,6 +29,7 @@ export class MethodsComponentState {
 
     applications: CheckboxState[] = [];
     environments: CheckboxState[] = [];
+    retentionPeriodDays = -1;
 
     constructor(private api: DashboardApiService) {
     }
@@ -50,6 +51,8 @@ export class MethodsComponentState {
             console.log('[ck dashboard] methodsFormData=%o', data);
             copyNames.call(null, this.applications, data.applications);
             copyNames.call(null, this.environments, data.environments);
+            this.retentionPeriodDays = data.retentionPeriodDays;
+            this.req.minCollectedDays = this.retentionPeriodDays > 0 ? this.retentionPeriodDays : 30;
 
             if (!this.anyEnvironmentSelected()) {
                 // Try to pre-select any environment named 'prod*'

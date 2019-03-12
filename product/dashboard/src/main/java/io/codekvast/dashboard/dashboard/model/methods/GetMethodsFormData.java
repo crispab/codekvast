@@ -43,12 +43,15 @@ public class GetMethodsFormData {
     @Singular
     private final SortedSet<String> environments;
 
+    private final Integer retentionPeriodDays;
+
     public static GetMethodsFormData sample() {
         return GetMethodsFormData.builder()
                                  .application("app2")
                                  .application("app1")
                                  .environment("env2")
                                  .environment("env1")
+                                 .retentionPeriodDays(14)
                                  .build();
     }
 

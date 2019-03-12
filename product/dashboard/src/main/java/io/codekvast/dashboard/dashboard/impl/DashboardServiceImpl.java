@@ -324,14 +324,18 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional(readOnly = true)
     public @NotNull GetMethodsFormData getMethodsFormData() {
+        Long customerId = customerIdProvider.getCustomerId();
+        CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
+
         return GetMethodsFormData
             .builder()
             .applications(
                 jdbcTemplate
-                    .queryForList("SELECT name FROM applications WHERE customerId = ? ", String.class, customerIdProvider.getCustomerId()))
+                    .queryForList("SELECT name FROM applications WHERE customerId = ? ", String.class, customerId))
             .environments(
                 jdbcTemplate.queryForList("SELECT name FROM environments WHERE customerId = ? ", String.class,
-                                          customerIdProvider.getCustomerId()))
+                                          customerId))
+            .retentionPeriodDays(customerData.getPricePlan().getRetentionPeriodDays())
             .build();
     }
 
