@@ -3,6 +3,7 @@
 ## 1.0.1
 
 1. Replace Server Error 500 caused by RequestRejectedException with a simple 404.
+2. Bug fix: eliminating methods in search results that haven't been tracked long enough.
 
 ## 1.0.0
 

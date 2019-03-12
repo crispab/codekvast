@@ -89,30 +89,47 @@ public class DashboardServiceImpl implements DashboardService {
         PricePlan pricePlan = customerService.getCustomerDataByCustomerId(customerId).getPricePlan();
 
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("customerId", customerId);
         params.addValue("minCollectedDays", request.getMinCollectedDays());
         params.addValue("now", new Timestamp(clock.millis()));
         params.addValue("onlyInvokedAfterMillis", request.getOnlyInvokedAfterMillis());
         params.addValue("onlyInvokedBeforeMillis", request.getOnlyInvokedBeforeMillis());
 
-        String whereClause = "";
+        params.addValue("customerId", customerId);
+        String whereClause = "i.customerId = :customerId";
+
+        String normalizedSignature = request.getNormalizedSignature();
+        if (!normalizedSignature.equals("%")) {
+            params.addValue("signature", normalizedSignature);
+            whereClause += " AND m.signature LIKE :signature";
+        }
         if (request.getApplications() != null && !request.getApplications().isEmpty()) {
-            params.addValue("applicationIds", translateNamesToIds("applications", request.getApplications()));
-            whereClause += " AND i.applicationId IN (:applicationIds)";
+            List<Long> applicationIds = translateNamesToIds("applications", request.getApplications());
+            if (applicationIds.size() == 1) {
+                params.addValue("applicationId", applicationIds.get(0));
+                whereClause += " AND i.applicationId = :applicationId";
+            } else {
+                params.addValue("applicationIds", applicationIds);
+                whereClause += " AND i.applicationId IN (:applicationIds)";
+            }
         }
         if (request.getEnvironments() != null && !request.getEnvironments().isEmpty()) {
-            params.addValue("environmentIds", translateNamesToIds("environments", request.getEnvironments()));
-            whereClause += " AND i.environmentId IN (:environmentIds)";
+            List<Long> environmentIds = translateNamesToIds("environments", request.getEnvironments());
+            if (environmentIds.size() == 1) {
+                params.addValue("environmentId", environmentIds.get(0));
+                whereClause += " AND i.environmentId = :environmentId";
+
+            } else {
+                params.addValue("environmentIds", environmentIds);
+                whereClause += " AND i.environmentId IN (:environmentIds)";
+            }
         }
-        params.addValue("signature", request.getNormalizedSignature());
-        whereClause += " AND m.signature LIKE :signature ";
 
         String sql = "SELECT\n" +
             "    m.id, m.signature, MAX(i.status) AS status, " +
             "    ((TO_SECONDS(:now) - TO_SECONDS(MIN(j.startedAt))) DIV 86400) AS collectedDays,\n" +
             "    MAX(i.invokedAtMillis) AS lastInvokedAtMillis\n" +
             "FROM invocations i, methods m, jvms j\n" +
-            "WHERE i.methodId = m.id AND i.jvmId = j.id AND j.garbage = FALSE AND i.customerId = :customerId" + whereClause +
+            "WHERE " + whereClause + " AND i.methodId = m.id AND i.jvmId = j.id AND j.garbage = FALSE\n" +
             "GROUP BY m.signature\n" +
             "HAVING collectedDays >= :minCollectedDays " +
             "   AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n" +
@@ -139,12 +156,18 @@ public class DashboardServiceImpl implements DashboardService {
                 return;
             }
 
+            int collectedDays = pricePlan.adjustCollectedDays(rs.getInt("collectedDays"));
+            if (request.getMinCollectedDays() > collectedDays) {
+                logger.trace("Suppressing method {} that only has been tracked {} days", signature, collectedDays);
+                return;
+            }
+
             methods.add(
                 MethodDescriptor2.builder()
                                  .id(rs.getLong("id"))
                                  .signature(signature)
                                  .trackedPercent(status.isTracked() ? 100 : 0)
-                                 .collectedDays(pricePlan.adjustCollectedDays(rs.getInt("collectedDays")))
+                                 .collectedDays(collectedDays)
                                  .lastInvokedAtMillis(pricePlan.adjustTimestampMillis(rs.getLong("lastInvokedAtMillis"), clock))
                                  .build());
 
@@ -163,7 +186,7 @@ public class DashboardServiceImpl implements DashboardService {
                                   .build();
     }
 
-    private Collection<Long> translateNamesToIds(final String tableName, Collection<String> names) {
+    private List<Long> translateNamesToIds(final String tableName, Collection<String> names) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("customerId", customerIdProvider.getCustomerId());
         params.addValue("names", names);
