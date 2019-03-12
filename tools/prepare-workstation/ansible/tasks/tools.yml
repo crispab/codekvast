@@ -35,11 +35,18 @@
 - name: Install Yarn
   package: name=yarn state=present
 
-- name: Install Ruby
-  package: name={{ item }} state=installed
+- name: Install Ruby (for Kensa)
+  package: name={{ item }} state=present
   with_items:
   - ruby
   - ruby-dev
 
 - name: Install Kensa
   shell: gem install kensa
+
+- name: Install datadogpy
+  shell: pip3 install {{ item }}
+  with_items:
+  - datadog
+  - pyyaml
+
