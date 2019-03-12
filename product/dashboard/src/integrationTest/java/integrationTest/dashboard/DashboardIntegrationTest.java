@@ -31,6 +31,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -650,17 +651,17 @@ public class DashboardIntegrationTest {
         assertThat(getMethodsFormData.getEnvironments(), contains("env1", "env2", "env3", "env4"));
     }
 
-    @Test
+    @Test(expected = AuthenticationException.class)
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_getFilterData_for_unknown_customerId() {
+    public void should_not_getFilterData_for_unknown_customerId() {
         // given
         setSecurityContextCustomerId(17L);
 
         // when
-        GetMethodsFormData formData = dashboardService.getMethodsFormData();
+        dashboardService.getMethodsFormData();
 
         // then
-        assertThat(formData, is(GetMethodsFormData.builder().build()));
+        // kaboom!
     }
 
     @Test

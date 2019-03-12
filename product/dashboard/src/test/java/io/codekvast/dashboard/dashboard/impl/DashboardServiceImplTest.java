@@ -160,9 +160,21 @@ public class DashboardServiceImplTest {
     @Test
     public void should_getFilterData() {
         // given
-        when(customerIdProvider.getCustomerId()).thenReturn(4711L);
+        PricePlanDefaults ppd = PricePlanDefaults.TEST;
+        long customerId = 1L;
+
+        when(customerIdProvider.getCustomerId()).thenReturn(customerId);
+        CustomerData customerData = CustomerData.builder()
+                                                .customerId(customerId)
+                                                .customerName("customerName")
+                                                .pricePlan(PricePlan.of(ppd))
+                                                .source("source")
+                                                .collectionStartedAt(null)
+                                                .trialPeriodEndsAt(null)
+                                                .build();
+        when(customerService.getCustomerDataByCustomerId(eq(customerId))).thenReturn(customerData);
         //noinspection unchecked
-        when(jdbcTemplate.queryForList(anyString(), eq(String.class), eq(4711L)))
+        when(jdbcTemplate.queryForList(anyString(), eq(String.class), eq(customerId)))
             .thenReturn(asList("app2", "app1", "app3"), asList("env2", "env1", "env3"));
 
         // when
@@ -176,6 +188,7 @@ public class DashboardServiceImplTest {
                                                   .environment("env1")
                                                   .environment("env2")
                                                   .environment("env3")
+                                                  .retentionPeriodDays(ppd.getRetentionPeriodDays())
                                                   .build()));
     }
 }
