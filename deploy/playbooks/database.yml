@@ -18,7 +18,7 @@
     mysql_origin: 'default'
     mysql_vendor: 'mariadb'
     mariadb_version: '10.1'
-    mysql_backup_dir: '/var/backups/mariadb'
+    mysql_backup_dir: '/backups/mariadb'
     mysql_bind_address: '0.0.0.0'
     mysql_slow_query_log_file: '/var/log/mysql/mysql-slow.log'
     mysql_extra_configuration:
@@ -60,6 +60,43 @@
   - name: "Mount /dev/xvdf1 on /data"
     mount: src=/dev/xvdf1 path=/data state=mounted fstype=ext4
 
+#----------------------------------------
+  - name: Create a partition table for /dev/xvdg
+    parted: device=/dev/xvdg number=1 state=present
+    register: partition_table
+
+  - debug: var=partition_table
+    when: _debug is defined and _debug
+
+  - name: Create ext4 file system on /dev/xvdg
+    filesystem: dev=/dev/xvdg1 fstype=ext4
+    register: fs
+
+  - debug: var=fs
+    when: _debug is defined and _debug
+
+  - name: "Create the directory /backups"
+    file: path=/backups state=directory
+
+  - name: "Mount /dev/xvdg1 on /backups"
+    mount: src=/dev/xvdg1 path=/backups state=mounted fstype=ext4
+
+  - set_fact: old_mysql_backup_dir=/var/backups/mariadb
+  - set_fact: new_mysql_backup_dir=/backups/mariadb
+
+  - name: "Check if {{ old_mysql_backup_dir }} exists"
+    stat: path={{ old_mysql_backup_dir }}
+    register: st1
+
+  - name: "Check if {{ new_mysql_backup_dir }} exists"
+    stat: path={{ new_mysql_backup_dir }}
+    register: st2
+
+  - name: "Move MariaDB backups from {{ old_mysql_backup_dir }} to {{ new_mysql_backup_dir }}"
+    command: mv {{ old_mysql_backup_dir }} {{ new_mysql_backup_dir }} creates={{ new_mysql_backup_dir }} removes={{ old_mysql_backup_dir }}
+    when: st1.stat.isdir is defined and st1.stat.isdir and not st2.stat.isdir is defined
+
+  #----------------------------------------
   - set_fact: standard_datadir=/var/lib/mysql
   - name: "Check if {{ standard_datadir }} exists"
     stat: path={{ standard_datadir }}

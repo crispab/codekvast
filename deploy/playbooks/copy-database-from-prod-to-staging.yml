@@ -17,7 +17,7 @@
   become: yes
 
   vars:
-      mysql_backup_dir: '/var/backups/mariadb'
+      mysql_backup_dir: '/backups/mariadb'
       s3_bucket:        "s3://io.codekvast.default.prod.backup"
       tarball:          "mariadb-backup-extra.tar.gz"
 

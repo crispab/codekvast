@@ -2,7 +2,7 @@
 #-----------------------------------------------------------------------------------------------------------
 # Playbook that makes a extra backup of the production database to S3
 #-----------------------------------------------------------------------------------------------------------
-- name: Make extra production database backup
+- name: Make production database backup
   hosts: tag_Name_Codekvast_default_prod_database
   user: ubuntu
   become: yes
