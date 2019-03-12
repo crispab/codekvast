@@ -664,56 +664,6 @@ public class DashboardIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "/sql/base-data.sql")
-    public void should_delete_agent_when_valid_parameters() {
-        // given
-        setSecurityContextCustomerId(1L);
-        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
-        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
-
-        // when
-        dashboardService.deleteAgent(1L, 1L);
-
-        // then
-        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(1));
-        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(1));
-    }
-
-    @Test
-    @Sql(scripts = "/sql/base-data.sql")
-    public void should_ignore_to_delete_agent_when_invalid_customerId() {
-        // given
-        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
-        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
-
-        setSecurityContextCustomerId(4711L);
-
-        // when
-        dashboardService.deleteAgent(1L, 1L);
-
-        // then
-        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
-        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
-    }
-
-    @Test
-    @Sql(scripts = "/sql/base-data.sql")
-    public void should_ignore_to_delete_agent_when_null_customerId() {
-        // given
-        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
-        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
-
-        setSecurityContextCustomerId(null);
-
-        // when
-        dashboardService.deleteAgent(1L, 1L);
-
-        // then
-        assertThat(countRowsInTable("agent_state WHERE garbage = TRUE"), is(0));
-        assertThat(countRowsInTable("jvms WHERE garbage = TRUE"), is(0));
-    }
-
-    @Test
     @Sql(scripts = {"/sql/base-data.sql", "/sql/garbage-data.sql"})
     public void should_perform_dataWeeding() {
 

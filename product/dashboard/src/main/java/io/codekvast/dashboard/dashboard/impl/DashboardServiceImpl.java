@@ -335,28 +335,6 @@ public class DashboardServiceImpl implements DashboardService {
             .build();
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteAgent(Long agentId, Long jvmId) {
-        Long customerId = customerIdProvider.getCustomerId();
-        if (customerId == null) {
-            logger.warn("Unauthenticated attempt to delete agent");
-            return;
-        }
-
-        int updatedAgentState = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND id = ? AND garbage = FALSE ", customerId, agentId);
-
-        int updatedJvms = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND id = ? AND garbage = FALSE ", customerId, jvmId);
-
-        if (updatedJvms + updatedAgentState == 0) {
-            logger.warn("Cannot mark agent {}:{}:{} as garbage: Not found", customerId, agentId, jvmId);
-        } else {
-            logger.info("Marked agent {}:{}:{} as garbage", customerId, agentId, jvmId);
-        }
-
-        // The garbage will be deleted by the WeedingService.
-    }
-
     private List<AgentDescriptor> getAgents(Long customerId, int publishIntervalSeconds) {
         List<AgentDescriptor> result = new ArrayList<>();
 

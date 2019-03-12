@@ -149,47 +149,6 @@
             <ngb-tab>
                 <ng-template ngbTabTitle><h5>{{ getAgentsLabel() }}</h5></ng-template>
                 <ng-template ngbTabContent>
-                    <ng-template #deleteModalTemplate let-c="close" let-d="dismiss">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Delete Terminated Agents</h4>
-                            <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <p>Codekvast is about collecting historic usage data for your applications to assist decision making,
-                                        so <em>deleting historic data can make Codekvast less valuable</em>.</p>
-                                    Don't delete terminated agents unless there is a good reason!
-                                </div>
-                            </div>
-                            <p>Examples of when it can be okay to delete terminated {{ getAgentsLabel() }}:</p>
-                            <ul>
-                                <li>You have made refactorings that make historic data useless or misleading.</li>
-                                <li>You have made changes to <code>codekvast.conf</code>, specifically changed <code>appName</code>, <code>appVersion</code>
-                                    or <code>environment</code>.
-                                </li>
-                                <li>You have used Codekvast for longer time than your application's usage cycle.</li>
-                                <li>You have retired an application or environment.</li>
-                            </ul>
-                            <div class="alert alert-warning" role="alert"
-                                 *ngIf="state.numSelectedTerminatedAgents() > state.numSelectedVisibleTerminatedAgents()">
-                                The filters hide some of the selected agents!
-                            </div>
-                            <hr>
-                            <div class="alert alert-danger" role="alert">
-                                Delete all data collected by {{ state.numSelectedTerminatedAgents() }} terminated {{ getAgentsLabel() }}
-                                ?<br>
-                                There is no way to restore once deleted data.
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-dark" (click)="d('cancel')">Cancel</button>
-                            <button type="button" class="btn btn-danger" (click)="c('delete')">Yes, Delete</button>
-                        </div>
-                    </ng-template>
-
                     <div class="mt-3 form-inline mb-2" [class.invisible]="state.numTerminatedAgents() === 0">
                         <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents">
                         <label class="ml-1" for="showTerminatedAgents">Show&nbsp;
@@ -197,29 +156,6 @@
                                 title="The number of terminated agents that pass the filters below">{{ state.numTerminatedFilteredAgents() }}</span>
                             (<span title="The total number of terminated agents">{{ state.numTerminatedAgents() }}</span>) terminated {{
                             getAgentsLabel() }}</label>
-                        <div class="input-group col-auto">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Select terminated agents older than</span>
-                            </div>
-                            <input class="form-control"
-                                   id="terminatedDays"
-                                   type="number"
-                                   required
-                                   min="0"
-                                   max="3650"
-                                   [(ngModel)]="state.selectTerminatedAgentsOlderThanDays"/>
-                            <div class="input-group-append">
-                                <span class="input-group-text">days</span>
-                            </div>
-                            <button class="ml-3 btn btn-outline-secondary btn-sm" (click)="state.selectOldTerminatedAgents()">
-                                Select
-                            </button>
-                        </div>
-                        <button class="ml-3 btn btn-outline-secondary btn-sm" [disabled]="state.numSelectedTerminatedAgents() === 0"
-                                (click)="state.openDeleteModal(deleteModalTemplate)">Delete {{ state.numSelectedTerminatedAgents() }}
-                            selected
-                            terminated agents...
-                        </button>
                     </div>
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -243,10 +179,6 @@
                             <th class="align-top">Data received at</th>
                             <th class="align-top">Next expected at</th>
                             <th class="align-top">Comments</th>
-                            <th class="align-top">
-                                <input type="checkbox" [(ngModel)]="state.selectAllTerminatedAgents"
-                                       (change)="state.selectOrUnselectAllVisibleTerminatedAgents()"/>
-                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -267,7 +199,6 @@
                                     [ngClass]="agentUploadExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
                             </td>
                             <td>{{ getComments(agent) }} <i [ngClass]="commentClasses(agent)"></i></td>
-                            <td><input [disabled]="!isAgentDeletable(agent)" type="checkbox" [(ngModel)]="agent.selected"></td>
                         </tr>
                         </tbody>
                     </table>

@@ -70,12 +70,4 @@ public interface DashboardService {
      * @return A GetMethodsFormData object. Does never return null.
      */
     GetMethodsFormData getMethodsFormData();
-
-    /**
-     * Deletes an agent and all associated data (from jvms, invocations, methods, applications, environments).
-     *
-     * @param agentId The value of agent_data.id
-     * @param jvmId The value of jvms.id
-     */
-    void deleteAgent(Long agentId, Long jvmId);
 }

@@ -6,8 +6,6 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DashboardApiService} from '../../services/dashboard-api.service';
 import {DatePipe} from '@angular/common';
 import {Settings} from '../../components/settings.model';
-import {isNullOrUndefined} from 'util';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'ck-collection-status',
@@ -20,14 +18,13 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
     state: CollectionStatusComponentState;
     agentsLabel = 'Agents';
 
-    constructor(private stateService: StateService, private api: DashboardApiService, private agePipe: AgePipe,
-                private modalService: NgbModal) {
+    constructor(private stateService: StateService, private api: DashboardApiService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
         this.state = this.stateService.getState(CollectionStatusComponentState.KEY,
-            () => new CollectionStatusComponentState(this.agePipe, this.api, this.modalService));
+            () => new CollectionStatusComponentState(this.agePipe, this.api));
         this.state.init();
         this.stateService.getAuthData().subscribe((ad: AuthData) => {
             this.agentsLabel = ad && ad.source === 'heroku' ? 'Dynos' : 'Agents';
@@ -71,7 +68,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
             return `${this.state.data.numLiveEnabledAgents} ${this.getAgentsLabel()}`;
         }
         let disabled = this.state.data.numLiveAgents - this.state.data.numLiveEnabledAgents;
-        return `${this.state.data.numLiveAgents} ${this.getAgentsLabel()} (${disabled} suspended)`
+        return `${this.state.data.numLiveAgents} ${this.getAgentsLabel()} (${disabled} suspended)`;
     }
 
     agentUploadExpectedAtClasses(agent: Agent) {
@@ -108,7 +105,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
             'invisible': agent.deletionState !== 1,
             'far': agent.deletionState === 1,
             'fa-clock': agent.deletionState === 1
-        }
+        };
     }
 
     getAgentsLabel() {
@@ -117,7 +114,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
 
     isAgentDeletable(agent: Agent) {
         console.log('[ck dashboard] isDeletable(%o)', agent);
-        return !agent.agentAlive && isNullOrUndefined(agent.deletionState);
+        return !agent.agentAlive && (agent.deletionState === null || agent.deletionState === undefined);
     }
 
 }
