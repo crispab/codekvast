@@ -91,7 +91,7 @@
     state: started
     timeout: 60
 
-- name: Install /opt/codekvast/remove-old-versions.sh
+- name: "Install /opt/codekvast/remove-old-versions.sh"
   copy:
     src: remove-old-versions.sh
     dest: /opt/codekvast/remove-old-versions.sh
@@ -99,7 +99,7 @@
     group: codekvast
     mode: 0700
 
-- name: Execute /opt/codekvast/remove-old-versions.sh
+- name: "Execute /opt/codekvast/remove-old-versions.sh"
   command: /opt/codekvast/remove-old-versions.sh
   register: removed_versions
   changed_when: removed_versions.stdout != ""
@@ -107,4 +107,15 @@
 - debug: var=removed_versions.stdout_lines
   when: removed_versions.stdout != ""
 
+- name: "Install /etc/cron.daily/codekvast"
+  copy:
+    src: cron.daily/codekvast.sh
+    dest: /etc/cron.daily/codekvast
+    mode: 0755
+  tags: cron
+  register: cronscript
 
+- name: "Execute /etc/cron.daily/codekvast"
+  command: /etc/cron.daily/codekvast
+  when: cronscript.changed
+  tags: cron
