@@ -195,7 +195,7 @@ Codekvast collector attached.
 The following procedure can be used for demo purposes and also when doing development with live data flowing.
 
 1. Launch 4 terminal windows
-1. In terminal #1 do `./gradlew :product:dashboard:bootRun`.
+1. In terminal #1 do `./gradlew :product:server:dashboard:bootRun`.
 This will start Codekvast Dashboard that will consume the data files uploaded by the instrumented apps.
 1. In terminal #2 do `./gradlew :sample:jenkins1:run`. This will download and start one version of Jenkins with Codekvast attached.
 1. In terminal #3 do `./gradlew :sample:jenkins2:run`. This will download and start another version of Jenkins with Codekvast attached.
@@ -233,7 +233,7 @@ The canned response for `/webapp/v1/methods` is captured by executing
     curl -X GET --header 'Accept: application/json' 'http://localhost:8081/webapp/v1/methods?signature=%25&maxResults=100'|jq . > product/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
     git add product/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
     
-from the root directory while `./gradlew :product:dashboard:bootRun` is running.
+from the root directory while `./gradlew :product:server:dashboard:bootRun` is running.
 When doing the capture, make sure that data from the three above mentioned sample apps is stored in the dashboard.
 
 (The JSON response is piped through `jq .` to make it more pretty for the human eye.)

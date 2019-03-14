@@ -45,4 +45,4 @@ docker stop ${container}
 docker rm -v ${container}
 
 cd ..
-./gradlew :product:login:startMariadb
+./gradlew :product:server:login:startMariadb

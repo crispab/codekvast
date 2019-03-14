@@ -41,7 +41,7 @@ node {
             stage('Frontend webpack') {
                 lock("Codekvast-${env.BRANCH_NAME}-webpack") {
                     try {
-                        sh "./.gradlew :product:dashboard:frontendWebpack"
+                        sh "./.gradlew :product:server:dashboard:frontendWebpack"
                     } finally {
                         // Prevent junit publisher to fail if Gradle has skipped the test
                         sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs --no-run-if-empty touch"
