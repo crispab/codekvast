@@ -5,10 +5,10 @@ description = """A sample concretization of AbstractMethodExecutionAspect for us
 The aspect is written in ajc style"""
 
 dependencies {
-    compile project(":product:java-agent")
+    compile project(":product:agent:java-agent")
 }
 
 compileAspect {
-    dependsOn ':product:java-agent:jar'
+    dependsOn ':product:agent:java-agent:jar'
     additionalAjcArgs = ['source': '1.7', 'target': '1.7']
 }

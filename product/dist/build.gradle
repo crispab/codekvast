@@ -14,7 +14,7 @@ distributions {
             }
 
             from([
-                tasks.getByPath(':product:java-agent:javaagents'),
+                tasks.getByPath(':product:agent:java-agent:javaagents'),
                 file("$rootDir/RELEASE-NOTES.md"),
                 file("$rootDir/LICENSE"),
             ]) {
@@ -49,7 +49,7 @@ task createIndexHtml(type: Copy) {
 }
 
 task stageForUpload(type: Copy) {
-    dependsOn agentDistZip, tasks.getByPath(':product:java-agent:javaagents'), markdownToHtml, createIndexHtml
+    dependsOn agentDistZip, tasks.getByPath(':product:agent:java-agent:javaagents'), markdownToHtml, createIndexHtml
 
     into "$buildDir/staging"
     from("$rootDir/product/graphics/logo-feathers-60x104.png") {

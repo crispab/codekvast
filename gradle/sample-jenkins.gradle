@@ -6,7 +6,7 @@ configurations {
 }
 
 dependencies {
-    codekvastagent project(path: ":product:java-agent", configuration: 'shadow')
+    codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
 }
 
 defaultTasks 'run'
@@ -23,7 +23,7 @@ task installJenkinsWarInTomcat {
     def downloadDir = file("$rootDir/.tmp/download")
     def jenkinsDir = new File(catalinaWebapps, "jenkins")
 
-    dependsOn ':product:java-agent:shadowJar'
+    dependsOn ':product:agent:java-agent:shadowJar'
 
     inputs.property "javaVersion", javaVersion
     inputs.property "tomcatVersion", tomcatVersion
@@ -82,7 +82,7 @@ task installJenkinsWarInTomcat {
 task generateCodekvastConfig {
     group "Build"
     description "Generates a codekvast.conf for test"
-    dependsOn ":product:java-agent:assemble"
+    dependsOn ":product:agent:java-agent:assemble"
 
     ext.configFile = file("$buildDir/codekvast.conf")
 

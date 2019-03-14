@@ -14,7 +14,7 @@ apply from: "$projectDir/src/webapp/build.gradle"
 apply from: "$projectDir/src/integrationTest/build.gradle"
 
 dependencies {
-    compile project(':product:agent-model')
+    compile project(':product:agent:agent-model')
     compile project(':product:common')
     compile "com.google.code.gson:gson:$gsonVersion"
     compile 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
@@ -46,7 +46,7 @@ bootJar {
 }
 
 run {
-    // dependsOn startMariadb, ":product:dashboard:frontendWebpack", installDist, generateCodekvastConfig, ':product:java-agent:shadowJar'
+    // dependsOn startMariadb, ":product:dashboard:frontendWebpack", installDist, generateCodekvastConfig, ':product:agent:java-agent:shadowJar'
     dependsOn startMariadb, ":product:dashboard:frontendWebpack"
 
     jvmArgs = [
