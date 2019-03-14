@@ -29,8 +29,8 @@ ext.endpointFiles = [
 ]
 
 ext.bootJars = [
-    'dashboard': tasks.getByPath(':product:dashboard:bootJar').outputs.files,
-    'login'    : tasks.getByPath(':product:login:bootJar').outputs.files
+    'dashboard': tasks.getByPath(':product:server:dashboard:bootJar').outputs.files,
+    'login'    : tasks.getByPath(':product:server:login:bootJar').outputs.files
 ]
 
 def javaHome = System.getenv("JAVA_HOME")
@@ -56,7 +56,7 @@ ext.launchCommands = [
 dependencies {
     testCompileOnly lombok
 
-    testCompile project(':product:common')
+    testCompile project(':product:server:common')
     testCompile project(':product:testsupport')
     testCompile "org.codehaus.groovy:groovy-all"
     testCompile 'org.gebish:geb-spock:2.2'

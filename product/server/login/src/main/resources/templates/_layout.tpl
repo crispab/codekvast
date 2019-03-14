@@ -1,3 +1,5 @@
+package templates
+
 yieldUnescaped '<!DOCTYPE html>'; newLine()
 html {
     comment " Codekvast Login version ${settings.displayVersion} "; newLine()

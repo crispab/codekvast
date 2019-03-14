@@ -15,11 +15,11 @@ apply from: "$projectDir/src/integrationTest/build.gradle"
 
 dependencies {
     compile project(':product:agent:agent-model')
-    compile project(':product:common')
+    compile project(':product:server:common')
     compile "com.google.code.gson:gson:$gsonVersion"
     compile 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
     
-    runtime project(':product:db-migration')
+    runtime project(':product:server:db-migration')
 }
 
 bootJar {
@@ -46,8 +46,8 @@ bootJar {
 }
 
 run {
-    // dependsOn startMariadb, ":product:dashboard:frontendWebpack", installDist, generateCodekvastConfig, ':product:agent:java-agent:shadowJar'
-    dependsOn startMariadb, ":product:dashboard:frontendWebpack"
+    // dependsOn startMariadb, ":product:server:dashboard:frontendWebpack", installDist, generateCodekvastConfig, ':product:agent:java-agent:shadowJar'
+    dependsOn startMariadb, ":product:server:dashboard:frontendWebpack"
 
     jvmArgs = [
         '-enableassertions',

@@ -1,3 +1,5 @@
+package templates
+
 layout '_layout.tpl', true,
     title: '',
     bodyContents: contents {

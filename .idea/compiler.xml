@@ -7,6 +7,21 @@
     <bytecodeTargetLevel>
       <module name="agent-model_main" target="1.7" />
       <module name="agent-model_test" target="1.7" />
+      <module name="codekvast.product.agent-agent-model_main" target="1.7" />
+      <module name="codekvast.product.agent-agent-model_test" target="1.7" />
+      <module name="codekvast.product.agent-java-agent_integrationTest" target="1.7" />
+      <module name="codekvast.product.agent-java-agent_main" target="1.7" />
+      <module name="codekvast.product.agent-java-agent_test" target="1.7" />
+      <module name="codekvast.product.server-common_integrationTest" target="11" />
+      <module name="codekvast.product.server-common_main" target="11" />
+      <module name="codekvast.product.server-common_test" target="11" />
+      <module name="codekvast.product.server-dashboard_integrationTest" target="11" />
+      <module name="codekvast.product.server-dashboard_main" target="11" />
+      <module name="codekvast.product.server-dashboard_test" target="11" />
+      <module name="codekvast.product.server-db-migration_main" target="11" />
+      <module name="codekvast.product.server-db-migration_test" target="11" />
+      <module name="codekvast.product.server-login_main" target="11" />
+      <module name="codekvast.product.server-login_test" target="11" />
       <module name="common_integrationTest" target="11" />
       <module name="common_main" target="11" />
       <module name="common_test" target="11" />

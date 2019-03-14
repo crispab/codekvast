@@ -1,3 +1,5 @@
+package templates
+
 import java.time.Instant
 
 layout '_layout.tpl', true,

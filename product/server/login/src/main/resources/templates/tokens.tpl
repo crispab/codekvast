@@ -1,3 +1,5 @@
+package templates
+
 import io.codekvast.common.customer.CustomerService
 
 layout '_layout.tpl', true,

@@ -4,14 +4,14 @@
 
 The following stack is used when developing Codekvast (in alphabetical order):
 
-1. Angular 5+
+1. Angular 7+
 1. AspectJ (in Load-Time Weaving mode)
 1. Docker 1.10.3+ (For running MariaDB)
 1. Github
 1. git-crypt
 1. Gradle 
 1. Inkscape (SVG graphics)
-1. Java 7 and 11
+1. Java 7, 8, 9, 10 and 11.
 1. Kotlin
 1. Lombok
 1. MariaDB 10+ (Codekvast Dashboard)
@@ -27,13 +27,15 @@ The following stack is used when developing Codekvast (in alphabetical order):
 
 The product itself lives under `product/`.
 
+Server-side stuff lives under `product/server`, while agent stuff lives under `product/agent`.
+
 Sample projects to use when testing Codekvast lives under `sample/`.
 
 Development tools live under `tools/`.
 
 Provisioning scripts live under `deploy/`.
 
-*NOTE: the deploy/ tree is encrypted with git-crypt since it stores sensible data like cloud provider credentials!*
+*NOTE: Some files are encrypted with git-crypt since it stores sensible data like cloud provider credentials!*
 
 Authorized developers are enabled to unlock the repo by adding their public GPG keys.
 See `man git-crypt`, `git-crypt help add-gpg-user` and `git-crypt help unlock`.
