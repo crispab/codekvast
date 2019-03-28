@@ -208,7 +208,7 @@ you want to correlate source code to the data that is collected by Codekvast.
 In addition to the above do this:
 
 1. Launch a terminal window
-1. `cd product/dashboard/src/webapp`
+1. `cd product/server/dashboard/src/webapp`
 1. `npm start`. It will start an embedded web server on port 8088.
 It reloads changes to the webapp automatically. It will also refresh the browser automatically.
 1. Open the web browser at http://localhost:8088
@@ -230,8 +230,8 @@ Canned responses has to be re-captured every time the dashboard REST API has bee
 
 The canned response for `/webapp/v1/methods` is captured by executing
 
-    curl -X GET --header 'Accept: application/json' 'http://localhost:8081/webapp/v1/methods?signature=%25&maxResults=100'|jq . > product/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
-    git add product/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
+    curl -X GET --header 'Accept: application/json' 'http://localhost:8081/webapp/v1/methods?signature=%25&maxResults=100'|jq . > product/server/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
+    git add product/server/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
     
 from the root directory while `./gradlew :product:server:dashboard:bootRun` is running.
 When doing the capture, make sure that data from the three above mentioned sample apps is stored in the dashboard.
