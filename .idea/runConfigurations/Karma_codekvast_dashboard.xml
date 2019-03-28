@@ -1,9 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Karma codekvast-dashboard" type="JavaScriptTestRunnerKarma" factoryName="Karma">
-    <config-file value="$PROJECT_DIR$/product/dashboard/src/webapp/karma.conf.js" />
-    <karma-package-dir value="$PROJECT_DIR$/product/dashboard/src/webapp/node_modules/karma" />
+  <configuration default="false" name="Karma codekvast-dashboard" type="JavaScriptTestRunnerKarma">
+    <config-file value="$PROJECT_DIR$/product/server/dashboard/src/webapp/karma.conf.js" />
+    <karma-package-dir value="$PROJECT_DIR$/product/server/dashboard/src/webapp/node_modules/karma" />
+    <working-directory value="$PROJECT_DIR$" />
     <node-interpreter value="project" />
     <envs />
-    <method />
+    <method v="2" />
   </configuration>
 </component>
