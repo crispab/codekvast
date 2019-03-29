@@ -1,7 +1,9 @@
 {
-  "extends": "tslint:recommended",
+    "extends": [
+        "codelyzer"
+    ],
   "rulesDirectory": [
-    "codelyzer"
+      "node_modules/codelyzer"
   ],
   "rules": {
     "array-type": false,
