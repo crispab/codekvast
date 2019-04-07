@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="npm start dashboard" type="js.build_tools.npm" factoryName="npm">
-    <package-json value="$PROJECT_DIR$/product/dashboard/src/webapp/package.json" />
+  <configuration default="false" name="npm start dashboard" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/product/server/dashboard/src/webapp/package.json" />
     <command value="run" />
     <scripts>
       <script value="start" />
     </scripts>
     <node-interpreter value="project" />
     <envs />
-    <method />
+    <method v="2" />
   </configuration>
 </component>
