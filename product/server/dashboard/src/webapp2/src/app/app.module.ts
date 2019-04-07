@@ -4,11 +4,13 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AgePipe } from './pipes/age.pipe';
+import { InvocationStatusPipe } from './pipes/invocation-status.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AgePipe
+    AgePipe,
+    InvocationStatusPipe
   ],
   imports: [
     BrowserModule,

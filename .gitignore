@@ -50,6 +50,7 @@ codekvast.iws
 node_modules/
 out/
 **/src/webapp/dist/
+**/src/webapp2/dist/
 target/
 tools/downloaded/
 typings/
