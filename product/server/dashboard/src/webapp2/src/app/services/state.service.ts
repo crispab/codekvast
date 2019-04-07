@@ -3,7 +3,6 @@
  */
 import {CookieService} from 'ngx-cookie';
 import {Injectable} from '@angular/core';
-import {isNullOrUndefined} from 'util';
 import {Observable, Subject} from 'rxjs';
 
 export class AuthData {
@@ -31,7 +30,7 @@ export class StateService {
     }
 
     getState<T>(key: string, initialState: () => T): T {
-        if (isNullOrUndefined(this.state[key])) {
+        if (this.isNullOrUndefined(this.state[key])) {
             this.state[key] = initialState();
         }
         return this.state[key];
@@ -55,7 +54,7 @@ export class StateService {
     }
 
     isLoggedIn() {
-        if (isNullOrUndefined(this.cookieService.get('sessionToken'))) {
+        if (this.isNullOrUndefined(this.cookieService.get('sessionToken'))) {
             if (this.loggedIn) {
                 console.log('[ck dashboard] Detected that sessionToken cookie has disappeared')
             }
@@ -63,4 +62,7 @@ export class StateService {
         }
         return this.loggedIn;
     }
+
+    private isNullOrUndefined(value: any) {
+        return value === null || value === undefined;}
 }

@@ -1,23 +1,20 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { AgePipe } from './pipes/age.pipe';
-import { InvocationStatusPipe } from './pipes/invocation-status.pipe';
-import { VoteComponent } from './components/vote/vote.component';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {AgePipe} from './pipes/age.pipe';
+import {InvocationStatusPipe} from './pipes/invocation-status.pipe';
+import {VoteComponent} from './components/vote/vote.component';
+import {SettingsEditorComponent} from './components/settings-editor/settings-editor.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    AgePipe,
-    InvocationStatusPipe,
-    VoteComponent
+      AppComponent, AgePipe, InvocationStatusPipe, VoteComponent, SettingsEditorComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule
-  ],
+    imports: [
+        BrowserModule, AppRoutingModule, FormsModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
