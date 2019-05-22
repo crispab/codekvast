@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {StateService} from '../../../../../webapp/src/app/services/state.service';
 import {Router} from '@angular/router';
+import {StateService} from '../../services/state.service';
 
 class VoteState {
     vote: boolean = undefined;
