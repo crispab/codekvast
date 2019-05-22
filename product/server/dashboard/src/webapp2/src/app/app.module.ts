@@ -8,10 +8,11 @@ import {InvocationStatusPipe} from './pipes/invocation-status.pipe';
 import {VoteComponent} from './components/vote/vote.component';
 import {SettingsEditorComponent} from './components/settings-editor/settings-editor.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
+import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
 
 @NgModule({
     declarations: [
-        AppComponent, AgePipe, InvocationStatusPipe, VoteComponent, SettingsEditorComponent, VoteResultComponent
+        AppComponent, AgePipe, InvocationStatusPipe, VoteComponent, SettingsEditorComponent, VoteResultComponent, ReportGeneratorComponent
     ],
     imports: [
         BrowserModule, AppRoutingModule, FormsModule
