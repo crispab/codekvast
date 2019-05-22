@@ -1,0 +1,47 @@
+<div class="container">
+    <h4>Codekvast collects usage data for your applications.</h4>
+    <p>The collected data helps you identify <em>Truly Dead Code</em>, i.e., <em>code that no-one has used in production for a certain
+        period of time</em>.</p>
+    <p>By continuously removing truly dead code, you will keep your code base compact. The smaller code base, the faster development
+        cycle.</p>
+    <p>Codekvast does not modify your code in any way, it just <em>enables you to make informed decisions.</em> Read more at
+        <a href="https://www.codekvast.io/index.html" target="_blank">What is Codekvast?</a>
+    </p>
+
+    <div class="row">
+        <div class="col-2 table-header">Feature</div>
+        <div class="col-4 table-header">Summary</div>
+        <div class="col-6 table-header">Use Case</div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-2"><a routerLink="/status">Status</a></div>
+        <div class="col-4">Shows a summary of the collection status.</div>
+        <div class="col-6 use-case">
+            <p>As a developer or manager</p>
+            <p>I want to see the status of the data collection process</p>
+            <p>So that I can judge the trustworthiness of the collected data.</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-2"><a routerLink="/methods">Methods</a></div>
+        <div class="col-4">Shows collected data about one or more methods.</div>
+        <div class="col-6 use-case">
+            <p>As a developer looking at the source code for a method that is
+                <b>ugly/incomprehensible/untestable/&lt;insert-reason-here&gt;</b></p>
+            <p>I want to see when and where it has been invoked</p>
+            <p>So I that can make an informed decision whether it is safe to delete it.</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-2"><a routerLink="/reports">Reports</a></div>
+        <div class="col-4">Make reports of the collected data.</div>
+        <div class="col-6 use-case">
+            <p>As a developer or manager</p>
+            <p>I want to generate reports of the collected data</p>
+            <p>So that I can use the data in other places.</p>
+        </div>
+    </div>
+</div>

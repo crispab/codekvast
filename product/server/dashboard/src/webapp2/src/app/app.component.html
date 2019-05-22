@@ -1,21 +1,53 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<div id="native-integration-menu" class="bg-info small" [class.d-none]="showHerokuIntegrationMenu">
+    <ul class="nav justify-content-end mr-1">
+        <li class="nav-item px-3"><span class="btn disabled">{{ viewingCustomer }}</span></li>
+        <li class="nav-item px-3"><span class="btn disabled">{{ loggedInAs }}</span></li>
+        <li class="nav-item px-3 pt-1"><a class="btn btn-secondary btn-sm" (click)="logout()"><i class="fas fa-sign-out-alt"
+                                                                                                 [class.d-none]="!loggedIn"></i>{{ logoutButtonText() }}
+        </a></li>
+    </ul>
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<header id="top-nav" [ngClass]="topNavClasses()">
+    <div class="row align-items-end pt-1 pl-3">
+        <div class="col-1">
+            <a routerLink=""> <img src="/assets/logo-feathers-60x104.png" class="img" alt="logotype"></a>
+        </div>
+        <div class="col-3">
+            <h1>Codekvast</h1>
+            <p class="small text-muted">The Truly Dead Code Detector</p>
+        </div>
 
-<router-outlet></router-outlet>
+        <div class="col-8">
+            <nav class="nav nav-tabs">
+                <a routerLink="/home" class="nav-link" routerLinkActive="active">Home</a>
+                <a routerLink="/status" class="nav-link" routerLinkActive="active">Status</a>
+                <a routerLink="/methods" class="nav-link" routerLinkActive="active">Methods</a>
+                <a routerLink="/reports" class="nav-link" routerLinkActive="active">Reports</a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<main>
+    <router-outlet></router-outlet>
+</main>
+
+<footer class="bg-info small">
+    <ul class="nav justify-content-end mr-1">
+        <li class="nav-item px-3" [class.d-none]="!showHerokuIntegrationMenu"><span class="btn disabled">{{ loggedInAs }}</span></li>
+        <li class="nav-item px-3 pt-1" [class.d-none]="!showHerokuIntegrationMenu"><a class="btn btn-secondary btn-sm" href="#"
+                                                                                      (click)="logout()"><i class="fas fa-sign-out-alt"
+                                                                                                            [class.d-none]="!loggedIn"></i>{{ logoutButtonText() }}
+        </a></li>
+        <li class="nav-item px-3"><a class="btn btn-info" href='https://www.codekvast.io/archive.html' target="_new">Latest News</a></li>
+        <li class="nav-item px-3"><a class="btn btn-info" href='https://www.codekvast.io/pages/privacy-policy.html' target="_new">Privacy
+            Policy</a></li>
+        <li class="nav-item px-3"><a class="btn btn-info" id="api-docs" href='/swagger-ui.html' target="_new">API docs</a></li>
+        <li class="nav-item px-3"><span class="btn disabled"
+                                        container="body"
+                                        ngbPopover="Server version {{ getServerVersion() }}"
+                                        triggers="mouseenter:mouseleave"
+                                        placement="top">Codekvast Dashboard <span id="codekvastVersion">{{ getVersion() }}</span></span>
+        </li>
+    </ul>
+</footer>
