@@ -5,6 +5,8 @@ import {BrowserModule} from '@angular/platform-browser';
 import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {FormsModule} from '@angular/forms';
 import {InvocationStatusPipe} from './pipes/invocation-status.pipe';
+import {MethodDetailsComponent} from './pages/methods/method-details/method-details.component';
+import {MethodsComponent} from './pages/methods/methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgModule} from '@angular/core';
 import {NotLoggedInComponent} from './pages/auth/not-logged-in/not-logged-in.component';
@@ -19,6 +21,8 @@ import {VoteResultComponent} from './pages/vote-result/vote-result.component';
         AppComponent,
         CollectionStatusComponent,
         InvocationStatusPipe,
+        MethodDetailsComponent,
+        MethodsComponent,
         NotLoggedInComponent,
         ReportGeneratorComponent,
         SettingsEditorComponent,

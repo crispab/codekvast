@@ -24,7 +24,8 @@ export class NgbProgressbarStubComponent {
     selector: 'app-settings-editor',
     template: ''
 })
-export class SettingsEditorStubComponent {
+// tslint:disable-next-line:component-class-suffix
+export class SettingsEditorComponentStub {
 };
 
 describe('CollectionStatusComponent', () => {
@@ -33,7 +34,7 @@ describe('CollectionStatusComponent', () => {
     beforeEach(async(() => {
         // noinspection JSIgnoredPromiseFromCall
         TestBed.configureTestingModule({
-                   declarations: [CollectionStatusComponent, NgbProgressbarStubComponent, AgePipe, SettingsEditorStubComponent],
+                   declarations: [CollectionStatusComponent, NgbProgressbarStubComponent, AgePipe, SettingsEditorComponentStub],
                    providers: [
                        {
                            provide: StateService,
