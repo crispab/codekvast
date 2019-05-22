@@ -9,13 +9,22 @@ import {VoteComponent} from './components/vote/vote.component';
 import {SettingsEditorComponent} from './components/settings-editor/settings-editor.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
 import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
+import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
     declarations: [
-        AppComponent, AgePipe, InvocationStatusPipe, VoteComponent, SettingsEditorComponent, VoteResultComponent, ReportGeneratorComponent
+        AgePipe,
+        AppComponent,
+        CollectionStatusComponent,
+        InvocationStatusPipe,
+        ReportGeneratorComponent,
+        SettingsEditorComponent,
+        VoteComponent,
+        VoteResultComponent,
     ],
     imports: [
-        BrowserModule, AppRoutingModule, FormsModule
+        BrowserModule, AppRoutingModule, FormsModule, NgbModule
     ],
     providers: [],
     bootstrap: [AppComponent]
