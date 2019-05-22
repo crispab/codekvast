@@ -6,6 +6,8 @@ import {AgePipe} from '../../pipes/age.pipe';
 import {StateService} from '../../services/state.service';
 import {DashboardApiService} from '../../services/dashboard-api.service';
 import {CookieService} from 'ngx-cookie';
+import {Observable} from 'rxjs';
+import {StatusData} from '../../model/status/status-data';
 
 @Component({
     // tslint:disable-next-line:component-selector
@@ -40,7 +42,7 @@ describe('CollectionStatusComponent', () => {
                            provide: DashboardApiService,
                            useValue: {
                                getStatus: function () {
-                                   return null;
+                                   return new Observable<StatusData>();
                                }
                            } as DashboardApiService
                        }

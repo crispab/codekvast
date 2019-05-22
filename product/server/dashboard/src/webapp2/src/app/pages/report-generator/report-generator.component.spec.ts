@@ -6,8 +6,8 @@ import {Component, Input} from '@angular/core';
 @Component({
     selector: 'app-vote-for',
     template: ''
-})
-export class VoteStubComponent {
+}) // tslint:disable-next-line:component-class-suffix
+export class VoteComponentStub {
     @Input() feature: string;
 };
 
@@ -18,7 +18,7 @@ describe('ReportGeneratorComponent', () => {
     beforeEach(async(() => {
         // noinspection JSIgnoredPromiseFromCall
         TestBed.configureTestingModule({
-                   declarations: [ReportGeneratorComponent, VoteStubComponent],
+                   declarations: [ReportGeneratorComponent, VoteComponentStub],
                })
                .compileComponents();
     }));
