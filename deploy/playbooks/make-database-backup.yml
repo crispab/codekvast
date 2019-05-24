@@ -4,7 +4,7 @@
 #-----------------------------------------------------------------------------------------------------------
 - name: Make production database backup
   hosts: tag_Name_Codekvast_default_prod_database
-  user: ubuntu
+
   become: yes
 
   tasks:

@@ -5,4 +5,4 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/login.yml --limit tag_Env_staging $*
+ansible-playbook playbooks/login.yml --limit tag_Env_staging $*

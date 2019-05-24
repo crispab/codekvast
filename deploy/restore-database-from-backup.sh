@@ -30,7 +30,7 @@ case ${answer} in
 
     y|yes)
         echo "OK, here we go..."
-        ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/restore-database-from-backup.yml -e env=${env} -e weekday=${weekday}
+        ansible-playbook playbooks/restore-database-from-backup.yml -e env=${env} -e weekday=${weekday}
         ;;
     ''|n|no|N|NO|No)
         echo "Nothing done."

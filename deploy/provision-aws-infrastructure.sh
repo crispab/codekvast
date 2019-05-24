@@ -5,5 +5,5 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/infrastructure.yml $*
+ansible-playbook playbooks/infrastructure.yml $*
 

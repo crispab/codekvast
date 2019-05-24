@@ -3,6 +3,5 @@
 # Refreshes the Ansible inventory cache
 #---------------------------------------------------------------------------------------------------
 
-source $(dirname $0)/.check-requirements.sh
-
-inventory/ec2.py --refresh-cache
+rm -fr ~/.cache/ansible-inventory/
+ansible-inventory --graph

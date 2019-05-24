@@ -5,4 +5,4 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/update-cnames.yml $*
+ansible-playbook playbooks/update-cnames.yml $*

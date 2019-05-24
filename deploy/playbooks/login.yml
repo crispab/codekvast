@@ -4,7 +4,7 @@
 #--------------------------------------------------------------------------------------------------------------------------------
 - name: Codekvast Login Application
   hosts: tag_role_backend
-  user: ubuntu
+
   become: yes
   serial: 1
 

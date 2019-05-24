@@ -4,7 +4,7 @@
 #-----------------------------------------------------------------------------------------------------------
 - name: Codevast Database Server
   hosts: tag_role_database
-  user: ubuntu
+
   become: yes
 
   vars_files:
