@@ -8,5 +8,5 @@
   become: yes
 
   tasks:
-  - name: "Making {{ weekday }} database backup of {{ ec2_tag_CNAME }}"
+  - name: "Making {{ weekday }} database backup of {{ tags.CNAME }}"
     shell: /root/mariadb-backup {{ weekday }}

@@ -121,9 +121,9 @@
 
   post_tasks:
   - set_fact:
-      customer: "{{ hostvars[inventory_hostname]['ec2_tag_Customer'] }}"
-      env: "{{ hostvars[inventory_hostname]['ec2_tag_Env'] }}"
-      s3_bucket_location: "{{ hostvars[inventory_hostname]['ec2_region'] }}"
+      customer: "{{ tags.Customer }}"
+      env: "{{ tags.Env }}"
+      s3_bucket_location: "{{ placement.region }}"
 
   - set_fact:
       s3_database_backup_bucket: "io.codekvast.{{ customer|lower }}.{{ env|lower }}.backup"

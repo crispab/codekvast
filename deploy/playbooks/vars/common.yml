@@ -43,9 +43,9 @@ ports:
     jvm_debugger: 5011
 
 datadog_config:
-  hostname: "{{ ec2_tag_CNAME }}"
+  hostname: "{{ tags.CNAME }}"
   tags:
-    - "env:{{ ec2_tag_Env }}"
+    - "env:{{ tags.Env }}"
   collect_ec2_tags: true
   logs_enabled: true
   process_config:

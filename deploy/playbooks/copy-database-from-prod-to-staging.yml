@@ -8,7 +8,7 @@
   become: yes
 
   tasks:
-  - name:  "Making an extra database backup of {{ ec2_tag_CNAME }}"
+  - name:  "Making an extra database backup of {{ tags.CNAME }}"
     shell: /root/mariadb-backup extra
 
 - name:   Restore extra production database
@@ -23,8 +23,8 @@
 
   tasks:
 
-  - name:  "Fetching {{ s3_bucket }}/{{ tarball }} to {{ ec2_tag_CNAME }}:{{ mysql_backup_dir }}"
+  - name:  "Fetching {{ s3_bucket }}/{{ tarball }} to {{ tags.CNAME }}:{{ mysql_backup_dir }}"
     shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ tarball }} {{ mysql_backup_dir }}"
 
-  - name:  "Restoring {{ mysql_backup_dir }}/{{ tarball }} in {{ ec2_tag_CNAME }}"
+  - name:  "Restoring {{ mysql_backup_dir }}/{{ tarball }} in {{ tags.CNAME }}"
     shell: "/root/mariadb-restore {{ mysql_backup_dir }}/{{ tarball }} --yes"

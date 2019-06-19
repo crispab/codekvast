@@ -1,4 +1,4 @@
-customer: "{{ hostvars[inventory_hostname]['ec2_tag_Customer'] }}"
-env: "{{ hostvars[inventory_hostname]['ec2_tag_Env'] }}"
+customer: "{{ tags.Customer }}"
+env: "{{ tags.Env }}"
 database_group_name: "tag_Name_Codekvast_{{ customer }}_{{ env }}_database"
 codekvastVersion: "{{ lookup('ini', 'codekvastVersion type=properties file=../../gradle.properties') }}"

@@ -21,7 +21,7 @@
   tags: datadog
 
 - name: Lookup the private DNS name for the database server
-  set_fact: database_dns_names="{{ groups[database_group_name]|map('extract', hostvars, 'ec2_private_dns_name')|list }}"
+  set_fact: database_dns_names="{{ groups[database_group_name]|map('extract', hostvars, 'private_dns_name')|list }}"
 
 - name: Create directories
   file: path={{ item }} state=directory owner=codekvast group=codekvast
@@ -31,7 +31,7 @@
 
 - name: "Install codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar"
   copy:
-    src: ../../product/{{ service_name }}/build/libs/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar
+    src: ../../product/server/{{ service_name }}/build/libs/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar
     dest: "/opt/codekvast/{{ service_name }}/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar"
     owner: codekvast
     group: codekvast
@@ -58,7 +58,7 @@
 
 - name: "Install /opt/codekvast/codekvast-javaagent-{{ codekvastVersion }}.jar"
   copy:
-    src: ../../product/java-agent/build/libs/codekvast-javaagent-{{ codekvastVersion }}.jar
+    src: ../../product/agent/java-agent/build/libs/codekvast-javaagent-{{ codekvastVersion }}.jar
     dest: "/opt/codekvast/codekvast-javaagent-{{ codekvastVersion }}.jar"
     owner: codekvast
     group: codekvast

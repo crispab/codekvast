@@ -1,13 +1,13 @@
 codekvast:
     cipherSecret: "{{ codekvast_cipherSecret }}"
-    dashboardBaseUrl: "https://{{ ec2_tag_LBCNAME2 }}"
+    dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
     dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
     dashboardJwtSecret: "{{ codekvast_dashboardJwtSecret }}"
-    dnsCname: "{{ ec2_tag_CNAME1 }}"
-    environment: "{{ ec2_tag_Env }}"
+    dnsCname: "{{ tags.CNAME1 }}"
+    environment: "{{ tags.Env }}"
     herokuApiPassword: "{{ codekvast_herokuApiPassword }}"
     herokuApiSsoSalt: "{{ codekvast_herokuApiSsoSalt }}"
-    herokuCodekvastUrl: "https://{{ ec2_tag_LBCNAME0 }}"
+    herokuCodekvastUrl: "https://{{ tags.LBCNAME0 }}"
     herokuOAuthClientId: "{{ codekvast_herokuOAuthClientId }}"
     herokuOAuthClientSecret: "{{ codekvast_herokuOAuthClientSecret }}"
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
@@ -29,8 +29,8 @@ management:
     metrics:
         tags:
             service: "codekvast-{{ service_name }}"
-            env: "{{ ec2_tag_Env }}"
-            host: "{{ ec2_tag_CNAME1 }}"
+            env: "{{ tags.Env }}"
+            host: "{{ tags.CNAME1 }}"
         export.datadog:
             api-key: "{{ datadog_api_key }}"
             enabled: true

@@ -1,11 +1,11 @@
 codekvast:
-    dashboardBaseUrl: "https://{{ ec2_tag_LBCNAME2 }}"
+    dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
     dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
     dashboardJwtSecret: "{{ codekvast_dashboardJwtSecret }}"
-    dnsCname: "{{ ec2_tag_CNAME2 }}"
-    environment: "{{ ec2_tag_Env }}"
+    dnsCname: "{{ tags.CNAME2 }}"
+    environment: "{{ tags.Env }}"
     fileImportIntervalSeconds: "{{ fileImportIntervalSeconds }}"
-    loginBaseUrl: "https://{{ ec2_tag_LBCNAME1 }}"
+    loginBaseUrl: "https://{{ tags.LBCNAME1 }}"
     queuePath: "{{ queuePath }}"
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
 logging:
@@ -25,8 +25,8 @@ management:
     metrics:
         tags:
             service: "codekvast-{{ service_name }}"
-            env: "{{ ec2_tag_Env }}"
-            host: "{{ ec2_tag_CNAME2 }}"
+            env: "{{ tags.Env }}"
+            host: "{{ tags.CNAME2 }}"
         export.datadog:
             api-key: "{{ datadog_api_key }}"
             enabled: true
