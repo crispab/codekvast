@@ -52,9 +52,9 @@
       <module name="system-test" target="1.8" />
       <module name="system-test_main" target="11" />
       <module name="system-test_test" target="11" />
-      <module name="testsupport_integrationTest" target="11" />
-      <module name="testsupport_main" target="11" />
-      <module name="testsupport_test" target="11" />
+      <module name="testsupport_integrationTest" target="1.7" />
+      <module name="testsupport_main" target="1.7" />
+      <module name="testsupport_test" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

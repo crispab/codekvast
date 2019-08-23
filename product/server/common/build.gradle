@@ -39,10 +39,12 @@ dependencies {
     runtime 'net.logstash.logback:logstash-logback-encoder:6.1'
     runtime 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
 
-    testCompile lombok
+    testAnnotationProcessor lombok
+    testCompileOnly lombok
     testCompile testFrameworks
     testRuntime logback
 
+    integrationTestAnnotationProcessor lombok
     integrationTestCompileOnly lombok
     integrationTestCompile sourceSets.test.output
 }
