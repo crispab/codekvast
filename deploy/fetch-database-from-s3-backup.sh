@@ -10,22 +10,27 @@ declare tarball=mariadb-backup-${weekday}.tar.gz
 declare mysql_datadir=~/.codekvast_database
 declare s3_bucket="s3://io.codekvast.default.prod.backup"
 
-declare tmp_dir=$(mktemp -d /tmp/fetch-database.XXXXXXX)
-trap "rm -fr ${tmp_dir}" EXIT
+declare tmp_dir1=$(mktemp -d /tmp/fetch-database.XXXXXXX)
+declare tmp_dir2=$(mktemp -d /tmp/fetch-database.XXXXXXX)
+trap "rm -fr ${tmp_dir1} ${tmp_dir2}" EXIT
 
-s3cmd get ${s3_bucket}/${tarball} ${tmp_dir}
+s3cmd get ${s3_bucket}/${tarball} ${tmp_dir1}
+
+echo "Unpacking ${tmp_dir1}/${tarball} into ${tmp_dir2}/ ..."
+tar xf ${tmp_dir1}/${tarball} -C ${tmp_dir2}
+
+echo "Running xtrabackup --prepare --target-dir=${tmp_dir2}/ ..."
+xtrabackup --prepare --target-dir=${tmp_dir2}/
 
 echo "docker stop codekvast_database"
 docker stop codekvast_database
 
-echo "docker rm codekvast_database"q
-docker rm codekvast_database
-
-echo "Removing $mysql_datadir/*"
+echo "Cleaning $mysql_datadir/*"
 sudo rm -fr ${mysql_datadir}/*
+mkdir -p ${mysql_datadir}/
 
-echo "Unpacking ${tmp_dir}/${tarball} into ${mysql_datadir}/ ..."
-sudo tar xf ${tmp_dir}/${tarball} -C ${mysql_datadir}
+echo "Moving ${tmp_dir2}/ to ${mysql_datadir}/ ..."
+cp -r ${tmp_dir2}/* ${mysql_datadir}
 
 echo "Changing ownership of ${mysql_datadir}/ ..."
 sudo chown -R ${USER}:"$(id -gn ${USER})" ${mysql_datadir}
@@ -34,7 +39,7 @@ echo "Starting a temporary MariaDB container without grant tables..."
 declare container=$(docker run -d -v ${mysql_datadir}:/var/lib/mysql mariadb:10.0 --skip-grant-tables)
 
 echo "Waiting for MariaDB to start..."
-sleep 10
+sleep 30
 
 echo "Resetting passwords..."
 docker exec ${container} mysql -e "
