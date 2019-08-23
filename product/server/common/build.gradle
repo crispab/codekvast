@@ -3,7 +3,6 @@ description = "Common utilities that can be used from any application"
 apply from: "$rootDir/gradle/java-11.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'java-library'
-apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.unbroken-dome.test-sets'
 
 archivesBaseName = "codekvast-common"
@@ -15,24 +14,21 @@ testSets {
 integrationTest.mustRunAfter test
 check.dependsOn integrationTest
 
-dependencyManagement {
-    imports {
-        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
-    }
-}
-
 dependencies {
+    implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+
+    api 'io.micrometer:micrometer-registry-datadog'
+    api 'org.springframework.boot:spring-boot-starter-security'
+
     implementation slf4jApi
     implementation 'com.github.seratch:jslack:1.7.1'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'javax.servlet:javax.servlet-api'
     implementation 'org.jetbrains:annotations:17.0.0'
+    implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
-    api 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
-    api 'io.micrometer:micrometer-registry-datadog'
 
     runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.1'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt

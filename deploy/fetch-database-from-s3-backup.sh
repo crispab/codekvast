@@ -18,6 +18,9 @@ s3cmd get ${s3_bucket}/${tarball} ${tmp_dir}
 echo "docker stop codekvast_database"
 docker stop codekvast_database
 
+echo "docker rm codekvast_database"q
+docker rm codekvast_database
+
 echo "Removing $mysql_datadir/*"
 sudo rm -fr ${mysql_datadir}/*
 

@@ -1,18 +1,18 @@
 //-----------------------------------------------------------------------------------------
 // Illustrates how to attach codekvast-javaagent.jar to a repackaged Spring Boot jar
 //-----------------------------------------------------------------------------------------
+
 buildscript {
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE")
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
 
 version = '1.0.0'
 sourceCompatibility = 1.8
@@ -27,11 +27,14 @@ configurations {
 }
 
 dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:2.1.6.RELEASE')
+
     annotationProcessor 'org.projectlombok:lombok:1.18.8'
     compileOnly 'org.projectlombok:lombok:1.18.8'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation project(":sample:sample-lib")
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')

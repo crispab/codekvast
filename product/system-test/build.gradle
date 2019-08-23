@@ -8,13 +8,6 @@ import java.sql.SQLNonTransientConnectionException
 
 apply plugin: 'groovy'
 apply from: "$rootDir/gradle/java.gradle"
-apply plugin: 'io.spring.dependency-management'
-
-dependencyManagement {
-    imports {
-        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
-    }
-}
 
 configurations {
     jdbc
@@ -54,6 +47,8 @@ ext.launchCommands = [
 ]
 
 dependencies {
+    implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+
     testImplementation 'io.jsonwebtoken:jjwt:0.9.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation project(':product:server:common')
@@ -76,7 +71,7 @@ dependencies {
 configurations.all {
     resolutionStrategy {
 
-        failOnVersionConflict()
+        // failOnVersionConflict()
 
         eachDependency { DependencyResolveDetails details ->
             if (details.requested.group == 'org.codehaus.groovy') {
