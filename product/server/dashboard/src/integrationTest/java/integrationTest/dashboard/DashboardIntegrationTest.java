@@ -78,7 +78,7 @@ public class DashboardIntegrationTest {
     @ClassRule
     public static DockerContainer mariadb = DockerContainer
         .builder()
-        .imageName("mariadb:10")
+        .imageName("mariadb:10.0")
         .port("" + PORT)
 
         .env("MYSQL_ROOT_PASSWORD=root")

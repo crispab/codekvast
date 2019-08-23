@@ -16,9 +16,8 @@ import static org.junit.Assume.assumeTrue;
 public class DockerContainerIntegrationTest {
 
     @ClassRule
-    public static DockerContainer mariadb = DockerContainer
-            .builder()
-            .imageName("mariadb:10")
+    public static DockerContainer mariadb = DockerContainer.builder()
+            .imageName("mariadb:10.0")
             .port("3306")
 
             .env("MYSQL_ROOT_PASSWORD=foobar")

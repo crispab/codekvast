@@ -28,7 +28,7 @@ echo "Changing ownership of ${mysql_datadir}/ ..."
 sudo chown -R ${USER}:"$(id -gn ${USER})" ${mysql_datadir}
 
 echo "Starting a temporary MariaDB container without grant tables..."
-declare container=$(docker run -d -v ${mysql_datadir}:/var/lib/mysql mariadb:10 --skip-grant-tables)
+declare container=$(docker run -d -v ${mysql_datadir}:/var/lib/mysql mariadb:10.0 --skip-grant-tables)
 
 echo "Waiting for MariaDB to start..."
 sleep 10

@@ -91,19 +91,19 @@ def startSystemTestEnvironment() {
     logger.lifecycle("Stopping previous system test environments (if any)...")
     doStopSystemTestEnvironment(true)
 
-    def command = 'docker pull mariadb:10'
+    def command = 'docker pull mariadb:10.0'
     logger.lifecycle(command)
     assert command.execute().waitFor() == 0
 
     command = 'docker run -d --restart=unless-stopped ' +
-        "--name codekvast_systest_$jdbcPort " +
+        "--name codekvast_systest_db_$jdbcPort " +
         "-p $jdbcPort:3306 " +
         '-e MYSQL_ROOT_PASSWORD=root ' +
         '-e MYSQL_DATABASE=codekvast ' +
         '-e MYSQL_USER=codekvast ' +
         '-e MYSQL_PASSWORD=codekvast ' +
         '-e TERM=xterm-256color ' +
-        'mariadb:10 ' +
+        'mariadb:10.0 ' +
         '--character-set-server=utf8 ' +
         '--collation-server=utf8_general_ci ' +
         '--default-storage-engine=innodb '
