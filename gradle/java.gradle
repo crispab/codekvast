@@ -27,6 +27,7 @@ dependencies {
     annotationProcessor lombok
     compileOnly lombok
 
+    testAnnotationProcessor lombok
     testCompileOnly lombok
 }
 

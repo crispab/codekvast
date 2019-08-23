@@ -22,17 +22,12 @@ testSets {
 check.dependsOn integrationTest
 
 dependencies {
-    annotationProcessor lombok
-    compileOnly lombok
-
     compile project(":product:agent:agent-model")
     compile "com.google.code.gson:gson:$gsonVersion"
     compile 'com.google.guava:guava:20.0' // The latest version that works with Java 7.
     compile 'com.squareup.okhttp3:okhttp:3.12.1' // The latest version that works with Java 7.
     compile aspectjWeaver
 
-    testAnnotationProcessor lombok
-    testCompile lombok
     testCompile testFrameworks
 
     integrationTestCompile project(":product:testsupport")

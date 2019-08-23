@@ -20,8 +20,6 @@ dependencies {
     compile 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
     
     runtime project(':product:server:db-migration')
-
-    testAnnotationProcessor lombok
 }
 
 bootJar {

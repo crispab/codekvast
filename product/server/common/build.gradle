@@ -21,9 +21,6 @@ dependencyManagement {
 }
 
 dependencies {
-    annotationProcessor lombok
-    compileOnly lombok
-
     compile slf4jApi
     compile 'com.github.seratch:jslack:1.7.1'
     compile 'io.jsonwebtoken:jjwt:0.9.1'
@@ -39,8 +36,6 @@ dependencies {
     runtime 'net.logstash.logback:logstash-logback-encoder:6.1'
     runtime 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
 
-    testAnnotationProcessor lombok
-    testCompileOnly lombok
     testCompile testFrameworks
     testRuntime logback
 

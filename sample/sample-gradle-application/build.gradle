@@ -10,9 +10,6 @@ configurations {
 }
 
 dependencies {
-    annotationProcessor "org.projectlombok:lombok:1.16.6"
-    compileOnly "org.projectlombok:lombok:1.16.6"
-
     compile "org.slf4j:slf4j-api:1.7.12"
     compile "aopalliance:aopalliance:1.0"
     compile 'com.google.inject:guice:4.0'
