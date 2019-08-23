@@ -1,5 +1,5 @@
 ext.aspectjVersion = '1.9.2'
-apply plugin: "aspectj.gradle"
+apply plugin: 'aspectj.AspectjGradlePlugin'
 
 description = """A sample concretization of AbstractMethodExecutionAspect for use in compile-time weaving (CTW).
 The aspect is written in ajc style"""

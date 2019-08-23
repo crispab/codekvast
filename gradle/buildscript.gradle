@@ -12,7 +12,7 @@ dependencies {
     classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
     classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     classpath 'com.ofg:uptodate-gradle-plugin:1.6.3'
-    classpath 'gradle.plugin.aspectj:gradle-aspectj:0.1.6'
+    classpath 'gradle.plugin.de:AspectjGradlePlugin:0.0.3'
     classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
     classpath 'org.ajoberstar:grgit:1.8.0'
     classpath 'org.flywaydb:flyway-gradle-plugin:5.1.4'
@@ -21,5 +21,5 @@ dependencies {
     classpath 'org.kordamp:markdown-gradle-plugin:1.1.0'
     classpath 'org.mariadb.jdbc:mariadb-java-client:2.3.0'
     classpath 'org.springframework.boot:spring-boot-gradle-plugin:' + springBootVersion
-    classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:1.5.1'
+    classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:2.1.1'
 }
