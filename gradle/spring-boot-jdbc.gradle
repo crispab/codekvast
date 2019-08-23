@@ -4,8 +4,8 @@
 apply plugin: 'org.flywaydb.flyway'
 
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-jdbc'
-    compile "org.flywaydb:flyway-core:$flywayVersion"
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation "org.flywaydb:flyway-core:$flywayVersion"
 
     runtimeOnly 'com.zaxxer:HikariCP'
     runtimeOnly mariadbDriver

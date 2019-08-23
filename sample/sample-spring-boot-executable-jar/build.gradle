@@ -30,9 +30,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.8'
     compileOnly 'org.projectlombok:lombok:1.18.8'
 
-    compile 'org.springframework.boot:spring-boot-starter-web'
-    compile project(":sample:sample-lib")
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation project(":sample:sample-lib")
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
 }

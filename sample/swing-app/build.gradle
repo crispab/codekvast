@@ -6,8 +6,8 @@ apply plugin: 'application'
 mainClassName = "sample.swing.SampleSwingApp"
 
 dependencies {
-    compile project(":product:agent:java-agent")
-    compile project(":sample:sample-lib")
+    implementation project(":product:agent:java-agent")
+    implementation project(":sample:sample-lib")
 
     runtimeOnly logback
     runtimeOnly aspectjRuntime

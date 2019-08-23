@@ -13,11 +13,11 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
 
-    compile 'javax.inject:javax.inject:1'
-    compile 'org.springframework.boot:spring-boot-starter-logging'
-    compile 'org.springframework.boot:spring-boot-devtools'
+    implementation 'javax.inject:javax.inject:1'
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
+    implementation 'org.springframework.boot:spring-boot-devtools'
 
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 processResources {

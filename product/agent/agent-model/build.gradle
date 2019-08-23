@@ -6,8 +6,8 @@ archivesBaseName = "codekvast-javaagent-model"
 version = codekvastVersion
 
 dependencies {
-    compile 'javax.validation:validation-api:1.1.0.Final' // The latest version that works with Java 7.
+    implementation 'javax.validation:validation-api:1.1.0.Final' // The latest version that works with Java 7.
 
-    testCompile testFrameworks
-    testCompile "com.google.code.gson:gson:$gsonVersion"
+    testImplementation testFrameworks
+    testImplementation "com.google.code.gson:gson:$gsonVersion"
 }

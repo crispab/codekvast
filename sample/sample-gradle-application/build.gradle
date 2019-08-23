@@ -10,10 +10,10 @@ configurations {
 }
 
 dependencies {
-    compile "org.slf4j:slf4j-api:1.7.12"
-    compile "aopalliance:aopalliance:1.0"
-    compile 'com.google.inject:guice:4.0'
-    compile project(":sample:sample-lib")
+    implementation "org.slf4j:slf4j-api:1.7.12"
+    implementation "aopalliance:aopalliance:1.0"
+    implementation 'com.google.inject:guice:4.0'
+    implementation project(":sample:sample-lib")
 
     runtimeOnly logback
 

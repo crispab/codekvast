@@ -5,7 +5,7 @@ description = """A sample concretization of AbstractMethodExecutionAspect for us
 The aspect is written in ajc style"""
 
 dependencies {
-    compile project(":product:agent:java-agent")
+    implementation project(":product:agent:java-agent")
 }
 
 compileAspect {

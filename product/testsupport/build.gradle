@@ -13,11 +13,11 @@ integrationTest.dependsOn test
 check.dependsOn integrationTest
 
 dependencies {
-    compile slf4jApi
-    compile testFrameworks
-    compile mariadbDriver, {
+    implementation slf4jApi
+    implementation testFrameworks
+    implementation mariadbDriver, {
         exclude group: 'net.java.dev.jna'
     }
 
-    testRuntime logback
+    testRuntimeOnly logback
 }

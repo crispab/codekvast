@@ -14,10 +14,10 @@ apply from: "$projectDir/src/webapp/build.gradle"
 apply from: "$projectDir/src/integrationTest/build.gradle"
 
 dependencies {
-    compile project(':product:agent:agent-model')
-    compile project(':product:server:common')
-    compile "com.google.code.gson:gson:$gsonVersion"
-    compile 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
+    implementation project(':product:agent:agent-model')
+    implementation project(':product:server:common')
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
     
     runtimeOnly project(':product:server:db-migration')
 }

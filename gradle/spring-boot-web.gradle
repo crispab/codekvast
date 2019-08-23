@@ -8,10 +8,10 @@ configurations.compile {
 }
 
 dependencies {
-    compile "io.springfox:springfox-swagger2:$springfoxVersion"
-    compile 'org.springframework.boot:spring-boot-starter-undertow'
-    compile 'org.springframework.boot:spring-boot-starter-web'
-    compile 'org.springframework.boot:spring-boot-starter-json'
+    implementation "io.springfox:springfox-swagger2:$springfoxVersion"
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-json'
 
     runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly "io.springfox:springfox-swagger-ui:$springfoxVersion"
