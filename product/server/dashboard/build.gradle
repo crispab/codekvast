@@ -19,7 +19,7 @@ dependencies {
     compile "com.google.code.gson:gson:$gsonVersion"
     compile 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
     
-    runtime project(':product:server:db-migration')
+    runtimeOnly project(':product:server:db-migration')
 }
 
 bootJar {

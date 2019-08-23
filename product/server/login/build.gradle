@@ -20,12 +20,12 @@ dependencies {
     compile "com.google.code.gson:gson:$gsonVersion"
     compile 'com.jayway.jsonpath:json-path:2.4.0'
 
-    runtime project(':product:server:db-migration')
+    runtimeOnly project(':product:server:db-migration')
 
     def groovyVersion = '2.4.15' // prevent a bug in groovy-templates 2.5.4
-    runtime "org.codehaus.groovy:groovy-templates:$groovyVersion"
-    runtime "org.codehaus.groovy:groovy:$groovyVersion"
-    runtime "org.codehaus.groovy:groovy-xml:$groovyVersion"
+    runtimeOnly "org.codehaus.groovy:groovy-templates:$groovyVersion"
+    runtimeOnly "org.codehaus.groovy:groovy:$groovyVersion"
+    runtimeOnly "org.codehaus.groovy:groovy-xml:$groovyVersion"
 
     testCompile "com.github.tomakehurst:wiremock:$wiremockVersion"
 }

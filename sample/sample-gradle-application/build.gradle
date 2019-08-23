@@ -15,7 +15,7 @@ dependencies {
     compile 'com.google.inject:guice:4.0'
     compile project(":sample:sample-lib")
 
-    runtime logback
+    runtimeOnly logback
 
     codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
     // codekvastagent "io.codekvast:codekvast-agent:0.24.0"

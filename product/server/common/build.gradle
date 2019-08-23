@@ -33,8 +33,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-actuator-autoconfigure'
     compile 'io.micrometer:micrometer-registry-datadog'
 
-    runtime 'net.logstash.logback:logstash-logback-encoder:6.1'
-    runtime 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
+    runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.1'
+    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
 
     testCompile testFrameworks
     testRuntime logback

@@ -7,8 +7,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile "org.flywaydb:flyway-core:$flywayVersion"
 
-    runtime 'com.zaxxer:HikariCP'
-    runtime mariadbDriver
+    runtimeOnly 'com.zaxxer:HikariCP'
+    runtimeOnly mariadbDriver
 }
 
 task startMariadb {

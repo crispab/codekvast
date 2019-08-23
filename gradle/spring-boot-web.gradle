@@ -13,6 +13,6 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-json'
 
-    runtime 'org.springframework.boot:spring-boot-starter-actuator'
-    runtime "io.springfox:springfox-swagger-ui:$springfoxVersion"
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly "io.springfox:springfox-swagger-ui:$springfoxVersion"
 }

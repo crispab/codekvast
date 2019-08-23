@@ -9,8 +9,8 @@ dependencies {
     compile project(":product:agent:java-agent")
     compile project(":sample:sample-lib")
 
-    runtime logback
-    runtime aspectjRuntime
+    runtimeOnly logback
+    runtimeOnly aspectjRuntime
 }
 
 run.dependsOn installDist
