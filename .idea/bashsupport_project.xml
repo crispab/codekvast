@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BashSupportProjectSettings">
+    <option name="globalVariables">
+      <set>
+        <option value="BUILD_STATE_FILE" />
+        <option value="BUILT_FROM_VERSION" />
+        <option value="COMMITTED_VERSION" />
+        <option value="GRADLEW" />
+        <option value="GRADLE_OPTS" />
+        <option value="NUM_DIRTY_FILES" />
+      </set>
+    </option>
+  </component>
+</project>

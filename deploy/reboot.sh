@@ -3,10 +3,10 @@
 # Reboots one instance using the AWS CLI
 #---------------------------------------------------------------------------------------------------
 
-source $(dirname $0)/.check-requirements.sh
+source $(dirname "$0")/.check-requirements.sh
 
-if [ -z "$1" ]; then
-    echo "Usage: $(basename $0) instance-id-or-CNAME" >&2
+if [[ -z "$1" ]]; then
+    echo "Usage: $(basename "$0") instance-id-or-CNAME" >&2
     exit 1
 fi
 
@@ -15,7 +15,7 @@ declare AWS_EC2="aws --profile codekvast --region ${region} ec2"
 
 case "$1" in
     i-*) instance=$1 ;;
-    *) instance=$(${AWS_EC2} describe-instances --filter Name=tag:CNAME,Values=$1 | awk '/InstanceId/{print $2}' | tr -d '",');;
+    *) instance=$(${AWS_EC2} describe-instances --filter Name=tag:CNAME,Values="$1" | awk '/InstanceId/{print $2}' | tr -d '",');;
 esac
 
 echo -n "About to reboot ${instance}. Are you sure [N/y]: "; read answer
@@ -25,4 +25,4 @@ case "$answer" in
 esac
 
 echo "Rebooting instance ${instance}..."
-${AWS_EC2} reboot-instances --instance-ids ${instance}
+${AWS_EC2} reboot-instances --instance-ids "${instance}"

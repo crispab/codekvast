@@ -26,20 +26,20 @@ echo "docker stop codekvast_database"
 docker stop codekvast_database
 
 echo "Cleaning $mysql_datadir/*"
-sudo rm -fr ${mysql_datadir}/*
+sudo rm -fr ${mysql_datadir}/
 mkdir -p ${mysql_datadir}/
 
 echo "Moving ${tmp_dir2}/ to ${mysql_datadir}/ ..."
-cp -r ${tmp_dir2}/* ${mysql_datadir}
+mv ${tmp_dir2}/* ${mysql_datadir}/
 
 echo "Changing ownership of ${mysql_datadir}/ ..."
 sudo chown -R ${USER}:"$(id -gn ${USER})" ${mysql_datadir}
 
 echo "Starting a temporary MariaDB container without grant tables..."
-declare container=$(docker run -d -v ${mysql_datadir}:/var/lib/mysql mariadb:10.0 --skip-grant-tables)
+declare container=$(docker run -d -v ${mysql_datadir}:/var/lib/mysql -p 3306:3306 mariadb:10.0 --skip-grant-tables)
 
 echo "Waiting for MariaDB to start..."
-sleep 30
+wait-on tcp:localhost:3306 -d 10000 -t 60000 || exit 1
 
 echo "Resetting passwords..."
 docker exec ${container} mysql -e "

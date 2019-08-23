@@ -5,6 +5,7 @@
   - git
   - git-crypt
   - curl
+  - xtrabackup
 
 - name: Uninstall nodejs-legacy
   package: name=nodejs-legacy state=absent
@@ -34,6 +35,9 @@
 
 - name: Install Yarn
   package: name=yarn state=present
+
+- name: Install wait-on globally
+  shell: yarn global add wait-on
 
 - name: Install Ruby (for Kensa)
   package: name={{ item }} state=present
