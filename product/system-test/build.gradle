@@ -81,7 +81,7 @@ configurations.all {
     }
 }
 
-def startSystemTestEnvironment() {
+def doStartSystemTestEnvironment() {
 
     logger.lifecycle("Stopping previous system test environments (if any)...")
     doStopSystemTestEnvironment(true)
@@ -192,6 +192,12 @@ task psSystemTestEnvironment {
     }
 }
 
+task startSystemTestEnvironment {
+    doFirst {
+        doStartSystemTestEnvironment()
+    }
+}
+
 test {
     description 'Runs end-to-end tests against Codekvast Dashboard and Codekvast Login with MariaDB in a Docker container'
     dependsOn ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
@@ -219,7 +225,7 @@ test {
         def geckoDriver = tasks.getByPath(':tools:downloadGeckoDriver').outputs.files.asPath
         [chromeDriver, geckoDriver].each { "chmod +x ${it}".execute().waitFor() }
 
-        startSystemTestEnvironment()
+        doStartSystemTestEnvironment()
 
         def endpoint = getEndpoint('dashboard')
         logger.lifecycle("Running system tests against {}", endpoint)
