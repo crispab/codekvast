@@ -4,15 +4,14 @@
 apply from: "$rootDir/gradle/java-11.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 apply plugin: 'org.unbroken-dome.test-sets'
 
 dependencies {
-    implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
-
     // Annotation processors
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
-    compileOnly "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
 
     implementation 'javax.inject:javax.inject:1'
     implementation 'org.springframework.boot:spring-boot-starter-logging'

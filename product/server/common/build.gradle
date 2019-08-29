@@ -3,6 +3,7 @@ description = "Common utilities that can be used from any application"
 apply from: "$rootDir/gradle/java-11.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'java-library'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.unbroken-dome.test-sets'
 
 archivesBaseName = "codekvast-common"
@@ -14,9 +15,13 @@ testSets {
 integrationTest.mustRunAfter test
 check.dependsOn integrationTest
 
-dependencies {
-    implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
 
+dependencies {
     api 'io.micrometer:micrometer-registry-datadog'
     api 'org.springframework.boot:spring-boot-starter-security'
 
