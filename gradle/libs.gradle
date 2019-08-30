@@ -4,7 +4,7 @@ ext {
     gsonVersion = '2.8.5'
     // TODO: jacocoVersion = '0.8.2'
     seleniumVersion = '3.141.59'
-    springBootVersion = '2.1.6.RELEASE'
+    springBootVersion = '2.1.7.RELEASE'
     springfoxVersion = '2.9.2'
     wiremockVersion = '2.24.1'
 
