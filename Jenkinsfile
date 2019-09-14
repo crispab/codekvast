@@ -11,6 +11,8 @@ node {
                 tools/install-compilers.sh
                 # tools/real-clean-workspace.sh
                 pwd
+                ./.gradlew --version
+                ./.gradlew --stop
                 """
             }
 
