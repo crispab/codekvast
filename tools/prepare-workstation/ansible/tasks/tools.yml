@@ -22,7 +22,7 @@
   - build-essential
 
 - name: Install gradlew finder
-  template: src=gradlew-finder.sh dest=/usr/local/bin/gradle mode=a=rx
+  template: src=gradlew-finder.sh dest=/usr/local/bin/gradlew mode=a=rx
 
 - name: Install Yarn APT key
   apt_key: url=https://dl.yarnpkg.com/debian/pubkey.gpg state=present
