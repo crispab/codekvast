@@ -21,6 +21,7 @@
  */
 package io.codekvast.login.api;
 
+import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.CipherException;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
@@ -28,6 +29,7 @@ import io.codekvast.login.heroku.HerokuService;
 import io.codekvast.login.metrics.LoginMetricsService;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,7 +43,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -65,28 +71,35 @@ public class LoginController {
 
     @ModelAttribute("cookieConsent")
     public Boolean getCookieConsent(@CookieValue(name = "cookieConsent", defaultValue = "FALSE") Boolean cookieConsent) {
-        logger.info("cookieConsent={}", cookieConsent);
+        logger.debug("cookieConsent={}", cookieConsent);
         return Optional.ofNullable(cookieConsent).orElse(Boolean.FALSE);
     }
 
     @ModelAttribute("cookieDomain")
     public String cookieDomain(@RequestHeader("Host") String requestHost) {
-        logger.info("requestHost={}", requestHost);
+        logger.debug("requestHost={}", requestHost);
         return requestHost.startsWith("localhost") ? "localhost" : ".codekvast.io";
     }
 
     @GetMapping("/userinfo")
     public String userinfo(OAuth2AuthenticationToken authentication, Model model) {
         User user = loginService.getUserFromAuthentication(authentication);
-        logger.info("User = {}", user);
-        model.addAttribute("user", user);
-        model.addAttribute("roles",
-                           authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
+        Set<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+        logger.debug("roles={}", roles);
+
+        model.addAttribute("title", "Projects");
+        model.addAttribute("email", user.getEmail());
+        model.addAttribute("hasProject", user.getCustomerData().size() > 0);
+        model.addAttribute("projects", user.getCustomerData().stream().map(ProjectInfo::new).collect(Collectors.toList()));
+        model.addAttribute("isAdmin", roles.contains("ROLE_ADMIN"));
+
+        logger.debug("Model={}", model);
         return "userinfo";
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(Model model) {
+        model.addAttribute("title", "Login");
         return "login";
     }
 
@@ -94,9 +107,13 @@ public class LoginController {
     public String tokens(OAuth2AuthenticationToken authentication, Model model) {
 
         User user = loginService.getUserFromAuthentication(authentication);
-        logger.info("User = {}", user);
-        model.addAttribute("user", user);
-        model.addAttribute("customers", customerService.getCustomerData());
+        model.addAttribute("title", "Tokens");
+        model.addAttribute("email", user.getEmail());
+        model.addAttribute("customers", customerService.getCustomerData().stream()
+                                                       .filter(customerData -> customerData.getSource()
+                                                                                           .equals(CustomerService.Source.HEROKU))
+                                                       .collect(Collectors.toList()));
+        logger.debug("Model={}", model);
         return "tokens";
     }
 
@@ -104,17 +121,19 @@ public class LoginController {
     public String getAccessTokenFor(OAuth2AuthenticationToken authentication, Model model, @PathVariable("customerId") Long customerId)
         throws CipherException {
         User user = loginService.getUserFromAuthentication(authentication);
-        logger.info("User = {}", user);
-        model.addAttribute("user", user);
-        model.addAttribute("customerData", customerService.getCustomerDataByCustomerId(customerId));
+        model.addAttribute("title", "Tokens");
+        model.addAttribute("email", user.getEmail());
+        model.addAttribute("customerName", customerService.getCustomerDataByCustomerId(customerId).getCustomerName());
         model.addAttribute("callbackUrl", herokuService.getCallbackUrlFor(customerId));
         model.addAttribute("accessToken", herokuService.getAccessTokenFor(customerId));
+        logger.debug("Model={}", model);
         return "tokens";
     }
 
     @GetMapping({"/", "/index", "/home"})
-    public String index(HttpServletRequest request, Authentication authentication) {
+    public String index(HttpServletRequest request, Authentication authentication, Model model) {
         logger.debug("index(): Request.contextPath={}", request.getContextPath());
+        model.addAttribute("title", "");
         return authentication == null ? "index" : "redirect:userinfo";
     }
 
@@ -134,4 +153,38 @@ public class LoginController {
         }
     }
 
+    @Value
+    private static class ProjectInfo {
+        Long customerId;
+        String displayName;
+        Instant createdAt;
+        Instant collectionStartedAt;
+        String collectionStartedAtClass;
+        String comment;
+        String commentClass;
+
+        private ProjectInfo(CustomerData cd) {
+            this.customerId = cd.getCustomerId();
+            this.displayName = cd.getDisplayName();
+            this.createdAt = cd.getCreatedAt();
+            this.collectionStartedAt = cd.getCollectionStartedAt();
+            this.collectionStartedAtClass = cd.getCollectionStartedAt() == null ? "" : "table-success";
+
+            List<String> comments = new ArrayList<>();
+            String commentClass = "";
+
+            if (this.collectionStartedAt == null) {
+                comments.add("No data has yet been collected.");
+                commentClass = "table-warning";
+            } else if (cd.isTrialPeriodExpired(Instant.now())) {
+                comments.add("Trial period expired at " + cd.getTrialPeriodEndsAt() + ".");
+                commentClass = "table-danger";
+            } else if (cd.getTrialPeriodEndsAt() != null) {
+                comments.add("Trial period ends at " + cd.getTrialPeriodEndsAt() + ".");
+                commentClass = "table-light";
+            }
+            this.comment = comments.stream().collect(Collectors.joining("<br>"));
+            this.commentClass = commentClass;
+        }
+    }
 }

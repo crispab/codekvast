@@ -8,6 +8,7 @@
 4. Includes retentionPeriodDays in 'Tracked For' popup.
 5. Upgraded to Spring Boot 2.1.8, Kotlin 1.3.50. Also upgraded Lombok, Mockito, jslack and logstash-logback-encoder.
 6. The agent supports running on Java 7, 8, 9, 10, 11 and 12.
+7. codekvast-login: Replaced groovy-templates with mustache.
 
 ## 1.0.0
 

@@ -22,11 +22,6 @@ dependencies {
 
     runtimeOnly project(':product:server:db-migration')
 
-    def groovyVersion = '2.4.15' // prevent a bug in groovy-templates 2.5.4
-    runtimeOnly "org.codehaus.groovy:groovy-templates:$groovyVersion"
-    runtimeOnly "org.codehaus.groovy:groovy:$groovyVersion"
-    runtimeOnly "org.codehaus.groovy:groovy-xml:$groovyVersion"
-
     testImplementation "com.github.tomakehurst:wiremock:$wiremockVersion"
 }
 

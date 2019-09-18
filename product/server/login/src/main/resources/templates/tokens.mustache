@@ -1,0 +1,26 @@
+{{>layout/header}}
+<h1>{{email}}</h1>
+
+{{#callbackUrl}}
+<p>{{customerName}} has Heroku API details:</p>
+<p>Callback URL: <code class="ml-3">{{{callbackUrl}}}</code></p>
+<p>Access token: <code class="ml-3">-H 'Authorization: Bearer {{{accessToken}}}'</code></p>
+<p><a href="javascript:window.history.back()">Back</a></p>
+{{/callbackUrl}}
+
+{{^callbackUrl}}
+<h2>Heroku projects</h2>
+<ul>
+    {{#customers}}
+    <li>{{customerName}} <span class="ml-2"><a href="/tokens/accessToken/{{customerId}}">Show access token</a></span></li>
+    {{/customers}}
+</ul>
+{{/callbackUrl}}
+
+<hr>
+<p><a href="/userinfo">All projects</a></p>
+<hr>
+<form class='form' method='POST' action='/logout'>
+    <button>Log in as another user</button>
+</form>
+{{>layout/footer}}

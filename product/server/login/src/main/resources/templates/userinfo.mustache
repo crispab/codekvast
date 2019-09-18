@@ -1,0 +1,43 @@
+{{>layout/header}}
+
+{{^hasProject}}
+<div class="alert alert-danger" role="alert">{{email}} hasn't access to any Codekvast project</div>
+{{/hasProject}}
+
+{{#hasProject}}
+<div class='alert alert-success'>{{email}} has access to the following Codekvast projects:</div>
+<p class='small text-muted'>Click on the project name to view the collected data</p>
+<table class='table table-striped table-hover table-sm'>
+    <thead class='thead-light'>
+    <tr>
+        <th scope='col'>Project</th>
+        <th scope='col'>Created at</th>
+        <th scope='col'>Collected since</th>
+        <th scope='col'>Comments</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#projects}}
+    <tr>
+        <td>
+            <form method='POST' action='/launch/{{customerId}}'>
+                <button type='submit' class='btn btn-link'>{{displayName}}</button>
+            </form>
+        </td>
+        <td>{{createdAt}}</td>
+        <td class='{{collectionStartedAtClass}}'>{{collectionStartedAt}}</td>
+        <td class='{{commentClass}}'>{{{comment}}}</td>
+    </tr>
+    {{/projects}}
+    </tbody>
+</table>
+{{/hasProject}}
+
+<form class='form' method='POST' action='/logout'>
+    <button>Log in as another user</button>
+</form>
+{{#isAdmin}}
+<hr>
+<p><a href="/tokens">Show Heroku access tokens</a></p>
+{{/isAdmin}}
+{{>layout/footer}}

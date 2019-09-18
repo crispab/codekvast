@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<!-- Codekvast Login version {{settings.displayVersion}} -->
+<html>
+<head>
+    <title>Codekvast - {{title}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css"/>
+    <link rel="stylesheet" href="/assets/codekvast.css"/>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script type="text/javascript" src="https://www.google-analytics.com/analytics.js"></script>
+    <script type="text/javascript" src="/assets/codekvast.js"></script>
+
+</head>
+<body>
+<div id='app'>
+    <header id='top-nav' class='container'>
+        <div class='row align-items-end pt-1 pl-3'>
+            <div class='col-1'>
+                <a href='/'>
+                    <img src='/assets/logo-feathers-60x104.png' class='img' alt='logotype'/>
+                </a>
+            </div>
+            <div class='col-3'>
+                <h1>Codekvast</h1>
+                <p class='small text-muted'>The Truly Dead Code Detector</p>
+            </div>
+            <div class='col-8'/>
+        </div>
+    </header>
+    <main class='container'>
+        {{^cookieConsent}}
+        <div id='cookieConsentAlert' class='alert alert-warning alert-dismissible fade show' role='alert'>
+            <p>
+                This site uses cookies to deliver our services. By using our site, you acknowledge that you have read and understand our <a
+                href='https://www.codekvast.io/pages/privacy-policy.html' target='_new'>Privacy Policy</a> and our <a
+                href='https://www.codekvast.io/pages/terms-of-service.html' target='_new'>Terms of Service</a>. Your use of Codekvast
+                services is subject to this policy and terms.
+            </p>
+            <button type='button' class='close' aria-label='Close' onclick='codekvast.giveCookieConsent("{{{cookieDomain}}}")'>
+                <span aria-hidden='true'>&times;</span>
+            </button>
+        </div>
+        {{/cookieConsent}}
+        <!--  End of header.mustache -->

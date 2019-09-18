@@ -1,0 +1,20 @@
+{{>layout/header}}
+<h1>Welcome!</h1>
+<p>Log in with one account that has an email address associated with your Codekvast project(s):</p>
+<ul class='list-group'>
+    <li class='list-group-item'><a href='/oauth2/authorization/google'>Google</a></li>
+    <li class='list-group-item'><a href='/oauth2/authorization/github'>Github</a></li>
+    <li class='list-group-item'><a href='/oauth2/authorization/facebook'>Facebook</a></li>
+    <li class='list-group-item'>
+        <div class='card'>
+            <div class='card-body'><h5 class='card-title'>Heroku</h5>
+                <div class='card-text'><p>As a Heroku user you open the Codekvast Dashboard with the CLI command <code>heroku addons:open
+                    codekvast</code> from your Heroku workspace or by clicking on Codekvast in the <a
+                    href='https://dashboard.heroku.com/apps/' target='_new'>Heroku Dashboard</a>.</p>
+                    <p>You can also log in using any of the above social login providers,
+                        as long as it is associated with the same email address as your Heroku account.</p></div>
+            </div>
+        </div>
+    </li>
+</ul>
+{{>layout/footer}}

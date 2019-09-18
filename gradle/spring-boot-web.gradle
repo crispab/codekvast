@@ -12,6 +12,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-undertow'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-json'
+    implementation 'org.springframework.boot:spring-boot-starter-mustache'
 
     runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly "io.springfox:springfox-swagger-ui:$springfoxVersion"
