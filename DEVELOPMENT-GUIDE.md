@@ -9,9 +9,9 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. Docker 1.10.3+ (For running MariaDB)
 1. Github
 1. git-crypt
-1. Gradle 
+1. Gradle (via Gradle wrapper)
 1. Inkscape (SVG graphics)
-1. Java 7, 8, 9, 10 and 11.
+1. Java 7, 8, 9, 10, 11 and 12.
 1. Kotlin
 1. Lombok
 1. MariaDB 10+ (Codekvast Dashboard)
@@ -66,14 +66,14 @@ SDKMAN is required.
 
 In SDKMAN, the Java versions that are required are defined by `gradle.properties`.
 
-Node.js 8+, NPM 3.10+ and Yarn 1.13+ are required. Chrome and Firefox are downloaded on demand for executing system tests.
+Node.js 12+, NPM 3.10+ and Yarn 1.13+ are required. Chrome and Firefox are downloaded on demand for executing system tests.
 
 git-crypt is required for deploying to the cloud.
 
-Use the following command to install OpenJDK 8, git-crypt, Node.js, npm, Chrome and Yarn (Ubuntu, Debian):
+Use the following command to install OpenJDK 11, git-crypt, Node.js, npm, Chrome and Yarn (Ubuntu, Debian):
 
-    curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-    sudo apt install openjdk-8-jdk openjdk-8-doc openjdk-8-source git-crypt nodejs
+    curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+    sudo apt install openjdk-11-jdk openjdk-11-doc openjdk-8-source git-crypt nodejs
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
     echo "deb http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
@@ -81,7 +81,7 @@ Use the following command to install OpenJDK 8, git-crypt, Node.js, npm, Chrome 
 
 ### TypeScript
 
-The Codekvast Dashboard web UI is developed with TypeScript and Angular 5. Twitter Bootstrap is used as CSS framework.
+The Codekvast Dashboard web UI is developed with TypeScript and Angular 7. Twitter Bootstrap is used as CSS framework.
 
 npm and yarn are used for managing the frontend development environment. Webpack is used as frontend bundler.
     
@@ -100,8 +100,8 @@ Inkscape is an excellent, free and cross-platform SVG editor.
 ### Build tool
 
 Codekvast uses **Gradle** as build tool. It uses the Gradle Wrapper, `gradlew`, which is checked in at the root of the workspace.
-There is the convenience script `tools/src/script/gradle` which simplifies invocation of gradlew. Install that script in your PATH
-(e.g., `/usr/local/bin`) and simply use `gradle` instead of `path/to/gradlew`
+There is the convenience script `tools/src/script/gradlew` which simplifies invocation of gradlew. Install that script in your PATH
+(e.g., `/usr/local/bin`), `chmod +x /usr/local/bin/gradlew` and simply use `gradlew` instead of `path/to/gradlew`
 
 ## Continuous Integration
 
@@ -132,7 +132,7 @@ Preconditions:
 
 ### IDE
 
-**Intellij Ultimate Edition 2017+** is the recommended IDE with the following plugins:
+**Intellij Ultimate Edition 2019+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
 1. Angular 2 TypeScript Live Templates (optional)
