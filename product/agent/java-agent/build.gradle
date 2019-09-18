@@ -147,7 +147,8 @@ integrationTest {
         ${sdkmanJavaVersion_8},
         ${sdkmanJavaVersion_9},
         ${sdkmanJavaVersion_10},
-        ${sdkmanJavaVersion_11}
+        ${sdkmanJavaVersion_11},
+        ${sdkmanJavaVersion_12}
         """
 }
 
