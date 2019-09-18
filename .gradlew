@@ -6,6 +6,6 @@
 # It is used from Jenkinsfile.
 #---------------------------------------------------------------------------------------------------------------
 
-declare javaVersion=$(awk '/sdkmanJavaDefault*/ {print $3}' gradle.properties)
+declare javaVersion=$(awk '/sdkmanJavaDefault*/ {print $3}' $(dirname $0)/gradle.properties)
 
-env JAVA_HOME=$HOME/.sdkman/candidates/java/$javaVersion ./gradlew --console=plain $*
+env JAVA_HOME=$HOME/.sdkman/candidates/java/$javaVersion $(dirname $0)/gradlew --console=plain $*
