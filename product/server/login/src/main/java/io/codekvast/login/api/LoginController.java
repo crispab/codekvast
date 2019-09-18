@@ -42,7 +42,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +81,17 @@ public class LoginController {
     public String cookieDomain(@RequestHeader("Host") String requestHost) {
         logger.debug("requestHost={}", requestHost);
         return requestHost.startsWith("localhost") ? "localhost" : ".codekvast.io";
+    }
+
+    @ModelAttribute("serverHostName")
+    public String serverHostName() {
+        try {
+            String hostName = InetAddress.getLocalHost().getCanonicalHostName();
+            logger.debug("hostName={}", hostName);
+            return hostName;
+        } catch (UnknownHostException e) {
+            return "<unknown>";
+        }
     }
 
     @GetMapping("/userinfo")
