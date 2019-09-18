@@ -6,7 +6,7 @@
 2. Bug fix: eliminating methods in search results that haven't been tracked long enough.
 3. Removed the possibility to delete terminated agents from the dashboard UI (it is now automatic, based on the retention period).
 4. Includes retentionPeriodDays in 'Tracked For' popup.
-5. Upgraded to Spring Boot 2.1.8, Kotlin 1.3.50
+5. Upgraded to Spring Boot 2.1.8, Kotlin 1.3.50. Also upgraded Lombok, Mockito, jslack and logstash-logback-encoder.
 6. The agent supports running on Java 7, 8, 9, 10, 11 and 12.
 
 ## 1.0.0

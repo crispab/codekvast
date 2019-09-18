@@ -11,14 +11,14 @@ ext {
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
     logback = 'ch.qos.logback:logback-classic:1.2.3'
-    lombok = 'org.projectlombok:lombok:1.18.8'
+    lombok = 'org.projectlombok:lombok:1.18.10'
     mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.3.0'
     slf4jApi = 'org.slf4j:slf4j-api:1.7.28'
     testFrameworks = [
         'junit:junit:4.12',
         'org.hamcrest:hamcrest-core:2.1',
         'org.hamcrest:hamcrest-library:2.1',
-        'org.mockito:mockito-core:2.28.2',
+        'org.mockito:mockito-core:3.0.0',
         "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
     ]
 }
