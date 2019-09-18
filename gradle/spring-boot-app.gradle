@@ -37,7 +37,7 @@ compileJava.dependsOn processResources
 
 bootJar {
     // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
-    classifier = 'all'
+    archiveClassifier = 'all'
 
     manifest {
         attributes(
