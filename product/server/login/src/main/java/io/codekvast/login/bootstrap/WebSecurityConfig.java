@@ -26,10 +26,10 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.Roles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -81,7 +81,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .authorizeRequests()
                 .antMatchers("/favicon.ico", "/robots.txt", "/management/**", "/assets/**", "/heroku/**", LOGIN_URL).permitAll()
-                .antMatchers("/tokens**").hasRole("ADMIN")
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             .and()
                 .oauth2Login()
@@ -108,7 +108,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * TODO: remove Facebook bug work-around.
      */
     private DefaultOAuth2UserService createFacebookCompatibleUserService() {
-        RestTemplate restTemplate = restTemplateBuilder.interceptors((ClientHttpRequestInterceptor) (request, body, execution) -> {
+        RestTemplate restTemplate = restTemplateBuilder.interceptors((request, body, execution) -> {
             if (request.getURI().getHost().toLowerCase().contains("facebook")) {
                 List<MediaType> accepts = request.getHeaders().getAccept();
                 for (MediaType accept : accepts) {
@@ -120,7 +120,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             return execution.execute(request, body);
         }).build();
 
-        DefaultOAuth2UserService userService = new DefaultOAuth2UserService();
+        val userService = new DefaultOAuth2UserService();
         userService.setRestOperations(restTemplate);
         return userService;
     }

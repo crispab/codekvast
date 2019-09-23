@@ -1,21 +1,16 @@
 {{>layout/header}}
-<h1>{{email}}</h1>
 
 {{#callbackUrl}}
-<p>{{customerName}} has Heroku API details:</p>
+<h2>{{customerName}} Heroku details</h2>
 <p>Callback URL: <code class="ml-3">{{{callbackUrl}}}</code></p>
 <p>Access token: <code class="ml-3">-H 'Authorization: Bearer {{{accessToken}}}'</code></p>
-<p><a href="javascript:window.history.back()">Back</a></p>
 {{/callbackUrl}}
 
 {{^callbackUrl}}
-<h2>Heroku projects</h2>
-<ul>
-    {{#customers}}
-    <li>{{customerName}} <span class="ml-2"><a href="/tokens/accessToken/{{customerId}}">Show access token</a></span></li>
-    {{/customers}}
-</ul>
+<div class="alert alert-danger" role="alert">Cannot get Heroku details for {{customerName}}</div>
 {{/callbackUrl}}
+
+<p><a href="javascript:window.history.back()">Back to Heroku projects</a></p>
 
 <hr>
 <p><a href="/userinfo">All projects</a></p>

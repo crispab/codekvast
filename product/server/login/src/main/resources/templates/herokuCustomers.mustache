@@ -1,0 +1,15 @@
+{{>layout/header}}
+<h1>Heroku customers</h1>
+<ul>
+    {{#customers}}
+    <li>{{customerName}} <span class="ml-2"><a href="/admin/heroku/{{customerId}}">Show Heroku API Details</a></span></li>
+    {{/customers}}
+</ul>
+
+<hr>
+<p><a href="/userinfo">All projects</a></p>
+<hr>
+<form class='form' method='POST' action='/logout'>
+    <button>Log in as another user</button>
+</form>
+{{>layout/footer}}

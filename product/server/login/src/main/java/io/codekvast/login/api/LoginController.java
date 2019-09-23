@@ -73,13 +73,13 @@ public class LoginController {
 
     @ModelAttribute("cookieConsent")
     public Boolean getCookieConsent(@CookieValue(name = "cookieConsent", defaultValue = "FALSE") Boolean cookieConsent) {
-        logger.debug("cookieConsent={}", cookieConsent);
+        logger.trace("cookieConsent={}", cookieConsent);
         return Optional.ofNullable(cookieConsent).orElse(Boolean.FALSE);
     }
 
     @ModelAttribute("cookieDomain")
     public String cookieDomain(@RequestHeader("Host") String requestHost) {
-        logger.debug("requestHost={}", requestHost);
+        logger.trace("requestHost={}", requestHost);
         return requestHost.startsWith("localhost") ? "localhost" : ".codekvast.io";
     }
 
@@ -87,7 +87,7 @@ public class LoginController {
     public String serverHostName() {
         try {
             String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-            logger.debug("hostName={}", hostName);
+            logger.trace("hostName={}", hostName);
             return hostName;
         } catch (UnknownHostException e) {
             return "<unknown>";
@@ -106,7 +106,7 @@ public class LoginController {
         model.addAttribute("projects", user.getCustomerData().stream().map(ProjectInfo::new).collect(Collectors.toList()));
         model.addAttribute("isAdmin", roles.contains("ROLE_ADMIN"));
 
-        logger.debug("Model={}", model);
+        logger.trace("Model={}", model);
         return "userinfo";
     }
 
@@ -116,8 +116,8 @@ public class LoginController {
         return "login";
     }
 
-    @GetMapping("/tokens")
-    public String tokens(OAuth2AuthenticationToken authentication, Model model) {
+    @GetMapping("/admin/heroku")
+    public String herokuCustomers(OAuth2AuthenticationToken authentication, Model model) {
 
         User user = loginService.getUserFromAuthentication(authentication);
         model.addAttribute("title", "Tokens");
@@ -126,12 +126,12 @@ public class LoginController {
                                                        .filter(customerData -> customerData.getSource()
                                                                                            .equals(CustomerService.Source.HEROKU))
                                                        .collect(Collectors.toList()));
-        logger.debug("Model={}", model);
-        return "tokens";
+        logger.trace("Model={}", model);
+        return "herokuCustomers";
     }
 
-    @GetMapping("/tokens/accessToken/{customerId}")
-    public String getAccessTokenFor(OAuth2AuthenticationToken authentication, Model model, @PathVariable("customerId") Long customerId)
+    @GetMapping("/admin/heroku/{customerId}")
+    public String herokuDetails(OAuth2AuthenticationToken authentication, Model model, @PathVariable("customerId") Long customerId)
         throws CipherException {
         User user = loginService.getUserFromAuthentication(authentication);
         model.addAttribute("title", "Tokens");
@@ -139,8 +139,8 @@ public class LoginController {
         model.addAttribute("customerName", customerService.getCustomerDataByCustomerId(customerId).getCustomerName());
         model.addAttribute("callbackUrl", herokuService.getCallbackUrlFor(customerId));
         model.addAttribute("accessToken", herokuService.getAccessTokenFor(customerId));
-        logger.debug("Model={}", model);
-        return "tokens";
+        logger.trace("Model={}", model);
+        return "herokuDetails";
     }
 
     @GetMapping({"/", "/index", "/home"})

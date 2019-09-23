@@ -27,6 +27,7 @@ import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -114,9 +115,9 @@ public class HerokuResourcesController {
         // The password is defined in <rootDir>/deploy/vars/secrets.yml, and it has been pushed to Heroku by means
         // of <rootDir>/deploy/push-addon-manifest-to-heroku.sh
 
-        String credentials = "codekvast:" + settings.getHerokuApiPassword();
-        String expected = "Basic " + new String(Base64.getEncoder().encode(credentials.getBytes()), StandardCharsets.UTF_8);
-        String normalizedAuth = authentication.replaceAll("^[Bb][Aa][Ss][Ii][Cc] ", "Basic ");
+        val credentials = "codekvast:" + settings.getHerokuApiPassword();
+        val expected = "Basic " + new String(Base64.getEncoder().encode(credentials.getBytes()), StandardCharsets.UTF_8);
+        val normalizedAuth = authentication.replaceAll("^[Bb][Aa][Ss][Ii][Cc] ", "Basic ");
         if (!normalizedAuth.equals(expected)) {
             throw new BadCredentialsException("Invalid credentials: " + authentication);
         }
@@ -137,11 +138,11 @@ public class HerokuResourcesController {
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-            ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
+            val wrappedRequest = new ContentCachingRequestWrapper(request);
 
             filterChain.doFilter(wrappedRequest, response);
 
-            String path = request.getRequestURI();
+            val path = request.getRequestURI();
             if (path.startsWith("/heroku/resources")) {
                 HerokuResourcesRequestLoggingFilter.logger
                     .debug("{} {}, body=\n{}", request.getMethod(), path, getBody(wrappedRequest));
@@ -150,7 +151,7 @@ public class HerokuResourcesController {
 
         private String getBody(ContentCachingRequestWrapper request) {
             String payload = null;
-            ContentCachingRequestWrapper wrapper = WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
+            val wrapper = WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
             if (wrapper != null) {
                 byte[] buf = wrapper.getContentAsByteArray();
                 if (buf.length > 0) {
