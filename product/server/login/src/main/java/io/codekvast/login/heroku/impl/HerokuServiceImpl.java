@@ -143,6 +143,12 @@ public class HerokuServiceImpl implements HerokuService {
     }
 
     @Override
+    @Secured(Roles.ADMIN)
+    public Instant getAccessTokenExpiresAtFor(Long customerId) {
+        return herokuDetailsDAO.getAccessTokenExpiresAt(customerId);
+    }
+
+    @Override
     public String getCallbackUrlFor(Long customerId) {
         return herokuDetailsDAO.getCallbackUrl(customerId);
     }

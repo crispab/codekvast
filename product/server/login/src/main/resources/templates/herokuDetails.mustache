@@ -2,8 +2,20 @@
 
 {{#callbackUrl}}
 <h2>{{customerName}} Heroku details</h2>
-<p>Callback URL: <code class="ml-3">{{{callbackUrl}}}</code></p>
-<p>Access token: <code class="ml-3">-H 'Authorization: Bearer {{{accessToken}}}'</code></p>
+<table>
+    <tr>
+        <th>Callback URL:</th>
+        <td class="pl-3"><code>{{{callbackUrl}}}</code></td>
+    </tr>
+    <tr>
+        <th>Access token:</th>
+        <td class="pl-3"><code>-H 'Authorization: Bearer {{{accessToken}}}'</code></td>
+    </tr>
+    <tr>
+        <th>Expires at:</th>
+        <td class="pl-3"><code>{{expiresAt}}</code> (in {{expiresIn}})</td>
+    </tr>
+</table>
 {{/callbackUrl}}
 
 {{^callbackUrl}}

@@ -19,13 +19,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.api.impl;
+package io.codekvast.login.service.impl;
 
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.common.security.WebappCredentials;
-import io.codekvast.login.api.LoginService;
+import io.codekvast.login.service.LoginService;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.metrics.LoginMetricsService;
 import io.codekvast.login.model.User;

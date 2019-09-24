@@ -60,4 +60,6 @@ public interface HerokuDetailsDAO {
     String getCallbackUrl(Long customerId);
 
     void updateAccessToken(Long customerId, String accessToken, Instant expiresAt) throws CipherException;
+
+    Instant getAccessTokenExpiresAt(Long customerId);
 }

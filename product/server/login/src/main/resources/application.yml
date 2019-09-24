@@ -65,6 +65,9 @@ server:
             pattern: combined
             prefix:  access.
     use-forward-headers: true
+    error:
+        whitelabel:
+            enabled: false
 
 spring:
     application.name:    Codekvast Login

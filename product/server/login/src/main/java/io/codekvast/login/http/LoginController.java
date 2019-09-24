@@ -19,15 +19,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.api;
+package io.codekvast.login.http;
 
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.CipherException;
-import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.heroku.HerokuService;
 import io.codekvast.login.metrics.LoginMetricsService;
 import io.codekvast.login.model.User;
+import io.codekvast.login.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -38,17 +38,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,37 +62,8 @@ public class LoginController {
 
     private final LoginService loginService;
     private final CustomerService customerService;
-    private final CodekvastLoginSettings settings;
     private final HerokuService herokuService;
     private final LoginMetricsService metricsService;
-
-    @ModelAttribute("settings")
-    public CodekvastLoginSettings getCodekvastSettings() {
-        return settings;
-    }
-
-    @ModelAttribute("cookieConsent")
-    public Boolean getCookieConsent(@CookieValue(name = "cookieConsent", defaultValue = "FALSE") Boolean cookieConsent) {
-        logger.trace("cookieConsent={}", cookieConsent);
-        return Optional.ofNullable(cookieConsent).orElse(Boolean.FALSE);
-    }
-
-    @ModelAttribute("cookieDomain")
-    public String cookieDomain(@RequestHeader("Host") String requestHost) {
-        logger.trace("requestHost={}", requestHost);
-        return requestHost.startsWith("localhost") ? "localhost" : ".codekvast.io";
-    }
-
-    @ModelAttribute("serverHostName")
-    public String serverHostName() {
-        try {
-            String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-            logger.trace("hostName={}", hostName);
-            return hostName;
-        } catch (UnknownHostException e) {
-            return "<unknown>";
-        }
-    }
 
     @GetMapping("/userinfo")
     public String userinfo(OAuth2AuthenticationToken authentication, Model model) {
@@ -139,6 +110,11 @@ public class LoginController {
         model.addAttribute("customerName", customerService.getCustomerDataByCustomerId(customerId).getCustomerName());
         model.addAttribute("callbackUrl", herokuService.getCallbackUrlFor(customerId));
         model.addAttribute("accessToken", herokuService.getAccessTokenFor(customerId));
+        Instant expiresAt = herokuService.getAccessTokenExpiresAtFor(customerId);
+        if (expiresAt != null) {
+            model.addAttribute("expiresAt", expiresAt);
+            model.addAttribute("expiresIn", Duration.between(Instant.now(), expiresAt));
+        }
         logger.trace("Model={}", model);
         return "herokuDetails";
     }

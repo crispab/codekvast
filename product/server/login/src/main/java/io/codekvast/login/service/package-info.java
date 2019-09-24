@@ -19,23 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.api;
-
-import io.codekvast.common.security.Roles;
-import io.codekvast.login.model.User;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-
-import java.net.URI;
-
 /**
+ * Things related to the login services.
+ *
  * @author olle.hallin@crisp.se
  */
-public interface LoginService {
-    @Secured(Roles.CUSTOMER)
-    URI getDashboardLaunchURI(Long customerId);
-
-    User getUserFromSecurityContext();
-
-    User getUserFromAuthentication(OAuth2AuthenticationToken authentication);
-}
+package io.codekvast.login.service;

@@ -135,4 +135,17 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Instant getAccessTokenExpiresAt(Long customerId) {
+        try {
+            Timestamp expiresAt = jdbcTemplate.queryForObject("SELECT expiresAt FROM heroku_details WHERE customerId = ? ",
+                                                              Timestamp.class, customerId);
+            return expiresAt.toInstant();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            logger.debug("Found no valid access token for customer {}", customerId);
+            return null;
+        }
+    }
+
 }

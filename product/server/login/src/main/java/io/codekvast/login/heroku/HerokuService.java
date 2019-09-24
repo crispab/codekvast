@@ -26,6 +26,8 @@ import io.codekvast.login.heroku.model.HerokuChangePlanRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionResponse;
 
+import java.time.Instant;
+
 /**
  * Service for handling Heroku provisioning, deprovisioning and plan changes.
  *
@@ -66,6 +68,13 @@ public interface HerokuService {
      * @throws CipherException When failed to encrypt the access token.
      */
     String getAccessTokenFor(Long customerId) throws CipherException;
+
+    /**
+     *
+     * @param customerId The customerId
+     * @return The instant the access token expires. Returns null if customerId is not a Heroku customer.
+     */
+    Instant getAccessTokenExpiresAtFor(Long customerId) throws CipherException;
 
     /**
      * Get the callback URL for a certain customer.
