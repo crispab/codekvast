@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #----------------------------------------------------------------------------
-# Restore a backup produced by xtrabackup
+# Restore a backup produced by mariabackup
 #----------------------------------------------------------------------------
 
 declare backupFile=$1
@@ -37,14 +37,14 @@ echo "Unpacking archive..."
 tar xzf $backupFile -C $tmpDir
 
 echo "Preparing for restore..."
-xtrabackup --prepare --target-dir $tmpDir
+mariabackup --prepare --target-dir $tmpDir
 
 echo "Stopping {{ mysql_vendor }} server..."
 systemctl stop mysql
 
 echo "Restoring backup..."
 rm -fr {{ mysql_datadir }}/*
-xtrabackup --move-back --target-dir $tmpDir
+mariabackup --move-back --target-dir $tmpDir
 chown -R mysql.mysql {{ mysql_datadir }}
 chmod -R u+rw,g+rw,o= {{ mysql_datadir }}
 

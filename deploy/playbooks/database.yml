@@ -137,9 +137,11 @@
   - name: Install backup scripts
     template: src=database/{{ item }}.j2 dest=/root/{{ item }} mode=755
     with_items:
+    - mariabackup-backup
+    - mariabackup-restore
+    - s3cfg
     - xtrabackup-backup
     - xtrabackup-restore
-    - s3cfg
 
   - name: Remove old backup scripts
     file: path={{ item }} state=absent
@@ -155,8 +157,11 @@
     shell: s3cmd --config=/root/s3cfg ls s3://{{ s3_database_backup_bucket }}
     changed_when: False
 
-  - name: Link /root/xtrabackup-backup to /etc/cron.daily
-    file: src=/root/xtrabackup-backup dest=/etc/cron.daily/xtrabackup-backup state=link
+  - name: Link backup scripts to /etc/cron.daily
+    file: src=/root/{{ item }} dest=/etc/cron.daily/{{ item }} state=link
+    with_items:
+    - mariabackup-backup
+    - xtrabackup-backup
 
   - name: Create MySQL user for Datadog
     shell: mysql -e "{{ item }};"
