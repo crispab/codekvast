@@ -1,6 +1,8 @@
 ---
 #-----------------------------------------------------------------------------------------------------------
 # Playbook that makes a backup of the production database to S3 and then restores it to the staging database
+# It expects to be invoked with the ansible-playbook command line variables
+#   -e appName=aaa where aaa is one of xtrabackup or mariabackup
 #-----------------------------------------------------------------------------------------------------------
 - name:   Make extra production database backup
   hosts:  tag_Name_Codekvast_default_prod_database
@@ -9,7 +11,7 @@
 
   tasks:
   - name:  "Making an extra database backup of {{ tags.CNAME }}"
-    shell: /root/mariadb-backup extra
+    shell: /root/{{ appName }}-backup extra
 
 - name:   Restore extra production database
   hosts:  tag_Name_Codekvast_default_staging_database
@@ -19,7 +21,7 @@
   vars:
       mysql_backup_dir: '/backups/mariadb'
       s3_bucket:        "s3://io.codekvast.default.prod.backup"
-      tarball:          "mariadb-backup-extra.tar.gz"
+      tarball:          "{{ appName }}-extra.tar.gz"
 
   tasks:
 
@@ -27,4 +29,4 @@
     shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ tarball }} {{ mysql_backup_dir }}"
 
   - name:  "Restoring {{ mysql_backup_dir }}/{{ tarball }} in {{ tags.CNAME }}"
-    shell: "/root/mariadb-restore {{ mysql_backup_dir }}/{{ tarball }} --yes"
+    shell: "/root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ tarball }} --yes"

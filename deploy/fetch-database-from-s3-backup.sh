@@ -6,9 +6,24 @@
 source $(dirname $0)/.check-requirements.sh
 
 declare weekday=${1:-$(env LANG=en_US date -d "yesterday 13:00" --utc +%A | tr [A-Z] [a-z])}
-declare tarball=mariadb-backup-${weekday}.tar.gz
+declare srcEnv=${2:-prod}
+declare appName=${3:-xtrabackup}
+declare tarball=${appName}-${weekday}.tar.gz
+
+echo -n "About to fetch the ${weekday} backup from ${srcEnv} by means of ${appName}. Continue [y/N]: "
+read answer
+case ${answer} in
+    y|yes)
+        echo "OK, here we go..."
+        ;;
+    *)
+        echo "Nothing done."
+        exit 1
+        ;;
+esac
+
 declare mysql_datadir=~/.codekvast_database
-declare s3_bucket="s3://io.codekvast.default.prod.backup"
+declare s3_bucket="s3://io.codekvast.default.${srcEnv}.backup"
 
 declare tmp_dir1=$(mktemp -d /tmp/fetch-database.XXXXXXX)
 declare tmp_dir2=$(mktemp -d /tmp/fetch-database.XXXXXXX)
@@ -19,8 +34,8 @@ s3cmd get ${s3_bucket}/${tarball} ${tmp_dir1}
 echo "Unpacking ${tmp_dir1}/${tarball} into ${tmp_dir2}/ ..."
 tar xf ${tmp_dir1}/${tarball} -C ${tmp_dir2}
 
-echo "Running xtrabackup --prepare --target-dir=${tmp_dir2}/ ..."
-xtrabackup --prepare --target-dir=${tmp_dir2}/
+echo "Running ${appName} --prepare --target-dir=${tmp_dir2}/ ..."
+${appName} --prepare --target-dir=${tmp_dir2}/
 
 echo "docker stop codekvast_database"
 docker stop codekvast_database

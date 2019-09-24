@@ -5,7 +5,7 @@
 
 declare weekday=${1:-$(date --utc +%A | tr [A-Z] [a-z])}
 declare targetDir={{ mysql_backup_dir }}/latest
-declare tarball={{ mysql_backup_dir }}/mariadb-backup-$weekday.tar.gz
+declare tarball={{ mysql_backup_dir }}/xtrabackup-$weekday.tar.gz
 declare bucket={{ s3_database_backup_bucket }}
 
 rm -fr $targetDir

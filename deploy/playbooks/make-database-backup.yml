@@ -1,12 +1,16 @@
 ---
 #-----------------------------------------------------------------------------------------------------------
-# Playbook that makes a extra backup of the production database to S3
+# Playbook that makes a extra backup of the database to S3
+# It expects to be invoked with the ansible-playbook command line variables
+#   -e srcEnv=eee where eee is either prod or staging
+#   -e weekday=www where www is one of monday, tuesday, wednesday, thursday, friday, saturday, sunday or extra
+#   -e appName=aaa where aaa is one of xtrabackup or mariabackup
 #-----------------------------------------------------------------------------------------------------------
-- name: Make production database backup
-  hosts: tag_Name_Codekvast_default_prod_database
+- name: "Make {{ srcEnv }} database backup"
+  hosts: "tag_Name_Codekvast_default_{{ srcEnv }}_database"
 
   become: yes
 
   tasks:
-  - name: "Making {{ weekday }} database backup of {{ tags.CNAME }}"
-    shell: /root/mariadb-backup {{ weekday }}
+  - name: "Making {{ weekday }} database backup of {{ tags.CNAME }} using {{ appName }}"
+    shell: /root/{{ appName }}-backup {{ weekday }}

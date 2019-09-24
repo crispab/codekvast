@@ -6,22 +6,27 @@
 source $(dirname $0)/.check-requirements.sh
 
 declare weekday=${1:-$(env LANG=en_US date -d "yesterday 13:00" --utc +%A | tr [A-Z] [a-z])}
-declare env=${2:-prod}
+declare srcEnv=${2:-prod}
+declare targetEnv=${3:-prod}
+declare appName=${4:-xtrabackup}
 
 usage() {
     cat << EOF
 
-Usage: $0 [weekday] [environment]
+Usage: $0 [weekday] [source-environment] [target-environment] [appName]
 
-    Where weekday is one of monday, tuesday, wednesday, thursday, friday, saturday, sunday or extra.
-    extra is an extra backup created by the script $(dirname $0)/copy-database-from-prod-to-staging.sh.
+    Where weekday is one of monday, tuesday, wednesday, thursday, friday, saturday, sunday or extra. Defaults to yesterday's weekday.
 
-    environment is one of staging or prod. It is the environment that will receive the backup.
+    extra is an extra backup created by the scripts $(dirname $0)/make-extra-database-backup.sh or
+    $(dirname $0)/copy-database-from-prod-to-staging.sh.
 
+    source-environment is one of staging or prod. It is the environment that has produced the backup. Defaults to prod.
+    target-environment is one of staging or prod. It is the environment that will receive the backup. Defaults to prod.
+    appName is one of xtrabackup or mariabackup. It is the application that produced the backup and also will be used for restoring the backup. Defaults to xtrabackup.
 EOF
 }
 
-echo -n "About to restore the ${weekday} backup to ${env}. Continue [y/N/?]: "
+echo -n "About to restore the ${weekday} backup from ${srcEnv} to ${targetEnv} by means of ${appName}. Continue [y/N/?]: "
 read answer
 case ${answer} in
     '?')
@@ -30,7 +35,7 @@ case ${answer} in
 
     y|yes)
         echo "OK, here we go..."
-        ansible-playbook playbooks/restore-database-from-backup.yml -e env=${env} -e weekday=${weekday}
+        ansible-playbook playbooks/restore-database-from-backup.yml -e srcEnv=${srcEnv} -e targetEnv=${targetEnv} -e weekday=${weekday} -e appName=${appName}
         ;;
     ''|n|no|N|NO|No)
         echo "Nothing done."
