@@ -39,7 +39,7 @@ tar xzf $backupFile -C $tmpDir
 echo "Preparing for restore..."
 mariabackup --prepare --target-dir $tmpDir
 
-echo "Stopping {{ mysql_vendor }} server..."
+echo "Stopping mariadb server..."
 systemctl stop mysql
 
 echo "Restoring backup..."
@@ -48,5 +48,5 @@ mariabackup --move-back --target-dir $tmpDir
 chown -R mysql.mysql {{ mysql_datadir }}
 chmod -R u+rw,g+rw,o= {{ mysql_datadir }}
 
-echo "Starting {{ mysql_vendor }} server..."
+echo "Starting mariadb server..."
 systemctl start mysql

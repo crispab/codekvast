@@ -1,5 +1,0 @@
-mysql_vendor: 'mariadb_galera'
-mariadb_galera_members:
-  - '192.168.200.18'
-  - '192.168.200.19'
-  - '192.168.200.20'

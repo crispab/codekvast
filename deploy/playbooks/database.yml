@@ -15,23 +15,24 @@
     service_name: mariadb
     server_type: database
 
-    mysql_origin: 'default'
-    mysql_vendor: 'mariadb'
     mariadb_version: '10.1'
+    mysql_root_password_update: true
+    mysql_user_password_update: true
     mysql_backup_dir: '/backups/mariadb'
-    mysql_bind_address: '0.0.0.0'
-    mysql_slow_query_log_file: '/var/log/mysql/mysql-slow.log'
-    mysql_extra_configuration:
-      character_set_server: 'utf8'
-      collation_server: 'utf8_general_ci'
-      innodb_print_all_deadlocks: true
-      slow_query_log: true
-      slow_query_log_file: "{{ mysql_slow_query_log_file }}"
-      long_query_time: 2
+    mysql_slow_query_log_enabled: true
+    mysql_slow_query_log_file: "{{ mysql_slow_query_log_file }}"
+    mysql_slow_query_time: 2
+    mysql_packages:
+    - mariadb-client
+    - mariadb-server
+    - python-mysqldb
     mysql_datadir: /data/mysql
     mysql_log_error: '/var/log/mysql/error.log'
+
     mysql_databases:
-    - codekvast
+    - name: codekvast
+      encoding: utf8
+      collation: utf8_general_ci
 
     mysql_users:
     - name: 'codekvast'
@@ -117,7 +118,7 @@
   roles:
   - {role: Datadog.datadog, tags: [metrics, datadog] }
   - {role: codekvast.datadog, tags: [metrics, datadog] }
-  - {role: HanXHX.mysql, tags: [database, mariadb] }
+  - {role: geerlingguy.mysql, tags: [database, mariadb] }
 
   post_tasks:
   - set_fact:

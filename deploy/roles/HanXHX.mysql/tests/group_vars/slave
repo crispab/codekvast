@@ -1,9 +1,0 @@
-mysql_replication_master: false
-mysql_replication_slave: true
-mysql_replication_user: 'replication'
-mysql_replication_password: '1a2b3c'
-mysql_replication_host: '{{ his_master }}'
-mysql_server_id: 2
-mysql_slave_ignore_db: ['norepl']
-
-# vim: set ft=yaml :
