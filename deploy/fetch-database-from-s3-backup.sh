@@ -10,6 +10,29 @@ declare srcEnv=${2:-prod}
 declare appName=${3:-xtrabackup}
 declare tarball=${appName}-${weekday}.tar.gz
 
+case ${weekday} in
+  monday|tuesday|wednesday|thursday|friday|saturday|sunday|extra);;
+  *) echo "Bad weekday: ${weekday}" >&1
+     exit 1;;
+esac
+
+case ${srcEnv} in
+  staging|prod) ;;
+  *) echo "Bad srcEnv: ${srcEnv}" >&1
+  exit 1;;
+esac
+
+case ${appName} in
+  xtrabackup|mariabackup) ;;
+  *) echo "Bad appName: ${appName}" >&1
+  exit 1;;
+esac
+
+if [[ -z $(which ${appName}) ]]; then
+  echo "${appName} is not installed" >&1
+  exit 1
+fi
+
 echo -n "About to fetch the ${weekday} backup from ${srcEnv} by means of ${appName}. Continue [y/N]: "
 read answer
 case ${answer} in
@@ -51,7 +74,7 @@ echo "Changing ownership of ${mysql_datadir}/ ..."
 sudo chown -R ${USER}:"$(id -gn ${USER})" ${mysql_datadir}
 
 echo "Starting a temporary MariaDB container without grant tables..."
-declare container=$(docker run -d -v ${mysql_datadir}:/var/lib/mysql -p 3306:3306 mariadb:10.0 --skip-grant-tables)
+declare container=$(docker run -d -v ${mysql_datadir}:/var/lib/mysql -p 3306:3306 mariadb:10.1 --skip-grant-tables)
 
 echo "Waiting for MariaDB to start..."
 wait-on tcp:localhost:3306 -d 10000 -t 60000 || exit 1

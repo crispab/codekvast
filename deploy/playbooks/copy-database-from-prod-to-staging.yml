@@ -4,16 +4,16 @@
 # It expects to be invoked with the ansible-playbook command line variables
 #   -e appName=aaa where aaa is one of xtrabackup or mariabackup
 #-----------------------------------------------------------------------------------------------------------
-- name:   Make extra production database backup
+- name:   "Make extra production database backup by means of {{ appName }}"
   hosts:  tag_Name_Codekvast_default_prod_database
   user:   ubuntu
   become: yes
 
   tasks:
-  - name:  "Making an extra database backup of {{ tags.CNAME }}"
+  - name:  "Executing /root/{{ appName }}-backup extra in {{ tags.CNAME }}"
     shell: /root/{{ appName }}-backup extra
 
-- name:   Restore extra production database
+- name:   "Restore extra production database produced by {{ appName }}"
   hosts:  tag_Name_Codekvast_default_staging_database
   user:   ubuntu
   become: yes
@@ -24,9 +24,8 @@
       tarball:          "{{ appName }}-extra.tar.gz"
 
   tasks:
-
   - name:  "Fetching {{ s3_bucket }}/{{ tarball }} to {{ tags.CNAME }}:{{ mysql_backup_dir }}"
     shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ tarball }} {{ mysql_backup_dir }}"
 
-  - name:  "Restoring {{ mysql_backup_dir }}/{{ tarball }} in {{ tags.CNAME }}"
+  - name:  "Executing /root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ tarball }} --yes in {{ tags.CNAME }}"
     shell: "/root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ tarball }} --yes"

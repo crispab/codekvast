@@ -5,4 +5,6 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/copy-database-from-prod-to-staging.yml
+declare appName=${1:-xtrabackup}
+
+ansible-playbook playbooks/copy-database-from-prod-to-staging.yml -e appName=${appName}
