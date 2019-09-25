@@ -20,7 +20,7 @@
     mysql_user_password_update: true
     mysql_backup_dir: '/backups/mariadb'
     mysql_slow_query_log_enabled: true
-    mysql_slow_query_log_file: "{{ mysql_slow_query_log_file }}"
+    mysql_slow_query_log_file: '/var/log/mysql/mysql-slow.log'
     mysql_slow_query_time: 2
     mysql_packages:
     - mariadb-client

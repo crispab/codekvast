@@ -26,7 +26,7 @@ Usage: $0 [weekday] [source-environment] [target-environment] [appName]
 EOF
 }
 
-echo -n "About to restore the ${weekday} backup from ${srcEnv} to ${targetEnv} by means of ${appName}. Continue [y/N/?]: "
+echo -n "About to restore the ${weekday} backup produced by ${srcEnv} into ${targetEnv} by means of ${appName}. Continue [y/N/?]: "
 read answer
 case ${answer} in
     '?')
