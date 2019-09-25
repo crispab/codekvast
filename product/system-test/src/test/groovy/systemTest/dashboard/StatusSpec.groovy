@@ -13,7 +13,7 @@ class StatusSpec extends BaseSpec {
         at StatusPage
     }
 
-    def 'Methods page should redirect to NotLoggedInPage when unauthenticated'() {
+    def 'Status page should redirect to NotLoggedInPage when unauthenticated'() {
         given:
         deleteAllCookies()
 
