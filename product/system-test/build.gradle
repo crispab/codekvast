@@ -9,6 +9,7 @@ import java.sql.SQLNonTransientConnectionException
 apply plugin: 'groovy'
 apply from: "$rootDir/gradle/java.gradle"
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.energizedwork.webdriver-binaries'
 
 dependencyManagement {
     imports {
@@ -71,6 +72,11 @@ dependencies {
     testRuntimeOnly "com.squareup.okio:okio:1.17.2"
 
     jdbc mariadbDriver
+}
+
+webdriverBinaries {
+    chromedriver '2.41'
+    geckodriver '0.21.0'
 }
 
 configurations.all {
@@ -205,7 +211,6 @@ task startSystemTestEnvironment {
 
 test {
     description 'Runs end-to-end tests against Codekvast Dashboard and Codekvast Login with MariaDB in a Docker container'
-    dependsOn ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
 
     def foundChromeBinary = locateChromeBinary()
     assert !foundChromeBinary.isEmpty(): "Cannot find Chrome executable!"
@@ -226,9 +231,6 @@ test {
     }
 
     doFirst {
-        def chromeDriver = tasks.getByPath(':tools:downloadChromeDriver').outputs.files.asPath
-        def geckoDriver = tasks.getByPath(':tools:downloadGeckoDriver').outputs.files.asPath
-        [chromeDriver, geckoDriver].each { "chmod +x ${it}".execute().waitFor() }
 
         doStartSystemTestEnvironment()
 
@@ -237,8 +239,6 @@ test {
 
         logger.lifecycle "Running Geb with -Dgeb.env=$gebEnv, override with -Pbrowser=[chrome|chromeHeadless|firefox]"
         systemProperty "geb.env", gebEnv
-        systemProperty "webdriver.chrome.driver", chromeDriver
-        systemProperty "webdriver.gecko.driver", geckoDriver
         systemProperty "geb.build.reportsDir", "$reportsDir/dumps"
         systemProperty 'geb.build.baseUrl', endpoint
 
