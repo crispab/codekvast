@@ -21,8 +21,8 @@ ${GRADLEW} ${GRADLE_OPTS} ${tasks}
 echo "Generating aggregated javadoc..."
 ${GRADLEW} ${GRADLE_OPTS} :product:aggregateJavadoc
 
-# TODO: echo "Generating coverage report..."
-#${GRADLEW} ${GRADLE_OPTS} coverageReport
+echo "Generating coverage report..."
+${GRADLEW} ${GRADLE_OPTS} coverageReport
 
 if [[ ${NUM_DIRTY_FILES} -eq 0 && "${tasks}" == "build" ]]; then
     echo "Recorded that ${COMMITTED_VERSION} has been built in a clean workspace."

@@ -55,7 +55,7 @@ public class JavaAgentIntegrationTest {
         }
     }
 
-    // TODO: private final String jacocoAgent = System.getProperty("integrationTest.jacocoAgent");
+    private static final String jacocoAgent = System.getProperty("integrationTest.jacocoAgent");
     private static final String codekvastAgent = System.getProperty("integrationTest.codekvastAgent");
     private static final String classpath = System.getProperty("integrationTest.classpath");
     private static final String javaVersions = System.getProperty("integrationTest.javaVersions");
@@ -93,7 +93,7 @@ public class JavaAgentIntegrationTest {
 
     @Before
     public void beforeTest() throws Exception {
-        // TODO: assertThat(jacocoAgent, notNullValue());
+        assertThat(jacocoAgent, notNullValue());
         assertThat(codekvastAgent, notNullValue());
         assertThat(classpath, notNullValue());
         assertThat(javaVersions, notNullValue());
@@ -241,7 +241,7 @@ public class JavaAgentIntegrationTest {
 
         List<String> command = new ArrayList<>(
             Arrays.asList(java,
-                          // TODO: "-javaagent:" + jacocoAgent,
+                          "-javaagent:" + jacocoAgent,
                           "-javaagent:" + codekvastAgent,
                           "-cp", cp,
                           "-Djava.util.logging.config.file=src/integrationTest/resources/logging.properties",

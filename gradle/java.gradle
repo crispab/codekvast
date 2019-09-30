@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'com.ofg.uptodate'
-// TODO: apply plugin: 'jacoco'
+apply plugin: 'jacoco'
 apply from: "$rootDir/gradle/libs.gradle"
 
 uptodate {
@@ -45,30 +45,30 @@ configurations.forEach { it ->
     }
 }
 
-// TODO: task coverageReport(type: JacocoReport) {
-//    group 'Documentation'
-//    description 'Generates a test coverage report'
-//    sourceSets sourceSets.main
-//
-//    // One could do
-//    // executionData test, integrationTest, run
-//    // but then *all* of build/jacoco/test.exec, integrationTest.exec and run.exec  must exist, or else the report will be skipped.
-//    // Instead, build a report on what execution data we happen to have.
-//
-//    enabled = false
-//    def jacocoDir = file('build/jacoco')
-//    if (jacocoDir.exists()) {
-//        jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
-//    }
-//
-//    reports {
-//        xml.enabled false
-//        csv.enabled false
-//        html.destination file("${buildDir}/reports/coverage")
-//    }
-//
-//}
-//build.dependsOn coverageReport
+task coverageReport(type: JacocoReport) {
+    group 'Documentation'
+    description 'Generates a test coverage report'
+    sourceSets sourceSets.main
+
+    // One could do
+    // executionData test, integrationTest, run
+    // but then *all* of build/jacoco/test.exec, integrationTest.exec and run.exec  must exist, or else the report will be skipped.
+    // Instead, build a report on what execution data we happen to have.
+
+    enabled = false
+    def jacocoDir = file('build/jacoco')
+    if (jacocoDir.exists()) {
+        jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
+    }
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/reports/coverage")
+    }
+
+}
+build.dependsOn coverageReport
 
 // TODO: Run javadoc on delomboked code
 javadoc {
