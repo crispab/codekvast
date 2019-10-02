@@ -2,11 +2,11 @@ ext {
     aspectjVersion = '1.9.2' // The latest version that works with Java 7.
     flywayVersion = '5.2.4'
     gsonVersion = '2.8.5'
-    jacocoVersion = '0.8.2'
+    jacocoVersion = '0.8.4'
     seleniumVersion = '3.141.59'
-    springBootVersion = '2.1.8.RELEASE'
+    springBootVersion = '2.1.9.RELEASE'
     springfoxVersion = '2.9.2'
-    wiremockVersion = '2.24.1'
+    wiremockVersion = '2.25.0'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
