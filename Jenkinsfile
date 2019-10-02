@@ -9,7 +9,7 @@ node {
                 sh """
                 printenv | sort
                 tools/install-compilers.sh
-                # tools/real-clean-workspace.sh
+                tools/real-clean-workspace.sh
                 pwd
                 ./.gradlew --version
                 ./.gradlew --stop
