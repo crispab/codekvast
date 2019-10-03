@@ -129,10 +129,11 @@
   - set_fact:
       s3_database_backup_bucket: "io.codekvast.{{ customer|lower }}.{{ env|lower }}.backup"
 
-  - name: Install s3cmd and mariabackup
+  - name: Install s3cmd, gzip and mariabackup
     package: name={{ item }} state=present
     with_items:
         - s3cmd
+        - gzip
         - "mariadb-client-{{ mariadb_version }}"
 
   - name: Install backup scripts
@@ -140,19 +141,9 @@
     with_items:
     - mariabackup-backup
     - mariabackup-restore
+    - mysqldump-backup
+    - mysqldump-restore
     - s3cfg
-    - xtrabackup-backup
-    - xtrabackup-restore
-
-  - name: Remove old backup scripts
-    file: path={{ item }} state=absent
-    with_items:
-    - /root/mariadb-backup
-    - /root/mariadb-restore
-    - /root/mariadb-xtrabackup-backup
-    - /root/mariadb-xtrabackup-restore
-    - /etc/cron.daily/mariadb-backup
-    - /etc/cron.daily/mariadb-xtrabackup-backup
 
   - name: Check S3 access credentials
     shell: s3cmd --config=/root/s3cfg ls s3://{{ s3_database_backup_bucket }}
@@ -162,7 +153,7 @@
     file: src=/root/{{ item }} dest=/etc/cron.daily/{{ item }} state=link
     with_items:
     - mariabackup-backup
-    - xtrabackup-backup
+    - mysqldump-backup
 
   - name: Create MySQL user for Datadog
     shell: mysql -e "{{ item }};"
@@ -181,3 +172,18 @@
   - name: Configure Datadog Agent for MariaDB
     template: src=database/datadog/config.yaml.j2 dest=/etc/datadog-agent/conf.d/mysql.d/conf.yaml mode=644
     notify: restart datadog-agent
+
+  - name: Remove xtrabackup stuff
+    file: path={{ item }} state=absent
+    with_items:
+    - /etc/cron.daily/xtrabackup-backup
+    - /root/xtrabackup-backup
+    - /root/xtrabackup-restore
+    - /backups/mariadb/xtrabackup-monday.tar.gz
+    - /backups/mariadb/xtrabackup-tuesday.tar.gz
+    - /backups/mariadb/xtrabackup-wednesday.tar.gz
+    - /backups/mariadb/xtrabackup-thursday.tar.gz
+    - /backups/mariadb/xtrabackup-friday.tar.gz
+    - /backups/mariadb/xtrabackup-saturday.tar.gz
+    - /backups/mariadb/xtrabackup-sunday.tar.gz
+    - /backups/mariadb/xtrabackup-extra.tar.gz

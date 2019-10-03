@@ -8,7 +8,7 @@ source $(dirname $0)/.check-requirements.sh
 declare weekday=${1:-$(env LANG=en_US date -d "yesterday 13:00" --utc +%A | tr [A-Z] [a-z])}
 declare srcEnv=${2:-prod}
 declare targetEnv=${3:-prod}
-declare appName=${4:-xtrabackup}
+declare appName=mariabackup
 
 usage() {
     cat << EOF
@@ -22,7 +22,6 @@ Usage: $0 [weekday] [source-environment] [target-environment] [appName]
 
     source-environment is one of staging or prod. It is the environment that has produced the backup. Defaults to prod.
     target-environment is one of staging or prod. It is the environment that will receive the backup. Defaults to prod.
-    appName is one of xtrabackup or mariabackup. It is the application that produced the backup and also will be used for restoring the backup. Defaults to xtrabackup.
 EOF
 }
 

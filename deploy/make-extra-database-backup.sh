@@ -7,6 +7,6 @@ source $(dirname $0)/.check-requirements.sh
 
 declare weekday=${1:-extra}
 declare srcEnv=${2:-prod}
-declare appName=${3:-xtrabackup}
+declare appName=${3:-mariabackup}
 
 ansible-playbook playbooks/make-database-backup.yml -e weekday=${weekday} -e srcEnv=${srcEnv} -e appName=${appName}

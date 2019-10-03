@@ -43,5 +43,11 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="codekvast@RDS staging" uuid="ef9ac7f2-88b3-47ef-a6ae-0a9f9c311450">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://codekvast-default-staging.cahjor9xtqud.eu-central-1.rds.amazonaws.com:3306/codekvast</jdbc-url>
+    </data-source>
   </component>
 </project>
