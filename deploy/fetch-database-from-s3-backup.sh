@@ -7,7 +7,7 @@ source $(dirname $0)/.check-requirements.sh
 
 declare weekday=${1:-$(env LANG=en_US date -d "yesterday 13:00" --utc +%A | tr [A-Z] [a-z])}
 declare srcEnv=${2:-prod}
-declare appName=${3:-xtrabackup}
+declare appName=${3:-mariabackup}
 declare tarball=${appName}-${weekday}.tar.gz
 
 case ${weekday} in
@@ -23,7 +23,7 @@ case ${srcEnv} in
 esac
 
 case ${appName} in
-  xtrabackup|mariabackup) ;;
+  mariabackup) ;;
   *) echo "Bad appName: ${appName}" >&1
   exit 1;;
 esac

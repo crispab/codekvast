@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#----------------------------------------------------------------------------
+# Restore a backup produced by mysqldump
+#----------------------------------------------------------------------------
+
+declare backupFile=$1
+if [ -z "${backupFile}" ]; then
+    echo "Usage: $(basename $0) path/to/backup.tar.gz" 1>&2
+    exit 1
+fi
+
+if [ -d ${backupFile} ]; then
+    echo "${backupFile} is a directory" 1>&2
+    exit 2
+fi
+
+if [ ! -f ${backupFile} ]; then
+    echo "No such file: ${backupFile}" 1>&2
+    exit 2
+fi
+
+declare answer=$2
+if [ -z "$answer" ]; then
+    echo -n "About to restore database from ${backupFile}. Continue? [y/N] "; read answer
+fi
+if [ "$answer" != "y" -a "$answer" != "--yes" ]; then
+    echo "Nothing done."
+    exit 0
+fi
+
+echo "Here we go..."
+
+zcat ${backupFile} | mysql --user=codekvast --password={{ mysql_application_password }} --database=codekvast

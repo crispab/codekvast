@@ -21,11 +21,10 @@
   vars:
       mysql_backup_dir: '/backups/mariadb'
       s3_bucket:        "s3://io.codekvast.default.prod.backup"
-      tarball:          "{{ appName }}-extra.tar.gz"
+      backup_file:      "{{ appName }}-extra.{{ {'mariabackup': 'tar.gz', 'mysqldump': 'sql.gz'}[appName] }}"
 
   tasks:
-  - name:  "Fetching {{ s3_bucket }}/{{ tarball }} to {{ tags.CNAME }}:{{ mysql_backup_dir }}"
-    shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ tarball }} {{ mysql_backup_dir }}"
-
-  - name:  "Executing /root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ tarball }} --yes in {{ tags.CNAME }}"
-    shell: "/root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ tarball }} --yes"
+  - name:  "Fetching {{ s3_bucket }}/{{ backup_file }} to {{ tags.CNAME }}:{{ mysql_backup_dir }}"
+    shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ backup_file }} {{ mysql_backup_dir }}"
+  - name:  "Executing /root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ backup_file }} --yes in {{ tags.CNAME }}"
+    shell: "/root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ backup_file }} --yes"
