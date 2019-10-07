@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'com.ofg.uptodate'
 apply plugin: 'jacoco'
+apply plugin: 'io.freefair.lombok'
 apply from: "$rootDir/gradle/libs.gradle"
 
 uptodate {
@@ -23,13 +24,10 @@ jar {
     }
 }
 
-dependencies {
-    annotationProcessor lombok
-    compileOnly lombok
-
-    testAnnotationProcessor lombok
-    testCompileOnly lombok
+lombok {
+    version = '1.18.10'
 }
+generateLombokConfig.enabled = false
 
 configurations.forEach { it ->
     def config = it
@@ -70,7 +68,6 @@ task coverageReport(type: JacocoReport) {
 }
 build.dependsOn coverageReport
 
-// TODO: Run javadoc on delomboked code
 javadoc {
     title "Codekvast version $codekvastDisplayVersion"
     failOnError = false

@@ -41,7 +41,5 @@ dependencies {
     testImplementation testFrameworks
     testRuntimeOnly logback
 
-    integrationTestAnnotationProcessor lombok
-    integrationTestCompileOnly lombok
     integrationTestCompile sourceSets.test.output
 }

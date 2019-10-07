@@ -6,7 +6,6 @@ testSets {
 
 dependencies {
     integrationTestCompile project(':product:testsupport')
-    integrationTestCompileOnly lombok
 }
 
 integrationTest {
