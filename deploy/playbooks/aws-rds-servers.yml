@@ -1,0 +1,61 @@
+---
+#---------------------------------------------------------------
+# Playbook which provisions the AWS RDS servers
+#---------------------------------------------------------------
+-   name:         AWS infrastructure stack
+    hosts:        all[0]
+    connection:   local
+    gather_facts: no
+
+    vars_files:
+    - vars/common.yml
+    - vars/secrets.yml
+
+    vars:
+        servers:
+        - default
+
+    tasks:
+    -   name:       Create RDS subnet group
+        rds_subnet_group:
+            profile:             codekvast
+            name:                "codekvast-prod"
+            description:         "All Codekvast prod subnets"
+            region:              "{{ aws_region }}"
+            subnets:
+            - subnet-444a6a2c
+            - subnet-0e9cb168cb94c42be
+            # - subnet-3a4b6b52
+            # - subnet-0b361485fa58d7b2e
+            state:               present
+        connection: local
+        register:   subnet_group
+
+    -   debug: var=subnet_group
+
+    -   name:       Create RDS server
+        rds:
+            profile:                 codekvast
+            region:                  "{{ aws_region }}"
+            backup_retention:        "7"
+            backup_window:           "02:00-03:00"
+            maint_window:            "sun:04:00-sun:05:00"
+            instance_type:           db.t3.micro
+            db_engine:               mariadb
+            instance_name:           "codekvast-{{ item }}"
+            engine_version:          10.3.13
+            # character_set_name:      utf8
+            command:                 create
+            multi_zone:              yes
+            username:                "{{ aws.credentials.rds[item].username }}"
+            password:                "{{ aws.credentials.rds[item].password }}"
+            publicly_accessible:     yes
+            subnet:                  codekvast-prod
+            # vpc_security_groups:     sg-5ae27d31,sg-8ee27de5,sg-7be07f10,sg-c3e07fa8
+            size:                    "20"
+            tags:
+                Name:     "codekvast_{{ item }}"
+                Customer: "{{ item }}"
+                Owner:    Codekvast
+        connection: local
+        with_items: "{{ servers }}"
