@@ -9,6 +9,6 @@ public class ButtonTwoService {
 
     @SuppressWarnings("unused")
     public void doSomething() {
-        logger.info("Doing something 2");
+        log.info("Doing something 2");
     }
 }

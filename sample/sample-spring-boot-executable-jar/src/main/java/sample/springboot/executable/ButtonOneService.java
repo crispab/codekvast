@@ -10,6 +10,6 @@ public class ButtonOneService {
 
     @SuppressWarnings("unused")
     void doSomething() {
-        logger.info("Doing something 1: {}", new Bar1().declaredOnBar());
+        log.info("Doing something 1: {}", new Bar1().declaredOnBar());
     }
 }

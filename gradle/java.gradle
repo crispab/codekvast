@@ -26,8 +26,14 @@ jar {
 
 lombok {
     version = '1.18.10'
+    config['lombok.log.fieldName'] = 'logger'
+    config['lombok.log.slf4j.flagUsage'] = 'ALLOW'
+    config['lombok.log.apacheCommons.flagUsage'] = 'ERROR'
+    config['lombok.log.javaUtilLogging.flagUsage'] = 'ERROR'
+    config['lombok.log.log4j.flagUsage'] = 'ERROR'
+    config['lombok.log.log4j2.flagUsage'] = 'ERROR'
+    config['lombok.log.xslf4j.flagUsage'] = 'ERROR'
 }
-generateLombokConfig.enabled = false
 
 configurations.forEach { it ->
     def config = it
