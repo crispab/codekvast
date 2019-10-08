@@ -35,6 +35,10 @@ lombok {
     config['lombok.log.xslf4j.flagUsage'] = 'ERROR'
 }
 
+delombok {
+  nocopy = true
+}
+
 configurations.forEach { it ->
     def config = it
     def configName = config.name
