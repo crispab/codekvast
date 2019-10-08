@@ -1,14 +1,15 @@
-ext.aspectjVersion = '1.9.2'
-apply plugin: 'aspectj.AspectjGradlePlugin'
-
-description = """A sample concretization of AbstractMethodExecutionAspect for use in compile-time weaving (CTW).
-The aspect is written in ajc style"""
-
-dependencies {
-    implementation project(":product:agent:java-agent")
+plugins {
+    id "io.freefair.aspectj" version "4.1.2"
+    id "java"
 }
 
-compileAspect {
-    dependsOn ':product:agent:java-agent:jar'
-    additionalAjcArgs = ['source': '1.7', 'target': '1.7']
+aspectj {
+    version = '1.9.4'
+}
+
+description = """A sample concretization of AbstractMethodExecutionAspect for use in compile-time weaving (CTW).
+The aspect is written in @Aspect style"""
+
+dependencies {
+    inpath project(":product:agent:java-agent")
 }

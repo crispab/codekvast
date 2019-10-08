@@ -74,6 +74,8 @@
       <module name="testsupport_integrationTest" target="1.8" />
       <module name="testsupport_main" target="1.8" />
       <module name="testsupport_test" target="1.8" />
+      <module name="webstart-swing-app_main" target="11" />
+      <module name="webstart-swing-app_test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

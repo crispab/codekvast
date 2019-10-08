@@ -1,63 +1,21 @@
+plugins {
+    id "org.gretty" version "2.3.1"
+    id "io.freefair.aspectj" version "4.1.2"
+    id "war"
+}
+
 description = "Illustrates how to weave the sample-concrete-aspect when preparing swing-app for Java Web Start (JWS)"
-buildscript {
-    dependencies {
-        classpath 'org.akhikhl.gretty:gretty:2.0.0'
-    }
 
+aspectj {
+    version = '1.9.4'
 }
-
-apply plugin: 'org.akhikhl.gretty'
-apply plugin: 'war'
-
-configurations {
-    theapp
-    aspectjtools
-    aspects
-}
-
-def aspectjVersion = '1.8.5'
 
 dependencies {
-    aspectjtools "org.aspectj:aspectjtools:$aspectjVersion"
-
-    aspects project(":sample:sample-concrete-aspect")
-
-    theapp project(":sample:swing-app")
+    aspect project(":sample:sample-concrete-aspect")
+    inpath project(":sample:swing-app")
+    runtime 'org.ow2.asm:asm:6.2'
 }
 
-war {
-    from configurations.theapp
-}
-
-gretty.contextPath = ''
-
-task weaveClasses {
-    dependsOn classes
-
-    def inpath = "$buildDir/classes/orig"
-    def destDir = "$buildDir/classes/main"
-    def logFile = "$buildDir/aspectj.log"
-
-    inputs.dir inpath
-    outputs.dir destDir
-
-    doLast {
-        def iajcArgs = [destDir      : destDir,
-                        source       : project.convention.plugins.java.sourceCompatibility,
-                        target       : project.convention.plugins.java.targetCompatibility,
-                        inpath       : inpath,
-                        xlint        : "ignore",
-                        fork         : 'true',
-                        aspectPath   : project.configurations.aspects.asPath,
-                        showWeaveInfo: 'true',
-                        log          : logFile
-        ]
-
-        ant.taskdef(resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
-                classpath: project.configurations.aspectjtools.asPath)
-
-        file(destDir).renameTo file(inpath)
-        mkdir destDir
-        ant.iajc iajcArgs
-    }
+gretty {
+    contextPath = ''
 }
