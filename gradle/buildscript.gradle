@@ -15,6 +15,7 @@ dependencies {
     classpath 'gradle.plugin.com.energizedwork.webdriver-binaries:webdriver-binaries-gradle-plugin:1.4'
     classpath 'gradle.plugin.de:AspectjGradlePlugin:0.0.3'
     classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
+    classpath 'io.freefair.gradle:lombok-plugin:4.1.2'
     classpath 'org.ajoberstar:grgit:1.8.0'
     classpath 'org.flywaydb:flyway-gradle-plugin:5.1.4'
     classpath 'org.jetbrains.kotlin:kotlin-allopen:' + kotlinVersion

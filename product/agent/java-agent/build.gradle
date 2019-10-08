@@ -12,6 +12,11 @@ description = "The javaagent part of Codekvast, the code that runs inside the in
 archivesBaseName = "codekvast-javaagent"
 version = codekvastVersion
 
+lombok {
+    config['lombok.log.slf4j.flagUsage'] = 'ERROR'
+    config['lombok.log.javaUtilLogging.flagUsage'] = 'ALLOW'
+}
+
 configurations {
     jacocoagent
 }

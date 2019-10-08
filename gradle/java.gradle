@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'com.ofg.uptodate'
 apply plugin: 'jacoco'
+apply plugin: 'io.freefair.lombok'
 apply from: "$rootDir/gradle/libs.gradle"
 
 uptodate {
@@ -23,12 +24,19 @@ jar {
     }
 }
 
-dependencies {
-    annotationProcessor lombok
-    compileOnly lombok
+lombok {
+    version = '1.18.10'
+    config['lombok.log.fieldName'] = 'logger'
+    config['lombok.log.slf4j.flagUsage'] = 'ALLOW'
+    config['lombok.log.apacheCommons.flagUsage'] = 'ERROR'
+    config['lombok.log.javaUtilLogging.flagUsage'] = 'ERROR'
+    config['lombok.log.log4j.flagUsage'] = 'ERROR'
+    config['lombok.log.log4j2.flagUsage'] = 'ERROR'
+    config['lombok.log.xslf4j.flagUsage'] = 'ERROR'
+}
 
-    testAnnotationProcessor lombok
-    testCompileOnly lombok
+delombok {
+  nocopy = true
 }
 
 configurations.forEach { it ->
@@ -70,7 +78,6 @@ task coverageReport(type: JacocoReport) {
 }
 build.dependsOn coverageReport
 
-// TODO: Run javadoc on delomboked code
 javadoc {
     title "Codekvast version $codekvastDisplayVersion"
     failOnError = false
