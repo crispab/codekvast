@@ -1,8 +1,0 @@
-apply from: "$rootDir/gradle/java.gradle"
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-tasks.withType(JavaCompile) {
-    options.bootstrapClasspath = files("$rootDir/tools/java-7-openjdk-x86_64/jre/lib/rt.jar")
-}

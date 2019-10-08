@@ -67,11 +67,10 @@ public class JavaAgentIntegrationTest {
 
     @Parameterized.Parameters(name = "{0}")
     public static List<TestConfig> testParameters() {
-        // The streams API is not available in Java 7!
         List<TestConfig> result = new ArrayList<>();
         for (String version : javaVersions.split(",")) {
             String v = version.trim();
-            if (v.startsWith("7")) {
+            if (v.startsWith("8")) {
                 // Test missing config and disabled by config only once.
                 // We only need to test this once, since CodekvastAgent.premain() will exit immediately before any Java version-specific
                 // code is executed.
@@ -231,7 +230,7 @@ public class JavaAgentIntegrationTest {
 
     private boolean atLeastJava9() {
         String v = testConfig.javaVersion;
-        return !v.startsWith("7") && !v.startsWith("8");
+        return !v.startsWith("8");
     }
 
     private List<String> buildJavaCommand(String configPath) {

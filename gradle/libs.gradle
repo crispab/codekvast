@@ -1,7 +1,7 @@
 ext {
-    aspectjVersion = '1.9.2' // The latest version that works with Java 7.
+    aspectjVersion = '1.9.4'
     flywayVersion = '5.2.4'
-    gsonVersion = '2.8.5'
+    gsonVersion = '2.8.6'
     jacocoVersion = '0.8.4'
     seleniumVersion = '3.141.59'
     springBootVersion = '2.1.9.RELEASE'
@@ -17,7 +17,7 @@ ext {
         'junit:junit:4.12',
         'org.hamcrest:hamcrest-core:2.1',
         'org.hamcrest:hamcrest-library:2.1',
-        'org.mockito:mockito-core:3.0.0',
+        'org.mockito:mockito-core:3.1.0',
         "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
     ]
 }

@@ -11,7 +11,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. git-crypt
 1. Gradle (via Gradle wrapper)
 1. Inkscape (SVG graphics)
-1. Java 7, 8, 9, 10, 11 and 12.
+1. Java 8, 9, 10, 11, 12 and 13 (managed by SDKMAN).
 1. Kotlin
 1. Lombok
 1. MariaDB 10+ (Codekvast Dashboard)

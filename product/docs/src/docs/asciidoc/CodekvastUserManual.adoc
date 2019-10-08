@@ -35,7 +35,7 @@ Codekvast consists of two parts: the *Agent* and the *Dashboard*.
 Codekvast Agent:: The agent is attached to the JVM that runs your application. It makes an inventory of the <<code-base, code base>> and records the invocations of the methods of
 interest. At the end of each recording interval, the <<invocation-data, invocation data>> is transferred to the dashboard, and a new recording
 interval is started. The agent uses http://en.wikipedia.org/wiki/AspectJ[AspectJ, role="external", window="_new"]
-for hooking into your application. *The agent requires Java 7 or higher.*
+for hooking into your application. *The agent requires Java 8 or higher.*
 
 Codekvast Dashboard:: The dashboard receives code base and invocation publications from the agents, stores it in a database and makes it available for browsing and reporting
 in a web interface. It also offers a REST interface to facilitate IDE plugin development. There is only one dashboard. *The dashboard requires Java 8 or higher plus MariaDB server 10 or higher*

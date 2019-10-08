@@ -1,4 +1,4 @@
-apply from: "$rootDir/gradle/java-7.gradle"
+apply from: "$rootDir/gradle/java-8.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 
 description = "Model objects shared between Codekvast Agent and Server"
@@ -6,7 +6,7 @@ archivesBaseName = "codekvast-javaagent-model"
 version = codekvastVersion
 
 dependencies {
-    implementation 'javax.validation:validation-api:1.1.0.Final' // The latest version that works with Java 7.
+    implementation 'javax.validation:validation-api:2.0.1.Final'
 
     testImplementation testFrameworks
     testImplementation "com.google.code.gson:gson:$gsonVersion"
