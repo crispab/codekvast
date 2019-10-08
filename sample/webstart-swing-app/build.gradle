@@ -1,7 +1,7 @@
 description = "Illustrates how to weave the sample-concrete-aspect when preparing swing-app for Java Web Start (JWS)"
 buildscript {
     dependencies {
-        classpath 'org.akhikhl.gretty:gretty:1.4.0'
+        classpath 'org.akhikhl.gretty:gretty:2.0.0'
     }
 
 }
