@@ -152,7 +152,7 @@ public class DashboardIntegrationTest {
 
         // then
         assertThat("Wrong number of pending Flyway migrations", flyway.info().pending().length, is(0));
-        assertThat(countRowsInTable("schema_version WHERE success != 1"), is(0));
+        assertThat(countRowsInTable("flyway_schema_history WHERE success != 1"), is(0));
     }
 
     @Test

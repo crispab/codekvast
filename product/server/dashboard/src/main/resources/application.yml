@@ -68,7 +68,6 @@ spring:
         url:      jdbc:mariadb://localhost/codekvast
         username: codekvast
     flyway:
-        table:               schema_version
         validate-on-migrate: false
     http:
         converters.preferred-json-mapper: gson

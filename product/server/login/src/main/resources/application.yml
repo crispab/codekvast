@@ -78,7 +78,6 @@ spring:
         url:      jdbc:mariadb://localhost/codekvast
         username: codekvast
     flyway:
-        table:               schema_version
         validate-on-migrate: false
     groovy.template.configuration:
         auto-new-line: true

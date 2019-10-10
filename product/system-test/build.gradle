@@ -139,7 +139,7 @@ def waitForDatabaseReady(jdbcUrl) {
         loader.addURL(file.toURI().toURL())
     }
     Class driver = loader.loadClass('org.mariadb.jdbc.Driver')
-    Driver instance = driver.newInstance()
+    Driver instance = driver.getDeclaredConstructor().newInstance()
     DriverManager.registerDriver(instance)
 
     logger.lifecycle("Waiting for {} to become ready...", jdbcUrl)
