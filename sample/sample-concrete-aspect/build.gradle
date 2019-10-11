@@ -3,8 +3,13 @@ plugins {
     id "java"
 }
 
+apply from: "$rootDir/gradle/libs.gradle"
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
 aspectj {
-    version = '1.9.4'
+    version = aspectjVersion
 }
 
 description = """A sample concretization of AbstractMethodExecutionAspect for use in compile-time weaving (CTW).
@@ -12,4 +17,5 @@ The aspect is written in @Aspect style"""
 
 dependencies {
     inpath project(":product:agent:java-agent")
+    compile aspectjRuntime
 }

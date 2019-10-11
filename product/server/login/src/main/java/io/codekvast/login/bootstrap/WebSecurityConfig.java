@@ -86,43 +86,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .oauth2Login()
                     .userInfoEndpoint()
-            .userService(createFacebookCompatibleUserService())
             .userAuthoritiesMapper(userAuthoritiesMapper())
                 .and()
                     .loginPage(LOGIN_URL)
                     .authorizationEndpoint().baseUri(OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
 
         //@formatter:on
-    }
-
-    /**
-     * This is a work-around for a bug in Facebook's OAuth API.
-     *
-     * If https://graph.facebook.com/v3.2/me is invoked with any Accept header not exactly equal to "application/json"
-     * then it will return "Content-type: text/javascript".
-     *
-     * This will cause the default result extractor inside a default RestTemplate to fail, since it expects "Content-type: application/json"
-     *
-     * See https://developers.facebook.com/support/bugs/2178176915787648/
-     *
-     * TODO: remove Facebook bug work-around.
-     */
-    private DefaultOAuth2UserService createFacebookCompatibleUserService() {
-        RestTemplate restTemplate = restTemplateBuilder.interceptors((request, body, execution) -> {
-            if (request.getURI().getHost().toLowerCase().contains("facebook")) {
-                List<MediaType> accepts = request.getHeaders().getAccept();
-                for (MediaType accept : accepts) {
-                    if (accept.equals(MediaType.APPLICATION_JSON_UTF8)) {
-                        request.getHeaders().setAccept(asList(MediaType.APPLICATION_JSON));
-                    }
-                }
-            }
-            return execution.execute(request, body);
-        }).build();
-
-        val userService = new DefaultOAuth2UserService();
-        userService.setRestOperations(restTemplate);
-        return userService;
     }
 
     private GrantedAuthoritiesMapper userAuthoritiesMapper() {
