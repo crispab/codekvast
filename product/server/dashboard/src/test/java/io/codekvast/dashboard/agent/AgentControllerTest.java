@@ -112,6 +112,11 @@ public class AgentControllerTest {
     }
 
     @Test
+    public void should_accept_upload_codebase_publication3_when_valid_license() throws Exception {
+        assertUploadPublication(AgentService.PublicationType.CODEBASE, V3_UPLOAD_CODEBASE);
+    }
+
+    @Test
     public void should_accept_upload_invocation_data_publication1_when_valid_license() throws Exception {
         assertUploadPublication(AgentService.PublicationType.INVOCATIONS, V1_UPLOAD_INVOCATION_DATA);
     }

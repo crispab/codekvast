@@ -19,21 +19,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.file_import;
+package io.codekvast.javaagent.model.v3;
 
-import io.codekvast.javaagent.model.v3.CodeBasePublication3;
+import io.codekvast.javaagent.model.v2.CommonPublicationData2;
+import lombok.*;
+
+import java.io.Serializable;
+import java.util.Collection;
 
 /**
+ * Output of the CodeBasePublisher implementations.
+ *
  * @author olle.hallin@crisp.se
  */
-public interface CodeBaseImporter {
+@Data
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Setter(AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
+public class CodeBasePublication3 implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * Imports a CodeBasePublication3
-     *
-     * @param publication The publication to import.
-     * @return true iff the publication was handled
-     */
-    @SuppressWarnings("SameReturnValue")
-    boolean importPublication(CodeBasePublication3 publication);
+    @NonNull
+    private CommonPublicationData2 commonData;
+
+    @NonNull
+    private Collection<CodeBaseEntry3> entries;
+
+    @Override
+    public String toString() {
+        return String.format("%s(commonData=%s, entries.size()=%d)",
+                             this.getClass().getSimpleName(), commonData, entries.size());
+    }
 }

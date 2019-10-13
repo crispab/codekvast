@@ -4,8 +4,8 @@ import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
 import io.codekvast.dashboard.metrics.IntakeMetricsService;
-import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
+import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import org.assertj.core.util.Files;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,10 +51,10 @@ public class PublicationImporterImplTest {
     }
 
     @Test
-    public void should_import_CodeBasePublication2() throws URISyntaxException {
+    public void should_import_CodeBasePublication3() throws URISyntaxException {
         // given
         File file = new File(getClass().getResource("/sample-publications/codebase-v2.ser").toURI());
-        when(codeBaseImporter.importPublication(any(CodeBasePublication2.class))).thenReturn(true);
+        when(codeBaseImporter.importPublication(any(CodeBasePublication3.class))).thenReturn(true);
 
         // when
         boolean handled = publicationImporter.importPublicationFile(file);
@@ -62,16 +62,16 @@ public class PublicationImporterImplTest {
         // then
         assertThat(handled, is(true));
 
-        verify(codeBaseImporter).importPublication(any(CodeBasePublication2.class));
+        verify(codeBaseImporter).importPublication(any(CodeBasePublication3.class));
         verify(validator).validate(any());
         verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
     }
 
     @Test
-    public void should_reject_CodeBasePublication2_when_DuplicateKeyException() throws URISyntaxException {
+    public void should_reject_CodeBasePublication3_when_DuplicateKeyException() throws URISyntaxException {
         // given
         File file = new File(getClass().getResource("/sample-publications/codebase-v2.ser").toURI());
-        when(codeBaseImporter.importPublication(any(CodeBasePublication2.class))).thenThrow(new DuplicateKeyException("Thrown by mock"));
+        when(codeBaseImporter.importPublication(any(CodeBasePublication3.class))).thenThrow(new DuplicateKeyException("Thrown by mock"));
 
         // when
         boolean handled = publicationImporter.importPublicationFile(file);
@@ -79,7 +79,7 @@ public class PublicationImporterImplTest {
         // then
         assertThat(handled, is(false));
 
-        verify(codeBaseImporter).importPublication(any(CodeBasePublication2.class));
+        verify(codeBaseImporter).importPublication(any(CodeBasePublication3.class));
         verify(validator).validate(any());
         verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
     }

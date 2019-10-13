@@ -1,7 +1,7 @@
 package io.codekvast.javaagent.codebase;
 
 import io.codekvast.javaagent.config.AgentConfigFactory;
-import io.codekvast.javaagent.model.v2.MethodSignature2;
+import io.codekvast.javaagent.model.v3.MethodSignature3;
 import org.junit.Test;
 
 import java.net.URL;
@@ -221,7 +221,7 @@ public class CodeBaseTest {
     }
 
     private void assertThatCodeBaseContains(CodeBase codeBase, String signature) {
-        for (MethodSignature2 sig : codeBase.getSignatures()) {
+        for (MethodSignature3 sig : codeBase.getSignatures()) {
             if (sig.getAspectjString().contains(signature)) {
                 return;
             }
@@ -230,7 +230,7 @@ public class CodeBaseTest {
     }
 
     private void assertThatCodeBaseNotContains(CodeBase codeBase, String signature) {
-        for (MethodSignature2 sig : codeBase.getSignatures()) {
+        for (MethodSignature3 sig : codeBase.getSignatures()) {
             if (sig.getAspectjString().contains(signature)) {
                 fail("Unexpected signature: " + sig.getAspectjString());
             }

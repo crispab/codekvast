@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.util;
 
-import io.codekvast.javaagent.model.v2.MethodSignature2;
+import io.codekvast.javaagent.model.v3.MethodSignature3;
 import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
 import org.aspectj.lang.Signature;
@@ -30,6 +30,9 @@ import org.aspectj.runtime.reflect.Factory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 
 /**
  * Utility class for dealing with signatures.
@@ -46,7 +49,7 @@ public class SignatureUtils {
     public static final String PRIVATE = "private";
     private static final String[] VISIBILITY_KEYWORDS = {PUBLIC, PROTECTED, PACKAGE_PRIVATE, PRIVATE};
 
-    public static String normalizeSignature(MethodSignature2 methodSignature) {
+    public static String normalizeSignature(MethodSignature3 methodSignature) {
         return methodSignature == null ? null : normalizeSignature(methodSignature.getAspectjString());
     }
 
@@ -139,14 +142,14 @@ public class SignatureUtils {
     }
 
     /**
-     * Converts a java.lang.reflect.Method to a MethodSignature2 object.
+     * Converts a java.lang.reflect.Method to a MethodSignature3 object.
      *
      * @param clazz  The class containing the method
      * @param method The method to make a signature of
-     * @return A MethodSignature2 or null if the methodFilter stops the method.
+     * @return A MethodSignature3 or null if the methodFilter stops the method.
      * @see #makeSignature(Class, Method)
      */
-    public static MethodSignature2 makeMethodSignature(Class<?> clazz, Method method) {
+    public static MethodSignature3 makeMethodSignature(Class<?> clazz, Method method) {
         org.aspectj.lang.reflect.MethodSignature aspectjSignature =
             (org.aspectj.lang.reflect.MethodSignature) makeSignature(clazz, method);
 
@@ -154,7 +157,7 @@ public class SignatureUtils {
             return null;
         }
 
-        return MethodSignature2.builder()
+        return MethodSignature3.builder()
                                .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature)))
                                .bridge(method.isBridge())
                                .declaringType(aspectjSignature.getDeclaringTypeName())
@@ -165,19 +168,43 @@ public class SignatureUtils {
                                .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
                                .returnType(aspectjSignature.getReturnType().getName())
                                .synthetic(method.isSynthetic())
+                               .location(makeLocation(clazz))
                                .build();
 
     }
 
+    private static String makeLocation(Class<?> clazz) {
+        try {
+            ProtectionDomain protectionDomain = clazz.getProtectionDomain();
+            if (protectionDomain != null) {
+                CodeSource codeSource = protectionDomain.getCodeSource();
+                if (codeSource != null) {
+                    URL location = codeSource.getLocation();
+                    if (location != null) {
+                        String s = location.toString().replace('\\', '/');
+                        if (s.endsWith("/")) {
+                            s = s.substring(0, s.length() - 1);
+                        }
+                        int pos = s.lastIndexOf("/");
+                        return s.substring(pos + 1);
+                    }
+                }
+            }
+        } catch (SecurityException ignore) {
+            // ignore
+        }
+        return null;
+    }
+
     /**
-     * Converts a java.lang.reflect.Constructor to a MethodSignature2 object.
+     * Converts a java.lang.reflect.Constructor to a MethodSignature3 object.
      *
      * @param clazz       The class containing the method.
      * @param constructor The constructor to make a signature of.
-     * @return A MethodSignature2 or null if the methodFilter stops the constructor.
+     * @return A MethodSignature3 or null if the methodFilter stops the constructor.
      * @see #makeSignature(Class, Method)
      */
-    public static MethodSignature2 makeConstructorSignature(Class<?> clazz, Constructor constructor) {
+    public static MethodSignature3 makeConstructorSignature(Class<?> clazz, Constructor constructor) {
         org.aspectj.lang.reflect.ConstructorSignature aspectjSignature =
             (org.aspectj.lang.reflect.ConstructorSignature) makeSignature(clazz, constructor);
 
@@ -185,7 +212,7 @@ public class SignatureUtils {
             return null;
         }
 
-        return MethodSignature2.builder()
+        return MethodSignature3.builder()
                                .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature)))
                                .bridge(false)
                                .declaringType(aspectjSignature.getDeclaringTypeName())

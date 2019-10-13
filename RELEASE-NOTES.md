@@ -2,6 +2,7 @@
 
 ## 1.1
 
+1. Support for uploading class.protectionDomain.codeSource.location for each method
 1. The agent supports running on Java 8, 9, 10, 11, 12 and 13. ***NOTE: The support for Java 7 is dropped!***
 1. Server is now built with Java 12, but still runs on Java 11.
 1. Replace Server Error 500 caused by RequestRejectedException with a simple 404.

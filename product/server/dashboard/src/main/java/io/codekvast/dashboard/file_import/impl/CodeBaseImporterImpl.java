@@ -25,6 +25,7 @@ import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.metrics.IntakeMetricsService;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
+import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -46,7 +47,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean importPublication(CodeBasePublication2 publication) {
+    public boolean importPublication(CodeBasePublication3 publication) {
         logger.info("Importing {}", publication);
 
         CommonPublicationData2 data = publication.getCommonData();

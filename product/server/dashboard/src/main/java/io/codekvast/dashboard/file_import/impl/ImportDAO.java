@@ -22,8 +22,8 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
-import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
+import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 
 import java.util.Collection;
 import java.util.Set;
@@ -68,7 +68,7 @@ public interface ImportDAO {
      * @param importContext The import importContext returned by {@link CommonImporter#importCommonData(CommonPublicationData2)}
      * @param entries       The collection of code base entries to store.
      */
-    void importMethods(CommonPublicationData2 data, ImportContext importContext, Collection<CodeBaseEntry2> entries);
+    void importMethods(CommonPublicationData2 data, ImportContext importContext, Collection<CodeBaseEntry3> entries);
 
     /**
      * Inserts or updates rows into the invocations table. Existing rows are updated with the new interval.

@@ -89,6 +89,18 @@ class AgentController @Inject constructor(private val agentService: AgentService
         return "OK"
     }
 
+    @PostMapping(value = [V3_UPLOAD_CODEBASE])
+    fun uploadCodeBase3(
+        @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
+        @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
+        @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
+        @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
+
+        saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file)
+
+        return "OK"
+    }
+
     @PostMapping(value = [V1_UPLOAD_INVOCATION_DATA])
     fun uploadInvocationData1(
         @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,

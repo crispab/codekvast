@@ -21,7 +21,11 @@ import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.weeding.WeedingTask;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
-import io.codekvast.javaagent.model.v2.*;
+import io.codekvast.javaagent.model.v2.CommonPublicationData2;
+import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
+import io.codekvast.javaagent.model.v2.SignatureStatus2;
+import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
+import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import org.flywaydb.core.Flyway;
@@ -52,7 +56,8 @@ import java.util.stream.Collectors;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.time.temporal.ChronoUnit.*;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -375,9 +380,37 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("invocations"), is(0));
 
         //@formatter:off
-        CodeBasePublication2 publication = CodeBasePublication2.builder()
+        CodeBasePublication3 publication = CodeBasePublication3.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(Arrays.asList(CodeBaseEntry2.sampleCodeBaseEntry()))
+            .entries(Arrays.asList(CodeBaseEntry3.sampleCodeBaseEntry()))
+            .build();
+        //@formatter:on
+
+        // when
+        codeBaseImporter.importPublication(publication);
+
+        // then
+        assertThat(countRowsInTable("applications WHERE name = '" + publication.getCommonData().getAppName() + "'"), is(1));
+        assertThat(countRowsInTable("environments WHERE name = '" + publication.getCommonData().getEnvironment() + "'"), is(1));
+        assertThat(countRowsInTable("jvms WHERE uuid = '" + publication.getCommonData().getJvmUuid() + "'"), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = '" + publication.getEntries().iterator().next().getSignature() + "'"),
+                   is(1));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
+    }
+
+    @Test
+    public void should_import_codeBasePublication3() {
+        // given
+        assertThat(countRowsInTable("applications"), is(0));
+        assertThat(countRowsInTable("environments"), is(0));
+        assertThat(countRowsInTable("jvms"), is(0));
+        assertThat(countRowsInTable("methods"), is(0));
+        assertThat(countRowsInTable("invocations"), is(0));
+
+        //@formatter:off
+        CodeBasePublication3 publication = CodeBasePublication3.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .entries(Arrays.asList(CodeBaseEntry3.sampleCodeBaseEntry()))
             .build();
         //@formatter:on
 
@@ -403,9 +436,9 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("invocations"), is(0));
 
         //@formatter:off
-        CodeBasePublication2 codeBasePublication = CodeBasePublication2.builder()
+        CodeBasePublication3 codeBasePublication = CodeBasePublication3.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(Arrays.asList(CodeBaseEntry2.sampleCodeBaseEntry()))
+            .entries(Arrays.asList(CodeBaseEntry3.sampleCodeBaseEntry()))
             .build();
 
         long intervalStartedAtMillis = System.currentTimeMillis();
@@ -413,7 +446,7 @@ public class DashboardIntegrationTest {
         InvocationDataPublication2 invocationDataPublication = InvocationDataPublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
             .recordingIntervalStartedAtMillis(intervalStartedAtMillis)
-            .invocations(codeBasePublication.getEntries().stream().map(CodeBaseEntry2::getSignature).collect(Collectors.toSet()))
+            .invocations(codeBasePublication.getEntries().stream().map(CodeBaseEntry3::getSignature).collect(Collectors.toSet()))
             .build();
         //@formatter:on
 

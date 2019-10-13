@@ -7,6 +7,7 @@ import io.codekvast.javaagent.codebase.scannertest.ScannerTest4;
 import io.codekvast.javaagent.codebase.scannertest.excluded.ExcludedScannerTest5;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
+import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -46,9 +47,9 @@ public class CodeBaseScannerTest {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(numClasses, is(9));
 
-        Collection<CodeBaseEntry2> entries = codeBase.getEntries();
+        Collection<CodeBaseEntry3> entries = codeBase.getEntries();
         assertThat(entries, notNullValue());
-        for (CodeBaseEntry2 entry : entries) {
+        for (CodeBaseEntry3 entry : entries) {
             assertThat(entry.getSignature(), not(containsString("wait()")));
         }
 

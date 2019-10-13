@@ -1,7 +1,7 @@
 package io.codekvast.javaagent.util;
 
 import io.codekvast.javaagent.config.MethodAnalyzer;
-import io.codekvast.javaagent.model.v2.MethodSignature2;
+import io.codekvast.javaagent.model.v3.MethodSignature3;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -70,7 +70,7 @@ public class SignatureUtilsTest {
     @SuppressWarnings("Duplicates")
     @Test
     public void should_make_signature_for_protectedMethod2() throws Exception {
-        MethodSignature2 signature = makeMethodSignature(TestClass.class, findTestMethod("protectedMethod2"));
+        MethodSignature3 signature = makeMethodSignature(TestClass.class, findTestMethod("protectedMethod2"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(),
                    is("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.protectedMethod2()"));
@@ -86,7 +86,7 @@ public class SignatureUtilsTest {
     @SuppressWarnings("Duplicates")
     @Test
     public void should_make_signature_for_protectedMethod5() throws Exception {
-        MethodSignature2 signature = makeMethodSignature(TestClass.class, findTestMethod("protectedMethod5"));
+        MethodSignature3 signature = makeMethodSignature(TestClass.class, findTestMethod("protectedMethod5"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(),
                    is("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.protectedMethod5(java.lang.String, io.codekvast" +
@@ -103,7 +103,7 @@ public class SignatureUtilsTest {
 
     @Test
     public void should_make_signature_for_TestClass_constructor() throws Exception {
-        MethodSignature2 signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass()"));
+        MethodSignature3 signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass()"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(), is("public io.codekvast.javaagent.util.SignatureUtilsTest.TestClass()"));
         assertThat(signature.getDeclaringType(), is("io.codekvast.javaagent.util.SignatureUtilsTest$TestClass"));
@@ -126,7 +126,7 @@ public class SignatureUtilsTest {
 
     @Test
     public void should_make_signature_for_TestClass_constructor_int() throws Exception {
-        MethodSignature2 signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass(int)"));
+        MethodSignature3 signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass(int)"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(), is("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass(int)"));
         assertThat(signature.getDeclaringType(), is("io.codekvast.javaagent.util.SignatureUtilsTest$TestClass"));
@@ -140,7 +140,7 @@ public class SignatureUtilsTest {
 
     @Test
     public void should_make_signature_for_TestClass_constructor_int_int() throws Exception {
-        MethodSignature2 signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass(int,int)"));
+        MethodSignature3 signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass(int,int)"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(),
                    is("package-private io.codekvast.javaagent.util.SignatureUtilsTest.TestClass(int, int)"));

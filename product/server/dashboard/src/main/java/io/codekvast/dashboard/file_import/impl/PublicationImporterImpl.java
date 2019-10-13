@@ -28,6 +28,8 @@ import io.codekvast.dashboard.file_import.PublicationImporter;
 import io.codekvast.dashboard.metrics.IntakeMetricsService;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
+import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
+import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -37,6 +39,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.*;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.CODEBASE;
 import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.INVOCATIONS;
@@ -103,7 +106,12 @@ public class PublicationImporterImpl implements PublicationImporter {
     private boolean handlePublication(Object object) {
         if (object instanceof CodeBasePublication2) {
             metricsService.countImportedPublication(CODEBASE);
-            return codeBaseImporter.importPublication((CodeBasePublication2) object);
+            return codeBaseImporter.importPublication(toCodeBasePublication3((CodeBasePublication2) object));
+        }
+
+        if (object instanceof CodeBasePublication3) {
+            metricsService.countImportedPublication(CODEBASE);
+            return codeBaseImporter.importPublication((CodeBasePublication3) object);
         }
 
         if (object instanceof InvocationDataPublication2) {
@@ -113,6 +121,13 @@ public class PublicationImporterImpl implements PublicationImporter {
 
         logger.warn("Don't know how to handle {}", object.getClass().getName());
         return false;
+    }
+
+    private CodeBasePublication3 toCodeBasePublication3(CodeBasePublication2 publication2) {
+        return CodeBasePublication3.builder()
+                                   .commonData(publication2.getCommonData())
+                                   .entries(publication2.getEntries().stream().map(CodeBaseEntry3::fromFormat2).collect(Collectors.toList()))
+                                   .build();
     }
 
     private boolean isValidObject(Object object) {

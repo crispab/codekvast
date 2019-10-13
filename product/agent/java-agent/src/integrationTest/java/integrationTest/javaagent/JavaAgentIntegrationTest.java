@@ -185,7 +185,7 @@ public class JavaAgentIntegrationTest {
                                             .invocationDataPublisherRetryIntervalSeconds(1)
                                             .build()))));
 
-        givenThat(post(V2_UPLOAD_CODEBASE).willReturn(ok()));
+        givenThat(post(V3_UPLOAD_CODEBASE).willReturn(ok()));
         givenThat(post(V2_UPLOAD_INVOCATION_DATA).willReturn(ok()));
 
         List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
@@ -216,7 +216,7 @@ public class JavaAgentIntegrationTest {
         verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
 
         if (enabledByServer) {
-            verify(postRequestedFor(urlEqualTo(V2_UPLOAD_CODEBASE)));
+            verify(postRequestedFor(urlEqualTo(V3_UPLOAD_CODEBASE)));
             verify(postRequestedFor(urlEqualTo(V2_UPLOAD_INVOCATION_DATA)));
         }
 

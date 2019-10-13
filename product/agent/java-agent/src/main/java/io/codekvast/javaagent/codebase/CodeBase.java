@@ -22,9 +22,9 @@
 package io.codekvast.javaagent.codebase;
 
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
-import io.codekvast.javaagent.model.v2.CodeBasePublication2;
-import io.codekvast.javaagent.model.v2.MethodSignature2;
+import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
+import io.codekvast.javaagent.model.v3.CodeBasePublication3;
+import io.codekvast.javaagent.model.v3.MethodSignature3;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -54,7 +54,7 @@ public class CodeBase {
     private final AgentConfig config;
 
     @Getter
-    private final Set<MethodSignature2> signatures = new HashSet<>();
+    private final Set<MethodSignature3> signatures = new HashSet<>();
 
     @Getter
     private final CodeBaseFingerprint fingerprint;
@@ -168,7 +168,7 @@ public class CodeBase {
         }
     }
 
-    void addSignature(MethodSignature2 signature) {
+    void addSignature(MethodSignature3 signature) {
         String normalizedSignature = SignatureUtils.normalizeSignature(signature);
 
         if (normalizedSignature != null) {
@@ -186,12 +186,12 @@ public class CodeBase {
         return signatures.size();
     }
 
-    Collection<CodeBaseEntry2> getEntries() {
-        List<CodeBaseEntry2> result = new ArrayList<>();
+    Collection<CodeBaseEntry3> getEntries() {
+        List<CodeBaseEntry3> result = new ArrayList<>();
 
-        for (MethodSignature2 signature : signatures) {
+        for (MethodSignature3 signature : signatures) {
             result.add(
-                CodeBaseEntry2.builder()
+                CodeBaseEntry3.builder()
                               .methodSignature(signature)
                               .signature(SignatureUtils.stripModifiers(signature.getAspectjString()))
                               .visibility(SignatureUtils.getVisibility(signature.getAspectjString()))
@@ -200,8 +200,8 @@ public class CodeBase {
         return result;
     }
 
-    public CodeBasePublication2 getCodeBasePublication(long customerId, int sequenceNumber) {
-        return CodeBasePublication2
+    public CodeBasePublication3 getCodeBasePublication(long customerId, int sequenceNumber) {
+        return CodeBasePublication3
             .builder()
             .commonData(config.commonPublicationData().toBuilder()
                               .codeBaseFingerprint(getFingerprint().toString())

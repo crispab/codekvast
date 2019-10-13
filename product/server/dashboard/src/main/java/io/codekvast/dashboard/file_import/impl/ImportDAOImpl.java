@@ -22,10 +22,10 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.common.customer.CustomerService;
-import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
-import io.codekvast.javaagent.model.v2.MethodSignature2;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
+import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
+import io.codekvast.javaagent.model.v3.MethodSignature3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -137,7 +137,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public void importMethods(CommonPublicationData2 data, ImportContext importContext, Collection<CodeBaseEntry2> entries) {
+    public void importMethods(CommonPublicationData2 data, ImportContext importContext, Collection<CodeBaseEntry3> entries) {
         long customerId = importContext.getCustomerId();
         long appId = importContext.getAppId();
         long jvmId = importContext.getJvmId();
@@ -226,11 +226,11 @@ public class ImportDAOImpl implements ImportDAO {
                               customerId, appId, jvmId));
     }
 
-    private void importNewMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry2> entries,
+    private void importNewMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry3> entries,
                                   Map<String, Long> existingMethods) {
         long startedAtMillis = System.currentTimeMillis();
         int count = 0;
-        for (CodeBaseEntry2 entry : entries) {
+        for (CodeBaseEntry3 entry : entries) {
             String signature = entry.getSignature();
             if (!existingMethods.containsKey(signature)) {
                 existingMethods
@@ -242,12 +242,12 @@ public class ImportDAOImpl implements ImportDAO {
         logger.debug("Imported {} methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private void updateIncompleteMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry2> entries,
+    private void updateIncompleteMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry3> entries,
                                          Set<String> incompleteMethods,
                                          Map<String, Long> existingMethods, Set<Long> incompleteInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int count = 0;
-        for (CodeBaseEntry2 entry : entries) {
+        for (CodeBaseEntry3 entry : entries) {
             long methodId = existingMethods.get(entry.getSignature());
             if (incompleteMethods.contains(entry.getSignature()) || incompleteInvocations.contains(methodId)) {
                 logger.debug("Updating {}", entry.getSignature());
@@ -259,12 +259,12 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     private void ensureInitialInvocations(CommonPublicationData2 data, long customerId, long appId, long environmentId,
-                                          long jvmId, Collection<CodeBaseEntry2> entries,
+                                          long jvmId, Collection<CodeBaseEntry3> entries,
                                           Map<String, Long> existingMethods, Set<Long> existingInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int importCount = 0;
 
-        for (CodeBaseEntry2 entry : entries) {
+        for (CodeBaseEntry3 entry : entries) {
             long methodId = existingMethods.get(entry.getSignature());
             if (!existingInvocations.contains(methodId)) {
                 SignatureStatus2 initialStatus = calculateInitialStatus(data, entry);
@@ -277,7 +277,7 @@ public class ImportDAOImpl implements ImportDAO {
         logger.debug("Imported {} invocations in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private SignatureStatus2 calculateInitialStatus(CommonPublicationData2 data, CodeBaseEntry2 entry) {
+    private SignatureStatus2 calculateInitialStatus(CommonPublicationData2 data, CodeBaseEntry3 entry) {
         for (String pkg : data.getExcludePackages()) {
             if (entry.getMethodSignature().getPackageName().startsWith(pkg)) {
                 return SignatureStatus2.EXCLUDED_BY_PACKAGE_NAME;
@@ -287,7 +287,7 @@ public class ImportDAOImpl implements ImportDAO {
         return ofNullable(getExcludeByVisibility(data.getMethodVisibility(), entry)).orElse(getExcludeByTriviality(entry));
     }
 
-    private SignatureStatus2 getExcludeByTriviality(CodeBaseEntry2 entry) {
+    private SignatureStatus2 getExcludeByTriviality(CodeBaseEntry3 entry) {
         String name = entry.getMethodSignature().getMethodName();
         String parameterTypes = entry.getMethodSignature().getParameterTypes().trim();
 
@@ -310,7 +310,7 @@ public class ImportDAOImpl implements ImportDAO {
         return SignatureStatus2.NOT_INVOKED;
     }
 
-    SignatureStatus2 getExcludeByVisibility(String methodVisibility, CodeBaseEntry2 entry) {
+    SignatureStatus2 getExcludeByVisibility(String methodVisibility, CodeBaseEntry3 entry) {
         String v = entry.getVisibility();
         switch (methodVisibility) {
         case VISIBILITY_PRIVATE:
@@ -336,7 +336,7 @@ public class ImportDAOImpl implements ImportDAO {
     private static class InsertCompleteMethodStatement implements PreparedStatementCreator {
         private final long customerId;
         private final long publishedAtMillis;
-        private final MethodSignature2 method;
+        private final MethodSignature3 method;
         private final String visibility;
         private final String signature;
 
@@ -372,7 +372,7 @@ public class ImportDAOImpl implements ImportDAO {
     private static class UpdateIncompleteMethodStatement implements PreparedStatementCreator {
         private final long customerId;
         private final long publishedAtMillis;
-        private final CodeBaseEntry2 entry;
+        private final CodeBaseEntry3 entry;
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
@@ -383,7 +383,7 @@ public class ImportDAOImpl implements ImportDAO {
                     "  bridge = ?, synthetic = ?, modifiers = ?, packageName    = ?, parameterTypes = ?, returnType = ?\n" +
                     "WHERE customerId = ? AND signature = ?");
             int column = 0;
-            MethodSignature2 method = entry.getMethodSignature();
+            MethodSignature3 method = entry.getMethodSignature();
             ps.setString(++column, entry.getVisibility());
             ps.setTimestamp(++column, new Timestamp(publishedAtMillis));
             ps.setString(++column, method.getDeclaringType());
@@ -402,7 +402,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @RequiredArgsConstructor
-    private class InsertInvocationStatement implements PreparedStatementCreator {
+    private static class InsertInvocationStatement implements PreparedStatementCreator {
         private final long customerId;
         private final long appId;
         private final long environmentId;
@@ -433,7 +433,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @RequiredArgsConstructor
-    private class UpdateInvocationStatement implements PreparedStatementCreator {
+    private static class UpdateInvocationStatement implements PreparedStatementCreator {
         private final long customerId;
         private final long appId;
         private final long jvmId;
@@ -460,7 +460,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @RequiredArgsConstructor
-    private class InsertIncompleteMethodStatement implements PreparedStatementCreator {
+    private static class InsertIncompleteMethodStatement implements PreparedStatementCreator {
         private final long customerId;
         private final String signature;
         private final long invokedAtMillis;
