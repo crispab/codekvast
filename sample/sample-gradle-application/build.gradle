@@ -11,6 +11,7 @@ configurations {
 
 dependencies {
     implementation "org.slf4j:slf4j-api:1.7.12"
+    implementation "org.slf4j:jul-to-slf4j:1.7.12"
     implementation "aopalliance:aopalliance:1.0"
     implementation 'com.google.inject:guice:4.0'
     implementation project(":sample:sample-lib")

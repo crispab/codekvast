@@ -78,7 +78,7 @@ public class CodeBaseScanner {
                         if (classInfo.getPackageName().contains(".WEB-INF.classes.")) {
                             logger.log(finest, "Ignoring " + classInfo);
                         } else {
-                            logger.warning("Cannot analyze " + classInfo + ": " + t);
+                            logger.log(Level.WARNING, "Cannot analyze " + classInfo, t);
                         }
                     }
                 } else {
@@ -243,9 +243,9 @@ public class CodeBaseScanner {
 
         logger.log(finest, "Analyzing " + clazz);
         try {
-            Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
+            Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
 
-            for (Constructor constructor : declaredConstructors) {
+            for (Constructor<?> constructor : declaredConstructors) {
                 MethodSignature3 thisSignature = SignatureUtils.makeConstructorSignature(clazz, constructor);
                 codeBase.addSignature(thisSignature);
             }
@@ -271,11 +271,15 @@ public class CodeBaseScanner {
                 boolean ignored = true;
                 MethodSignature3 signature = SignatureUtils.makeMethodSignature(clazz, method);
 
-                String declaringPackage = method.getDeclaringClass().getPackage().getName();
-                for (String pkg : packages) {
-                    if (declaringPackage.startsWith(pkg)) {
-                        codeBase.addSignature(signature);
-                        ignored = false;
+                if (signature == null) {
+                    logger.log(finest, "Ignoring method " + method + ", cannot make AspectJ signature");
+                } else {
+                    String declaringPackage = method.getDeclaringClass().getPackage().getName();
+                    for (String pkg : packages) {
+                        if (declaringPackage.startsWith(pkg)) {
+                            codeBase.addSignature(signature);
+                            ignored = false;
+                        }
                     }
                 }
                 if (ignored) {

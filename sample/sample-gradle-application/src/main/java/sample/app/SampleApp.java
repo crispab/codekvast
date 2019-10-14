@@ -2,6 +2,7 @@ package sample.app;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import sample.lib.used.Bar1;
 import sample.lib.used.Bar2;
 import untracked.UntrackedClass;
@@ -16,6 +17,8 @@ public class SampleApp {
     private int sum = 0;
 
     public static void main(String[] args) {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
         new SampleApp().run();
     }
 
