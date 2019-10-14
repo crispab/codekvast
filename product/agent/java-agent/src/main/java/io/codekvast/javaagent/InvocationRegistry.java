@@ -49,7 +49,7 @@ public class InvocationRegistry {
     public static InvocationRegistry instance = new NullInvocationRegistry();
 
     // Toggle between two invocation sets to avoid synchronisation
-    private final Set[] invocations;
+    private final Set<String>[] invocations;
     private volatile int currentInvocationIndex = 0;
 
     // Do all updates to the current set from a single worker thread
@@ -58,6 +58,7 @@ public class InvocationRegistry {
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
     private InvocationRegistry() {
+        //noinspection unchecked
         this.invocations = new Set[]{new HashSet<String>(), new HashSet<String>()};
         startWorker();
     }
@@ -94,9 +95,10 @@ public class InvocationRegistry {
      * Thread-safe.
      *
      * @param signature The captured method invocation signature.
+     * @param location The source location of the invoked method.
      */
-    public void registerMethodInvocation(Signature signature) {
-        String sig = SignatureUtils.signatureToString(signature);
+    public void registerMethodInvocation(Signature signature, String location) {
+        String sig = SignatureUtils.signatureToString(signature, location);
 
         // HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
         // a background worker thread.
@@ -116,7 +118,6 @@ public class InvocationRegistry {
             // avoid ConcurrentModificationException.
             Thread.sleep(10L);
 
-            //noinspection unchecked
             publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
         } catch (InterruptedException ignored) {
             // Do nothing here
@@ -131,7 +132,6 @@ public class InvocationRegistry {
     }
 
     private class InvocationsAdder implements Runnable {
-        @SuppressWarnings("unchecked")
         @Override
         public void run() {
             while (true) {
@@ -152,7 +152,7 @@ public class InvocationRegistry {
         }
 
         @Override
-        public void registerMethodInvocation(Signature signature) {
+        public void registerMethodInvocation(Signature signature, String location) {
             // No operation
         }
 

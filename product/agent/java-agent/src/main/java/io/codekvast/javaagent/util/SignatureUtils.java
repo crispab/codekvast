@@ -24,6 +24,7 @@ package io.codekvast.javaagent.util;
 import io.codekvast.javaagent.model.v3.MethodSignature3;
 import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
+import lombok.val;
 import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
 
@@ -33,6 +34,8 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for dealing with signatures.
@@ -58,14 +61,26 @@ public class SignatureUtils {
     }
 
     /**
-     * Converts a (method) signature to a string containing the bare minimum to uniquely identify the method, namely: <ul> <li>The declaring
-     * class name</li> <li>The method name</li> <li>The full parameter types</li> </ul>
+     * Converts a (method) signature to a string containing the bare minimum to uniquely identify the method, namely:
+     * <ul>
+     *     <li>The declaring class name</li>
+     *     <li>The method name</li>
+     *     <li>The full parameter types</li>
+     *     <li>The source location</li>
+     *     </ul>
      *
-     * @param signature The signature to convert.
-     * @return A string representation of the signature.
+     * @param signature The signature to convert. May be null.
+     * @param location  The source location (file name). May be null.
+     * @return A string representation of the signature appended by " (location)" or null.
      */
-    public static String signatureToString(Signature signature) {
-        return signature == null ? null : signature.toLongString();
+    public static String signatureToString(Signature signature, String location) {
+        if (signature == null) {
+            return null;
+        }
+        if (location == null) {
+            return signature.toLongString();
+        }
+        return String.format("%s (%s)", signature.toLongString(), location);
     }
 
     public static String stripModifiers(String signature) {
@@ -106,7 +121,7 @@ public class SignatureUtils {
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
      * method is not synthetic.
      */
-    public static Signature makeSignature(Class clazz, Method method) {
+    public static Signature makeSignature(Class<?> clazz, Method method) {
 
         if (clazz == null || method.isSynthetic()) {
             return null;
@@ -129,7 +144,7 @@ public class SignatureUtils {
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
      * constructor is not synthetic.
      */
-    private static Signature makeSignature(Class clazz, Constructor constructor) {
+    private static Signature makeSignature(Class<?> clazz, Constructor<?> constructor) {
         if (clazz == null || constructor.isSynthetic()) {
             return null;
         }
@@ -157,8 +172,10 @@ public class SignatureUtils {
             return null;
         }
 
+        String location = makeLocation(clazz);
+
         return MethodSignature3.builder()
-                               .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature)))
+                               .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature, location)))
                                .bridge(method.isBridge())
                                .declaringType(aspectjSignature.getDeclaringTypeName())
                                .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
@@ -168,12 +185,11 @@ public class SignatureUtils {
                                .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
                                .returnType(aspectjSignature.getReturnType().getName())
                                .synthetic(method.isSynthetic())
-                               .location(makeLocation(clazz))
+                               .location(location)
                                .build();
-
     }
 
-    private static String makeLocation(Class<?> clazz) {
+    public static String makeLocation(Class<?> clazz) {
         try {
             ProtectionDomain protectionDomain = clazz.getProtectionDomain();
             if (protectionDomain != null) {
@@ -181,12 +197,16 @@ public class SignatureUtils {
                 if (codeSource != null) {
                     URL location = codeSource.getLocation();
                     if (location != null) {
-                        String s = location.toString().replace('\\', '/');
-                        if (s.endsWith("/")) {
-                            s = s.substring(0, s.length() - 1);
+                        String loc = location.toString();
+                        if (loc.endsWith(".jar") || loc.endsWith(".zip")) {
+                            int pos = loc.lastIndexOf("/");
+                            return loc.substring(pos + 1);
                         }
-                        int pos = s.lastIndexOf("/");
-                        return s.substring(pos + 1);
+                        val pwd = System.getProperty("user.dir") + "/";
+                        if (loc.startsWith("file:" + pwd)) {
+                            return loc.substring("file:".length()).replace(pwd, "");
+                        }
+                        return loc;
                     }
                 }
             }
@@ -204,16 +224,16 @@ public class SignatureUtils {
      * @return A MethodSignature3 or null if the methodFilter stops the constructor.
      * @see #makeSignature(Class, Method)
      */
-    public static MethodSignature3 makeConstructorSignature(Class<?> clazz, Constructor constructor) {
+    public static MethodSignature3 makeConstructorSignature(Class<?> clazz, Constructor<?> constructor) {
         org.aspectj.lang.reflect.ConstructorSignature aspectjSignature =
             (org.aspectj.lang.reflect.ConstructorSignature) makeSignature(clazz, constructor);
 
         if (aspectjSignature == null) {
             return null;
         }
-
+        String location = makeLocation(clazz);
         return MethodSignature3.builder()
-                               .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature)))
+                               .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature, location)))
                                .bridge(false)
                                .declaringType(aspectjSignature.getDeclaringTypeName())
                                .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
@@ -223,20 +243,13 @@ public class SignatureUtils {
                                .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
                                .returnType("")
                                .synthetic(constructor.isSynthetic())
+                               .location(location)
                                .build();
 
     }
 
-    private static String classArrayToString(Class[] classes) {
-        StringBuilder sb = new StringBuilder();
-        String delimiter = "";
-
-        for (Class clazz : classes) {
-            sb.append(delimiter).append(clazz.getName());
-            delimiter = ", ";
-        }
-
-        return sb.toString();
+    private static String classArrayToString(Class<?>[] classes) {
+        return Arrays.stream(classes).map(Class::getName).collect(Collectors.joining(", "));
     }
 
 }

@@ -31,6 +31,7 @@ public class InvocationRegistryTest {
 
     private Signature signature1;
     private Signature signature2;
+    private String location;
 
     @Before
     public void beforeTest() throws IOException, NoSuchMethodException {
@@ -47,6 +48,7 @@ public class InvocationRegistryTest {
         InvocationRegistry.initialize(config);
         signature1 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m1"));
         signature2 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m2"));
+        location = SignatureUtils.makeLocation(TestClass.class);
     }
 
     @After
@@ -58,7 +60,7 @@ public class InvocationRegistryTest {
     public void should_handle_registrations_when_disabled() {
         InvocationRegistry.initialize(null);
         assertThat(InvocationRegistry.instance.isNullRegistry(), is(true));
-        InvocationRegistry.instance.registerMethodInvocation(signature1);
+        InvocationRegistry.instance.registerMethodInvocation(signature1, "location");
     }
 
     @Test
@@ -74,38 +76,30 @@ public class InvocationRegistryTest {
 
         for (final Signature signature : signatures) {
             for (int i = 0; i < numThreads; i++) {
-                Thread t = new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            startingGun.await();
-                            for (int j = 0; j < numRegistrations; j++) {
-                                InvocationRegistry.instance.registerMethodInvocation(signature);
-                            }
-                        } catch (InterruptedException ignore) {
-                        } finally {
-                            finishLine.countDown();
+                Thread t = new Thread(() -> {
+                    try {
+                        startingGun.await();
+                        for (int j = 0; j < numRegistrations; j++) {
+                            InvocationRegistry.instance.registerMethodInvocation(signature, location);
                         }
-
+                    } catch (InterruptedException ignore) {
+                    } finally {
+                        finishLine.countDown();
                     }
+
                 });
                 t.start();
             }
         }
 
-        Thread publisher = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                NullInvocationDataPublisher publisher = new NullInvocationDataPublisher();
-                try {
-                    startingGun.await();
-                    //noinspection InfiniteLoopStatement
-                    while (true) {
-                        InvocationRegistry.instance.publishInvocationData(publisher);
-                    }
-                } catch (InterruptedException | CodekvastPublishingException ignore) {
+        Thread publisher = new Thread(() -> {
+            NullInvocationDataPublisher publisher1 = new NullInvocationDataPublisher();
+            try {
+                startingGun.await();
+                while (true) {
+                    InvocationRegistry.instance.publishInvocationData(publisher1);
                 }
+            } catch (InterruptedException | CodekvastPublishingException ignore) {
             }
         });
         publisher.start();

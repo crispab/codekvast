@@ -57,7 +57,7 @@ public abstract class AbstractMethodExecutionAspect {
 
     @Before("methodExecution() && !trivialMethodExecution()")
     public void registerInvocation(JoinPoint.StaticPart thisJointPoint) {
-        InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature());
+        InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature(), thisJointPoint.getSourceLocation().getFileName());
     }
 
 }

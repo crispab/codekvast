@@ -172,9 +172,14 @@ public class ImportDAOImpl implements ImportDAO {
         customerService.assertDatabaseSize(customerId);
     }
 
-    private void doImportInvocations(long customerId, long appId, long environmentId, long jvmId, long invokedAtMillis,
+    private void doImportInvocations(long customerId,
+                                     long appId,
+                                     long environmentId,
+                                     long jvmId,
+                                     long invokedAtMillis,
                                      Set<String> invokedSignatures,
-                                     Map<String, Long> existingMethods, Set<Long> existingInvocations) {
+                                     Map<String, Long> existingMethods,
+                                     Set<Long> existingInvocations) {
         for (String signature : invokedSignatures) {
             Long methodId = existingMethods.get(signature);
             if (methodId == null) {
