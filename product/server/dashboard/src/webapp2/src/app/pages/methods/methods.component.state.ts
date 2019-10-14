@@ -2,7 +2,6 @@
  * The state for MethodsComponent.
  */
 import {MethodData} from '../../model/methods/method-data';
-import {MethodsComponent} from './methods.component';
 import {Method} from '../../model/methods/method';
 import {GetMethodsRequest} from '../../model/methods/get-methods-request';
 import {DashboardApiService} from '../../services/dashboard-api.service';
@@ -14,6 +13,10 @@ export class CheckboxState {
 
 export class MethodsComponentState {
     static KEY = 'methods';
+    static readonly SIGNATURE_COLUMN = 'signature';
+    static readonly AGE_COLUMN = 'age';
+    static readonly COLLECTED_DAYS_COLUMN = 'collectedDays';
+
 
     req = new GetMethodsRequest();
     includeIfNotInvokedInDays = 30;
@@ -22,7 +25,7 @@ export class MethodsComponentState {
     includeOnlyNeverInvokedMethods = false;
     data: MethodData;
     errorMessage: string;
-    sortColumn = MethodsComponent.SIGNATURE_COLUMN;
+    sortColumn = MethodsComponentState.SIGNATURE_COLUMN;
     sortAscending = true;
     selectedMethod: Method;
     searching = false;
@@ -74,15 +77,15 @@ export class MethodsComponentState {
     }
 
     headerIconClassesSignature() {
-        return this.getHeaderIconClassesFor(MethodsComponent.SIGNATURE_COLUMN);
+        return this.getHeaderIconClassesFor(MethodsComponentState.SIGNATURE_COLUMN);
     }
 
     headerIconClassesAge() {
-        return this.getHeaderIconClassesFor(MethodsComponent.AGE_COLUMN);
+        return this.getHeaderIconClassesFor(MethodsComponentState.AGE_COLUMN);
     }
 
     headerIconClassesCollectedDays() {
-        return this.getHeaderIconClassesFor(MethodsComponent.COLLECTED_DAYS_COLUMN);
+        return this.getHeaderIconClassesFor(MethodsComponentState.COLLECTED_DAYS_COLUMN);
     }
 
     rowIconClasses(id: number) {
@@ -94,15 +97,15 @@ export class MethodsComponentState {
     }
 
     sortBySignature() {
-        this.sortBy(MethodsComponent.SIGNATURE_COLUMN);
+        this.sortBy(MethodsComponentState.SIGNATURE_COLUMN);
     }
 
     sortByAge() {
-        this.sortBy(MethodsComponent.AGE_COLUMN);
+        this.sortBy(MethodsComponentState.AGE_COLUMN);
     }
 
     sortByCollectedDays() {
-        this.sortBy(MethodsComponent.COLLECTED_DAYS_COLUMN);
+        this.sortBy(MethodsComponentState.COLLECTED_DAYS_COLUMN);
     }
 
     sortedMethods(): Method[] {
@@ -112,11 +115,11 @@ export class MethodsComponentState {
 
         return this.data.methods.sort((m1: Method, m2: Method) => {
             let cmp = 0;
-            if (this.sortColumn === MethodsComponent.SIGNATURE_COLUMN) {
+            if (this.sortColumn === MethodsComponentState.SIGNATURE_COLUMN) {
                 cmp = m1.signature.localeCompare(m2.signature);
-            } else if (this.sortColumn === MethodsComponent.AGE_COLUMN) {
+            } else if (this.sortColumn === MethodsComponentState.AGE_COLUMN) {
                 cmp = m1.lastInvokedAtMillis - m2.lastInvokedAtMillis;
-            } else if (this.sortColumn === MethodsComponent.COLLECTED_DAYS_COLUMN) {
+            } else if (this.sortColumn === MethodsComponentState.COLLECTED_DAYS_COLUMN) {
                 cmp = m1.collectedDays - m2.collectedDays;
             }
             if (cmp === 0) {

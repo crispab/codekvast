@@ -15,10 +15,6 @@ import {StateService} from '../../services/state.service';
     providers: [AgePipe, DatePipe]
 })
 export class MethodsComponent implements OnInit {
-    static readonly SIGNATURE_COLUMN = 'signature';
-    static readonly AGE_COLUMN = 'age';
-    static readonly COLLECTED_DAYS_COLUMN = 'collectedDays';
-
     settings: ClientSettings;
     state: MethodsComponentState;
 
