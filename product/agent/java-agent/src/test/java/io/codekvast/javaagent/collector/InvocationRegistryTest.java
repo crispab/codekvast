@@ -31,7 +31,6 @@ public class InvocationRegistryTest {
 
     private Signature signature1;
     private Signature signature2;
-    private String location;
 
     @Before
     public void beforeTest() throws IOException, NoSuchMethodException {
@@ -48,7 +47,6 @@ public class InvocationRegistryTest {
         InvocationRegistry.initialize(config);
         signature1 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m1"));
         signature2 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m2"));
-        location = SignatureUtils.makeLocation(TestClass.class);
     }
 
     @After
@@ -60,7 +58,7 @@ public class InvocationRegistryTest {
     public void should_handle_registrations_when_disabled() {
         InvocationRegistry.initialize(null);
         assertThat(InvocationRegistry.instance.isNullRegistry(), is(true));
-        InvocationRegistry.instance.registerMethodInvocation(signature1, "location");
+        InvocationRegistry.instance.registerMethodInvocation(signature1);
     }
 
     @Test
@@ -80,7 +78,7 @@ public class InvocationRegistryTest {
                     try {
                         startingGun.await();
                         for (int j = 0; j < numRegistrations; j++) {
-                            InvocationRegistry.instance.registerMethodInvocation(signature, location);
+                            InvocationRegistry.instance.registerMethodInvocation(signature);
                         }
                     } catch (InterruptedException ignore) {
                     } finally {

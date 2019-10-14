@@ -95,10 +95,9 @@ public class InvocationRegistry {
      * Thread-safe.
      *
      * @param signature The captured method invocation signature.
-     * @param location The source location of the invoked method.
      */
-    public void registerMethodInvocation(Signature signature, String location) {
-        String sig = SignatureUtils.signatureToString(signature, location);
+    public void registerMethodInvocation(Signature signature) {
+        String sig = SignatureUtils.signatureToString(signature);
 
         // HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
         // a background worker thread.
@@ -152,7 +151,7 @@ public class InvocationRegistry {
         }
 
         @Override
-        public void registerMethodInvocation(Signature signature, String location) {
+        public void registerMethodInvocation(Signature signature) {
             // No operation
         }
 

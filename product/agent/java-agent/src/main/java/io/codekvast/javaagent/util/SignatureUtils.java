@@ -21,6 +21,8 @@
  */
 package io.codekvast.javaagent.util;
 
+import com.google.common.annotations.VisibleForTesting;
+import io.codekvast.javaagent.model.v3.MethodLocation3;
 import io.codekvast.javaagent.model.v3.MethodSignature3;
 import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
@@ -73,14 +75,15 @@ public class SignatureUtils {
      * @param location  The source location (file name). May be null.
      * @return A string representation of the signature appended by " (location)" or null.
      */
-    public static String signatureToString(Signature signature, String location) {
+    public static MethodLocation3 makeMethodLocation(Signature signature, String location) {
         if (signature == null) {
             return null;
         }
-        if (location == null) {
-            return signature.toLongString();
-        }
-        return String.format("%s (%s)", signature.toLongString(), location);
+        return new MethodLocation3(signature.toLongString(), location);
+    }
+
+    public static String signatureToString(Signature signature) {
+      return signature == null ? null : signature.toLongString();
     }
 
     public static String stripModifiers(String signature) {
@@ -127,13 +130,13 @@ public class SignatureUtils {
             return null;
         }
 
-        return new Factory(null, clazz).makeMethodSig(method.getModifiers(),
-                                                      method.getName(),
-                                                      clazz,
-                                                      method.getParameterTypes(),
-                                                      null,
-                                                      method.getExceptionTypes(),
-                                                      method.getReturnType());
+        return new Factory(makeLocation(clazz), clazz).makeMethodSig(method.getModifiers(),
+                                                                     method.getName(),
+                                                                     clazz,
+                                                                     method.getParameterTypes(),
+                                                                     null,
+                                                                     method.getExceptionTypes(),
+                                                                     method.getReturnType());
     }
 
     /**
@@ -149,11 +152,11 @@ public class SignatureUtils {
             return null;
         }
 
-        return new Factory(null, clazz).makeConstructorSig(constructor.getModifiers(),
-                                                           clazz,
-                                                           constructor.getParameterTypes(),
-                                                           null,
-                                                           constructor.getExceptionTypes());
+        return new Factory(makeLocation(clazz), clazz).makeConstructorSig(constructor.getModifiers(),
+                                                                          clazz,
+                                                                          constructor.getParameterTypes(),
+                                                                          null,
+                                                                          constructor.getExceptionTypes());
     }
 
     /**
@@ -172,10 +175,9 @@ public class SignatureUtils {
             return null;
         }
 
-        String location = makeLocation(clazz);
-
+        MethodLocation3 methodLocation = makeMethodLocation(aspectjSignature, makeLocation(clazz));
         return MethodSignature3.builder()
-                               .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature, location)))
+                               .aspectjString(stripModifiersAndReturnType(methodLocation.getSignature()))
                                .bridge(method.isBridge())
                                .declaringType(aspectjSignature.getDeclaringTypeName())
                                .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
@@ -185,11 +187,12 @@ public class SignatureUtils {
                                .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
                                .returnType(aspectjSignature.getReturnType().getName())
                                .synthetic(method.isSynthetic())
-                               .location(location)
+                               .location(methodLocation.getLocation())
                                .build();
     }
 
-    public static String makeLocation(Class<?> clazz) {
+    @VisibleForTesting
+    static String makeLocation(Class<?> clazz) {
         try {
             ProtectionDomain protectionDomain = clazz.getProtectionDomain();
             if (protectionDomain != null) {
@@ -231,9 +234,10 @@ public class SignatureUtils {
         if (aspectjSignature == null) {
             return null;
         }
-        String location = makeLocation(clazz);
+
+        MethodLocation3 methodLocation = makeMethodLocation(aspectjSignature, makeLocation(clazz));
         return MethodSignature3.builder()
-                               .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature, location)))
+                               .aspectjString(stripModifiersAndReturnType(methodLocation.getSignature()))
                                .bridge(false)
                                .declaringType(aspectjSignature.getDeclaringTypeName())
                                .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
@@ -243,7 +247,7 @@ public class SignatureUtils {
                                .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
                                .returnType("")
                                .synthetic(constructor.isSynthetic())
-                               .location(location)
+                               .location(methodLocation.getLocation())
                                .build();
 
     }

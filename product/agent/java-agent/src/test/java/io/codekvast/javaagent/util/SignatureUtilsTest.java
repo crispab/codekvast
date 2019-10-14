@@ -2,9 +2,9 @@ package io.codekvast.javaagent.util;
 
 import io.codekvast.javaagent.config.MethodAnalyzer;
 import io.codekvast.javaagent.model.v3.MethodSignature3;
+import io.codekvast.javaagent.model.v3.MethodLocation3;
 import lombok.val;
 import org.assertj.core.api.AbstractAssert;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,8 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static io.codekvast.javaagent.util.SignatureUtils.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThat;
 
@@ -34,42 +33,32 @@ public class SignatureUtilsTest {
 
     @Test
     public void should_strip_modifiers_publicStaticMethod1() throws IOException, NoSuchMethodException {
-        String s = stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("publicStaticMethod1")),
-                                                                 makeLocation(TestClass.class)));
-        assertThat(s, matchesSignature(
-            "public io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.publicStaticMethod1(java.lang.String, java.util.Collection)"));
+        String s = stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("publicStaticMethod1"))));
+        assertThat(s, is("public io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.publicStaticMethod1(java.lang.String, java.util.Collection)"));
     }
 
     @Test
     public void should_strip_modifiers_protectedMethod2() throws IOException, NoSuchMethodException {
-        String s =
-            stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("protectedMethod2")),
-                                                          makeLocation(TestClass.class)));
-        assertThat(s, matchesSignature("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.protectedMethod2()"));
+        String s = stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("protectedMethod2"))));
+        assertThat(s, is("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.protectedMethod2()"));
     }
 
     @Test
     public void should_strip_modifiers_privateMethod3() throws IOException, NoSuchMethodException {
-        String s = stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("privateMethod3")),
-                                                                 makeLocation(TestClass.class)));
-        assertThat(s, matchesSignature(
-            "private io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.privateMethod3(int, java.lang.String[])"));
+        String s = stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("privateMethod3"))));
+        assertThat(s, is("private io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.privateMethod3(int, java.lang.String[])"));
     }
 
     @Test
     public void should_strip_modifiers_privateMethod4() throws IOException, NoSuchMethodException {
-        String s = stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("packagePrivateMethod4")),
-                                                                 makeLocation(TestClass.class)));
-        assertThat(s,
-                   matchesSignature("package-private io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.packagePrivateMethod4(int)"));
+        String s = stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("packagePrivateMethod4"))));
+        assertThat(s, is("package-private io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.packagePrivateMethod4(int)"));
     }
 
     @Test
     public void should_strip_modifiers_twice() throws NoSuchMethodException {
-        String s = stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("privateMethod3")),
-                                                                 makeLocation(TestClass.class)));
-        assertThat(s, matchesSignature(
-            "private io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.privateMethod3(int, java.lang.String[])"));
+        String s = stripModifiersAndReturnType(signatureToString(makeSignature(TestClass.class, findTestMethod("privateMethod3"))));
+        assertThat(s, is("private io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.privateMethod3(int, java.lang.String[])"));
         String s2 = stripModifiersAndReturnType(s);
         assertThat(s2, is(s));
     }
@@ -80,7 +69,7 @@ public class SignatureUtilsTest {
         MethodSignature3 signature = makeMethodSignature(TestClass.class, findTestMethod("protectedMethod2"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(),
-                   matchesSignature("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.protectedMethod2()"));
+                   is("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.protectedMethod2()"));
         assertThat(signature.getDeclaringType(), is("io.codekvast.javaagent.util.SignatureUtilsTest$TestClass"));
         assertThat(signature.getExceptionTypes(), is(""));
         assertThat(signature.getMethodName(), is("protectedMethod2"));
@@ -97,10 +86,9 @@ public class SignatureUtilsTest {
         MethodSignature3 signature = makeMethodSignature(TestClass.class, findTestMethod("protectedMethod5"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(),
-                   matchesSignature(
-                       "protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.protectedMethod5(java.lang.String, io" +
-                           ".codekvast" +
-                           ".javaagent.util.SignatureUtilsTest.TestInterface)"));
+                   is("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass.protectedMethod5(java.lang.String, io" +
+                          ".codekvast" +
+                          ".javaagent.util.SignatureUtilsTest.TestInterface)"));
         assertThat(signature.getDeclaringType(), is("io.codekvast.javaagent.util.SignatureUtilsTest$TestClass"));
         assertThat(signature.getExceptionTypes(), is("java.lang.UnsupportedOperationException"));
         assertThat(signature.getMethodName(), is("protectedMethod5"));
@@ -116,7 +104,7 @@ public class SignatureUtilsTest {
     public void should_make_signature_for_TestClass_constructor() throws Exception {
         MethodSignature3 signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass()"));
         assertThat(signature, notNullValue());
-        assertThat(signature.getAspectjString(), matchesSignature("public io.codekvast.javaagent.util.SignatureUtilsTest.TestClass()"));
+        assertThat(signature.getAspectjString(), is("public io.codekvast.javaagent.util.SignatureUtilsTest.TestClass()"));
         assertThat(signature.getDeclaringType(), is("io.codekvast.javaagent.util.SignatureUtilsTest$TestClass"));
         assertThat(signature.getExceptionTypes(), is(""));
         assertThat(signature.getMethodName(), is("<init>"));
@@ -141,7 +129,7 @@ public class SignatureUtilsTest {
         MethodSignature3 signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass(int)"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(),
-                   matchesSignature("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass(int)"));
+                   is("protected io.codekvast.javaagent.util.SignatureUtilsTest.TestClass(int)"));
         assertThat(signature.getDeclaringType(), is("io.codekvast.javaagent.util.SignatureUtilsTest$TestClass"));
         assertThat(signature.getExceptionTypes(), is(""));
         assertThat(signature.getMethodName(), is("<init>"));
@@ -157,7 +145,7 @@ public class SignatureUtilsTest {
         MethodSignature3 signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass(int,int)"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(),
-                   matchesSignature("package-private io.codekvast.javaagent.util.SignatureUtilsTest.TestClass(int, int)"));
+                   is("package-private io.codekvast.javaagent.util.SignatureUtilsTest.TestClass(int, int)"));
         assertThat(signature.getDeclaringType(), is("io.codekvast.javaagent.util.SignatureUtilsTest$TestClass"));
         assertThat(signature.getExceptionTypes(), is("java.lang.UnsupportedOperationException"));
         assertThat(signature.getMethodName(), is("<init>"));
@@ -198,22 +186,18 @@ public class SignatureUtilsTest {
     @Test
     public void should_handle_null_codeSource() throws NoSuchMethodException {
         val clazz = BigInteger.class;
-        String s = stripModifiersAndReturnType(signatureToString(makeSignature(clazz, findMethod(clazz, "nextProbablePrime")),
-                                                                 makeLocation(clazz)));
-        assertThat(s, is("public java.math.BigInteger.nextProbablePrime()"));
+        assertThat(makeLocation(clazz), is(nullValue()));
+
+        MethodLocation3 sigLoc = makeMethodLocation(makeSignature(clazz, findMethod(clazz, "nextProbablePrime")), makeLocation(clazz));
+        assertThat(sigLoc, is(new MethodLocation3("public java.math.BigInteger java.math.BigInteger.nextProbablePrime()", null)));
     }
 
     @Test
     public void should_handle_jarred_location() throws NoSuchMethodException {
         val clazz = AbstractAssert.class;
-        String s = stripModifiersAndReturnType(signatureToString(makeSignature(clazz, findMethod(clazz, "isNull")),
-                                                                 makeLocation(clazz)));
-        assertThat(s, is("public org.assertj.core.api.AbstractAssert.isNull() (assertj-core-3.11.1.jar)"));
-    }
-
-    private Matcher<String> matchesSignature(String sig) {
-        return matchesPattern(sig.replaceAll("([\\(\\)\\[\\]])", "\\\\$1")
-                                  + " \\(" + LOCATION_PATTERN + "\\)");
+        MethodLocation3 sigLoc = makeMethodLocation(makeSignature(clazz, findMethod(clazz, "isNull")), makeLocation(clazz));
+        assertThat(sigLoc, is(new MethodLocation3("public void org.assertj.core.api.AbstractAssert.isNull()", "assertj-core-3.11.1.jar")));
+        assertThat(stripModifiersAndReturnType(sigLoc.getSignature()), is("public org.assertj.core.api.AbstractAssert.isNull()"));
     }
 
     private Method findTestMethod(String name) {
