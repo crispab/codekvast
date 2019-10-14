@@ -417,13 +417,14 @@ public class DashboardServiceImpl implements DashboardService {
 
             return String.format("SELECT i.methodId, a.name AS appName, j.applicationVersion AS appVersion,\n" +
                                      "  e.name AS envName, i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.hostname, j.tags,\n" +
-                                     "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m.modifiers, m" +
-                                     ".packageName\n" +
+                                     "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m.modifiers," +
+                                     "  m.packageName, ml.location\n" +
                                      "  FROM invocations i\n" +
                                      "  INNER JOIN applications a ON a.id = i.applicationId \n" +
                                      "  INNER JOIN environments e ON e.id = i.environmentId \n" +
                                      "  INNER JOIN methods m ON m.id = i.methodId \n" +
                                      "  INNER JOIN jvms j ON j.id = i.jvmId \n" +
+                                     "  LEFT JOIN method_locations ml ON m.id = ml.methodId \n" +
                                      "  WHERE i.customerId = :customerId AND j.garbage = FALSE AND %s \n" +
                                      "  ORDER BY i.methodId ASC", whereClause);
         }
@@ -485,6 +486,12 @@ public class DashboardServiceImpl implements DashboardService {
                    .visibility(rs.getString("visibility"))
                    .bridge(bridge)
                    .synthetic(synthetic);
+
+            // Left join stuff
+            String location = rs.getString("location");
+            if (location != null) {
+                builder.location(location);
+            }
         }
 
         private Set<String> splitOnCommaOrSemicolon(String tags) {

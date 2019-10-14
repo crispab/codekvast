@@ -30,6 +30,10 @@
                 <th>Status:</th>
                 <td>{{ method.statuses | ckInvocationStatus }}</td>
             </tr>
+            <tr>
+                <th>Locations:</th>
+                <td>{{ method.locations.join(', ') }}</td>
+            </tr>
             <tr *ngIf="hasInconsistentTracking()">
                 <th colspan="2" class="bg-danger text-white">
                     WARNING: Inconsistent collector configuration, the method is only tracked in {{ method.trackedPercent }}% of the apps!

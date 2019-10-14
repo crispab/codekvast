@@ -79,6 +79,9 @@ public class MethodDescriptor1 {
     private Set<SignatureStatus2> statuses;
     private Set<String> tags;
 
+    @Singular
+    private SortedSet<String> locations;
+
     /**
      * Assigns values to all computed fields.
      * @return this

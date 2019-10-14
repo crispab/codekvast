@@ -121,6 +121,8 @@ public class MethodDescriptor1Test {
                                 .visibility("public")
                                 .bridge(null)
                                 .synthetic(false)
+                                .location("location1")
+                                .location("location2")
                                 .build().computeFields();
     }
 
