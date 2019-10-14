@@ -35,7 +35,7 @@ export class CollectionStatusComponentState {
 
     autoRefreshButtonClasses() {
         return {
-            'fas': true,
+            fas: true,
             'fa-pause': this.autoRefresh,
             'fa-play': !this.autoRefresh
         };

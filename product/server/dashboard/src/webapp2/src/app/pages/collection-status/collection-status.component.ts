@@ -75,7 +75,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         let invisible = !agent.agentAlive;
         let overdue = !invisible && agent.nextPublicationExpectedAtMillis < new Date().getTime() - 30000;
         return {
-            'invisible': invisible,
+            invisible: invisible,
             'bg-warning': overdue,
             'text-white': overdue
         };
@@ -102,8 +102,8 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
 
     commentClasses(agent: Agent) {
         return {
-            'invisible': agent.deletionState !== 1,
-            'far': agent.deletionState === 1,
+            invisible: agent.deletionState !== 1,
+            far: agent.deletionState === 1,
             'fa-clock': agent.deletionState === 1
         };
     }

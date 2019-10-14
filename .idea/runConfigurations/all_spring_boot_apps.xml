@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="all-spring-boot-apps" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
-    <toRun type="js.build_tools.npm" name="npm start dashboard" />
-    <toRun type="SpringBootApplicationConfigurationType" name="CodekvastDashboardApplication" />
-    <toRun type="SpringBootApplicationConfigurationType" name="CodekvastLoginApplication" />
+  <configuration default="false" name="all-spring-boot-apps" type="CompoundRunConfigurationType">
+    <toRun name="npm start dashboard2" type="js.build_tools.npm" />
+    <toRun name="CodekvastDashboardApplication" type="SpringBootApplicationConfigurationType" />
+    <toRun name="CodekvastLoginApplication" type="SpringBootApplicationConfigurationType" />
     <method v="2" />
   </configuration>
 </component>
