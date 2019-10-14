@@ -51,6 +51,14 @@ INSERT INTO methods (id, customerId, visibility, signature) VALUES
   (9, 1, 'public', 'm9'),
   (10, 1, 'public', 'm10');
 
+INSERT INTO method_locations(id, customerId, methodId, location) VALUES
+       (1, 1, 1, 'loc1'),
+       (2, 1, 1, 'loc2'),
+       (3, 1, 1, 'loc3'),
+       (4, 1, 2, 'loc1'),
+       (5, 1, 2, 'loc2'),
+       (6, 1, 2, 'loc3');
+
 INSERT INTO jvms (id, customerId, applicationId, applicationVersion, environmentId, uuid, methodVisibility, packages, excludePackages,
                   computerId, hostname, agentVersion, tags, garbage)
 VALUES

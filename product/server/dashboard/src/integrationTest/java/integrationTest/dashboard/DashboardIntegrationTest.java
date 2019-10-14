@@ -377,6 +377,7 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("environments"), is(0));
         assertThat(countRowsInTable("jvms"), is(0));
         assertThat(countRowsInTable("methods"), is(0));
+        assertThat(countRowsInTable("method_locations"), is(0));
         assertThat(countRowsInTable("invocations"), is(0));
 
         //@formatter:off
@@ -396,6 +397,7 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("methods WHERE signature = '" + publication.getEntries().iterator().next().getSignature() + "'"),
                    is(1));
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
+        assertThat(countRowsInTable("method_locations"), is(1));
     }
 
     @Test

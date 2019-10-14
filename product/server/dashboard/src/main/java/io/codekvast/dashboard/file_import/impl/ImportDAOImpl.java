@@ -150,6 +150,7 @@ public class ImportDAOImpl implements ImportDAO {
         Set<Long> existingInvocations = getExistingInvocations(customerId, appId, jvmId);
 
         importNewMethods(customerId, publishedAtMillis, entries, existingMethods);
+        insertMethodLocations(customerId, entries, existingMethods);
         updateIncompleteMethods(customerId, publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
         ensureInitialInvocations(data, customerId, appId, environmentId, jvmId, entries, existingMethods, existingInvocations);
 
@@ -245,6 +246,22 @@ public class ImportDAOImpl implements ImportDAO {
             }
         }
         logger.debug("Imported {} methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
+    }
+
+    private void insertMethodLocations(long customerId, Collection<CodeBaseEntry3> entries,
+                                       Map<String, Long> existingMethods) {
+        long startedAtMillis = System.currentTimeMillis();
+        int count = 0;
+        for (CodeBaseEntry3 entry : entries) {
+            String location = entry.getMethodSignature().getLocation();
+            if (location != null) {
+                long methodId = existingMethods.get(entry.getSignature());
+                logger.debug("Inserting {} ({})", entry.getSignature(), location);
+                count += jdbcTemplate.update(new InsertMethodLocationStatement(customerId, methodId, location));
+            }
+        }
+        logger.debug("Inserted {} method locations in {} ms", count, System.currentTimeMillis() - startedAtMillis);
+
     }
 
     private void updateIncompleteMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry3> entries,
@@ -433,6 +450,25 @@ public class ImportDAOImpl implements ImportDAO {
             ps.setString(++column, status.name());
             ps.setLong(++column, invokedAtMillis);
             ps.setLong(++column, invocationCount);
+            return ps;
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static class InsertMethodLocationStatement implements PreparedStatementCreator {
+        private final long customerId;
+        private final long methodId;
+        private final String location;
+
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "INSERT IGNORE INTO method_locations(customerId, methodId, location) VALUES(?, ?, ?) ");
+            int column = 0;
+            ps.setLong(++column, customerId);
+            ps.setLong(++column, methodId);
+            ps.setString(++column, location);
             return ps;
         }
     }

@@ -55,6 +55,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
         val invocationsBefore = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Int::class.java)!!
         val deletedJvms = jdbcTemplate.update("DELETE FROM jvms WHERE garbage = TRUE ")
+        var deletedMethodLocations = 0
         var deletedMethods = 0
         var deletedApplications = 0
         var deletedEnvironments = 0
@@ -63,6 +64,11 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         if (deletedJvms > 0) {
             val invocationsAfter = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Int::class.java)!!
             deletedInvocations = invocationsBefore - invocationsAfter
+
+            deletedMethodLocations = jdbcTemplate.update("""
+                DELETE ml FROM method_locations AS ml
+                LEFT JOIN invocations AS i ON ml.id = i.methodId
+                WHERE i.methodId IS NULL""")
 
             deletedMethods = jdbcTemplate.update("""
                 DELETE m FROM methods AS m
@@ -82,10 +88,10 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
         val deletedAgents = jdbcTemplate.update("DELETE FROM agent_state WHERE garbage = TRUE ")
 
-        val deletedRows = deletedAgents + deletedJvms + deletedMethods + deletedApplications + deletedEnvironments + deletedInvocations
+        val deletedRows = deletedAgents + deletedJvms + deletedMethodLocations + deletedMethods + deletedApplications + deletedEnvironments + deletedInvocations
         if (deletedRows > 0) {
-            logger.info(String.format("Deleted %,d database rows (%,d agents, %,d JVMs, %,d methods, %,d applications, %,d environments and %,d invocations) in %s.",
-                deletedRows, deletedAgents, deletedJvms, deletedMethods, deletedApplications, deletedEnvironments, deletedInvocations,
+            logger.info(String.format("Deleted %,d database rows (%,d agents, %,d JVMs, %,d method locations, %,d methods, %,d applications, %,d environments and %,d invocations) in %s.",
+                deletedRows, deletedAgents, deletedJvms, deletedMethodLocations, deletedMethods, deletedApplications, deletedEnvironments, deletedInvocations,
                 LoggingUtils.humanReadableDuration(Duration.between(startedAt, Instant.now()))))
         } else {
             logger.debug("Found nothing to delete")
