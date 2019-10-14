@@ -205,11 +205,15 @@ public class SignatureUtils {
                             int pos = loc.lastIndexOf("/");
                             return loc.substring(pos + 1);
                         }
-                        val pwd = System.getProperty("user.dir") + "/";
-                        if (loc.startsWith("file:" + pwd)) {
-                            return loc.substring("file:".length()).replace(pwd, "");
+                        for (String suffix : Arrays.asList("BOOT-INF/classes/", "WEB-INF/classes/", "classes/")) {
+                            if (loc.endsWith(suffix)) {
+                                return suffix;
+                            }
                         }
-                        return loc;
+
+                        // Probably in dev environment, make location relative to $PWD
+                        val pwd = "file:" + System.getProperty("user.dir") + "/";
+                        return loc.replace(pwd, "");
                     }
                 }
             }

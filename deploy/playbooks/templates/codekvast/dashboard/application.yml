@@ -13,7 +13,7 @@ logging:
     file.max-size: '10MB'
     file.max-history: 10
     level:
-        io.codekvast: DEBUG
+        io.codekvast: INFO
         io.micrometer.datadog.DatadogMeterRegistry: OFF
 
 management:

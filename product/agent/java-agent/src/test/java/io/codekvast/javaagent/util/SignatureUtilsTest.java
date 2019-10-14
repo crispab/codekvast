@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 @SuppressWarnings("ALL")
 public class SignatureUtilsTest {
 
-    private static final String IDEA_TEST_CLASSES_PATH = "out/test/classes/";
+    private static final String IDEA_TEST_CLASSES_PATH = "classes/";
     private static final String GRADLE_TEST_CLASSES_PATH = "build/classes/java/test/";
     private static final String LOCATION_PATTERN = String.format("(%s|%s)", IDEA_TEST_CLASSES_PATH, GRADLE_TEST_CLASSES_PATH);
 
