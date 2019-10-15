@@ -58,3 +58,4 @@ typings/
 .buildState
 ajcore.*.txt
 **/.DS_Store
+/product/server/dashboard/src/webapp2/coverage/

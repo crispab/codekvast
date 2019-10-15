@@ -2,17 +2,35 @@ import {AppComponent} from './app.component';
 import {async, TestBed} from '@angular/core/testing';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RouterTestingModule} from '@angular/router/testing';
+import {ConfigService} from './services/config.service';
+import {DashboardApiService} from './services/dashboard-api.service';
+import {CookieService} from 'ngx-cookie';
+import {StateService} from './services/state.service';
+import {from} from 'rxjs';
 
 describe('AppComponent', () => {
+    let fakeApiService = {getServerSettings: () => from([{serverVersion: 'some-server-version'}])};
+    let fakeCookieService = {get: () => ''};
+
     beforeEach(async(() => {
+
         TestBed.configureTestingModule({
             imports: [
                 RouterTestingModule, NgbModule
             ],
+            providers: [
+                ConfigService, StateService, {
+                    provide: CookieService,
+                    useValue: fakeCookieService
+                }, {
+                    provide: DashboardApiService,
+                    useValue: fakeApiService
+                }
+            ],
             declarations: [
                 AppComponent
             ],
-    }).compileComponents();
+        }).compileComponents();
   }));
 
   it('should create the app', () => {
@@ -21,16 +39,11 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'dashboard'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('dashboard');
-  });
-
-  it('should render title in a h1 tag', () => {
+  it('should render title in a title tag', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to dashboard!');
+    expect(compiled.querySelector('h1#title').textContent).toContain('Codekvast');
   });
+
 });
