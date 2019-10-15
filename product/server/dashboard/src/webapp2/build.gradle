@@ -9,7 +9,7 @@ task frontendInstall(type: Exec) {
     args 'install'
 
     inputs.files file('src/webapp2/package.json')
-    inputs.dir file('src/webapp2/node_modules')
+    outputs.dir file('src/webapp2/node_modules')
     outputs.file file('src/webapp2/yarn.lock')
 }
 
