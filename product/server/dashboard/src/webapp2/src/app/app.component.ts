@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
 
     loggedInAs = 'Not logged in';
     viewingCustomer = '';
-    private showHerokuIntegrationMenu = false;
+    showHerokuIntegrationMenu = false;
     private googleAnalyticsInitialized = false;
     private Boomerang: any = window['Boomerang'];
     private readonly googleAnalyticsId = 'UA-97240168-3';
@@ -61,6 +61,10 @@ export class AppComponent implements OnInit {
             'native-login-menu': this.stateService.isLoggedIn() && !this.showHerokuIntegrationMenu,
             container: true
         };
+    }
+
+    isLoggedIn() {
+        return this.stateService.isLoggedIn();
     }
 
     logout() {

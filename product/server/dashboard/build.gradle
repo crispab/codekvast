@@ -29,11 +29,7 @@ bootJar {
 
     // Output from frontendBuild
     into('static') {
-        from('src/webapp2/dist/dashboard') {
-            exclude '**/*.css.map'
-            exclude '**/*.js.map'
-            exclude '**/test/**'
-        }
+        from('src/webapp2/dist/dashboard')
     }
 
     launchScript {

@@ -92,7 +92,7 @@ task frontendBuild(type: Exec) {
 
     workingDir file('src/webapp2')
     executable 'npm'
-    args 'run', 'build'
+    args 'run', 'build-prod'
     environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
 }
 
