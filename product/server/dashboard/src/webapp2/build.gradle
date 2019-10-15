@@ -30,7 +30,7 @@ task frontendTest(type: Exec) {
 
     workingDir file('src/webapp2')
     executable 'npm'
-    args 'run', 'test'
+    args 'run', 'test-ci'
 
     doLast {
         timestampFile.parentFile.mkdirs()
