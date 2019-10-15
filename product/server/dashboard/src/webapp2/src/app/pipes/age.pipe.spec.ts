@@ -69,7 +69,7 @@ describe('AgePipe', () => {
     });
 
     it('Should transform getFutureDate(0, 0, 36, 12) to "in 36m 12s"', () => {
-        expect(pipe.transform(getFutureDate(0, 0, 36, 12), 'age')).toBe('in 36m 12s');
+        expect(pipe.transform(getFutureDate(0, 0, 36, 12), 'age')).toMatch(/in 36m (11s|12s)/);
     });
 
     it('Should throw error for non-dates and non-integers', () => {
