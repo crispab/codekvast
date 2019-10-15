@@ -23,13 +23,13 @@ dependencies {
 }
 
 bootJar {
-    dependsOn frontendWebpack
+    dependsOn frontendBuild
 
     // Spring Boot automatically serves static content from static/**
 
-    // Output from frontendWebpack
+    // Output from frontendBuild
     into('static') {
-        from('src/webapp/dist') {
+        from('src/webapp2/dist/dashboard') {
             exclude '**/*.css.map'
             exclude '**/*.js.map'
             exclude '**/test/**'
@@ -46,8 +46,8 @@ bootJar {
 }
 
 run {
-    // dependsOn startMariadb, ":product:server:dashboard:frontendWebpack", installDist, generateCodekvastConfig, ':product:agent:java-agent:shadowJar'
-    dependsOn startMariadb, ":product:server:dashboard:frontendWebpack"
+    // dependsOn startMariadb, ":product:server:dashboard:frontendBuild", installDist, generateCodekvastConfig, ':product:agent:java-agent:shadowJar'
+    dependsOn startMariadb, ":product:server:dashboard:frontendBuild"
 
     jvmArgs = [
         '-enableassertions',

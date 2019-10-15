@@ -77,7 +77,7 @@ task frontendStart(type: Exec) {
     args 'start'
 }
 
-task frontendWebpack(type: Exec) {
+task frontendBuild(type: Exec) {
     description "Builds the frontend webpack bundles for production"
     group "Frontend Development"
     dependsOn frontendTest

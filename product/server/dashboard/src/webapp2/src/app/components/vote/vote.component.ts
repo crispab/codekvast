@@ -39,12 +39,12 @@ class VoteState {
 export class VoteComponent implements OnInit {
     state: VoteState;
 
-    @Input('feature') featureName: string;
+    @Input() feature: string;
 
     constructor(private router: Router, private stateService: StateService) {
     }
 
     ngOnInit(): void {
-        this.state = this.stateService.getState('vote_' + this.featureName, () => new VoteState(this.router, this.featureName));
+        this.state = this.stateService.getState('vote_' + this.feature, () => new VoteState(this.router, this.feature));
     }
 }

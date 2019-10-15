@@ -31,8 +31,8 @@
 **/*~
 **/src/docs/asciidoc/.asciidoctor/
 **/src/docs/asciidoc/images/architecture-diagram.*
-**/src/webapp/src/**/*.js
-**/src/webapp/src/**/*.js.map
+**/src/webapp2/src/**/*.js
+**/src/webapp2/src/**/*.js.map
 *.log
 *.log.*
 *.retry
