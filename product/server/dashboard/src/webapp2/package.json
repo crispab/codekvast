@@ -4,7 +4,7 @@
     "private": true,
     "sideEffects": false,
     "scripts": {
-        "clean": "rimraf dist; find src -name '*.js' -delete; find src -name '*.js.map' -delete",
+        "clean": "rimraf dist",
         "ng": "ng",
         "start": "ng serve",
         "build": "ng build",
