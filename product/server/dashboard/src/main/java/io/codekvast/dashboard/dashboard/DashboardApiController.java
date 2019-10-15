@@ -78,7 +78,7 @@ public class DashboardApiController {
     public GetMethodsResponse2 getMethods2(@Valid @RequestBody GetMethodsRequest request) {
         logger.debug("Request: {}", request);
         GetMethodsResponse2 response = dashboardService.getMethods2(request);
-        logger.debug("Response: {}", response);
+        logger.trace("Response: {}", response);
         return response;
     }
 
@@ -98,7 +98,7 @@ public class DashboardApiController {
     @GetMapping("/dashboard/api/v1/status")
     public GetStatusResponse getStatus1() {
         GetStatusResponse status = dashboardService.getStatus();
-        logger.debug("{}", status);
+        logger.trace("{}", status);
         return status;
     }
 
