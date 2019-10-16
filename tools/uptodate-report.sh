@@ -13,7 +13,3 @@ cd ${PROJECT_ROOT}/product
 echo -e "\nDashboard JavaScript webapp:" | tee -a ${REPORT_FILE}
 cd ${PROJECT_ROOT}/product/server/dashboard/src/webapp
 yarn outdated --depth=0 | tee -a ${REPORT_FILE}
-
-echo -e "\nDashboard JavaScript webapp2:" | tee -a ${REPORT_FILE}
-cd ${PROJECT_ROOT}/product/server/dashboard/src/webapp2
-yarn outdated --depth=0 | tee -a ${REPORT_FILE}

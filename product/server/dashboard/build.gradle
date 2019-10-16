@@ -10,7 +10,7 @@ archivesBaseName = 'codekvast-dashboard'
 version = codekvastVersion
 mainClassName = 'io.codekvast.dashboard.CodekvastDashboardApplicationKt'
 
-apply from: "$projectDir/src/webapp2/build.gradle"
+apply from: "$projectDir/src/webapp/build.gradle"
 apply from: "$projectDir/src/integrationTest/build.gradle"
 
 dependencies {
@@ -29,7 +29,7 @@ bootJar {
 
     // Output from frontendBuild
     into('static') {
-        from('src/webapp2/dist/dashboard')
+        from('src/webapp/dist/dashboard')
     }
 
     launchScript {

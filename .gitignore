@@ -31,8 +31,8 @@
 **/*~
 **/src/docs/asciidoc/.asciidoctor/
 **/src/docs/asciidoc/images/architecture-diagram.*
-**/src/webapp2/src/**/*.js
-**/src/webapp2/src/**/*.js.map
+**/src/webapp/src/**/*.js
+**/src/webapp/src/**/*.js.map
 *.log
 *.log.*
 *.retry
@@ -51,11 +51,11 @@ codekvast.iws
 node_modules/
 out/
 **/src/webapp/dist/
-**/src/webapp2/dist/
+**/src/webapp/dist/
 target/
 tools/downloaded/
 typings/
 .buildState
 ajcore.*.txt
 **/.DS_Store
-/product/server/dashboard/src/webapp2/coverage/
+/product/server/dashboard/src/webapp/coverage/

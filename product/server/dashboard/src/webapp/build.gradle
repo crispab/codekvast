@@ -4,13 +4,13 @@ task frontendInstall(type: Exec) {
     description 'Installs the node modules and tools required for frontend development'
     group 'Frontend Development'
 
-    workingDir file('src/webapp2')
+    workingDir file('src/webapp')
     executable 'yarn'
     args 'install'
 
-    inputs.files file('src/webapp2/package.json')
-    outputs.dir file('src/webapp2/node_modules')
-    outputs.file file('src/webapp2/yarn.lock')
+    inputs.files file('src/webapp/package.json')
+    outputs.dir file('src/webapp/node_modules')
+    outputs.file file('src/webapp/yarn.lock')
 }
 
 task frontendTest(type: Exec) {
@@ -22,13 +22,13 @@ task frontendTest(type: Exec) {
 
     def timestampFile = file("$buildDir/${name}.timestamp")
 
-    inputs.files file('src/webapp2/angular.json')
-    inputs.files file('src/webapp2/package.json')
-    inputs.files file('src/webapp2/tsconfig.json')
-    inputs.dir file('src/webapp2/src')
+    inputs.files file('src/webapp/angular.json')
+    inputs.files file('src/webapp/package.json')
+    inputs.files file('src/webapp/tsconfig.json')
+    inputs.dir file('src/webapp/src')
     outputs.file timestampFile
 
-    workingDir file('src/webapp2')
+    workingDir file('src/webapp')
     executable 'npm'
     args 'run', 'test-ci'
 
@@ -48,14 +48,14 @@ task frontendLint(type: Exec) {
 
     def timestampFile = file("$buildDir/${name}.timestamp")
 
-    inputs.files file('src/webapp2/angular.json')
-    inputs.files file('src/webapp2/package.json')
-    inputs.files file('src/webapp2/tsconfig.json')
-    inputs.dir file('src/webapp2/src')
+    inputs.files file('src/webapp/angular.json')
+    inputs.files file('src/webapp/package.json')
+    inputs.files file('src/webapp/tsconfig.json')
+    inputs.dir file('src/webapp/src')
     inputs.property "version", codekvastDisplayVersion
     outputs.file timestampFile
 
-    workingDir file('src/webapp2')
+    workingDir file('src/webapp')
     executable 'npm'
     args 'run', 'lint'
 
@@ -72,7 +72,7 @@ task frontendStart(type: Exec) {
 
     dependsOn frontendInstall
 
-    workingDir file('src/webapp2')
+    workingDir file('src/webapp')
     executable 'npm'
     args 'start'
 }
@@ -83,8 +83,8 @@ task frontendGenerateProdEnvironmentFile(type: Copy) {
 
     inputs.property "version", codekvastDisplayVersion
 
-    from('src/webapp2/src/environments/environment.prod.ts')
-    into 'src/webapp2/dist'
+    from('src/webapp/src/environments/environment.prod.ts')
+    into 'src/webapp/dist'
     filter {
         return it.replace('#CODEKVAST_VERSION_TO_BE_INJECTED_BY_GRADLE#', codekvastDisplayVersion)
     }
@@ -95,15 +95,15 @@ task frontendBuild(type: Exec) {
     group "Frontend Development"
     dependsOn frontendTest, frontendGenerateProdEnvironmentFile
 
-    inputs.files file('src/webapp2/angular.json')
-    inputs.files file('src/webapp2/package.json')
-    inputs.files file('src/webapp2/tsconfig.json')
-    inputs.dir file('src/webapp2/src')
+    inputs.files file('src/webapp/angular.json')
+    inputs.files file('src/webapp/package.json')
+    inputs.files file('src/webapp/tsconfig.json')
+    inputs.dir file('src/webapp/src')
     inputs.property "version", codekvastDisplayVersion
 
-    outputs.dir file('src/webapp2/dist')
+    outputs.dir file('src/webapp/dist')
 
-    workingDir file('src/webapp2')
+    workingDir file('src/webapp')
     executable 'npm'
     args 'run', 'build-prod'
     environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
@@ -113,7 +113,7 @@ task frontendClean(type: Exec) {
     description "Cleans the frontend webpack bundles"
     group "Frontend Development"
 
-    workingDir file('src/webapp2')
+    workingDir file('src/webapp')
     executable 'npm'
     args 'run', 'clean'
 }
