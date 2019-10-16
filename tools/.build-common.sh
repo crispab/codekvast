@@ -6,7 +6,7 @@ set -e
 cd $(dirname $0)/..
 
 declare GRADLEW=./.gradlew
-declare GRADLE_OPTS="${GRADLE_OPTS:--Dorg.gradle.configureondemand=false}"
+declare GRADLE_OPTS="${GRADLE_OPTS:--Dorg.gradle.configureondemand=false -Dorg.gradle.caching=false}"
 declare CODEKVAST_VERSION=$(grep codekvastVersion gradle.properties | egrep --only-matching '[0-9.]+')
 declare GIT_HASH=$(git rev-parse --short HEAD)
 declare COMMITTED_VERSION="${CODEKVAST_VERSION}-${GIT_HASH}"
