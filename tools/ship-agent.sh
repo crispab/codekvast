@@ -56,7 +56,7 @@ if [[ "${answer}" != 'y' ]]; then
 fi
 
 tools/clean-workspace.sh
-tools/build-it.sh --console=plain --no-daemon --no-build-cache --max-workers=1 build
+tools/build-it.sh --no-daemon --no-build-cache --max-workers=1 build
 
 echo "Creating Git tag ${CODEKVAST_VERSION}"
 git tag --force --message="Version ${CODEKVAST_VERSION}" ${CODEKVAST_VERSION}
@@ -69,4 +69,4 @@ echo "Uploading to downloads.codekvast.io ..."
 ${GRADLEW} :product:dist:uploadToS3 --console=plain
 
 echo "Uploading codekvast-agent-${CODEKVAST_VERSION}.jar to jcenter ..."
-${GRADLEW} :product:java-agent:bintrayUpload --console=plain
+${GRADLEW} :product:java-agent:bintrayUpload
