@@ -35,6 +35,7 @@
     <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="trivialMethodExecution" />
     <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="syntheticMethodExecution" />
   </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="JRUBY" url="file://$PROJECT_DIR$/tools/prepare-workstation/ansible/roles/franklinkim.docker/Vagrantfile" />
     <file type="Spring" url="file://$PROJECT_DIR$/playground" />
