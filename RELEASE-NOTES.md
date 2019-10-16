@@ -11,6 +11,7 @@
 1. Includes retentionPeriodDays in 'Tracked For' popup.
 1. Upgraded to Spring Boot 2.1.9, Kotlin 1.3.50. Also upgraded Lombok, Mockito, jslack and logstash-logback-encoder.
 1. codekvast-login: Replaced groovy-templates with mustache.
+1. The Codekvast dashboard webapp is now packaged by Angular CLI (ng) instead of by hand-crafted webpack config.
 
 ## 1.0.0
 
