@@ -56,7 +56,7 @@ task stageForUpload(type: Copy) {
         into "assets"
     }
     from "$buildDir/distributions/codekvast-agent-${codekvastVersion}.zip"
-    from("$rootDir/product/java-agent/build/javaagents/codekvast-javaagent-${codekvastVersion}.jar") {
+    from("$rootDir/product/agent/java-agent/build/javaagents/codekvast-javaagent-${codekvastVersion}.jar") {
         rename {
             "codekvast-agent-${codekvastVersion}.jar"
         }
