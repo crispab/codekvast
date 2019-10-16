@@ -12,7 +12,6 @@ dependencies {
 }
 
 task startMariadb {
-    def mariadbVersion = '10.1'
     description "Starts MariaDB $mariadbVersion in a Docker container, on port 3306"
 
     outputs.upToDateWhen {

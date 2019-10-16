@@ -2,11 +2,12 @@ ext {
     aspectjVersion = '1.9.4'
     flywayVersion = '5.2.4'
     gsonVersion = '2.8.6'
-    jacocoVersion = '0.8.4'
+    jacocoVersion = '0.8.5'
+    mariadbVersion = '10.1'
     seleniumVersion = '3.141.59'
     springBootVersion = '2.1.9.RELEASE'
     springfoxVersion = '2.9.2'
-    wiremockVersion = '2.25.0'
+    wiremockVersion = '2.25.1'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"

@@ -30,7 +30,7 @@ dependencies {
     implementation project(":product:agent:agent-model")
     implementation "com.google.code.gson:gson:$gsonVersion"
     implementation 'com.google.guava:guava:28.1-jre'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.3'
+    implementation 'com.squareup.okhttp3:okhttp:3.14.3' // the last version that does not bring Kotlin stuff
     implementation aspectjWeaver
 
     testImplementation testFrameworks
