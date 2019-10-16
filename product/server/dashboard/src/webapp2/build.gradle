@@ -77,10 +77,23 @@ task frontendStart(type: Exec) {
     args 'start'
 }
 
+task frontendGenerateProdEnvironmentFile(type: Copy) {
+    description "Generates an environment.ts containing $codekvastDisplayVersion"
+    group "Frontend Development"
+
+    inputs.property "version", codekvastDisplayVersion
+
+    from('src/webapp2/src/environments/environment.prod.ts')
+    into 'src/webapp2/dist'
+    filter {
+        return it.replace('#CODEKVAST_VERSION_TO_BE_INJECTED_BY_GRADLE#', codekvastDisplayVersion)
+    }
+}
+
 task frontendBuild(type: Exec) {
     description "Builds the frontend webpack bundles for production"
     group "Frontend Development"
-    dependsOn frontendTest
+    dependsOn frontendTest, frontendGenerateProdEnvironmentFile
 
     inputs.files file('src/webapp2/angular.json')
     inputs.files file('src/webapp2/package.json')
