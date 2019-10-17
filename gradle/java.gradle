@@ -81,4 +81,5 @@ build.dependsOn coverageReport
 javadoc {
     title "Codekvast version $codekvastDisplayVersion"
     failOnError = false
+    options.addStringOption('Xdoclint:none', '-quiet')
 }
