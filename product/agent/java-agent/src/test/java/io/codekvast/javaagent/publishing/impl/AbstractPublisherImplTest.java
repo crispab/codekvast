@@ -3,7 +3,7 @@ package io.codekvast.javaagent.publishing.impl;
 import io.codekvast.javaagent.publishing.Publisher;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 public class AbstractPublisherImplTest {
 
     @Rule
-    public OutputCapture output = new JulAwareOutputCapture();
+    public OutputCaptureRule output = new JulAwareOutputCapture();
 
     private final Publisher publisher = new NoOpCodeBasePublisherImpl(null);
 

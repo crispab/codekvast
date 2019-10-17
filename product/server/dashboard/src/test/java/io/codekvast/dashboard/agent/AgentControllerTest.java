@@ -48,7 +48,7 @@ public class AgentControllerTest {
 
     @Test
     public void getConfig1_should_reject_invalid_method() throws Exception {
-        mockMvc.perform(get(V1_POLL_CONFIG).contentType(APPLICATION_JSON_UTF8))
+        mockMvc.perform(get(V1_POLL_CONFIG).contentType(APPLICATION_JSON))
                .andExpect(status().isMethodNotAllowed());
     }
 
@@ -62,7 +62,7 @@ public class AgentControllerTest {
     public void getConfig1_should_reject_invalid_json() throws Exception {
         mockMvc.perform(post(V1_POLL_CONFIG)
                             .content("invalid json")
-                            .contentType(APPLICATION_JSON_UTF8))
+                            .contentType(APPLICATION_JSON))
                .andExpect(status().isBadRequest());
     }
 
@@ -74,7 +74,7 @@ public class AgentControllerTest {
                                                  .toBuilder()
                                                  .appName("")
                                                  .build()))
-                            .contentType(APPLICATION_JSON_UTF8))
+                            .contentType(APPLICATION_JSON))
                .andExpect(status().isBadRequest());
     }
 
@@ -84,15 +84,30 @@ public class AgentControllerTest {
 
         mockMvc.perform(post(V1_POLL_CONFIG)
                             .content(gson.toJson(GetConfigRequest1.sample()))
-                            .contentType(APPLICATION_JSON_UTF8))
+                            .contentType(APPLICATION_JSON))
                .andExpect(status().isForbidden());
     }
 
     @Test
-    public void getConfig1_should_accept_valid_request() throws Exception {
+    public void getConfig1_should_accept_valid_request_with_accept_application_json() throws Exception {
         when(agentService.getConfig(any(GetConfigRequest1.class))).thenReturn(
             GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build());
 
+        //noinspection deprecation
+        mockMvc.perform(post(V1_POLL_CONFIG)
+                            .content(gson.toJson(GetConfigRequest1.sample()))
+                            .contentType(APPLICATION_JSON))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+               .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
+    }
+
+    @Test
+    public void getConfig1_should_accept_valid_request_with_accept_application_json_utf8() throws Exception {
+        when(agentService.getConfig(any(GetConfigRequest1.class))).thenReturn(
+            GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build());
+
+        //noinspection deprecation
         mockMvc.perform(post(V1_POLL_CONFIG)
                             .content(gson.toJson(GetConfigRequest1.sample()))
                             .contentType(APPLICATION_JSON_UTF8))

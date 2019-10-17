@@ -1,33 +1,28 @@
 package io.codekvast.javaagent.publishing.impl;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 
-import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.logging.LogManager;
 
 /**
  * @author olle.hallin@crisp.se
  */
-public class JulAwareOutputCapture extends OutputCapture {
+public class JulAwareOutputCapture extends OutputCaptureRule {
+    private final Locale oldLocale = Locale.getDefault();
 
-    private Locale oldLocale = Locale.getDefault();
-
-    @Override
-    protected void captureOutput() {
-        super.captureOutput();
+    public JulAwareOutputCapture() {
         Locale.setDefault(Locale.ENGLISH);
         try {
+            URL url = JulAwareOutputCapture.class.getResource("/logging.properties");
+            String path = Paths.get(url.toURI()).toAbsolutePath().toString();
+            System.setProperty("java.util.logging.config.file", path);
             LogManager.getLogManager().readConfiguration();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Failed to execute java.util.logging.LogManager.getLogManager().readConfiguration()", e);
         }
-    }
-
-    @Override
-    protected void releaseOutput() {
-        Locale.setDefault(oldLocale);
-        super.releaseOutput();
     }
 
 }

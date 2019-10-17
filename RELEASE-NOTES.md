@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 1.2
+
+1. Upgraded to Spring Boot 2.2
+1. Upgraded to MariaDB 10.4
+
 ## 1.1
 
 1. Support for uploading class.protectionDomain.codeSource.location for each method

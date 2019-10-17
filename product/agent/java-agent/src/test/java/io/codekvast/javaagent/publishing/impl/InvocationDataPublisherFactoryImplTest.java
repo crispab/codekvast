@@ -1,12 +1,12 @@
 package io.codekvast.javaagent.publishing.impl;
 
-import io.codekvast.javaagent.publishing.InvocationDataPublisher;
-import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
+import io.codekvast.javaagent.publishing.InvocationDataPublisher;
+import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -19,12 +19,12 @@ public class InvocationDataPublisherFactoryImplTest {
     private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
     @Rule
-    public OutputCapture output = new JulAwareOutputCapture();
+    public OutputCaptureRule output = new JulAwareOutputCapture();
 
     private final InvocationDataPublisherFactory factory = new InvocationDataPublisherFactoryImpl();
 
     @Test
-    public void should_handle_noop_name() throws Exception {
+    public void should_handle_noop_name() {
         // given
         InvocationDataPublisher publisher = factory.create(NoOpInvocationDataPublisherImpl.NAME, config);
 
@@ -34,7 +34,7 @@ public class InvocationDataPublisherFactoryImplTest {
     }
 
     @Test
-    public void should_handle_http_name() throws Exception {
+    public void should_handle_http_name() {
         // given
         InvocationDataPublisher publisher = factory.create(HttpInvocationDataPublisherImpl.NAME, config);
 
@@ -44,7 +44,7 @@ public class InvocationDataPublisherFactoryImplTest {
     }
 
     @Test
-    public void should_warn_when_unrecognized_name() throws Exception {
+    public void should_warn_when_unrecognized_name() {
         // given
         InvocationDataPublisher publisher = factory.create("foobar", config);
 

@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -55,12 +56,30 @@ public class AgentControllerIntegrationTest {
     private CommonMetricsService commonMetricsService;
 
     @Test
-    public void should_accept_post_to_agentPollConfig() throws Exception {
+    public void should_accept_post_to_agentPollConfig_with_accept_application_json() throws Exception {
         GetConfigRequest1 request = GetConfigRequest1.sample();
         when(agentService.getConfig(request)).thenReturn(GetConfigResponse1.sample().toBuilder()
                                                                            .codeBasePublisherName("foobar")
                                                                            .build());
 
+        //noinspection deprecation
+        mvc.perform(post(V1_POLL_CONFIG)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+           .andExpect(status().isOk())
+           .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+           .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
+    }
+
+    @Test
+    public void should_accept_post_to_agentPollConfig_with_accept_application_json_utf8() throws Exception {
+        GetConfigRequest1 request = GetConfigRequest1.sample();
+        when(agentService.getConfig(request)).thenReturn(GetConfigResponse1.sample().toBuilder()
+                                                                           .codeBasePublisherName("foobar")
+                                                                           .build());
+
+        //noinspection deprecation
         mvc.perform(post(V1_POLL_CONFIG)
                         .accept(APPLICATION_JSON_UTF8)
                         .contentType(APPLICATION_JSON_UTF8)

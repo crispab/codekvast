@@ -4,7 +4,7 @@ import io.codekvast.javaagent.publishing.impl.JulAwareOutputCapture;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 
 import java.io.File;
 import java.util.List;
@@ -24,7 +24,7 @@ public class ConfigUtilsTest {
     private static final String MY_PROP3 = ConfigUtilsTest.class.getName() + ".prop3";
 
     @Rule
-    public OutputCapture output = new JulAwareOutputCapture();
+    public OutputCaptureRule output = new JulAwareOutputCapture();
 
     @After
     public void afterTest() {

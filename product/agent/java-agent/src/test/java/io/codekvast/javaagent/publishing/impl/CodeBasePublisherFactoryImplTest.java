@@ -1,15 +1,15 @@
 package io.codekvast.javaagent.publishing.impl;
 
-import io.codekvast.javaagent.publishing.CodeBasePublisher;
-import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
+import io.codekvast.javaagent.publishing.CodeBasePublisher;
+import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author olle.hallin@crisp.se
@@ -19,7 +19,7 @@ public class CodeBasePublisherFactoryImplTest {
     private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
     @Rule
-    public OutputCapture output = new JulAwareOutputCapture();
+    public OutputCaptureRule output = new JulAwareOutputCapture();
 
     private final CodeBasePublisherFactory factory = new CodeBasePublisherFactoryImpl();
 

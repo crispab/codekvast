@@ -1,18 +1,18 @@
 ext {
     aspectjVersion = '1.9.4'
-    flywayVersion = '5.2.4'
+    flywayVersion = '6.0.6'
     gsonVersion = '2.8.6'
     jacocoVersion = '0.8.5'
-    mariadbVersion = '10.1'
+    mariadbVersion = '10.4'
     seleniumVersion = '3.141.59'
-    springBootVersion = '2.1.9.RELEASE'
+    springBootVersion = '2.2.0.RELEASE'
     springfoxVersion = '2.9.2'
     wiremockVersion = '2.25.1'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
     logback = 'ch.qos.logback:logback-classic:1.2.3'
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.3.0'
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.5.1'
     slf4jApi = 'org.slf4j:slf4j-api:1.7.28'
     testFrameworks = [
         'junit:junit:4.12',

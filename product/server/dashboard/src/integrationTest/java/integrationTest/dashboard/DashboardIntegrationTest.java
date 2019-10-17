@@ -83,7 +83,7 @@ public class DashboardIntegrationTest {
     @ClassRule
     public static DockerContainer mariadb = DockerContainer
         .builder()
-        .imageName("mariadb:10.1")
+        .imageName("mariadb:10.4")
         .port("" + PORT)
 
         .env("MYSQL_ROOT_PASSWORD=root")
@@ -98,7 +98,7 @@ public class DashboardIntegrationTest {
                                         .database(DATABASE)
                                         .username(USERNAME)
                                         .password(PASSWORD)
-                                        .timeoutSeconds(120)
+                                        .timeoutSeconds(300)
                                         .assignJdbcUrlToSystemProperty("spring.datasource.url")
                                         .build())
         .build();

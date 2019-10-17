@@ -19,21 +19,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.bootstrap;
+package io.codekvast.common.messaging.model
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.time.Clock;
+import java.time.Instant
 
 /**
+ * An event that is sent when a customer sends its first data.
+ *
  * @author olle.hallin@crisp.se
  */
-@Configuration
-public class ClockConfig {
-
-    @Bean
-    public Clock clock() {
-        return Clock.systemUTC();
-    }
-}
+data class TrialPeriodStarted(val customerId: Long,
+                              val collectionStartedAt: Instant,
+                              val trialPeriodEndsAt: Instant) {}

@@ -9,7 +9,6 @@ include ':product:server:common'
 include ':product:server:dashboard'
 include ':product:server:db-migration'
 include ':product:server:login'
-include ':product:server:pipeline-model'
 include ':product:system-test'
 include ':product:testsupport'
 

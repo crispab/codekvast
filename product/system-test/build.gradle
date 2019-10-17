@@ -82,7 +82,7 @@ webdriverBinaries {
 configurations.all {
     resolutionStrategy {
 
-        failOnVersionConflict()
+        // TODO: failOnVersionConflict()
 
         eachDependency { DependencyResolveDetails details ->
             if (details.requested.group == 'org.codehaus.groovy') {
@@ -143,10 +143,15 @@ def waitForDatabaseReady(jdbcUrl) {
     DriverManager.registerDriver(instance)
 
     logger.lifecycle("Waiting for {} to become ready...", jdbcUrl)
+    def maxWaitSeconds = 300
     int attempt = 1
-    while (attempt <= 60) {
+    while (attempt <= maxWaitSeconds) {
         try {
-            logger.info("Waiting for {} #{}", jdbcUrl, attempt)
+            if (attempt < 100) {
+                logger.info("Waiting for {} #{}", jdbcUrl, attempt)
+            } else {
+                logger.lifecycle("Waiting for {} #{}", jdbcUrl, attempt)
+            }
             def sql = Sql.newInstance(jdbcUrl, 'codekvast', 'codekvast')
 
             sql.eachRow('SHOW TABLES') { row ->
@@ -160,6 +165,7 @@ def waitForDatabaseReady(jdbcUrl) {
             sleep(1000)
         }
     }
+    throw new IllegalStateException("${jdbcUrl} did not become ready within ${maxWaitSeconds} seconds")
 }
 
 task stopSystemTestEnvironment {

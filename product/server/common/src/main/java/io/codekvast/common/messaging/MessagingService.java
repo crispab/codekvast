@@ -19,15 +19,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.pipeline.model
+package io.codekvast.common.messaging;
 
-import java.time.Instant
+import lombok.NonNull;
 
 /**
- * An event that is sent when a customer sends its first data.
- *
  * @author olle.hallin@crisp.se
  */
-data class TrialPeriodStarted(val customerId: Long,
-                              val collectionStartedAt: Instant,
-                              val trialPeriodEndsAt: Instant) {}
+public interface MessagingService {
+
+    /**
+     * Puts an event in the outgoing event queue. A random correlationId is generated and used.
+     *
+     * @param event The event to publish.
+     */
+    void publish(Object event);
+
+    /**
+     * Puts an event in the outgoing event queue.
+     *
+     * @param event         The event to publish.
+     * @param correlationId The correlationId to use
+     */
+    void publish(@NonNull Object event, @NonNull String correlationId);
+}

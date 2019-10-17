@@ -17,7 +17,7 @@ public class DockerContainerIntegrationTest {
 
     @ClassRule
     public static DockerContainer mariadb = DockerContainer.builder()
-            .imageName("mariadb:10.1")
+            .imageName("mariadb:10.4")
             .port("3306")
 
             .env("MYSQL_ROOT_PASSWORD=foobar")
@@ -32,7 +32,7 @@ public class DockerContainerIntegrationTest {
                                                 .database("somedatabase")
                                                 .username("nisse")
                                                 .password("hult")
-                                                .timeoutSeconds(120)
+                                                .timeoutSeconds(300)
                                                 .assignJdbcUrlToSystemProperty("my.jdbcUrl")
                                                 .build())
             .build();

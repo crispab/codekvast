@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 public class AgentConfigLocatorTest {
 
     @Rule
-    public OutputCapture outputCapture = new JulAwareOutputCapture();
+    public OutputCaptureRule outputCapture = new JulAwareOutputCapture();
 
     @Before
     public void beforeTest() {

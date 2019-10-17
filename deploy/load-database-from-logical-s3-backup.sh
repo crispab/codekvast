@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Fetches a database backup (default yesterday's) from S3 to the Docker container codekvast_database
+# Fetches a database backup produced by mysqldump (default yesterday's) from S3 and loads it into a database by means of 'mysql < dumpfile.sql'
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
@@ -9,7 +9,7 @@ declare weekday=${1:-$(env LANG=en_US date -d "yesterday 13:00" --utc +%A | tr [
 declare srcEnv=${2:-prod}
 declare dumpfile=mysqldump-${weekday}.sql.gz
 
-declare targetHost=codekvast-default-staging.cahjor9xtqud.eu-central-1.rds.amazonaws.com
+declare targetHost=localhost #codekvast-default-staging.cahjor9xtqud.eu-central-1.rds.amazonaws.com
 
 case ${weekday} in
   monday|tuesday|wednesday|thursday|friday|saturday|sunday|extra);;
@@ -28,7 +28,7 @@ if [[ -z $(which mysql) ]]; then
   exit 1
 fi
 
-echo -n "About to load the ${weekday} mysqldump from ${srcEnv} into ${targetHost}. Continue [y/N]: "
+echo -n "About to load the ${weekday} mysqldump from ${srcEnv} into ${targetHost}:3306. Continue [y/N]: "
 read answer
 case ${answer} in
     y|yes)
@@ -49,4 +49,4 @@ echo "Fetching ${s3_bucket}/${dumpfile} ..."
 s3cmd get ${s3_bucket}/${dumpfile} ${tmp_dir}/${dumpfile}
 
 echo "Loading ${srcEnv} ${dumpfile} into ${targetHost}/codekvast ..."
-zcat ${tmp_dir}/${dumpfile} | mysql --user=codekvast --password --host=${targetHost} --database=codekvast
+zcat ${tmp_dir}/${dumpfile} | mysql --protocol=tcp --user=codekvast --password --host=${targetHost} --database=codekvast

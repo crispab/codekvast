@@ -196,7 +196,7 @@ public class SignatureUtilsTest {
     public void should_handle_jarred_location() throws NoSuchMethodException {
         val clazz = AbstractAssert.class;
         MethodLocation3 sigLoc = makeMethodLocation(makeSignature(clazz, findMethod(clazz, "isNull")), makeLocation(clazz));
-        assertThat(sigLoc, is(new MethodLocation3("public void org.assertj.core.api.AbstractAssert.isNull()", "assertj-core-3.11.1.jar")));
+        assertThat(sigLoc, is(new MethodLocation3("public void org.assertj.core.api.AbstractAssert.isNull()", "assertj-core-3.13.2.jar")));
         assertThat(stripModifiersAndReturnType(sigLoc.getSignature()), is("public org.assertj.core.api.AbstractAssert.isNull()"));
     }
 

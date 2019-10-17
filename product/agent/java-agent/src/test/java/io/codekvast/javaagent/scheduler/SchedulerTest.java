@@ -15,7 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 public class SchedulerTest {
 
     @Rule
-    public OutputCapture output = new JulAwareOutputCapture();
+    public OutputCaptureRule output = new JulAwareOutputCapture();
 
     @Mock
     private ConfigPoller configPollerMock;

@@ -19,15 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.pipeline.model
+package io.codekvast.common.bootstrap;
 
-import java.time.Instant
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.time.Clock;
 
 /**
- * An event that is sent each time an agent polls after the end of the trial period.
- *
  * @author olle.hallin@crisp.se
  */
-data class TrialPeriodEnded(val customerId: Long,
-                            val collectionStartedAt: Instant,
-                            val trialPeriodEndedAt: Instant) {}
+@Configuration
+public class CommonConfig {
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemUTC();
+    }
+}

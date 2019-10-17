@@ -20,6 +20,7 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,9 +59,10 @@ public class DashboardApiControllerTest {
                                                                    .build());
 
         // when
+        //noinspection deprecation
         mockMvc.perform(post("/dashboard/api/v2/methods")
-                            .accept(APPLICATION_JSON_UTF8)
-                            .contentType(APPLICATION_JSON_UTF8)
+                            .accept(APPLICATION_JSON)
+                            .contentType(APPLICATION_JSON)
                             .content(gson.toJson(request)))
                .andExpect(status().isOk())
                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
@@ -102,6 +104,8 @@ public class DashboardApiControllerTest {
                                                                .build().computeFields();
 
         when(dashboardService.getMethodById(17L)).thenReturn(Optional.of(methodDescriptor1));
+
+        //noinspection deprecation
         mockMvc.perform(get("/dashboard/api/v1/method/detail/17"))
                .andExpect(status().isOk())
                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
@@ -118,6 +122,7 @@ public class DashboardApiControllerTest {
         // given
         when(dashboardService.getMethodsFormData()).thenReturn(GetMethodsFormData.sample());
 
+        //noinspection deprecation
         mockMvc.perform(get("/dashboard/api/v1/methodsFormData"))
                .andExpect(status().isOk())
                .andExpect(content().contentType(APPLICATION_JSON_UTF8))

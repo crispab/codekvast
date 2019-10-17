@@ -55,7 +55,8 @@ class AgentController @Inject constructor(private val agentService: AgentService
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.message)
     }
 
-    @PostMapping(value = [V1_POLL_CONFIG], consumes = [APPLICATION_JSON_UTF8_VALUE], produces = [APPLICATION_JSON_UTF8_VALUE])
+    @Suppress("DEPRECATION")
+    @PostMapping(value = [V1_POLL_CONFIG], consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun getConfig1(@Valid @RequestBody request: GetConfigRequest1): GetConfigResponse1 {
         logger.debug("Received {}", request)
 
