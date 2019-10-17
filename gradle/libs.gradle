@@ -1,6 +1,6 @@
 ext {
     aspectjVersion = '1.9.4'
-    flywayVersion = '6.0.6'
+    flywayVersion = '6.0.7'
     gsonVersion = '2.8.6'
     jacocoVersion = '0.8.5'
     mariadbVersion = '10.4'
@@ -16,8 +16,8 @@ ext {
     slf4jApi = 'org.slf4j:slf4j-api:1.7.28'
     testFrameworks = [
         'junit:junit:4.12',
-        'org.hamcrest:hamcrest-core:2.1',
-        'org.hamcrest:hamcrest-library:2.1',
+        'org.hamcrest:hamcrest-core:2.2',
+        'org.hamcrest:hamcrest-library:2.2',
         'org.mockito:mockito-core:3.1.0',
         "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
     ]

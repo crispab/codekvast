@@ -17,25 +17,25 @@ public class DockerContainerIntegrationTest {
 
     @ClassRule
     public static DockerContainer mariadb = DockerContainer.builder()
-            .imageName("mariadb:10.4")
-            .port("3306")
+                                                           .imageName("mariadb:10.4")
+                                                           .port("3306")
 
-            .env("MYSQL_ROOT_PASSWORD=foobar")
-            .env("MYSQL_DATABASE=somedatabase")
-            .env("MYSQL_USER=nisse")
-            .env("MYSQL_PASSWORD=hult")
+                                                           .env("MYSQL_ROOT_PASSWORD=foobar")
+                                                           .env("MYSQL_DATABASE=somedatabase")
+                                                           .env("MYSQL_USER=nisse")
+                                                           .env("MYSQL_PASSWORD=hult")
 
-            .readyChecker(
-                    MariaDbContainerReadyChecker.builder()
-                                                .host("localhost")
-                                                .internalPort(3306)
-                                                .database("somedatabase")
-                                                .username("nisse")
-                                                .password("hult")
-                                                .timeoutSeconds(300)
-                                                .assignJdbcUrlToSystemProperty("my.jdbcUrl")
-                                                .build())
-            .build();
+                                                           .readyChecker(
+                                                               MariaDbContainerReadyChecker.builder()
+                                                                                           .host("localhost")
+                                                                                           .internalPort(3306)
+                                                                                           .database("somedatabase")
+                                                                                           .username("nisse")
+                                                                                           .password("hult")
+                                                                                           .timeoutSeconds(300)
+                                                                                           .assignJdbcUrlToSystemProperty("my.jdbcUrl")
+                                                                                           .build())
+                                                           .build();
 
     @Test
     public void should_start_and_wait_for_mariadb() throws Exception {
