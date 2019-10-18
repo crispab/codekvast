@@ -44,9 +44,7 @@ task startMariadb {
                 '-e MYSQL_PASSWORD=codekvast ' +
                 '-e TERM=xterm-256color ' +
                 'mariadb:' + mariadbVersion + ' ' +
-                '--character-set-server=utf8 ' +
-                '--collation-server=utf8_general_ci ' +
-                '--default-storage-engine=innodb '
+                '--character-set-server=utf8 '
             logger.lifecycle(command)
             assert command.execute().waitFor() == 0
         }

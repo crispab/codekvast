@@ -15,7 +15,7 @@
     service_name: mariadb
     server_type: database
 
-    mariadb_version: '10.1'
+    mariadb_version: '10.4'
     mysql_root_password_update: true
     mysql_user_password_update: true
     mysql_backup_dir: '/backups/mariadb'

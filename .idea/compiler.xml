@@ -8,14 +8,14 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.10/625fc0055674dff70dbc76efa36d0f2c89b04a24/lombok-1.18.10.jar" />
         </processorPath>
-        <module name="codekvast.product.server-login_test" />
+        <module name="login_test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.8/448003bc1b234aac04b58e27d7755c12c3ec4236/lombok-1.18.8.jar" />
         </processorPath>
-        <module name="sample-spring-boot-executable-jar_main" />
+        <module name="codekvast.sample-sample-spring-boot-executable-jar_main" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -23,46 +23,46 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.2.0.RELEASE/480bcedb42859abe66e98446b3b98f11222663b/spring-boot-configuration-processor-2.2.0.RELEASE.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.10/625fc0055674dff70dbc76efa36d0f2c89b04a24/lombok-1.18.10.jar" />
         </processorPath>
-        <module name="codekvast.product.server-login_main" />
+        <module name="login_main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="codekvast.product.agent.agent-model.main" target="1.8" />
-      <module name="codekvast.product.agent.agent-model.test" target="1.8" />
-      <module name="codekvast.product.agent.java-agent.integrationTest" target="1.8" />
-      <module name="codekvast.product.agent.java-agent.main" target="1.8" />
-      <module name="codekvast.product.agent.java-agent.test" target="1.8" />
-      <module name="codekvast.product.server.common.integrationTest" target="11" />
-      <module name="codekvast.product.server.common.main" target="11" />
-      <module name="codekvast.product.server.common.test" target="11" />
-      <module name="codekvast.product.server.dashboard.integrationTest" target="11" />
-      <module name="codekvast.product.server.dashboard.main" target="11" />
-      <module name="codekvast.product.server.dashboard.test" target="11" />
-      <module name="codekvast.product.server.db-migration.main" target="11" />
-      <module name="codekvast.product.server.db-migration.test" target="11" />
-      <module name="codekvast.product.server.login.main" target="11" />
-      <module name="codekvast.product.server.login.test" target="11" />
-      <module name="codekvast.product.system-test.main" target="12" />
-      <module name="codekvast.product.system-test.test" target="12" />
-      <module name="codekvast.product.testsupport.integrationTest" target="1.8" />
-      <module name="codekvast.product.testsupport.main" target="1.8" />
-      <module name="codekvast.product.testsupport.test" target="1.8" />
-      <module name="codekvast.sample.jenkins1.main" target="12" />
-      <module name="codekvast.sample.jenkins1.test" target="12" />
-      <module name="codekvast.sample.jenkins2.main" target="12" />
-      <module name="codekvast.sample.jenkins2.test" target="12" />
-      <module name="codekvast.sample.sample-concrete-aspect.main" target="11" />
-      <module name="codekvast.sample.sample-concrete-aspect.test" target="11" />
-      <module name="codekvast.sample.sample-gradle-application.main" target="1.8" />
-      <module name="codekvast.sample.sample-gradle-application.test" target="1.8" />
-      <module name="codekvast.sample.sample-lib.main" target="1.8" />
-      <module name="codekvast.sample.sample-lib.test" target="1.8" />
-      <module name="codekvast.sample.sample-spring-boot-executable-jar.main" target="1.8" />
-      <module name="codekvast.sample.sample-spring-boot-executable-jar.test" target="1.8" />
-      <module name="codekvast.sample.swing-app.main" target="1.8" />
-      <module name="codekvast.sample.swing-app.test" target="1.8" />
-      <module name="codekvast.sample.webstart-swing-app.main" target="12" />
-      <module name="codekvast.sample.webstart-swing-app.test" target="12" />
+      <module name="codekvast.product.agent-agent-model_main" target="1.8" />
+      <module name="codekvast.product.agent-agent-model_test" target="1.8" />
+      <module name="codekvast.product.agent-java-agent_integrationTest" target="1.8" />
+      <module name="codekvast.product.agent-java-agent_main" target="1.8" />
+      <module name="codekvast.product.agent-java-agent_test" target="1.8" />
+      <module name="codekvast.product.server-common_integrationTest" target="11" />
+      <module name="codekvast.product.server-common_main" target="11" />
+      <module name="codekvast.product.server-common_test" target="11" />
+      <module name="codekvast.product.server-dashboard_integrationTest" target="11" />
+      <module name="codekvast.product.server-dashboard_main" target="11" />
+      <module name="codekvast.product.server-dashboard_test" target="11" />
+      <module name="codekvast.product.server-db-migration_main" target="11" />
+      <module name="codekvast.product.server-db-migration_test" target="11" />
+      <module name="codekvast.product.server-login_main" target="11" />
+      <module name="codekvast.product.server-login_test" target="11" />
+      <module name="jenkins1_main" target="12" />
+      <module name="jenkins1_test" target="12" />
+      <module name="jenkins2_main" target="12" />
+      <module name="jenkins2_test" target="12" />
+      <module name="sample-concrete-aspect_main" target="11" />
+      <module name="sample-concrete-aspect_test" target="11" />
+      <module name="sample-gradle-application_main" target="1.8" />
+      <module name="sample-gradle-application_test" target="1.8" />
+      <module name="sample-lib_main" target="1.8" />
+      <module name="sample-lib_test" target="1.8" />
+      <module name="sample-spring-boot-executable-jar_main" target="1.8" />
+      <module name="sample-spring-boot-executable-jar_test" target="1.8" />
+      <module name="swing-app_main" target="1.8" />
+      <module name="swing-app_test" target="1.8" />
+      <module name="system-test_main" target="12" />
+      <module name="system-test_test" target="12" />
+      <module name="testsupport_integrationTest" target="1.8" />
+      <module name="testsupport_main" target="1.8" />
+      <module name="testsupport_test" target="1.8" />
+      <module name="webstart-swing-app_main" target="12" />
+      <module name="webstart-swing-app_test" target="12" />
     </bytecodeTargetLevel>
   </component>
   <component name="TypeScriptCompiler">
