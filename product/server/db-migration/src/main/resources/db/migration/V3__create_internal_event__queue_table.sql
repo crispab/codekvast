@@ -23,6 +23,7 @@
 CREATE TABLE internal_event_queue (
     id                BIGINT AUTO_INCREMENT PRIMARY KEY,
     createdAt         TIMESTAMP    NOT NULL,
+    messageId         VARCHAR(40)  NOT NULL,
     correlationId     VARCHAR(40)  NOT NULL,
     environment       VARCHAR(30)  NOT NULL,
     sendingApp        VARCHAR(30)  NOT NULL,

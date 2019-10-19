@@ -65,6 +65,7 @@ public class MessagingServiceMariadbImpl implements MessagingService {
     public void publish(@NonNull Object event, @NonNull String correlationId) {
         Map<String, Object> params = new HashMap<>();
         params.put("createdAt", Timestamp.from(clock.instant()));
+        params.put("messageId", UUID.randomUUID().toString());
         params.put("correlationId", correlationId);
         params.put("environment", settings.getEnvironment());
         params.put("sendingApp", settings.getApplicationName());
@@ -78,9 +79,9 @@ public class MessagingServiceMariadbImpl implements MessagingService {
         }
 
         jdbcTemplate.update(
-            "INSERT INTO internal_event_queue(createdAt, correlationId, environment, sendingApp, sendingAppVersion, " +
+            "INSERT INTO internal_event_queue(createdAt, messageId, correlationId, environment, sendingApp, sendingAppVersion, " +
                 "sendingHostname, type, data) \n" +
-                "VALUES (:createdAt, :correlationId, :environment, :sendingApp, :sendingAppVersion, :sendingHostname, :type, :data)",
+                "VALUES (:createdAt, :messageId, :correlationId, :environment, :sendingApp, :sendingAppVersion, :sendingHostname, :type, :data)",
             params);
         logger.debug("Appended {} to internal_event_queue", event);
     }
