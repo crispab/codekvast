@@ -28,6 +28,8 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.rules.ExternalResource;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +59,8 @@ public class DockerContainer extends ExternalResource {
 
     private final Map<Integer, Integer> externalPorts = new HashMap<>();
 
-    private final String args;
+    @Singular
+    private final List<String> args;
 
     private final boolean pullBeforeRun;
 
@@ -106,11 +109,14 @@ public class DockerContainer extends ExternalResource {
         long stopWaitingAtMillis = readyChecker.getTimeoutSeconds() <= 0 ? Long.MAX_VALUE :
                 System.currentTimeMillis() + readyChecker.getTimeoutSeconds() * 1000L;
 
+        Instant startedWaitingAt = Instant.now();
         int attempt = 0;
         while (System.currentTimeMillis() < stopWaitingAtMillis) {
             attempt += 1;
             try {
                 readyChecker.check(getExternalPort(readyChecker.getInternalPort()));
+                Instant becameReadyAt = Instant.now();
+                logger.info("{} became ready at {} after waiting {}", imageName, becameReadyAt, Duration.between(startedWaitingAt, becameReadyAt));
                 return;
             } catch (Exception e) {
                 logger.debug("{} is not yet ready, attempt #{}", imageName, attempt);
@@ -166,8 +172,8 @@ public class DockerContainer extends ExternalResource {
         }
         sb.append(" ").append(imageName);
 
-        if (args != null) {
-            sb.append(" ").append(args);
+        if (args != null && !args.isEmpty()) {
+            sb.append(" ").append(String.join(" ", args));
         }
         return sb.toString();
     }

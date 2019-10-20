@@ -25,6 +25,9 @@ public class DockerContainerIntegrationTest {
                                                            .env("MYSQL_USER=nisse")
                                                            .env("MYSQL_PASSWORD=hult")
 
+                                                           .arg("--innodb-buffer-pool-dump-at-shutdown=OFF")
+                                                           .arg("--innodb-buffer-pool-load-at-startup=OFF")
+
                                                            .readyChecker(
                                                                MariaDbContainerReadyChecker.builder()
                                                                                            .host("localhost")
