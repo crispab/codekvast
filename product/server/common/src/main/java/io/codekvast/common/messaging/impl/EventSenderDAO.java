@@ -22,20 +22,20 @@
 package io.codekvast.common.messaging.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
-import io.codekvast.common.messaging.MessagingService;
+import io.codekvast.common.messaging.EventSender;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Clock;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * An implementation of Messaging service that uses the database table internal_event_queue as queue.
@@ -45,14 +45,11 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MessagingServiceMariadbImpl implements MessagingService {
-
-    private static final String LOCK_NAME = "EVENT_QUEUE"; // Must exist as row in the table internal_locks
+public class EventSenderDAO extends EventDAOBase implements EventSender {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final Clock clock;
     private final CodekvastCommonSettings settings;
-    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -65,7 +62,7 @@ public class MessagingServiceMariadbImpl implements MessagingService {
     public void publish(@NonNull Object event, @NonNull String correlationId) {
         Map<String, Object> params = new HashMap<>();
         params.put("createdAt", Timestamp.from(clock.instant()));
-        params.put("messageId", UUID.randomUUID().toString());
+        params.put("eventId", UUID.randomUUID().toString());
         params.put("correlationId", correlationId);
         params.put("environment", settings.getEnvironment());
         params.put("sendingApp", settings.getApplicationName());
@@ -79,17 +76,12 @@ public class MessagingServiceMariadbImpl implements MessagingService {
         }
 
         jdbcTemplate.update(
-            "INSERT INTO internal_event_queue(createdAt, messageId, correlationId, environment, sendingApp, sendingAppVersion, " +
+            "INSERT INTO internal_event_queue(createdAt, eventId, correlationId, environment, sendingApp, sendingAppVersion, " +
                 "sendingHostname, type, data) \n" +
-                "VALUES (:createdAt, :messageId, :correlationId, :environment, :sendingApp, :sendingAppVersion, :sendingHostname, :type, :data)",
+                "VALUES (:createdAt, :eventId, :correlationId, :environment, :sendingApp, :sendingAppVersion, :sendingHostname, :type, " +
+                ":data)",
             params);
         logger.debug("Appended {} to internal_event_queue", event);
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    List<Object> getEvents(int max) {
-        Map<String, Object> params = Collections.singletonMap("name", LOCK_NAME);
-        jdbcTemplate.queryForObject("SELECT name FROM internal_locks WHERE name = :name FOR UPDATE NOWAIT", params, String.class);
-        return Collections.emptyList();
-    }
 }

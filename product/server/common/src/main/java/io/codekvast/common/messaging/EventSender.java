@@ -26,7 +26,7 @@ import lombok.NonNull;
 /**
  * @author olle.hallin@crisp.se
  */
-public interface MessagingService {
+public interface EventSender {
 
     /**
      * Puts an event in the outgoing event queue. A random correlationId is generated and used.

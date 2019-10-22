@@ -48,7 +48,6 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
-    @Transactional(rollbackFor = [Exception::class])
     override fun performDataWeeding() {
         val startedAt = Instant.now()
         logger.debug("Performing data weeding")
@@ -98,7 +97,6 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         }
     }
 
-    @Transactional(rollbackFor = [Exception::class])
     override fun findWeedingCandidates() {
         val startedAt = Instant.now()
         var sum = 0

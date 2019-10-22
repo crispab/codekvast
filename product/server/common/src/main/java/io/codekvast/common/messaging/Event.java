@@ -19,15 +19,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.messaging.model
+package io.codekvast.common.messaging;
 
-import java.time.Instant
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+
+import java.time.Instant;
 
 /**
- * An event that is sent each time an agent polls after the end of the trial period.
- *
  * @author olle.hallin@crisp.se
  */
-data class TrialPeriodEnded(val customerId: Long,
-                            val collectionStartedAt: Instant,
-                            val trialPeriodEndedAt: Instant) {}
+@Value
+@Builder
+public class Event {
+    @NonNull Long id;
+    @NonNull Instant createdAt;
+    @NonNull String eventId;
+    @NonNull String correlationId;
+    @NonNull String environment;
+    @NonNull String sendingApp;
+    @NonNull String sendingAppVersion;
+    @NonNull String sendingHostname;
+    @NonNull Object data;
+}

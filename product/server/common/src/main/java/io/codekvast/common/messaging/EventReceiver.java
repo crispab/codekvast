@@ -19,15 +19,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.messaging.model
+package io.codekvast.common.messaging;
 
-import java.time.Instant
+import java.util.List;
 
 /**
- * An event that is sent when a customer sends its first data.
+ * Interface for consuming events
  *
  * @author olle.hallin@crisp.se
  */
-data class TrialPeriodStarted(val customerId: Long,
-                              val collectionStartedAt: Instant,
-                              val trialPeriodEndsAt: Instant) {}
+public interface EventReceiver {
+
+    /**
+     * Poll the incoming event queue.
+     *
+     * @param max The maximum number of events to retrieve.
+     * @return The N oldest events. Returns an empty list if no events.
+     */
+    List<Event> getOldestEvents(int max);
+
+    /**
+     * Acknowledges events retrieved by {@link #getOldestEvents(int)}.
+     *
+     * @param events The events to acknowledge.
+     */
+    void acknowledgeEvents(List<Event> events);
+}

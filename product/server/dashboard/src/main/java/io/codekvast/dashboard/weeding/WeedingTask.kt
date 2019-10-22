@@ -21,10 +21,13 @@
  */
 package io.codekvast.dashboard.weeding
 
+import io.codekvast.common.lock.LockManager
+import io.codekvast.common.lock.LockManager.Lock
 import org.slf4j.LoggerFactory
-import org.springframework.dao.CannotAcquireLockException
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -34,20 +37,26 @@ import javax.inject.Inject
  */
 @Component
 class WeedingTask
-    @Inject constructor(private val weedingService: WeedingService) {
+@Inject constructor(private val lockManager: LockManager, private val weedingService: WeedingService) {
 
     /**
      * Scheduled task that invokes the data weeding service.
      */
     @Scheduled(initialDelayString = "\${codekvast.dataWeedingInitialDelaySeconds}000", fixedDelayString = "\${codekvast.dataWeedingIntervalSeconds}000")
+    @Transactional
     fun performDataWeeding() {
         val oldThreadName = Thread.currentThread().name
         Thread.currentThread().name = "Codekvast Data Weeder"
         try {
-            weedingService.findWeedingCandidates()
-            weedingService.performDataWeeding()
-        } catch (e: CannotAcquireLockException) {
-            logger.warn("Could not perform data weeding: $e")
+            val lock: Optional<Lock> = lockManager.acquireLock(Lock.WEEDER);
+            if (lock.isPresent) {
+                try {
+                    weedingService.findWeedingCandidates()
+                    weedingService.performDataWeeding()
+                } finally {
+                    lockManager.releaseLock(lock.get());
+                }
+            }
         } finally {
             Thread.currentThread().name = oldThreadName
         }
