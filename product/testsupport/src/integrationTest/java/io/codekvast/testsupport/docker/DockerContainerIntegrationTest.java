@@ -20,13 +20,11 @@ public class DockerContainerIntegrationTest {
                                                            .imageName("mariadb:10.4")
                                                            .port("3306")
 
-                                                           .env("MYSQL_ROOT_PASSWORD=foobar")
+                                                           .env("MYSQL_ROOT_PASSWORD=root")
                                                            .env("MYSQL_DATABASE=somedatabase")
                                                            .env("MYSQL_USER=nisse")
                                                            .env("MYSQL_PASSWORD=hult")
-
-                                                           .arg("--innodb-buffer-pool-dump-at-shutdown=OFF")
-                                                           .arg("--innodb-buffer-pool-load-at-startup=OFF")
+                                                           .env("MYSQL_INITDB_SKIP_TZINFO=true")
 
                                                            .readyChecker(
                                                                MariaDbContainerReadyChecker.builder()

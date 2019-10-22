@@ -90,6 +90,7 @@ public class DashboardIntegrationTest {
         .env("MYSQL_DATABASE=" + DATABASE)
         .env("MYSQL_USER=" + USERNAME)
         .env("MYSQL_PASSWORD=" + PASSWORD)
+        .env("MYSQL_INITDB_SKIP_TZINFO=true")
 
         .readyChecker(
             MariaDbContainerReadyChecker.builder()
