@@ -108,6 +108,7 @@ def doStartSystemTestEnvironment() {
         '-e MYSQL_DATABASE=codekvast ' +
         '-e MYSQL_USER=codekvast ' +
         '-e MYSQL_PASSWORD=codekvast ' +
+        '-e MYSQL_INITDB_SKIP_TZINFO=true ' +
         '-e TERM=xterm-256color ' +
         "mariadb:$mariadbVersion " +
         '--character-set-server=utf8 '
