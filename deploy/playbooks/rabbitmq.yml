@@ -1,0 +1,64 @@
+---
+#-----------------------------------------------------------------------------------------------------------
+# Playbook that installs RabbitMQ
+#-----------------------------------------------------------------------------------------------------------
+-   name:   RabbitMQ
+    hosts:  tag_role_database
+
+    become: yes
+
+    vars_files:
+    - vars/secrets.yml
+    - vars/common.yml
+
+    vars:
+        rabbitmq_version: "3.8.0"
+
+    tasks:
+    -   name: Install RabbitMQ APT signing key
+        apt_key:
+            id:        '0x6B73A36E6026DFCA'
+            keyserver: hkps.pool.sks-keyservers.net
+            state:     present
+
+    -   name: Install apt-transport-https
+        apt:  name=apt-transport-https state=present
+
+    -   name: Define APT source for Erlang
+        apt_repository:
+            filename:     bintray.erlang
+            repo:         "deb https://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-22.x"
+            state:        present
+
+    -   name: Define APT source for RabbitMQ
+        apt_repository:
+            filename:     bintray.rabbitmq
+            repo:         "deb https://dl.bintray.com/rabbitmq/debian bionic main"
+            state:        present
+
+    -   set_fact:
+            rabbit_packages:
+            - erlang-base
+            - erlang-asn1
+            - erlang-crypto
+            - erlang-eldap
+            - erlang-ftp
+            - erlang-inets
+            - erlang-mnesia
+            - erlang-os-mon
+            - erlang-parsetools
+            - erlang-public-key
+            - erlang-runtime-tools
+            - erlang-snmp
+            - erlang-ssl
+            - erlang-syntax-tools
+            - erlang-tftp
+            - erlang-tools
+            - erlang-xmerl
+            - rabbitmq-server
+
+    -   name: Install Erlang and RabbitMQ packages
+        apt:  name={{ rabbit_packages }} state=present update_cache=yes
+
+    -   name:    Enable and start RabbitMQ
+        service: name=rabbitmq-server state=started enabled=yes
