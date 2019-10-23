@@ -72,6 +72,9 @@ task startRabbitMQ {
 
             command = 'docker run -d --restart=unless-stopped ' +
                 '--name codekvast_rabbitmq ' +
+                '-e RABBITMQ_DEFAULT_VHOST=codekvast ' +
+                '-e RABBITMQ_DEFAULT_USER=codekvast ' +
+                '-e RABBITMQ_DEFAULT_PASS=codekvast ' +
                 '-p 4369:4369 ' +
                 '-p 5671:5671 ' +
                 '-p 5672:5672 ' +
