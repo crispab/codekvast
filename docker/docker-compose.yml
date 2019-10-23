@@ -1,0 +1,41 @@
+version: '3.7'
+
+volumes:
+    database:
+        driver: local
+    rabbitmq:
+        driver: local
+
+services:
+    database:
+        image: mariadb:10.4
+        restart: unless-stopped
+        environment:
+        - "MYSQL_ROOT_PASSWORD=root"
+        - "MYSQL_DATABASE=codekvast"
+        - "MYSQL_USER=codekvast"
+        - "MYSQL_PASSWORD=codekvast"
+        - "MYSQL_INITDB_SKIP_TZINFO=true"
+        - "TERM=xterm-256color"
+        volumes:
+        - database:/var/lib/mysql
+        ports:
+        - '3306:3306'
+        command: "--character-set-server=utf8"
+
+    rabbitmq:
+        image: rabbitmq:3.8-management-alpine
+        restart: unless-stopped
+        environment:
+        - "RABBITMQ_DEFAULT_VHOST=codekvast-dev"
+        - "RABBITMQ_DEFAULT_USER=codekvast"
+        - "RABBITMQ_DEFAULT_PASS=codekvast"
+        volumes:
+          - rabbitmq:/var/lib/rabbitmq
+        ports:
+        - "4369:4369"
+        - "5671:5671"
+        - "5672:5672"
+        - "25672:25672"
+        - "15671:15671"
+        - "15672:15672"

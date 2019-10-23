@@ -42,8 +42,7 @@ bootJar {
 }
 
 run {
-    // dependsOn startMariadb, ":product:server:dashboard:frontendBuild", installDist, generateCodekvastConfig, ':product:agent:java-agent:shadowJar'
-    dependsOn startMariadb, ":product:server:dashboard:frontendBuild"
+    dependsOn startDockerContainers, ":product:server:dashboard:frontendBuild"
 
     jvmArgs = [
         '-enableassertions',
@@ -57,7 +56,7 @@ run {
 }
 
 bootRun {
-    dependsOn startMariadb
+    dependsOn startDockerContainers
 
     jvmArgs = run.jvmArgs
     args = run.args

@@ -46,3 +46,13 @@ bootJar {
         )
     }
 }
+
+task startDockerContainers {
+    description "Starts MariaDB and RabbitMQ in Docker, using their default ports"
+
+    doLast {
+        def command = "$rootDir/docker/docker-compose.sh up -d"
+        logger.lifecycle(command)
+        assert command.execute().waitFor() == 0
+    }
+}

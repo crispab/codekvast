@@ -27,7 +27,7 @@ dependencies {
 }
 
 run {
-    dependsOn startMariadb
+    dependsOn startDockerContainers
 
     jvmArgs = [
         '-enableassertions',
@@ -40,7 +40,7 @@ run {
 }
 
 bootRun {
-    dependsOn startMariadb
+    dependsOn startDockerContainers
 
     jvmArgs = run.jvmArgs
     args = run.args

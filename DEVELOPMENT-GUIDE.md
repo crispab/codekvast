@@ -6,7 +6,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 
 1. Angular 7+
 1. AspectJ (in Load-Time Weaving mode)
-1. Docker 1.10.3+ (For running MariaDB)
+1. Docker Engine - Community 19.03+ and Docker Compose 1.24+ (For running MariaDB and RabbitMQ in development environment)
 1. Github
 1. git-crypt
 1. Gradle (via Gradle wrapper)
@@ -30,6 +30,8 @@ The product itself lives under `product/`.
 Server-side stuff lives under `product/server`, while agent stuff lives under `product/agent`.
 
 Sample projects to use when testing Codekvast lives under `sample/`.
+
+Docker-related stuff live under `docker/`.
 
 Development tools live under `tools/`.
 
@@ -85,12 +87,14 @@ The Codekvast Dashboard web UI is developed with TypeScript and Angular 7. Twitt
 
 npm and yarn are used for managing the frontend development environment. Webpack is used as frontend bundler.
     
-### Docker Engine
+### Docker Engine - Community and Docker Composae
 
-Docker Engine 1.10 or later is required for Codekvast Dashboard development.
+Docker Engine - Community 19.03 or later and Docker Compose 1.24 or later is required for Codekvast Dashboard development.
 
-Install [Docker Engine 1.10.3+](https://docs.docker.com/engine/installation/) using
+Install [Docker Engine - Community v19.03+](https://docs.docker.com/engine/installation/) using
 the official instructions.
+
+Install [Docker Compose 1.24+](https://docs.docker.com/compose/install/) using the official instructions.
 
 ### Inkscape
 
