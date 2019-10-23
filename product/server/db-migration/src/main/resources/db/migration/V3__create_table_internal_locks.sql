@@ -20,19 +20,6 @@
 -- THE SOFTWARE.
 --
 
-CREATE TABLE internal_event_queue (
-    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
-    createdAt         TIMESTAMP    NOT NULL,
-    eventId           VARCHAR(40)  NOT NULL,
-    correlationId     VARCHAR(40)  NOT NULL,
-    environment       VARCHAR(30)  NOT NULL,
-    sendingApp        VARCHAR(30)  NOT NULL,
-    sendingAppVersion VARCHAR(30)  NOT NULL,
-    sendingHostname   VARCHAR(80)  NOT NULL,
-    type              VARCHAR(255) NOT NULL,
-    data              TEXT         NOT NULL
-);
-
 CREATE TABLE internal_locks (
     name VARCHAR(80) PRIMARY KEY NOT NULL
 );
