@@ -8,14 +8,14 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.10/625fc0055674dff70dbc76efa36d0f2c89b04a24/lombok-1.18.10.jar" />
         </processorPath>
-        <module name="login.codekvast.product.server.login.test" />
+        <module name="login_test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.8/448003bc1b234aac04b58e27d7755c12c3ec4236/lombok-1.18.8.jar" />
         </processorPath>
-        <module name="sample-spring-boot-executable-jar.codekvast.sample.sample-spring-boot-executable-jar.main" />
+        <module name="codekvast.sample-sample-spring-boot-executable-jar_main" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -23,7 +23,7 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.2.0.RELEASE/480bcedb42859abe66e98446b3b98f11222663b/spring-boot-configuration-processor-2.2.0.RELEASE.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.10/625fc0055674dff70dbc76efa36d0f2c89b04a24/lombok-1.18.10.jar" />
         </processorPath>
-        <module name="login.codekvast.product.server.login.main" />
+        <module name="login_main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

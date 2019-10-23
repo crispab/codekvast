@@ -21,14 +21,16 @@
  */
 package io.codekvast.testsupport.docker;
 
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import lombok.Builder;
 import lombok.NonNull;
-import org.mariadb.jdbc.MariaDbDataSource;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * A Runnable that can be used as ready-checker when starting a {@link DockerContainer} containing a MariaDB image.
@@ -36,17 +38,17 @@ import java.sql.Statement;
  * @author olle.hallin@crisp.se
  */
 @Builder
-public class MariaDbContainerReadyChecker implements ContainerReadyChecker {
+public class RabbitmqContainerReadyChecker implements ContainerReadyChecker {
 
     @NonNull
-    private final String hostname;
+    private final String host;
     private final int internalPort;
     @NonNull
-    private final String database;
+    private final String vhost;
     private int timeoutSeconds;
     private final String username;
     private final String password;
-    private final String assignJdbcUrlToSystemProperty;
+    private final String assignRabbitUrlToSystemProperty;
 
     @Override
     public int getInternalPort() {
@@ -60,25 +62,25 @@ public class MariaDbContainerReadyChecker implements ContainerReadyChecker {
 
     @Override
     public void check(int externalPort) throws ContainerNotReadyException {
-        String jdbcUrl = buildJdbcUrl(externalPort);
+
+        String amqpUrl = buildAmqpUrl(externalPort);
         try {
-            DataSource dataSource = new MariaDbDataSource(jdbcUrl);
-
-            try (Connection connection = dataSource.getConnection(username, password);
-                 Statement st = connection.createStatement()) {
-
-                st.execute("SELECT 1 FROM DUAL");
-            }
-        } catch (SQLException e) {
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setUri(amqpUrl);
+            Connection conn = factory.newConnection();
+            conn.close();
+        } catch (TimeoutException | IOException e) {
             throw new ContainerNotReadyException(this + " is not ready", e);
+        } catch (NoSuchAlgorithmException | KeyManagementException | URISyntaxException e) {
+            throw new IllegalArgumentException("Cannot connect to RabbitMQ using " + amqpUrl, e);
         }
 
-        if (assignJdbcUrlToSystemProperty != null) {
-            System.setProperty(assignJdbcUrlToSystemProperty, jdbcUrl);
+        if (assignRabbitUrlToSystemProperty != null) {
+            System.setProperty(assignRabbitUrlToSystemProperty, amqpUrl);
         }
     }
 
-    private String buildJdbcUrl(int port) {
-        return String.format("jdbc:mariadb://localhost:%d/%s", port, database);
+    private String buildAmqpUrl(int port) {
+        return String.format("amqp://%s:%s@%s:%d/%s", username, password, host, port, vhost);
     }
 }

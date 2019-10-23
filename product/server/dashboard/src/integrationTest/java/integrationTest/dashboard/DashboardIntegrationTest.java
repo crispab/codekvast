@@ -102,7 +102,7 @@ public class DashboardIntegrationTest {
 
         .readyChecker(
             MariaDbContainerReadyChecker.builder()
-                                        .host("localhost")
+                                        .hostname("localhost")
                                         .internalPort(PORT)
                                         .database(DATABASE)
                                         .username(USERNAME)
