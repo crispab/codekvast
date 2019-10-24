@@ -33,6 +33,9 @@ aws_stacks:
 ports:
   ssh: 22
   mysql: 3306
+  rabbitmq:
+      api: 5672
+      console: 15672
   login:
     service: 8080
     management: 9080
