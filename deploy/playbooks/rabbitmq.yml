@@ -60,5 +60,19 @@
     -   name: Install Erlang and RabbitMQ packages
         apt:  name={{ rabbit_packages }} state=present update_cache=yes
 
+    -   name: Create /etc/rabbitmq/
+        file: path=/etc/rabbitmq/ state=directory
+
+    -   name:     "Install /etc/rabbitmq/rabbitmq*.conf"
+        template: src=rabbitmq/{{ item }} dest=/etc/rabbitmq/{{ item }}
+        notify:   restart rabbitmq-server
+        with_items:
+        - rabbitmq.conf
+        - rabbitmq-env.conf
+
     -   name:    Enable and start RabbitMQ
         service: name=rabbitmq-server state=started enabled=yes
+
+    handlers:
+    -   name:    restart rabbitmq-server
+        service: name=rabbitmq-server state=restarted
