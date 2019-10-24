@@ -1,0 +1,17 @@
+init_config:
+instances:
+-   rabbitmq_api_url: http://localhost:15672/api/
+    tags:
+    - "env:{{ tags.Env }}"
+    username: datadog
+    password: {{ rabbitmq_datadog_password }}
+
+logs:
+-   type:    file
+    path:    /var/log/rabbitmq/*.log
+    source:  rabbitmq
+    service: codekvast
+    log_processing_rules:
+    -   type:    multi_line
+        name:    logs_starts_with_equal_sign
+        pattern: "="

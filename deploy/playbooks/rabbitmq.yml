@@ -15,7 +15,10 @@
         rabbitmq_version:  "3.8.0"
         rabbitmq_data_dir: "/data/rabbitmq"
 
-    tasks:
+    roles:
+    - Datadog.datadog
+
+    post_tasks:
     -   name: Install RabbitMQ APT signing key
         apt_key:
             id:        '0x6B73A36E6026DFCA'
@@ -81,12 +84,33 @@
     -   name:    Enable and start RabbitMQ
         service: name=rabbitmq-server state=started enabled=yes
 
-    -   name:       Enable plugins
+    -   name:       Enable RabbitMQ plugins
         command:    rabbitmq-plugins enable --silent --{{ item[1] }} {{ item[0] }}
         with_nested:
         - [rabbitmq_management]
         - [offline, online]
 
+    -   name:    Define Datadog user
+        command: rabbitmqctl add_user datadog {{ rabbitmq_datadog_password }}
+        ignore_errors: yes
+
+    -   name:    Set Datadog permissions
+        command: rabbitmqctl set_permissions datadog "^aliveness-test$" "^amq\.default$" ".*"
+
+    -   name:    Give Datadog user monitoring rights
+        command: rabbitmqctl set_user_tags datadog monitoring
+
+    -   name:   Make sure Datadog Agent can tail RabbitMQ log files
+        user:   name=dd-agent groups=adm append=yes
+        notify: restart datadog-agent
+
+    -   name:     Configure Datadog Agent for RabbitMQ
+        template: src=rabbitmq/datadog/conf.yaml dest=/etc/datadog-agent/conf.d/rabbitmq.d/conf.yaml mode=644
+        notify:   restart datadog-agent
+
     handlers:
     -   name:    restart rabbitmq-server
         service: name=rabbitmq-server state=restarted
+
+    -   name:    restart datadog-agent
+        service: name=datadog-agent state=restarted
