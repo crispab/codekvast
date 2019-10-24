@@ -1,3 +1,5 @@
+# {{ ansible_managed }}
+
 codekvast:
     dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
     dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
@@ -8,6 +10,7 @@ codekvast:
     loginBaseUrl: "https://{{ tags.LBCNAME1 }}"
     queuePath: "{{ queuePath }}"
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
+
 logging:
     file: "/var/log/codekvast/{{ service_name }}/application.log"
     file.max-size: '10MB'

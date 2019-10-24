@@ -12,7 +12,8 @@
     - vars/common.yml
 
     vars:
-        rabbitmq_version: "3.8.0"
+        rabbitmq_version:  "3.8.0"
+        rabbitmq_data_dir: "/data/rabbitmq"
 
     tasks:
     -   name: Install RabbitMQ APT signing key
@@ -65,13 +66,26 @@
 
     -   name:     "Install /etc/rabbitmq/rabbitmq*.conf"
         template: src=rabbitmq/{{ item }} dest=/etc/rabbitmq/{{ item }}
-        notify:   restart rabbitmq-server
         with_items:
         - rabbitmq.conf
         - rabbitmq-env.conf
+        notify:   restart rabbitmq-server
+
+    -   name: "Create {{ rabbitmq_data_dir }}"
+        file:
+            path:  "{{ rabbitmq_data_dir }}"
+            state: directory
+            owner: rabbitmq
+            group: rabbitmq
 
     -   name:    Enable and start RabbitMQ
         service: name=rabbitmq-server state=started enabled=yes
+
+    -   name:       Enable plugins
+        command:    rabbitmq-plugins enable --silent --{{ item[1] }} {{ item[0] }}
+        with_nested:
+        - [rabbitmq_management]
+        - [offline, online]
 
     handlers:
     -   name:    restart rabbitmq-server

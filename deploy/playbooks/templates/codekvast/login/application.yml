@@ -1,3 +1,5 @@
+# {{ ansible_managed }}
+
 codekvast:
     cipherSecret: "{{ codekvast_cipherSecret }}"
     dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
