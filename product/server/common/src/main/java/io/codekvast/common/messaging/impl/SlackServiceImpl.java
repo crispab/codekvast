@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 
 /**
@@ -51,6 +52,7 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     private final CodekvastCommonSettings settings;
     private final CommonMetricsService metricsService;
     private final Slack slack = Slack.getInstance();
+    private final Instant startedAt = Instant.now();
 
     @Override
     @Async
@@ -67,7 +69,8 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     public void notifyShutdown() {
         metricsService.countApplicationShutdown();
         doSend(
-            String.format("%s %s in %s is stopping", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
+            String.format("%s %s in %s is stopping. Uptime = %s", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname(),
+                          Duration.between(startedAt, Instant.now())),
             Channel.ALARMS);
     }
 
