@@ -9,8 +9,10 @@ import io.codekvast.login.heroku.HerokuException;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -19,7 +21,9 @@ import java.time.ZonedDateTime;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author olle.hallin@crisp.se
@@ -50,6 +54,11 @@ public class HerokuServiceImplTest {
     @Test
     public void should_delegate_provision_to_customerService_addCustomer() throws HerokuException {
         // given
+        when(customerService.addCustomer(any())).thenReturn(
+            CustomerService.AddCustomerResponse.builder()
+                                               .customerId(1L)
+                                               .licenseKey("licenseKey")
+                                               .build());
 
         // when
         service.provision(HerokuProvisionRequest

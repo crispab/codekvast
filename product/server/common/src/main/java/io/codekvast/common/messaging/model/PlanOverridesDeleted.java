@@ -21,21 +21,20 @@
  */
 package io.codekvast.common.messaging.model;
 
+import io.codekvast.common.customer.PricePlanDefaults;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.time.Instant;
-
 /**
- * An event that is sent when a customer starts a trial period by sending it's first data.
+ * An event that is sent when a customer changes plan, and thus loses price plan overrides.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class TrialPeriodStarted implements CodekvastEvent {
+public class PlanOverridesDeleted implements CodekvastEvent {
     @NonNull Long customerId;
-    @NonNull Instant collectionStartedAt;
-    @NonNull Instant trialPeriodEndsAt;
+    @NonNull String plan;
+    @NonNull PricePlanDefaults pricePlanDefaults;
 }

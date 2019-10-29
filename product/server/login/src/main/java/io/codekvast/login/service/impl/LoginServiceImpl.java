@@ -23,6 +23,7 @@ package io.codekvast.login.service.impl;
 
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.common.security.WebappCredentials;
 import io.codekvast.login.service.LoginService;
@@ -50,10 +51,9 @@ public class LoginServiceImpl implements LoginService {
     private final CodekvastLoginSettings settings;
     private final CustomerService customerService;
     private final SecurityService securityService;
-    private final LoginMetricsService metricsService;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public URI getDashboardLaunchURI(Long customerId) {
         User user = getUserFromSecurityContext();
 
@@ -86,7 +86,6 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public User getUserFromAuthentication(OAuth2AuthenticationToken authentication) {
-        //noinspection unchecked
         Map<String, Object> details = authentication.getPrincipal().getAttributes();
         String clientRegistrationId = authentication.getAuthorizedClientRegistrationId();
         logger.debug("Details={}", details);

@@ -22,7 +22,9 @@
 package io.codekvast.common.customer.impl;
 
 import io.codekvast.common.customer.*;
+import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.SlackService;
+import io.codekvast.common.messaging.model.*;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.codekvast.common.security.Roles;
 import lombok.NonNull;
@@ -31,12 +33,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.Instant;
 import java.util.*;
 
@@ -53,6 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final JdbcTemplate jdbcTemplate;
     private final SlackService slackService;
     private final CommonMetricsService metricsService;
+    private final EventService eventService;
 
     @Override
     @Transactional(readOnly = true)
@@ -125,7 +131,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public CustomerData registerAgentPoll(CustomerData customerData, Instant polledAt) {
         final CustomerData result;
 
@@ -137,8 +143,14 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             result = customerData;
         }
-        // TODO: Send Slack notification about ended trial period.
-        //  Requires a database change to prevent more than one notification per customer.
+        if (result.isTrialPeriodExpired(polledAt)) {
+            eventService.send(AgentPolledAfterTrialPeriodExpired.builder()
+                                                                .customerId(result.getCustomerId())
+                                                                .collectionStartedAt(result.getCollectionStartedAt())
+                                                                .trialPeriodEndedAt(result.getTrialPeriodEndsAt())
+                                                                .polledAt(polledAt)
+                                                                .build());
+        }
         return result;
     }
 
@@ -158,6 +170,11 @@ public class CustomerServiceImpl implements CustomerService {
         if (updated <= 0) {
             logger.warn("Failed to start trial period for {}", result);
         } else {
+            eventService.send(TrialPeriodStarted.builder()
+                                                .customerId(result.getCustomerId())
+                                                .collectionStartedAt(result.getCollectionStartedAt())
+                                                .trialPeriodEndsAt(result.getTrialPeriodEndsAt())
+                                                .build());
             slackService.sendNotification(
                 String.format("Trial period started for `%s`, ends at %s", result, result.getTrialPeriodEndsAt()),
                 SlackService.Channel.BUSINESS_EVENTS);
@@ -178,6 +195,11 @@ public class CustomerServiceImpl implements CustomerService {
         if (updated <= 0) {
             logger.warn("Failed to record collection started for {}", result);
         } else {
+            eventService.send(CollectionStarted.builder()
+                                               .customerId(result.getCustomerId())
+                                               .collectionStartedAt(result.getCollectionStartedAt())
+                                               .build());
+
             slackService.sendNotification(String.format("Collection started for `%s`", result), SlackService.Channel.BUSINESS_EVENTS);
             logger.info("Collection started for {}", result);
         }
@@ -185,7 +207,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void registerLogin(LoginRequest request) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
@@ -210,20 +232,31 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         metricsService.countLogin(request.getSource());
+
+        eventService.send(UserLoggedIn.builder()
+                                      .authenticationProvider(request.getSource())
+                                      .emailAddress(request.getEmail())
+                                      .customerId(request.getCustomerId())
+                                      .build());
+
         logger.info("Logged in {}", request);
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public String addCustomer(AddCustomerRequest request) {
+    @Transactional
+    public AddCustomerResponse addCustomer(AddCustomerRequest request) {
+        Long newCustomerId = null;
         String licenseKey = null;
 
         if (Source.HEROKU.equals(request.getSource())) {
             logger.debug("Attempt to retry Heroku request {}", request);
             try {
-                licenseKey = jdbcTemplate
-                    .queryForObject("SELECT licenseKey FROM customers WHERE externalId = ? ", String.class, request.getExternalId());
-                logger.info("Found existing licenseKey {}", licenseKey);
+                Map<String, Object> result = jdbcTemplate.queryForMap("SELECT id, licenseKey FROM customers " +
+                                                                          "WHERE source = ? AND externalId = ? ",
+                                                                      request.getSource(), request.getExternalId());
+                newCustomerId = (Long) result.get("id");
+                licenseKey = (String) result.get("licenseKey");
+                logger.info("Found existing Heroku customerId={}, licenseKey '{}'", newCustomerId, licenseKey);
             } catch (IncorrectResultSizeDataAccessException e) {
                 logger.debug("Heroku request was not a retry");
             }
@@ -231,22 +264,31 @@ public class CustomerServiceImpl implements CustomerService {
 
         if (licenseKey == null) {
             licenseKey = UUID.randomUUID().toString().replaceAll("[-_]", "").toUpperCase();
+            KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            jdbcTemplate.update("INSERT INTO customers(source, externalId, name, licenseKey, plan) VALUES(?, ?, ?, ?, ?)",
-                                request.getSource(), request.getExternalId(), request.getName(), licenseKey, request.getPlan());
-            logger.info("{} resulted in licenseKey {}", request, licenseKey);
+            jdbcTemplate.update(new InsertCustomerStatement(request, licenseKey), keyHolder);
+            newCustomerId = keyHolder.getKey().longValue();
+
+            eventService.send(CustomerAdded.builder()
+                                           .customerId(newCustomerId)
+                                           .source(request.getSource())
+                                           .name(request.getName())
+                                           .plan(request.getPlan())
+                                           .build());
             slackService.sendNotification(String.format("Handled `%s`", request), SlackService.Channel.BUSINESS_EVENTS);
+            logger.info("{} resulted in customerId {}, licenseKey '{}'", request, newCustomerId, licenseKey);
         }
 
-        return licenseKey;
+        return AddCustomerResponse.builder().customerId(newCustomerId).licenseKey(licenseKey).build();
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void changePlanForExternalId(@NonNull String externalId, @NonNull String newPlan) {
         CustomerData customerData = getCustomerDataByExternalId(externalId);
 
-        if (newPlan.equals(customerData.getPricePlan().getName())) {
+        String oldPlan = customerData.getPricePlan().getName();
+        if (newPlan.equals(oldPlan)) {
             logger.info("{} is already on plan '{}'", customerData, newPlan);
             return;
         }
@@ -257,21 +299,32 @@ public class CustomerServiceImpl implements CustomerService {
             logger.warn("Failed to change plan for {} to '{}'", customerData, newPlan);
         } else {
             logger.info("Changed plan for {} to '{}'", customerData, newPlan);
-            slackService.sendNotification(String.format("Changed plan for `%s` to '%s'", customerData, newPlan),
-                                          SlackService.Channel.BUSINESS_EVENTS);
+
+            eventService.send(PlanChanged.builder()
+                                         .customerId(customerData.getCustomerId())
+                                         .oldPlan(oldPlan)
+                                         .newPlan(newPlan)
+                                         .build());
+
+            slackService.sendNotification(String.format("Changed plan for `%s` to '%s'", customerData, newPlan), SlackService.Channel.BUSINESS_EVENTS);
 
             count = jdbcTemplate.update("DELETE FROM price_plan_overrides WHERE customerId = ?", customerData.getCustomerId());
             if (count > 0) {
                 PricePlanDefaults ppd = PricePlanDefaults.fromDatabaseName(newPlan);
-                logger.warn("Removed price plan override, new effective price plan is {}", ppd);
+                eventService.send(PlanOverridesDeleted.builder()
+                                                      .customerId(customerData.getCustomerId())
+                                                      .plan(newPlan)
+                                                      .pricePlanDefaults(ppd)
+                                                      .build());
                 slackService.sendNotification("Removed price plan override, new effective price plan is `" + ppd + "`",
                                               SlackService.Channel.BUSINESS_EVENTS);
+                logger.warn("Removed price plan override, new effective price plan is {}", ppd);
             }
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void deleteCustomerByExternalId(String externalId) {
         CustomerData customerData = getCustomerDataByExternalId(externalId);
 
@@ -289,8 +342,16 @@ public class CustomerServiceImpl implements CustomerService {
         deleteFromTable("heroku_details", customerId);
         deleteFromTable("customers", customerId);
 
-        logger.info("Deleted customer {}", customerData);
+        eventService.send(CustomerDeleted.builder()
+                                         .customerId(customerId)
+                                         .name(customerData.getCustomerName())
+                                         .displayName(customerData.getDisplayName())
+                                         .source(customerData.getSource())
+                                         .plan(customerData.getPricePlan().getName())
+                                         .build());
+
         slackService.sendNotification("Deleted `" + customerData + "`", SlackService.Channel.BUSINESS_EVENTS);
+        logger.info("Deleted customer {}", customerData);
     }
 
     @Override
@@ -318,14 +379,19 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateAppDetails(String appName, String contactEmail, String licenseKey) {
-        int count = jdbcTemplate.update("UPDATE customers SET name = ?, contactEmail = ? WHERE licenseKey = ? ",
-                                        appName, contactEmail, licenseKey);
+    @Transactional
+    public void updateAppDetails(String appName, String contactEmail, Long customerId) {
+        int count = jdbcTemplate.update("UPDATE customers SET name = ?, contactEmail = ? WHERE id = ? ",
+                                        appName, contactEmail, customerId);
         if (count > 0) {
-            logger.debug("Assigned appName='{}' for licenseKey {}", appName, licenseKey);
+            eventService.send(AppDetailsUpdated.builder()
+                                               .customerId(customerId)
+                                               .applicationName(appName)
+                                               .contactEmail(contactEmail)
+                                               .build());
+            logger.debug("Assigned appName='{}' and contactEmail='{}' for customer {}", appName, contactEmail, customerId);
         } else {
-            logger.warn("Could not assign appName='{}' for license key {}", appName, licenseKey);
+            logger.warn("Could not assign appName='{}' and contactEmail='{}' for customer {}", appName, contactEmail, customerId);
         }
     }
 
@@ -395,6 +461,26 @@ public class CustomerServiceImpl implements CustomerService {
             throw new LicenseViolationException(
                 String.format("Too many methods: %d. The plan '%s' has a limit of %d methods",
                               numberOfMethods, customerData.getPricePlan().getName(), pp.getMaxMethods()));
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static class InsertCustomerStatement implements PreparedStatementCreator {
+        private final AddCustomerRequest request;
+        private final String licenseKey;
+
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            PreparedStatement ps =
+                con.prepareStatement("INSERT INTO customers(source, externalId, name, plan, licenseKey) VALUES(?, ?, ?, ?, ?)",
+                                     Statement.RETURN_GENERATED_KEYS);
+            int column = 0;
+            ps.setString(++column, request.getSource());
+            ps.setString(++column, request.getExternalId());
+            ps.setString(++column, request.getName());
+            ps.setString(++column, request.getPlan());
+            ps.setString(++column, licenseKey);
+            return ps;
         }
     }
 

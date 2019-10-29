@@ -58,7 +58,7 @@ public class AgentServiceImpl implements AgentService {
     private final AgentDAO agentDAO;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
 

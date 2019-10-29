@@ -28,14 +28,15 @@ import lombok.Value;
 import java.time.Instant;
 
 /**
- * An event that is sent when a customer starts a trial period by sending it's first data.
+ * An event that is sent when a new customer is added.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class TrialPeriodStarted implements CodekvastEvent {
+public class CustomerAdded implements CodekvastEvent {
+    @NonNull String source;
     @NonNull Long customerId;
-    @NonNull Instant collectionStartedAt;
-    @NonNull Instant trialPeriodEndsAt;
+    @NonNull String name;
+    @NonNull String plan;
 }

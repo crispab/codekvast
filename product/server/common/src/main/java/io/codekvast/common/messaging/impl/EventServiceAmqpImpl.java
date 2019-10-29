@@ -19,41 +19,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.file_import.impl;
+package io.codekvast.common.messaging.impl;
 
-import io.codekvast.dashboard.file_import.CodeBaseImporter;
-import io.codekvast.dashboard.metrics.IntakeMetricsService;
-import io.codekvast.javaagent.model.v2.CodeBasePublication2;
-import io.codekvast.javaagent.model.v2.CommonPublicationData2;
-import io.codekvast.javaagent.model.v3.CodeBasePublication3;
+import io.codekvast.common.messaging.EventService;
+import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.CODEBASE;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.stereotype.Service;
 
 /**
+ * An AMQP implementation of the EventService.
+ *
  * @author olle.hallin@crisp.se
  */
-@Component
+@Service
 @RequiredArgsConstructor
 @Slf4j
-public class CodeBaseImporterImpl implements CodeBaseImporter {
+public class EventServiceAmqpImpl implements EventService {
 
-    private final CommonImporter commonImporter;
-    private final ImportDAO importDAO;
-    private final IntakeMetricsService metricsService;
+    private final AmqpTemplate amqpTemplate;
 
     @Override
-    @Transactional
-    public boolean importPublication(CodeBasePublication3 publication) {
-        logger.info("Importing {}", publication);
-
-        CommonPublicationData2 data = publication.getCommonData();
-        CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
-        importDAO.importMethods(data, importContext, publication.getEntries());
-        metricsService.gaugePublicationSize(CODEBASE, publication.getEntries().size());
-        return true;
+    public void send(CodekvastEvent event) {
+        logger.debug("Sending {}", event);
+        amqpTemplate.convertAndSend(event);
     }
 }

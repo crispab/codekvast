@@ -54,32 +54,33 @@ public class HerokuServiceImpl implements HerokuService {
     private final HerokuDetailsDAO herokuDetailsDAO;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException {
         logger.debug("Handling {}", request);
         try {
-            String licenseKey = customerService.addCustomer(CustomerService.AddCustomerRequest
-                                                                .builder()
-                                                                .source(CustomerService.Source.HEROKU)
-                                                                .externalId(request.getUuid())
-                                                                .name(request.getHeroku_id())
-                                                                .plan(request.getPlan())
-                                                                .build());
+            String heroku = CustomerService.Source.HEROKU;
+            CustomerService.AddCustomerResponse response = customerService.addCustomer(CustomerService.AddCustomerRequest
+                                                                                           .builder()
+                                                                                           .source(heroku)
+                                                                                           .externalId(request.getUuid())
+                                                                                           .name(request.getHeroku_id())
+                                                                                           .plan(request.getPlan())
+                                                                                           .build());
 
-            String accessToken = exchangeOAuthGrant(request, licenseKey);
+            String accessToken = exchangeOAuthGrant(request, response.getLicenseKey());
 
-            fetchAppDetails(request.getUuid(), accessToken, licenseKey);
+            fetchAppDetails(heroku, request.getUuid(), accessToken, response.getCustomerId());
 
             Map<String, String> config = new HashMap<>();
             config.put("CODEKVAST_URL", settings.getHerokuCodekvastUrl());
-            config.put("CODEKVAST_LICENSE_KEY", licenseKey);
+            config.put("CODEKVAST_LICENSE_KEY", response.getLicenseKey());
 
-            HerokuProvisionResponse response = HerokuProvisionResponse.builder()
-                                                                      .id(request.getUuid())
-                                                                      .config(config)
-                                                                      .build();
-            logger.debug("Returning {}", response);
-            return response;
+            HerokuProvisionResponse herokuProvisionResponse = HerokuProvisionResponse.builder()
+                                                                                     .id(request.getUuid())
+                                                                                     .config(config)
+                                                                                     .build();
+            logger.debug("Returning {}", herokuProvisionResponse);
+            return herokuProvisionResponse;
         } catch (Exception e) {
             throw new HerokuException("Could not execute " + request, e);
         }
@@ -125,7 +126,7 @@ public class HerokuServiceImpl implements HerokuService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     @Secured(Roles.ADMIN)
     public String getAccessTokenFor(Long customerId) throws CipherException {
         String accessToken = herokuDetailsDAO.getAccessToken(customerId);
@@ -153,13 +154,13 @@ public class HerokuServiceImpl implements HerokuService {
         return herokuDetailsDAO.getCallbackUrl(customerId);
     }
 
-    private void fetchAppDetails(String externalId, String accessToken, String licenseKey) {
+    private void fetchAppDetails(String source, String externalId, String accessToken, Long customerId) {
         if (accessToken == null) {
-            logger.info("Cannot get application details for licenseKey {}", licenseKey);
+            logger.info("Cannot get application details from {} for externalId '{}'", source, externalId);
             return;
         }
 
         HerokuAppDetails appDetails = herokuApiWrapper.getAppDetails(externalId, accessToken);
-        customerService.updateAppDetails(appDetails.getAppName(), appDetails.getOwnerEmail(), licenseKey);
+        customerService.updateAppDetails(appDetails.getAppName(), appDetails.getOwnerEmail(), customerId);
     }
 }

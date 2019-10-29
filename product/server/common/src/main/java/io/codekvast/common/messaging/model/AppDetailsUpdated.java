@@ -28,14 +28,14 @@ import lombok.Value;
 import java.time.Instant;
 
 /**
- * An event that is sent when a customer has reached the end of a trial period.
+ * An event that is sent after application details were fetched from an external system.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class TrialPeriodEnded {
+public class AppDetailsUpdated implements CodekvastEvent {
     @NonNull Long customerId;
-    @NonNull Instant collectionStartedAt;
-    @NonNull Instant trialPeriodEndedAt;
+    @NonNull String applicationName;
+    @NonNull String contactEmail;
 }

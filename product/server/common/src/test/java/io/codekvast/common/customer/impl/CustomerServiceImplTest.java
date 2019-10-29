@@ -3,6 +3,7 @@ package io.codekvast.common.customer.impl;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
+import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.SlackService;
 import io.codekvast.common.metrics.CommonMetricsService;
 import org.junit.Before;
@@ -31,12 +32,15 @@ public class CustomerServiceImplTest {
     @Mock
     private CommonMetricsService metricsService;
 
+    @Mock
+    private EventService eventService;
+
     private CustomerService service;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        service = new CustomerServiceImpl(jdbcTemplate, slackService, metricsService);
+        service = new CustomerServiceImpl(jdbcTemplate, slackService, metricsService, eventService);
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", 1L);

@@ -21,21 +21,10 @@
  */
 package io.codekvast.common.messaging.model;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-
-import java.time.Instant;
-
 /**
- * An event that is sent when a customer starts a trial period by sending it's first data.
+ * A marker interface for events that could be transmitted using the {@link EventService}.
  *
  * @author olle.hallin@crisp.se
  */
-@Value
-@Builder
-public class TrialPeriodStarted implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull Instant collectionStartedAt;
-    @NonNull Instant trialPeriodEndsAt;
+public interface CodekvastEvent {
 }

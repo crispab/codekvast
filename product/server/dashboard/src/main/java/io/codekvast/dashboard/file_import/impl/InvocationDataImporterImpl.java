@@ -48,7 +48,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
     private final IntakeMetricsService metricsService;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public boolean importPublication(InvocationDataPublication2 publication) {
         logger.info("Importing {}", publication);
 

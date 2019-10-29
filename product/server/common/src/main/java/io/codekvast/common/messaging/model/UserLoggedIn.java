@@ -25,17 +25,15 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.time.Instant;
-
 /**
- * An event that is sent when a customer starts a trial period by sending it's first data.
+ * An event that is sent when a user logs in.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class TrialPeriodStarted implements CodekvastEvent {
+public class UserLoggedIn implements CodekvastEvent {
     @NonNull Long customerId;
-    @NonNull Instant collectionStartedAt;
-    @NonNull Instant trialPeriodEndsAt;
+    @NonNull String emailAddress;
+    @NonNull String authenticationProvider; // "facebook", "github", "google" etc
 }

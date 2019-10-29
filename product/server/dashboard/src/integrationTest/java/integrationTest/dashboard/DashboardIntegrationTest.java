@@ -78,7 +78,7 @@ import static org.junit.Assume.assumeTrue;
     classes = {CodekvastDashboardApplication.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationTest")
-@Transactional(rollbackFor = Exception.class)
+@Transactional
 public class DashboardIntegrationTest {
 
     private final long now = System.currentTimeMillis();
@@ -257,19 +257,19 @@ public class DashboardIntegrationTest {
     @Test
     @Sql(scripts = "/sql/base-data.sql")
     public void should_handle_add_delete_customer() {
-        String licenseKey = customerService.addCustomer(CustomerService.AddCustomerRequest
-                                                            .builder()
-                                                            .source("test")
-                                                            .externalId("externalId")
-                                                            .name("customerName")
-                                                            .plan("test")
-                                                            .build());
+        CustomerService.AddCustomerResponse response = customerService.addCustomer(CustomerService.AddCustomerRequest
+                                                                                       .builder()
+                                                                                       .source("test")
+                                                                                       .externalId("externalId")
+                                                                                       .name("customerName")
+                                                                                       .plan("test")
+                                                                                       .build());
 
         Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE externalId = ?", Long.class, "externalId");
 
         assertThat(count, is(1L));
 
-        assertThat(licenseKey, notNullValue());
+        assertThat(response.getLicenseKey(), notNullValue());
 
         customerService.deleteCustomerByExternalId("externalId");
 

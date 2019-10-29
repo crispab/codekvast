@@ -56,7 +56,7 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void saveTokens(HerokuOAuthTokenResponse tokenResponse, String callbackUrl, String licenseKey) throws CipherException {
         Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE licenseKey = ?", Long.class, licenseKey);
 
@@ -122,7 +122,7 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void updateAccessToken(Long customerId, String accessToken, Instant expiresAt) throws CipherException {
         logger.debug("Saving Heroku accessToken for customer {}, expiresAt {}", customerId, expiresAt);
         int updated = jdbcTemplate.update("UPDATE heroku_details SET accessToken = ?, expiresAt = ? WHERE customerId = ?",

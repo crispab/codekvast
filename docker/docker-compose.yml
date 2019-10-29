@@ -28,8 +28,8 @@ services:
         restart: unless-stopped
         environment:
         - "RABBITMQ_DEFAULT_VHOST=codekvast-dev"
-        - "RABBITMQ_DEFAULT_USER=codekvast"
-        - "RABBITMQ_DEFAULT_PASS=codekvast"
+        - "RABBITMQ_DEFAULT_USER=admin"
+        - "RABBITMQ_DEFAULT_PASS=secret"
         volumes:
           - rabbitmq:/var/lib/rabbitmq
         ports:

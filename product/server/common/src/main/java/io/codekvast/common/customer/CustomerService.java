@@ -120,9 +120,9 @@ public interface CustomerService {
      * Adds a new customer
      *
      * @param request The add customer request data
-     * @return A unique license key
+     * @return A response containing the generated customerId and the unique license key
      */
-    String addCustomer(AddCustomerRequest request);
+    AddCustomerResponse addCustomer(AddCustomerRequest request);
 
     /**
      * Change plan for an existing customer
@@ -154,12 +154,11 @@ public interface CustomerService {
 
     /**
      * Update the app name and the contact email.
-     *
-     * @param appName      The new app name
+     *  @param appName      The new app name
      * @param contactEmail the new contact email
-     * @param licenseKey   Identifies the customer
+     * @param customerId   Identifies the customer
      */
-    void updateAppDetails(String appName, String contactEmail, String licenseKey);
+    void updateAppDetails(String appName, String contactEmail, Long customerId);
 
     /**
      * Parameter object for {@link #addCustomer(AddCustomerRequest)}
@@ -178,6 +177,13 @@ public interface CustomerService {
 
         @NonNull
         String plan;
+    }
+
+    @Value
+    @Builder
+    class AddCustomerResponse {
+        @NonNull Long customerId;
+        @NonNull String licenseKey;
     }
 
     /**
