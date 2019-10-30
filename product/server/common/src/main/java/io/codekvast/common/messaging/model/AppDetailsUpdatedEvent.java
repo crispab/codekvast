@@ -25,17 +25,27 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.time.Instant;
-
 /**
- * An event that is sent when a customer starts a trial period by sending it's first data.
+ * An event that is sent after application details were fetched from an external system.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class TrialPeriodStarted implements CodekvastEvent {
+public class AppDetailsUpdatedEvent implements CodekvastEvent {
+    private static final long serialVersionUID = 1L;
+
+    private final MetaData metaData = MetaData.create();
+
     @NonNull Long customerId;
-    @NonNull Instant collectionStartedAt;
-    @NonNull Instant trialPeriodEndsAt;
+    @NonNull String applicationName;
+    @NonNull String contactEmail;
+
+    public static AppDetailsUpdatedEvent sample() {
+        return AppDetailsUpdatedEvent.builder()
+                                     .customerId(1L)
+                                     .applicationName("applicationName")
+                                     .contactEmail("contactEmail")
+                                     .build();
+    }
 }

@@ -28,15 +28,24 @@ import lombok.Value;
 import java.time.Instant;
 
 /**
- * An event that is sent when a new customer is added.
+ * An event that is sent the first time collection data is received.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class CustomerAdded implements CodekvastEvent {
-    @NonNull String source;
+public class CollectionStartedEvent implements CodekvastEvent {
+    private static final long serialVersionUID = 1L;
+
+    private final MetaData metaData = MetaData.create();
+
     @NonNull Long customerId;
-    @NonNull String name;
-    @NonNull String plan;
+    @NonNull Instant collectionStartedAt;
+
+    public static CollectionStartedEvent sample() {
+        return CollectionStartedEvent.builder()
+                                     .customerId(1L)
+                                     .collectionStartedAt(Instant.now())
+                                     .build();
+    }
 }

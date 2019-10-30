@@ -10,6 +10,7 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,6 +49,9 @@ public class AgentControllerIntegrationTest {
 
     @MockBean
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @MockBean
+    private AmqpTemplate amqpTemplate;
 
     @MockBean
     private MeterRegistry meterRegistry;

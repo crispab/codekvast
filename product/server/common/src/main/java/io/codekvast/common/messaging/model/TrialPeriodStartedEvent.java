@@ -28,15 +28,26 @@ import lombok.Value;
 import java.time.Instant;
 
 /**
- * An event that is sent when an agent polls after the expiration of the trial period.
+ * An event that is sent when a customer starts a trial period by sending it's first data.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class AgentPolledAfterTrialPeriodExpired implements CodekvastEvent {
+public class TrialPeriodStartedEvent implements CodekvastEvent {
+    private static final long serialVersionUID = 1L;
+
+    private final MetaData metaData = MetaData.create();
+
     @NonNull Long customerId;
     @NonNull Instant collectionStartedAt;
-    @NonNull Instant trialPeriodEndedAt;
-    @NonNull Instant polledAt;
+    @NonNull Instant trialPeriodEndsAt;
+
+    public static TrialPeriodStartedEvent sample() {
+        return TrialPeriodStartedEvent.builder()
+                                      .customerId(1L)
+                                      .collectionStartedAt(Instant.now())
+                                      .trialPeriodEndsAt(Instant.now())
+                                      .build();
+    }
 }

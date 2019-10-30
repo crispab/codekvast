@@ -21,21 +21,25 @@
  */
 package io.codekvast.common.messaging.model;
 
-import lombok.Builder;
+import io.codekvast.common.messaging.CorrelationIdHolder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 
 /**
- * An event that is sent after application details were fetched from an external system.
- *
  * @author olle.hallin@crisp.se
  */
 @Value
-@Builder
-public class AppDetailsUpdated implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull String applicationName;
-    @NonNull String contactEmail;
+public class MetaData implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @NonNull Instant instant;
+    @NonNull String messageId;
+    @NonNull String correlationId;
+
+    public static MetaData create() {
+        return new MetaData(Instant.now(), UUID.randomUUID().toString(), CorrelationIdHolder.get());
+    }
 }

@@ -25,15 +25,31 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.time.Instant;
+
 /**
- * An event that is sent when a customer changes plan.
+ * An event that is sent when an agent polls after the expiration of the trial period.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class PlanChanged implements CodekvastEvent {
+public class AgentPolledAfterTrialPeriodExpiredEvent implements CodekvastEvent {
+    private static final long serialVersionUID = 1L;
+
+    private final MetaData metaData = MetaData.create();
+
     @NonNull Long customerId;
-    @NonNull String oldPlan;
-    @NonNull String newPlan;
+    @NonNull Instant collectionStartedAt;
+    @NonNull Instant trialPeriodEndedAt;
+    @NonNull Instant polledAt;
+
+    public static AgentPolledAfterTrialPeriodExpiredEvent sample() {
+        return AgentPolledAfterTrialPeriodExpiredEvent.builder()
+                                                      .customerId(1L)
+                                                      .collectionStartedAt(Instant.now())
+                                                      .trialPeriodEndedAt(Instant.now())
+                                                      .polledAt(Instant.now())
+                                                      .build();
+    }
 }

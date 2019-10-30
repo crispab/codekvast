@@ -21,20 +21,32 @@
  */
 package io.codekvast.common.messaging.model;
 
+import io.codekvast.common.customer.PricePlanDefaults;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.time.Instant;
-
 /**
- * An event that is sent the first time collection data is received.
+ * An event that is sent when a customer changes plan, and thus loses price plan overrides.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class CollectionStarted implements CodekvastEvent {
+public class PlanOverridesDeletedEvent implements CodekvastEvent {
+    private static final long serialVersionUID = 1L;
+
+    private final MetaData metaData = MetaData.create();
+
     @NonNull Long customerId;
-    @NonNull Instant collectionStartedAt;
+    @NonNull String plan;
+    @NonNull PricePlanDefaults pricePlanDefaults;
+
+    public static PlanOverridesDeletedEvent sample() {
+        return PlanOverridesDeletedEvent.builder()
+                                        .customerId(1L)
+                                        .plan("plan")
+                                        .pricePlanDefaults(PricePlanDefaults.DEMO)
+                                        .build();
+    }
 }

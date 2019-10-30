@@ -144,12 +144,12 @@ public class CustomerServiceImpl implements CustomerService {
             result = customerData;
         }
         if (result.isTrialPeriodExpired(polledAt)) {
-            eventService.send(AgentPolledAfterTrialPeriodExpired.builder()
-                                                                .customerId(result.getCustomerId())
-                                                                .collectionStartedAt(result.getCollectionStartedAt())
-                                                                .trialPeriodEndedAt(result.getTrialPeriodEndsAt())
-                                                                .polledAt(polledAt)
-                                                                .build());
+            eventService.send(AgentPolledAfterTrialPeriodExpiredEvent.builder()
+                                                                     .customerId(result.getCustomerId())
+                                                                     .collectionStartedAt(result.getCollectionStartedAt())
+                                                                     .trialPeriodEndedAt(result.getTrialPeriodEndsAt())
+                                                                     .polledAt(polledAt)
+                                                                     .build());
         }
         return result;
     }
@@ -170,11 +170,11 @@ public class CustomerServiceImpl implements CustomerService {
         if (updated <= 0) {
             logger.warn("Failed to start trial period for {}", result);
         } else {
-            eventService.send(TrialPeriodStarted.builder()
-                                                .customerId(result.getCustomerId())
-                                                .collectionStartedAt(result.getCollectionStartedAt())
-                                                .trialPeriodEndsAt(result.getTrialPeriodEndsAt())
-                                                .build());
+            eventService.send(TrialPeriodStartedEvent.builder()
+                                                     .customerId(result.getCustomerId())
+                                                     .collectionStartedAt(result.getCollectionStartedAt())
+                                                     .trialPeriodEndsAt(result.getTrialPeriodEndsAt())
+                                                     .build());
             slackService.sendNotification(
                 String.format("Trial period started for `%s`, ends at %s", result, result.getTrialPeriodEndsAt()),
                 SlackService.Channel.BUSINESS_EVENTS);
@@ -195,10 +195,10 @@ public class CustomerServiceImpl implements CustomerService {
         if (updated <= 0) {
             logger.warn("Failed to record collection started for {}", result);
         } else {
-            eventService.send(CollectionStarted.builder()
-                                               .customerId(result.getCustomerId())
-                                               .collectionStartedAt(result.getCollectionStartedAt())
-                                               .build());
+            eventService.send(CollectionStartedEvent.builder()
+                                                    .customerId(result.getCustomerId())
+                                                    .collectionStartedAt(result.getCollectionStartedAt())
+                                                    .build());
 
             slackService.sendNotification(String.format("Collection started for `%s`", result), SlackService.Channel.BUSINESS_EVENTS);
             logger.info("Collection started for {}", result);
@@ -233,11 +233,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         metricsService.countLogin(request.getSource());
 
-        eventService.send(UserLoggedIn.builder()
-                                      .authenticationProvider(request.getSource())
-                                      .emailAddress(request.getEmail())
-                                      .customerId(request.getCustomerId())
-                                      .build());
+        eventService.send(UserLoggedInEvent.builder()
+                                           .authenticationProvider(request.getSource())
+                                           .emailAddress(request.getEmail())
+                                           .customerId(request.getCustomerId())
+                                           .build());
 
         logger.info("Logged in {}", request);
     }
@@ -269,12 +269,12 @@ public class CustomerServiceImpl implements CustomerService {
             jdbcTemplate.update(new InsertCustomerStatement(request, licenseKey), keyHolder);
             newCustomerId = keyHolder.getKey().longValue();
 
-            eventService.send(CustomerAdded.builder()
-                                           .customerId(newCustomerId)
-                                           .source(request.getSource())
-                                           .name(request.getName())
-                                           .plan(request.getPlan())
-                                           .build());
+            eventService.send(CustomerAddedEvent.builder()
+                                                .customerId(newCustomerId)
+                                                .source(request.getSource())
+                                                .name(request.getName())
+                                                .plan(request.getPlan())
+                                                .build());
             slackService.sendNotification(String.format("Handled `%s`", request), SlackService.Channel.BUSINESS_EVENTS);
             logger.info("{} resulted in customerId {}, licenseKey '{}'", request, newCustomerId, licenseKey);
         }
@@ -300,22 +300,23 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             logger.info("Changed plan for {} to '{}'", customerData, newPlan);
 
-            eventService.send(PlanChanged.builder()
-                                         .customerId(customerData.getCustomerId())
-                                         .oldPlan(oldPlan)
-                                         .newPlan(newPlan)
-                                         .build());
+            eventService.send(PlanChangedEvent.builder()
+                                              .customerId(customerData.getCustomerId())
+                                              .oldPlan(oldPlan)
+                                              .newPlan(newPlan)
+                                              .build());
 
-            slackService.sendNotification(String.format("Changed plan for `%s` to '%s'", customerData, newPlan), SlackService.Channel.BUSINESS_EVENTS);
+            slackService.sendNotification(String.format("Changed plan for `%s` to '%s'", customerData, newPlan),
+                                          SlackService.Channel.BUSINESS_EVENTS);
 
             count = jdbcTemplate.update("DELETE FROM price_plan_overrides WHERE customerId = ?", customerData.getCustomerId());
             if (count > 0) {
                 PricePlanDefaults ppd = PricePlanDefaults.fromDatabaseName(newPlan);
-                eventService.send(PlanOverridesDeleted.builder()
-                                                      .customerId(customerData.getCustomerId())
-                                                      .plan(newPlan)
-                                                      .pricePlanDefaults(ppd)
-                                                      .build());
+                eventService.send(PlanOverridesDeletedEvent.builder()
+                                                           .customerId(customerData.getCustomerId())
+                                                           .plan(newPlan)
+                                                           .pricePlanDefaults(ppd)
+                                                           .build());
                 slackService.sendNotification("Removed price plan override, new effective price plan is `" + ppd + "`",
                                               SlackService.Channel.BUSINESS_EVENTS);
                 logger.warn("Removed price plan override, new effective price plan is {}", ppd);
@@ -342,13 +343,13 @@ public class CustomerServiceImpl implements CustomerService {
         deleteFromTable("heroku_details", customerId);
         deleteFromTable("customers", customerId);
 
-        eventService.send(CustomerDeleted.builder()
-                                         .customerId(customerId)
-                                         .name(customerData.getCustomerName())
-                                         .displayName(customerData.getDisplayName())
-                                         .source(customerData.getSource())
-                                         .plan(customerData.getPricePlan().getName())
-                                         .build());
+        eventService.send(CustomerDeletedEvent.builder()
+                                              .customerId(customerId)
+                                              .name(customerData.getCustomerName())
+                                              .displayName(customerData.getDisplayName())
+                                              .source(customerData.getSource())
+                                              .plan(customerData.getPricePlan().getName())
+                                              .build());
 
         slackService.sendNotification("Deleted `" + customerData + "`", SlackService.Channel.BUSINESS_EVENTS);
         logger.info("Deleted customer {}", customerData);
@@ -384,11 +385,11 @@ public class CustomerServiceImpl implements CustomerService {
         int count = jdbcTemplate.update("UPDATE customers SET name = ?, contactEmail = ? WHERE id = ? ",
                                         appName, contactEmail, customerId);
         if (count > 0) {
-            eventService.send(AppDetailsUpdated.builder()
-                                               .customerId(customerId)
-                                               .applicationName(appName)
-                                               .contactEmail(contactEmail)
-                                               .build());
+            eventService.send(AppDetailsUpdatedEvent.builder()
+                                                    .customerId(customerId)
+                                                    .applicationName(appName)
+                                                    .contactEmail(contactEmail)
+                                                    .build());
             logger.debug("Assigned appName='{}' and contactEmail='{}' for customer {}", appName, contactEmail, customerId);
         } else {
             logger.warn("Could not assign appName='{}' and contactEmail='{}' for customer {}", appName, contactEmail, customerId);

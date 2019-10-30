@@ -21,15 +21,33 @@
  */
 package io.codekvast.common.messaging.model;
 
-import io.codekvast.common.messaging.EventService;
-
-import java.io.Serializable;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
 /**
- * A common interface for events that could be transmitted using {@link EventService}.
+ * An event that is sent when a new customer is added.
  *
  * @author olle.hallin@crisp.se
  */
-public interface CodekvastEvent extends Serializable {
-    MetaData getMetaData();
+@Value
+@Builder
+public class CustomerAddedEvent implements CodekvastEvent {
+    private static final long serialVersionUID = 1L;
+
+    private final MetaData metaData = MetaData.create();
+
+    @NonNull String source;
+    @NonNull Long customerId;
+    @NonNull String name;
+    @NonNull String plan;
+
+    public static CustomerAddedEvent sample() {
+        return CustomerAddedEvent.builder()
+                                 .source("source")
+                                 .customerId(1L)
+                                 .name("name")
+                                 .plan("plan")
+                                 .build();
+    }
 }

@@ -32,10 +32,24 @@ import lombok.Value;
  */
 @Value
 @Builder
-public class CustomerDeleted implements CodekvastEvent {
+public class CustomerDeletedEvent implements CodekvastEvent {
+    private static final long serialVersionUID = 1L;
+
+    private final MetaData metaData = MetaData.create();
+
     @NonNull Long customerId;
     @NonNull String source;
     @NonNull String name;
     @NonNull String displayName;
     @NonNull String plan;
+
+    public static CustomerDeletedEvent sample() {
+        return CustomerDeletedEvent.builder()
+                                   .customerId(1L)
+                                   .source("source")
+                                   .name("name")
+                                   .displayName("displayName")
+                                   .plan("plan")
+                                   .build();
+    }
 }

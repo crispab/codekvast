@@ -21,20 +21,31 @@
  */
 package io.codekvast.common.messaging.model;
 
-import io.codekvast.common.customer.PricePlanDefaults;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 /**
- * An event that is sent when a customer changes plan, and thus loses price plan overrides.
+ * An event that is sent when a user logs in.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class PlanOverridesDeleted implements CodekvastEvent {
+public class UserLoggedInEvent implements CodekvastEvent {
+    private static final long serialVersionUID = 1L;
+
+    private final MetaData metaData = MetaData.create();
+
     @NonNull Long customerId;
-    @NonNull String plan;
-    @NonNull PricePlanDefaults pricePlanDefaults;
+    @NonNull String emailAddress;
+    @NonNull String authenticationProvider; // "facebook", "github", "google" etc
+
+    public static UserLoggedInEvent sample() {
+        return UserLoggedInEvent.builder()
+                                .customerId(1L)
+                                .emailAddress("emailAddress")
+                                .authenticationProvider("authenticationProvider")
+                                .build();
+    }
 }
