@@ -27,7 +27,7 @@ services:
         image: rabbitmq:3.8-management-alpine
         restart: unless-stopped
         environment:
-        - "RABBITMQ_DEFAULT_VHOST=codekvast-dev"
+        - "RABBITMQ_DEFAULT_VHOST=/"
         - "RABBITMQ_DEFAULT_USER=admin"
         - "RABBITMQ_DEFAULT_PASS=secret"
         volumes:

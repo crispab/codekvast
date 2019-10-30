@@ -68,7 +68,11 @@ public class LoginController {
     @GetMapping("/userinfo")
     public String userinfo(OAuth2AuthenticationToken authentication, Model model) {
         User user = loginService.getUserFromAuthentication(authentication);
-        Set<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+        Set<String> roles = authentication.getAuthorities()
+                                          .stream()
+                                          .map(GrantedAuthority::getAuthority)
+                                          .filter(a -> a.startsWith("ROLE_"))
+                                          .collect(Collectors.toSet());
         logger.debug("roles={}", roles);
 
         model.addAttribute("title", "Projects");

@@ -26,27 +26,22 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.Roles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
 
 /**
@@ -102,11 +97,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 grantedAuthorities.add(authority);
 
                 Object email = null;
-                if (OAuth2UserAuthority.class.isInstance(authority)) {
+
+                //noinspection ChainOfInstanceofChecks
+                if (authority instanceof OAuth2UserAuthority) {
                     email = ((OAuth2UserAuthority) authority).getAttributes().get("email");
+                } else if (authority instanceof SimpleGrantedAuthority) {
+                    logger.debug("Ignoring extra authority {}", authority);
                 } else {
-                    logger.error("Don't know how to extract the email address from a {}", authority.getClass().getName());
+                    logger.warn("Don't know how to extract the email address from a {}", authority.getClass().getName());
                 }
+
                 if (email != null) {
                     List<CustomerData> customerData = customerService.getCustomerDataByUserEmail(email.toString());
                     if (!customerData.isEmpty()) {

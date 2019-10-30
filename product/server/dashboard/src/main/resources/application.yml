@@ -67,6 +67,15 @@ spring:
         password: codekvast
         url:      jdbc:mariadb://localhost/codekvast
         username: codekvast
+    rabbitmq:
+        host: localhost
+        port: 5672
+        username: admin
+        password: secret
+        template:
+            retry:
+                enabled: true
+                initial-interval: 2s
     flyway:
         validate-on-migrate: false
     http:
@@ -85,14 +94,5 @@ spring:
                 queue-capacity: 100
             thread-name-prefix: 'Codekvast task-'
         scheduling.pool.size: 5
-    rabbitmq:
-        host: localhost
-        port: 5672
-        username: admin
-        password: secret
-        template:
-            retry:
-                enabled: true
-                initial-interval: 2s
 
 springfox.documentation.swagger.v2.path: /api-docs

@@ -77,6 +77,15 @@ spring:
         password: codekvast
         url:      jdbc:mariadb://localhost/codekvast
         username: codekvast
+    rabbitmq:
+        host: localhost
+        port: 5672
+        username: admin
+        password: secret
+        template:
+            retry:
+                enabled: true
+                initial-interval: 2s
     flyway:
         validate-on-migrate: false
     groovy.template.configuration:
