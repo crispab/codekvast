@@ -34,7 +34,7 @@ run {
     ]
 
     args = [
-        "--logging.file=$buildDir/log/${applicationName}.log",
+        "--logging.file.name=$buildDir/log/${applicationName}.log",
         "--spring.profiles.active=dev-secrets,webpack-dev-server"
     ]
 }
