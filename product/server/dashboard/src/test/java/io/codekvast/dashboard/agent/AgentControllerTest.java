@@ -6,7 +6,6 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -31,8 +30,6 @@ public class AgentControllerTest {
     @Mock
     private AgentService agentService;
 
-    private AgentController agentController;
-
     private MockMvc mockMvc;
 
     private final Gson gson = new Gson();
@@ -40,7 +37,7 @@ public class AgentControllerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        agentController = new AgentController(agentService);
+        AgentController agentController = new AgentController(agentService);
         this.mockMvc = MockMvcBuilders.standaloneSetup(agentController)
                                       .setMessageConverters(new GsonHttpMessageConverter(), new StringHttpMessageConverter())
                                       .build();

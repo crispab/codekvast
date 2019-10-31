@@ -22,6 +22,7 @@
 package io.codekvast.common.messaging;
 
 import lombok.NonNull;
+import org.slf4j.MDC;
 
 import java.util.UUID;
 
@@ -32,6 +33,7 @@ import java.util.UUID;
  */
 public class CorrelationIdHolder {
     private final static ThreadLocal<String> holder = new ThreadLocal<>();
+    private static final String CORRELATION_ID = "correlationId";
 
     /**
      * Retrieves the thread's correlationId. Creates one if missing.
@@ -42,37 +44,42 @@ public class CorrelationIdHolder {
         String id = holder.get();
         if (id == null) {
             id = UUID.randomUUID().toString();
-            holder.set(id);
+            set(id);
         }
         return id;
     }
 
     /**
      * Sets a new correlationId, obtained e.g., via a HTTP request parameter or an event received from another service.
+     * It also invokes {@code MDC.put("correlationId", id)}.
      *
      * @param id The new id to set. May not be null.
      */
     public static void set(@NonNull String id) {
         holder.set(id);
+        MDC.put(CORRELATION_ID, id);
     }
 
     /**
      * Generates and stores a new random correlationId
+     * It also invokes {@code MDC.put("correlationId", id)}.
      *
      * @return The new unique random correlationId. Does never return null.
      */
     public static String generateNew() {
         String id = UUID.randomUUID().toString();
-        holder.set(id);
+        set(id);
         return id;
     }
 
     /**
      * Removes the correlation id from the thread, to prevent leaking to other tasks.
+     * It also invokes {@code MDC.remove("correlationId")}.
      *
      * Should be used in a finally block.
      */
     public static void clear() {
         holder.remove();
+        MDC.remove(CORRELATION_ID);
     }
 }

@@ -39,8 +39,6 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorrelationIdServletFilter implements Filter {
 
-    private static final String CORRELATION_ID = "correlationId";
-
     @Override
     public void init(FilterConfig filterConfig) {
         // Do nothing
@@ -48,11 +46,10 @@ public class CorrelationIdServletFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        MDC.put(CORRELATION_ID, CorrelationIdHolder.generateNew());
+        CorrelationIdHolder.generateNew();
         try {
             chain.doFilter(request, response);
         } finally {
-            MDC.remove(CORRELATION_ID);
             CorrelationIdHolder.clear();
         }
     }

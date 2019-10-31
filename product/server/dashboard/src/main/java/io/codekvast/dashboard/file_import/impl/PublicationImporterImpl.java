@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.common.customer.LicenseViolationException;
+import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
@@ -64,6 +65,7 @@ public class PublicationImporterImpl implements PublicationImporter {
     public boolean importPublicationFile(File file) {
         logger.info("Processing {}", file);
         boolean handled;
+        CorrelationIdHolder.generateNew();
         try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 
             long startedAt = System.currentTimeMillis();
@@ -92,6 +94,8 @@ public class PublicationImporterImpl implements PublicationImporter {
             // Perhaps after deploying a new version of the service.
             logger.error("Cannot import " + file + ". Will try again.", e);
             handled = false;
+        } finally {
+            CorrelationIdHolder.clear();
         }
         if (!handled) {
             metricsService.countRejectedPublication();
