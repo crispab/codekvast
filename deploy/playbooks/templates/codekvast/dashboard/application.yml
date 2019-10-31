@@ -45,10 +45,7 @@ spring:
         password: "{{ mysql_application_password }}"
         url: "jdbc:mariadb://{{ database_dns_names[0] }}/codekvast"
     rabbitmq:
-        host: "{{ database_dns_names[0] }}"
-        port: 5672
-        username: codekvast
-        password: "{{ rabbitmq_application_password }}"
+        addresses: "amqp://codekvast:{{ rabbitmq_application_password }}@{{ database_dns_names[0] }}:5672"
         template:
             retry:
                 enabled: true

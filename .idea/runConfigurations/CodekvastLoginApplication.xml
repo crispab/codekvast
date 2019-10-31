@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CodekvastLoginApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-    <module name="login_main" />
+    <module name="codekvast.product.server.login.main" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="io.codekvast.login.*" />
@@ -25,6 +25,7 @@
       </param>
     </additionalParameters>
     <method v="2">
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="startDockerContainers" externalProjectPath="$PROJECT_DIR$/product/server/login" vmOptions="" scriptParameters="" />
       <option name="Make" enabled="true" />
     </method>
   </configuration>

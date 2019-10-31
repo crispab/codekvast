@@ -81,6 +81,7 @@ public class RabbitmqContainerReadyChecker implements ContainerReadyChecker {
     }
 
     private String buildAmqpUrl(int port) {
-        return String.format("amqp://%s:%s@%s:%d/%s", username, password, host, port, vhost);
+        String result = String.format("amqp://%s:%s@%s:%d/%s", username, password, host, port, vhost);
+        return result.replaceAll("//$", "");
     }
 }

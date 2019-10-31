@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CodekvastDashboardApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="dashboard_main" />
+    <module name="codekvast.product.server.dashboard.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboardApplication" />
     <option name="ACTIVE_PROFILES" value="dev-secrets,dev-webpack-dev-server" />
     <option name="VM_PARAMETERS" value="-ea" />
@@ -29,6 +29,7 @@
       </param>
     </additionalParameters>
     <method v="2">
+      <option name="Gradle.BeforeRunTask" enabled="false" tasks="startDockerContainers" externalProjectPath="$PROJECT_DIR$/product/server/dashboard" vmOptions="" scriptParameters="" />
       <option name="Make" enabled="true" />
     </method>
   </configuration>

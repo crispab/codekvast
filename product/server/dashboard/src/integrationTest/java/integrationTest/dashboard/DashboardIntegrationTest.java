@@ -29,6 +29,7 @@ import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
+import io.codekvast.testsupport.docker.RabbitmqContainerReadyChecker;
 import lombok.SneakyThrows;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.internal.jdbc.TransactionTemplate;
@@ -111,6 +112,27 @@ public class DashboardIntegrationTest {
                                         .assignJdbcUrlToSystemProperty("spring.datasource.url")
                                         .build())
         .build();
+
+    @ClassRule
+    public static DockerContainer rabbitmq = DockerContainer.builder()
+                                                            .imageName("rabbitmq:3.8-management-alpine")
+                                                            .port("5672")
+
+                                                            .env("RABBITMQ_DEFAULT_VHOST=/")
+                                                            .env("RABBITMQ_DEFAULT_USER=admin")
+                                                            .env("RABBITMQ_DEFAULT_PASS=secret")
+
+                                                            .readyChecker(
+                                                                RabbitmqContainerReadyChecker.builder()
+                                                                                             .host("localhost")
+                                                                                             .internalPort(5672)
+                                                                                             .vhost("/")
+                                                                                             .timeoutSeconds(30)
+                                                                                             .username("admin")
+                                                                                             .password("secret")
+                                                                                             .assignRabbitUrlToSystemProperty("spring.rabbitmq.addresses")
+                                                                                             .build())
+                                                            .build();
 
     @ClassRule
     public static final SpringClassRule springClassRule = new SpringClassRule();
@@ -780,23 +802,19 @@ public class DashboardIntegrationTest {
     @Test
     @Ignore("Causes deadlock")
     public void should_handle_lock_contention() throws InterruptedException {
-        CountDownLatch latches[] = {new CountDownLatch(1), new CountDownLatch(1), new CountDownLatch(1)};
+        CountDownLatch[] latches = {new CountDownLatch(1), new CountDownLatch(1), new CountDownLatch(1)};
 
-        new Thread(new Runnable() {
-            @Override
-            @SneakyThrows(SQLException.class)
-            public void run() {
-                TransactionTemplate transactionTemplate = new TransactionTemplate(jdbcTemplate.getDataSource().getConnection());
-                transactionTemplate.execute((Callable<Void>) () -> {
-                    Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.WEEDER);
-                    latches[0].countDown();
+        new Thread(() -> {
+            TransactionTemplate transactionTemplate = new TransactionTemplate(jdbcTemplate.getDataSource().getConnection());
+            transactionTemplate.execute((Callable<Void>) () -> {
+                Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.WEEDER);
+                latches[0].countDown();
 
-                    latches[1].await();
-                    lock.ifPresent(lockManager::releaseLock);
-                    latches[2].countDown();
-                    return null;
-                });
-            }
+                latches[1].await();
+                lock.ifPresent(lockManager::releaseLock);
+                latches[2].countDown();
+                return null;
+            });
         }).start();
 
         latches[0].await();

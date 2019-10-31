@@ -23,7 +23,8 @@ codekvast:
     slackWebHookUrl:             https://hooks.slack.com/services
 
 logging:
-    file:      build/log/login.log
+    file:
+        name: build/log/login.log
     level:
         io.codekvast: DEBUG
     group.web: debug
@@ -43,7 +44,7 @@ management:
     server:
         port: 9080
     metrics:
-        web.server.auto-time-requests: true
+        web.server.request.autotime.enabled: true
         export.datadog.enabled:        false
         tags:
             service: "codekvast-login"
@@ -64,7 +65,7 @@ server:
             enabled: true
             pattern: combined
             prefix:  access.
-    use-forward-headers: true
+    forward-headers-strategy: framework
     error:
         whitelabel:
             enabled: false
@@ -78,10 +79,7 @@ spring:
         url:      jdbc:mariadb://localhost/codekvast
         username: codekvast
     rabbitmq:
-        host: localhost
-        port: 5672
-        username: admin
-        password: secret
+        addresses: "amqp://admin:secret@localhost:5672"
         template:
             retry:
                 enabled: true
