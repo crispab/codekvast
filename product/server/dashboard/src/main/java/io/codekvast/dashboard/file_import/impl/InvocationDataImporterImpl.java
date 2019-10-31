@@ -21,6 +21,8 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
+import io.codekvast.common.messaging.EventService;
+import io.codekvast.common.messaging.model.InvocationDataReceivedEvent;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
 import io.codekvast.dashboard.metrics.IntakeMetricsService;
@@ -46,6 +48,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
     private final CommonImporter commonImporter;
     private final ImportDAO importDAO;
     private final IntakeMetricsService metricsService;
+    private final EventService eventService;
 
     @Override
     @Transactional
@@ -56,6 +59,18 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
         ImportContext importContext = commonImporter.importCommonData(data);
         importDAO.importInvocations(importContext, publication.getRecordingIntervalStartedAtMillis(),
                                     new TreeSet<>(publication.getInvocations()));
+
+        eventService.send(InvocationDataReceivedEvent.builder()
+                                                     .customerId(data.getCustomerId())
+                                                     .appName(data.getAppName())
+                                                     .appVersion(data.getAppVersion())
+                                                     .agentVersion(data.getAgentVersion())
+                                                     .environment(data.getEnvironment())
+                                                     .hostname(data.getHostname())
+                                                     .size(publication.getInvocations().size())
+                                                     .build());
+
+        metricsService.countImportedPublication(INVOCATIONS);
         metricsService.gaugePublicationSize(INVOCATIONS, publication.getInvocations().size());
         return true;
     }

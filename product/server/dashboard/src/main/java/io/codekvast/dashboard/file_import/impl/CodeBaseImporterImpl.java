@@ -21,9 +21,10 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
+import io.codekvast.common.messaging.EventService;
+import io.codekvast.common.messaging.model.CodeBaseReceivedEvent;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.metrics.IntakeMetricsService;
-import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
     private final CommonImporter commonImporter;
     private final ImportDAO importDAO;
     private final IntakeMetricsService metricsService;
+    private final EventService eventService;
 
     @Override
     @Transactional
@@ -53,6 +55,18 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
         CommonPublicationData2 data = publication.getCommonData();
         CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
         importDAO.importMethods(data, importContext, publication.getEntries());
+
+        eventService.send(CodeBaseReceivedEvent.builder()
+                                               .customerId(data.getCustomerId())
+                                               .appName(data.getAppName())
+                                               .appVersion(data.getAppVersion())
+                                               .agentVersion(data.getAgentVersion())
+                                               .environment(data.getEnvironment())
+                                               .hostname(data.getHostname())
+                                               .size(publication.getEntries().size())
+                                               .build());
+
+        metricsService.countImportedPublication(CODEBASE);
         metricsService.gaugePublicationSize(CODEBASE, publication.getEntries().size());
         return true;
     }

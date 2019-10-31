@@ -1,6 +1,7 @@
 package io.codekvast.common.messaging.impl;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import io.codekvast.common.messaging.CodekvastMessage;
 import io.codekvast.common.messaging.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,9 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.*;
@@ -27,8 +30,13 @@ class JacksonMessageConverterTest {
 
     private static final String APPLICATION_NAME = "applicationName";
 
+    private final Instant NOW = Instant.now();
+
     @Mock
     private CodekvastCommonSettings settings;
+
+    @Mock
+    private Clock clock;
 
     @InjectMocks
     private JacksonMessageConverter converter;
@@ -37,6 +45,7 @@ class JacksonMessageConverterTest {
     void beforeEach() {
         MockitoAnnotations.initMocks(this);
         when(settings.getApplicationName()).thenReturn(APPLICATION_NAME);
+        when(clock.instant()).thenReturn(NOW);
     }
 
     @ParameterizedTest
@@ -46,15 +55,14 @@ class JacksonMessageConverterTest {
 
         // When
         Message message = converter.toMessage(sampleEvent, null);
-        Object deserialized = converter.fromMessage(message);
-        MessageProperties messageProperties = message.getMessageProperties();
+        CodekvastMessage codekvastMessage = converter.fromMessage(message);
 
         // Then
-        assertThat(deserialized, is(sampleEvent));
-        assertThat(messageProperties, notNullValue());
-        assertThat(messageProperties.getCorrelationId(), notNullValue());
-        assertThat(messageProperties.getMessageId(), notNullValue());
-        assertThat(messageProperties.getAppId(), is(APPLICATION_NAME));
+        assertThat(codekvastMessage.getCorrelationId(), notNullValue());
+        assertThat(codekvastMessage.getMessageId(), notNullValue());
+        assertThat(codekvastMessage.getPayload(), is(sampleEvent));
+        assertThat(codekvastMessage.getSenderApp(), is(APPLICATION_NAME));
+        assertThat(codekvastMessage.getTimestamp(), is(NOW.truncatedTo(ChronoUnit.MILLIS)));
     }
 
     @Test
@@ -73,9 +81,11 @@ class JacksonMessageConverterTest {
         return Stream.of(
             Arguments.of(AgentPolledAfterTrialPeriodExpiredEvent.sample()),
             Arguments.of(AppDetailsUpdatedEvent.sample()),
+            Arguments.of(CodeBaseReceivedEvent.sample()),
             Arguments.of(CollectionStartedEvent.sample()),
             Arguments.of(CustomerAddedEvent.sample()),
             Arguments.of(CustomerDeletedEvent.sample()),
+            Arguments.of(InvocationDataReceivedEvent.sample()),
             Arguments.of(PlanChangedEvent.sample()),
             Arguments.of(PlanOverridesDeletedEvent.sample()),
             Arguments.of(TrialPeriodStartedEvent.sample()),

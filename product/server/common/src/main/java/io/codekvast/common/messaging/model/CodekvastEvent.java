@@ -23,8 +23,6 @@ package io.codekvast.common.messaging.model;
 
 import io.codekvast.common.messaging.EventService;
 
-import java.io.Serializable;
-
 /**
  * A marker interface for events that could be transmitted using {@link EventService}.
  *

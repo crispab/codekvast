@@ -41,9 +41,6 @@ import java.io.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.CODEBASE;
-import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.INVOCATIONS;
-
 /**
  * Importer for serialized publications.
  *
@@ -105,17 +102,14 @@ public class PublicationImporterImpl implements PublicationImporter {
     @SuppressWarnings({"ChainOfInstanceofChecks", "InstanceofConcreteClass", "CastToConcreteClass"})
     private boolean handlePublication(Object object) {
         if (object instanceof CodeBasePublication2) {
-            metricsService.countImportedPublication(CODEBASE);
             return codeBaseImporter.importPublication(toCodeBasePublication3((CodeBasePublication2) object));
         }
 
         if (object instanceof CodeBasePublication3) {
-            metricsService.countImportedPublication(CODEBASE);
             return codeBaseImporter.importPublication((CodeBasePublication3) object);
         }
 
         if (object instanceof InvocationDataPublication2) {
-            metricsService.countImportedPublication(INVOCATIONS);
             return invocationDataImporter.importPublication((InvocationDataPublication2) object);
         }
 

@@ -63,6 +63,8 @@
       <module name="codekvast.sample-swing-app_test" target="1.8" />
       <module name="codekvast.sample-webstart-swing-app_main" target="11" />
       <module name="codekvast.sample-webstart-swing-app_test" target="11" />
+      <module name="webstart-swing-app_main" target="11" />
+      <module name="webstart-swing-app_test" target="11" />
     </bytecodeTargetLevel>
   </component>
   <component name="TypeScriptCompiler">

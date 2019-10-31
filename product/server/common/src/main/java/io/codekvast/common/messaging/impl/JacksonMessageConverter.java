@@ -25,7 +25,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import io.codekvast.common.messaging.CodekvastMessage;
 import io.codekvast.common.messaging.CorrelationIdHolder;
+import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -36,6 +38,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -49,6 +53,7 @@ import java.util.UUID;
 public class JacksonMessageConverter implements MessageConverter {
 
     private final CodekvastCommonSettings settings;
+    private final Clock clock;
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -71,7 +76,7 @@ public class JacksonMessageConverter implements MessageConverter {
             messageProperties.setCorrelationId(CorrelationIdHolder.get());
             messageProperties.setMessageId(UUID.randomUUID().toString());
             messageProperties.setType(object.getClass().getName());
-
+            messageProperties.setTimestamp(Date.from(clock.instant()));
             return new Message(bytes, messageProperties);
         } catch (JsonProcessingException e) {
             throw new MessageConversionException("Cannot convert to JSON", e);
@@ -79,13 +84,20 @@ public class JacksonMessageConverter implements MessageConverter {
     }
 
     @Override
-    public Object fromMessage(Message message) throws MessageConversionException {
+    public CodekvastMessage fromMessage(Message message) throws MessageConversionException {
         MessageProperties messageProperties = message.getMessageProperties();
 
         try {
-            Object object = objectMapper.readValue(message.getBody(), Class.forName(messageProperties.getType()));
-            logger.debug("Converted {} from JSON", object);
-            return object;
+            CodekvastEvent payload = (CodekvastEvent) objectMapper.readValue(message.getBody(), Class.forName(messageProperties.getType()));
+            logger.debug("Converted {} from JSON", payload);
+            return CodekvastMessage.builder()
+                                   .correlationId(messageProperties.getCorrelationId())
+                                   .messageId(messageProperties.getMessageId())
+                                   .senderApp(messageProperties.getAppId())
+                                   .timestamp(messageProperties.getTimestamp().toInstant())
+                                   .payload(payload)
+                                   .build();
+
         } catch (IOException | ClassNotFoundException e) {
             throw new MessageConversionException("Cannot convert from JSON", e);
         }
