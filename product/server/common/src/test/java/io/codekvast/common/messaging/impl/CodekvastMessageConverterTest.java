@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author olle.hallin@crisp.se
  */
-class JacksonMessageConverterTest {
+class CodekvastMessageConverterTest {
 
     private static final String APPLICATION_NAME = "applicationName";
 
@@ -39,7 +39,7 @@ class JacksonMessageConverterTest {
     private Clock clock;
 
     @InjectMocks
-    private JacksonMessageConverter converter;
+    private CodekvastMessageConverter converter;
 
     @BeforeEach
     void beforeEach() {

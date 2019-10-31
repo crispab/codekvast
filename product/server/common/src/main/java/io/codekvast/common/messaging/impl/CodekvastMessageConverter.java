@@ -50,7 +50,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class JacksonMessageConverter implements MessageConverter {
+public class CodekvastMessageConverter implements MessageConverter {
 
     private final CodekvastCommonSettings settings;
     private final Clock clock;
