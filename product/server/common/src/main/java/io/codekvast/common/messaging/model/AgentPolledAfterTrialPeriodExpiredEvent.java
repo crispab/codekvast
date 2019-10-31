@@ -21,6 +21,8 @@
  */
 package io.codekvast.common.messaging.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -34,15 +36,17 @@ import java.time.Instant;
  */
 @Value
 @Builder
+@JsonDeserialize(builder = AgentPolledAfterTrialPeriodExpiredEvent.AgentPolledAfterTrialPeriodExpiredEventBuilder.class)
 public class AgentPolledAfterTrialPeriodExpiredEvent implements CodekvastEvent {
-    private static final long serialVersionUID = 1L;
-
-    private final MetaData metaData = MetaData.create();
-
     @NonNull Long customerId;
     @NonNull Instant collectionStartedAt;
     @NonNull Instant trialPeriodEndedAt;
     @NonNull Instant polledAt;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class AgentPolledAfterTrialPeriodExpiredEventBuilder {
+        // Will be filled out by @lombok.Builder
+    }
 
     public static AgentPolledAfterTrialPeriodExpiredEvent sample() {
         return AgentPolledAfterTrialPeriodExpiredEvent.builder()

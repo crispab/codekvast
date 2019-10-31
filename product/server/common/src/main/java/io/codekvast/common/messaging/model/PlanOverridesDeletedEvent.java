@@ -21,6 +21,8 @@
  */
 package io.codekvast.common.messaging.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import io.codekvast.common.customer.PricePlanDefaults;
 import lombok.Builder;
 import lombok.NonNull;
@@ -33,14 +35,16 @@ import lombok.Value;
  */
 @Value
 @Builder
+@JsonDeserialize(builder = PlanOverridesDeletedEvent.PlanOverridesDeletedEventBuilder.class)
 public class PlanOverridesDeletedEvent implements CodekvastEvent {
-    private static final long serialVersionUID = 1L;
-
-    private final MetaData metaData = MetaData.create();
-
     @NonNull Long customerId;
     @NonNull String plan;
     @NonNull PricePlanDefaults pricePlanDefaults;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class PlanOverridesDeletedEventBuilder {
+        // Will be filled out by @lombok.Builder
+    }
 
     public static PlanOverridesDeletedEvent sample() {
         return PlanOverridesDeletedEvent.builder()

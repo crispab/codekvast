@@ -21,6 +21,8 @@
  */
 package io.codekvast.common.messaging.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -32,14 +34,16 @@ import lombok.Value;
  */
 @Value
 @Builder
+@JsonDeserialize(builder = PlanChangedEvent.PlanChangedEventBuilder.class)
 public class PlanChangedEvent implements CodekvastEvent {
-    private static final long serialVersionUID = 1L;
-
-    private final MetaData metaData = MetaData.create();
-
     @NonNull Long customerId;
     @NonNull String oldPlan;
     @NonNull String newPlan;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class PlanChangedEventBuilder {
+        // Will be filled out by @lombok.Builder
+    }
 
     public static PlanChangedEvent sample() {
         return PlanChangedEvent.builder()

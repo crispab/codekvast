@@ -26,10 +26,9 @@ import io.codekvast.common.messaging.EventService;
 import java.io.Serializable;
 
 /**
- * A common interface for events that could be transmitted using {@link EventService}.
+ * A marker interface for events that could be transmitted using {@link EventService}.
  *
  * @author olle.hallin@crisp.se
  */
-public interface CodekvastEvent extends Serializable {
-    MetaData getMetaData();
+public interface CodekvastEvent {
 }

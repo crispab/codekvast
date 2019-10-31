@@ -805,7 +805,12 @@ public class DashboardIntegrationTest {
         CountDownLatch[] latches = {new CountDownLatch(1), new CountDownLatch(1), new CountDownLatch(1)};
 
         new Thread(() -> {
-            TransactionTemplate transactionTemplate = new TransactionTemplate(jdbcTemplate.getDataSource().getConnection());
+            TransactionTemplate transactionTemplate = null;
+            try {
+                transactionTemplate = new TransactionTemplate(jdbcTemplate.getDataSource().getConnection());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             transactionTemplate.execute((Callable<Void>) () -> {
                 Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.WEEDER);
                 latches[0].countDown();

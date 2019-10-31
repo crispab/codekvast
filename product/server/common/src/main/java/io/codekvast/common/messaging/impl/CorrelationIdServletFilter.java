@@ -19,27 +19,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.messaging.model;
+package io.codekvast.common.messaging.impl;
 
 import io.codekvast.common.messaging.CorrelationIdHolder;
-import lombok.NonNull;
-import lombok.Value;
+import org.slf4j.MDC;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.UUID;
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import java.io.IOException;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@Value
-public class MetaData implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @NonNull Instant instant;
-    @NonNull String messageId;
-    @NonNull String correlationId;
+@Component
+@WebFilter(urlPatterns = "/*")
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class CorrelationIdServletFilter implements Filter {
 
-    public static MetaData create() {
-        return new MetaData(Instant.now(), UUID.randomUUID().toString(), CorrelationIdHolder.get());
+    private static final String CORRELATION_ID = "correlationId";
+
+    @Override
+    public void init(FilterConfig filterConfig) {
+        // Do nothing
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        MDC.put(CORRELATION_ID, CorrelationIdHolder.generateNew());
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            MDC.remove(CORRELATION_ID);
+            CorrelationIdHolder.clear();
+        }
+    }
+
+    @Override
+    public void destroy() {
+        // Do nothing
     }
 }
