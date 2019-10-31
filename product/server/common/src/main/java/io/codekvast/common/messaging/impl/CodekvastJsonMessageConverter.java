@@ -21,9 +21,7 @@
  */
 package io.codekvast.common.messaging.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.messaging.CodekvastMessage;
 import io.codekvast.common.messaging.CorrelationIdHolder;
@@ -36,26 +34,24 @@ import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.util.Date;
 import java.util.UUID;
 
 /**
- * An AMQP message converter that uses Jackson for serializing to/from JSON.
+ * An AMQP message converter that converts to/from JSON by means of Gson.
  *
  * @author olle.hallin@crisp.se
  */
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CodekvastMessageConverter implements MessageConverter {
+public class CodekvastJsonMessageConverter implements MessageConverter {
 
     private final CodekvastCommonSettings settings;
     private final Clock clock;
-
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final Gson gson = new Gson();
 
     @Override
     public Message toMessage(Object object, MessageProperties messagePropertiesArg) throws MessageConversionException {
@@ -67,7 +63,7 @@ public class CodekvastMessageConverter implements MessageConverter {
         }
 
         try {
-            byte[] bytes = objectMapper.writeValueAsBytes(object);
+            byte[] bytes = gson.toJson(object).getBytes(StandardCharsets.UTF_8.name());
 
             messageProperties.setAppId(settings.getApplicationName());
             messageProperties.setContentEncoding(StandardCharsets.UTF_8.name());
@@ -78,7 +74,7 @@ public class CodekvastMessageConverter implements MessageConverter {
             messageProperties.setType(object.getClass().getName());
             messageProperties.setTimestamp(Date.from(clock.instant()));
             return new Message(bytes, messageProperties);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new MessageConversionException("Cannot convert to JSON", e);
         }
     }
@@ -88,7 +84,8 @@ public class CodekvastMessageConverter implements MessageConverter {
         MessageProperties messageProperties = message.getMessageProperties();
 
         try {
-            CodekvastEvent payload = (CodekvastEvent) objectMapper.readValue(message.getBody(), Class.forName(messageProperties.getType()));
+            CodekvastEvent payload = (CodekvastEvent) gson.fromJson(new String(message.getBody(), StandardCharsets.UTF_8),
+                                                                    Class.forName(messageProperties.getType()));
             logger.debug("Converted {} from JSON", payload);
             return CodekvastMessage.builder()
                                    .correlationId(messageProperties.getCorrelationId())
@@ -98,7 +95,7 @@ public class CodekvastMessageConverter implements MessageConverter {
                                    .payload(payload)
                                    .build();
 
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new MessageConversionException("Cannot convert from JSON", e);
         }
     }

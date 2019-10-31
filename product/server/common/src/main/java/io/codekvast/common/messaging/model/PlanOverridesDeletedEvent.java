@@ -35,16 +35,10 @@ import lombok.Value;
  */
 @Value
 @Builder
-@JsonDeserialize(builder = PlanOverridesDeletedEvent.PlanOverridesDeletedEventBuilder.class)
 public class PlanOverridesDeletedEvent implements CodekvastEvent {
     @NonNull Long customerId;
     @NonNull String plan;
     @NonNull PricePlanDefaults pricePlanDefaults;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class PlanOverridesDeletedEventBuilder {
-        // Will be filled out by @lombok.Builder
-    }
 
     public static PlanOverridesDeletedEvent sample() {
         return PlanOverridesDeletedEvent.builder()

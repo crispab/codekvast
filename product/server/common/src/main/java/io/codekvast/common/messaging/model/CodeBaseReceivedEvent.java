@@ -34,7 +34,6 @@ import lombok.Value;
  */
 @Value
 @Builder
-@JsonDeserialize(builder = CodeBaseReceivedEvent.CodeBaseReceivedEventBuilder.class)
 public class CodeBaseReceivedEvent implements CodekvastEvent {
     @NonNull Long customerId;
     @NonNull String appName;
@@ -43,11 +42,6 @@ public class CodeBaseReceivedEvent implements CodekvastEvent {
     @NonNull String environment;
     @NonNull String hostname;
     @NonNull Integer size;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class CodeBaseReceivedEventBuilder {
-        // Will be filled out by @lombok.Builder
-    }
 
     public static CodeBaseReceivedEvent sample() {
         return CodeBaseReceivedEvent.builder()

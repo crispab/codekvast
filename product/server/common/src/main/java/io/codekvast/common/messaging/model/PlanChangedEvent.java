@@ -34,16 +34,10 @@ import lombok.Value;
  */
 @Value
 @Builder
-@JsonDeserialize(builder = PlanChangedEvent.PlanChangedEventBuilder.class)
 public class PlanChangedEvent implements CodekvastEvent {
     @NonNull Long customerId;
     @NonNull String oldPlan;
     @NonNull String newPlan;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class PlanChangedEventBuilder {
-        // Will be filled out by @lombok.Builder
-    }
 
     public static PlanChangedEvent sample() {
         return PlanChangedEvent.builder()

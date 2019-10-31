@@ -39,7 +39,7 @@ class CodekvastMessageConverterTest {
     private Clock clock;
 
     @InjectMocks
-    private CodekvastMessageConverter converter;
+    private CodekvastJsonMessageConverter converter;
 
     @BeforeEach
     void beforeEach() {

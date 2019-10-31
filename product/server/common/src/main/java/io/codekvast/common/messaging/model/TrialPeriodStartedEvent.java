@@ -36,16 +36,10 @@ import java.time.Instant;
  */
 @Value
 @Builder
-@JsonDeserialize(builder = TrialPeriodStartedEvent.TrialPeriodStartedEventBuilder.class)
 public class TrialPeriodStartedEvent implements CodekvastEvent {
     @NonNull Long customerId;
     @NonNull Instant collectionStartedAt;
     @NonNull Instant trialPeriodEndsAt;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class TrialPeriodStartedEventBuilder {
-        // Will be filled out by @lombok.Builder
-    }
 
     public static TrialPeriodStartedEvent sample() {
         return TrialPeriodStartedEvent.builder()

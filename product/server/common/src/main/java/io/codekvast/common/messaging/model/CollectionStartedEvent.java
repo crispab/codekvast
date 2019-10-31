@@ -36,15 +36,9 @@ import java.time.Instant;
  */
 @Value
 @Builder
-@JsonDeserialize(builder = CollectionStartedEvent.CollectionStartedEventBuilder.class)
 public class CollectionStartedEvent implements CodekvastEvent {
     @NonNull Long customerId;
     @NonNull Instant collectionStartedAt;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class CollectionStartedEventBuilder {
-        // Will be filled out by @lombok.Builder
-    }
 
     public static CollectionStartedEvent sample() {
         return CollectionStartedEvent.builder()

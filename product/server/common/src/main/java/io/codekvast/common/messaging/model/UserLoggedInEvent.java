@@ -34,16 +34,10 @@ import lombok.Value;
  */
 @Value
 @Builder
-@JsonDeserialize(builder = UserLoggedInEvent.UserLoggedInEventBuilder.class)
 public class UserLoggedInEvent implements CodekvastEvent {
     @NonNull Long customerId;
     @NonNull String emailAddress;
     @NonNull String authenticationProvider; // "facebook", "github", "google" etc
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class UserLoggedInEventBuilder {
-        // Will be filled out by @lombok.Builder
-    }
 
     public static UserLoggedInEvent sample() {
         return UserLoggedInEvent.builder()
