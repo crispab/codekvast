@@ -19,37 +19,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.messaging.impl;
+package io.codekvast.login.spike;
 
-import io.codekvast.common.messaging.EventService;
+import io.codekvast.common.messaging.AbstractCodekvastEventListener;
+import io.codekvast.common.messaging.impl.MessageIdRepository;
 import io.codekvast.common.messaging.model.CodekvastEvent;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.MessageDeliveryMode;
-import org.springframework.stereotype.Service;
-
-import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_QUEUE;
+import org.springframework.stereotype.Component;
 
 /**
- * An AMQP implementation of the EventService.
- *
  * @author olle.hallin@crisp.se
  */
-@Service
-@RequiredArgsConstructor
+@Component
 @Slf4j
-public class EventServiceAmqpImpl implements EventService {
+public class SampleCodekvastEventListener extends AbstractCodekvastEventListener {
 
-    private final AmqpTemplate amqpTemplate;
+    public SampleCodekvastEventListener(MessageIdRepository messageIdRepository) {
+        super(messageIdRepository);
+    }
 
     @Override
-    public void send(CodekvastEvent event) {
-        logger.debug("Sending {} to {}", event, CODEKVAST_EVENT_QUEUE);
-        amqpTemplate.convertAndSend(CODEKVAST_EVENT_QUEUE, event, message -> {
-            logger.trace("Message={}", message);
-            message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
-            return message;
-        });
+    public void onCodekvastEvent(CodekvastEvent event) throws Exception {
+        logger.debug("Received {}", event);
     }
+
 }

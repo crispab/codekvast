@@ -21,35 +21,43 @@
  */
 package io.codekvast.common.messaging.impl;
 
-import io.codekvast.common.messaging.EventService;
-import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.MessageDeliveryMode;
-import org.springframework.stereotype.Service;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.context.annotation.Configuration;
 
-import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_QUEUE;
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * An AMQP implementation of the EventService.
+ * Don't forget to set spring.rabbitmq.listener.simple.default-requeue-rejected=false in application.yml, or else DLQ will not work.
  *
  * @author olle.hallin@crisp.se
  */
-@Service
+@Configuration
+@EnableRabbit
 @RequiredArgsConstructor
 @Slf4j
-public class EventServiceAmqpImpl implements EventService {
+public class RabbitmqConfig {
 
-    private final AmqpTemplate amqpTemplate;
+    public static final String CODEKVAST_EVENT_QUEUE = "codekvast.events";
+    public static final String CODEKVAST_EVENT_DLQ = "codekvast.events.dlq";
 
-    @Override
-    public void send(CodekvastEvent event) {
-        logger.debug("Sending {} to {}", event, CODEKVAST_EVENT_QUEUE);
-        amqpTemplate.convertAndSend(CODEKVAST_EVENT_QUEUE, event, message -> {
-            logger.trace("Message={}", message);
-            message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
-            return message;
-        });
+    private final AmqpAdmin amqpAdmin;
+
+    @PostConstruct
+    public void declareRabbitMQEntities() {
+        amqpAdmin.declareQueue(new Queue(CODEKVAST_EVENT_DLQ));
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-dead-letter-exchange", DirectExchange.DEFAULT.getName());
+        args.put("x-dead-letter-routing-key", CODEKVAST_EVENT_DLQ);
+        Queue queue = new Queue(CODEKVAST_EVENT_QUEUE, true, false, false, args);
+        amqpAdmin.declareQueue(queue);
     }
+
 }

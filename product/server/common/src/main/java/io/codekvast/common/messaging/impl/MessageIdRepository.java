@@ -21,35 +21,42 @@
  */
 package io.codekvast.common.messaging.impl;
 
-import io.codekvast.common.messaging.EventService;
-import io.codekvast.common.messaging.model.CodekvastEvent;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.MessageDeliveryMode;
-import org.springframework.stereotype.Service;
-
-import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_QUEUE;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * An AMQP implementation of the EventService.
+ * A repository (DAO) for keeping track of which messageIds that have been processed.
  *
  * @author olle.hallin@crisp.se
  */
-@Service
+@Repository
 @RequiredArgsConstructor
 @Slf4j
-public class EventServiceAmqpImpl implements EventService {
+public class MessageIdRepository {
 
-    private final AmqpTemplate amqpTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Override
-    public void send(CodekvastEvent event) {
-        logger.debug("Sending {} to {}", event, CODEKVAST_EVENT_QUEUE);
-        amqpTemplate.convertAndSend(CODEKVAST_EVENT_QUEUE, event, message -> {
-            logger.trace("Message={}", message);
-            message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
-            return message;
-        });
+    @Transactional(readOnly = true)
+    public boolean isDuplicate(@NonNull String messageId) {
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM rabbitmq_message_ids WHERE messageId = ?", Integer.class, messageId);
+        if (count != 0) {
+            logger.info("MessageId {} has already been processed", messageId);
+        }
+        return count != 0;
+    }
+
+
+    @Transactional
+    public void remember(@NonNull String messageId) {
+        int inserted = jdbcTemplate.update("INSERT INTO rabbitmq_message_ids(messageId) VALUE (?)", messageId);
+        if (inserted != 1) {
+            logger.error("Failed to remember messageId {}", messageId);
+        } else {
+            logger.debug("Remembered messageId {}", messageId);
+        }
     }
 }

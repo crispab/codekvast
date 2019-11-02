@@ -74,6 +74,9 @@ spring:
             retry:
                 enabled: true
                 initial-interval: 2s
+        listener:
+            simple:
+                default-requeue-rejected: false
     flyway:
         validate-on-migrate: false
     http:

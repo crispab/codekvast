@@ -19,26 +19,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.messaging;
+package io.codekvast.common.messaging.model;
 
-import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.time.Instant;
-
 /**
- * A wrapper for a received CodekvastEvent.
+ * An event that is sent when a user is authenticated, but before he/she has selected any project.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class CodekvastMessage {
-    @NonNull String correlationId;
-    @NonNull String messageId;
-    @NonNull String senderApp;
-    @NonNull Instant timestamp;
-    @NonNull CodekvastEvent payload;
+public class UserAuthenticatedEvent implements CodekvastEvent {
+    @NonNull String emailAddress;
+    @NonNull String authenticationProvider; // "facebook", "github", "google" etc
+
+    public static UserAuthenticatedEvent sample() {
+        return UserAuthenticatedEvent.builder()
+                                     .emailAddress("emailAddress")
+                                     .authenticationProvider("authenticationProvider")
+                                     .build();
+    }
 }

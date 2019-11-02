@@ -23,15 +23,15 @@ package io.codekvast.common.messaging.impl;
 
 import com.google.gson.Gson;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
-import io.codekvast.common.messaging.CodekvastMessage;
 import io.codekvast.common.messaging.CorrelationIdHolder;
-import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -54,7 +54,7 @@ public class CodekvastJsonMessageConverter implements MessageConverter {
     private final Gson gson = new Gson();
 
     @Override
-    public Message toMessage(Object object, MessageProperties messagePropertiesArg) throws MessageConversionException {
+    public @NonNull Message toMessage(@NonNull Object object, @Nullable MessageProperties messagePropertiesArg) throws MessageConversionException {
         logger.debug("Converting {} to JSON", object);
 
         MessageProperties messageProperties = messagePropertiesArg;
@@ -80,21 +80,12 @@ public class CodekvastJsonMessageConverter implements MessageConverter {
     }
 
     @Override
-    public CodekvastMessage fromMessage(Message message) throws MessageConversionException {
-        MessageProperties messageProperties = message.getMessageProperties();
-
+    public @NonNull Object fromMessage(@NonNull Message message) throws MessageConversionException {
         try {
-            CodekvastEvent payload = (CodekvastEvent) gson.fromJson(new String(message.getBody(), StandardCharsets.UTF_8),
-                                                                    Class.forName(messageProperties.getType()));
+            Object payload = gson.fromJson(new String(message.getBody(), StandardCharsets.UTF_8),
+                                           Class.forName(message.getMessageProperties().getType()));
             logger.debug("Converted {} from JSON", payload);
-            return CodekvastMessage.builder()
-                                   .correlationId(messageProperties.getCorrelationId())
-                                   .messageId(messageProperties.getMessageId())
-                                   .senderApp(messageProperties.getAppId())
-                                   .timestamp(messageProperties.getTimestamp().toInstant())
-                                   .payload(payload)
-                                   .build();
-
+            return payload;
         } catch (Exception e) {
             throw new MessageConversionException("Cannot convert from JSON", e);
         }

@@ -1,7 +1,6 @@
 package io.codekvast.common.messaging.impl;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
-import io.codekvast.common.messaging.CodekvastMessage;
 import io.codekvast.common.messaging.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,17 +15,17 @@ import org.springframework.amqp.core.Message;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
  * @author olle.hallin@crisp.se
  */
-class CodekvastMessageConverterTest {
+class CodekvastJsonMessageConverterTest {
 
     private static final String APPLICATION_NAME = "applicationName";
 
@@ -55,14 +54,10 @@ class CodekvastMessageConverterTest {
 
         // When
         Message message = converter.toMessage(sampleEvent, null);
-        CodekvastMessage codekvastMessage = converter.fromMessage(message);
+        Object fromMessage = converter.fromMessage(message);
 
         // Then
-        assertThat(codekvastMessage.getCorrelationId(), notNullValue());
-        assertThat(codekvastMessage.getMessageId(), notNullValue());
-        assertThat(codekvastMessage.getPayload(), is(sampleEvent));
-        assertThat(codekvastMessage.getSenderApp(), is(APPLICATION_NAME));
-        assertThat(codekvastMessage.getTimestamp(), is(NOW.truncatedTo(ChronoUnit.MILLIS)));
+        assertThat(fromMessage, is(sampleEvent));
     }
 
     @Test
@@ -89,6 +84,7 @@ class CodekvastMessageConverterTest {
             Arguments.of(PlanChangedEvent.sample()),
             Arguments.of(PlanOverridesDeletedEvent.sample()),
             Arguments.of(TrialPeriodStartedEvent.sample()),
+            Arguments.of(UserAuthenticatedEvent.sample()),
             Arguments.of(UserLoggedInEvent.sample()));
     }
 }
