@@ -19,23 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.rule_engine;
+package io.codekvast.backoffice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- * The Spring Boot main for codekvast-rule-engine,
+ * The Spring Boot main for codekvast-backoffice,
  *
  * @author olle.hallin@crisp.se
  */
 @SpringBootApplication
 @ComponentScan(basePackages = "io.codekvast")
-public class CodekvastRuleEngineApplication {
+public class CodekvastBackofficeApplication {
 
     public static void main(String[] args) {
-        new SpringApplication(CodekvastRuleEngineApplication.class).run(args);
+        new SpringApplication(CodekvastBackofficeApplication.class).run(args);
     }
 
 }

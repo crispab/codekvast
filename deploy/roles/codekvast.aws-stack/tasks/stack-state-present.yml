@@ -138,6 +138,8 @@
       - "{{ ports.login.management }}"
       - "{{ ports.dashboard.service }}"
       - "{{ ports.dashboard.management }}"
+      - "{{ ports.backoffice.service }}"
+      - "{{ ports.backoffice.management }}"
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
       group_desc: "Codekvast management access"
   tags: infra
@@ -195,6 +197,9 @@
       - "{{ ports.dashboard.service }}"
       - "{{ ports.dashboard.management }}"
       - "{{ ports.dashboard.jvm_debugger }}"
+      - "{{ ports.backoffice.service }}"
+      - "{{ ports.backoffice.management }}"
+      - "{{ ports.backoffice.jvm_debugger }}"
       cidr_ip: "{{ my_ip.content }}/32"
   tags: infra
 
@@ -372,7 +377,7 @@
 #  meta: refresh_inventory
 #  when: ec2database.changed or ec2backends.changed
 
-- name: "Create ALB target group for api/dashboard"
+- name: "Create ALB target group for dashboard"
   local_action:
     module: elb_target_group
     region: "{{ aws_region }}"
@@ -407,6 +412,31 @@
     port: "{{ ports.login.service }}"
     health_check_protocol: http
     health_check_port: "{{ ports.login.management }}"
+    health_check_path: /management/health
+    health_check_interval: 10
+    health_check_timeout: 2
+    healthy_threshold_count: 2
+    unhealthy_threshold_count: 3
+    state: present
+    stickiness_enabled: yes
+    stickiness_lb_cookie_duration: 300
+    stickiness_type: lb_cookie
+    tags: "{{ aws_common_tags }}"
+    target_type: instance
+    targets: "{{ backend_ids }}"
+  tags: infra
+
+- name: "Create ALB target group for backoffice"
+  local_action:
+    module: elb_target_group
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    name: "{{ aws_target_group_backoffice }}"
+    protocol: http
+    port: "{{ ports.backoffice.service }}"
+    health_check_protocol: http
+    health_check_port: "{{ ports.backoffice.management }}"
     health_check_path: /management/health
     health_check_interval: 10
     health_check_timeout: 2
@@ -462,7 +492,15 @@
           Priority: '1'
           Actions:
           - Type: forward
-            TargetGroupName: "{{ aws_target_group_login }}"
+            TargetGroupName: "{{ aws_target_group_backoffice }}"
+        - Conditions:
+          - Field: host-header
+            Values:
+            - "{{ stack.app_cnames[3] }}.codekvast.io"
+          Priority: '2'
+          Actions:
+          - Type: forward
+            TargetGroupName: "{{ aws_target_group_backoffice }}"
     wait: yes
   register: alb
   tags: infra
@@ -565,6 +603,22 @@
     label: "{{ item.1.public_dns_name }}"
   tags: infra
 
+- name: Define backoffice CNAMEs
+  local_action:
+    module: route53
+    profile: codekvast # in ~/.boto
+    command: create
+    overwrite: yes
+    record: "{{ stack.app_cnames[3] }}{{ '%02d'|format(item.0) }}.codekvast.io"
+    value: "{{ item.1.public_dns_name }}"
+    ttl: 60
+    type: CNAME
+    zone: codekvast.io
+  with_indexed_items: "{{ ec2backends }}"
+  loop_control:
+    label: "{{ item.1.public_dns_name }}"
+  tags: infra
+
 - name: Tag application instances with their CNAMEs
   local_action:
     module: ec2_tag
@@ -576,10 +630,12 @@
       CNAME0: "{{ stack.app_cnames[0] }}{{ '%02d'|format(item.0) }}.codekvast.io"
       CNAME1: "{{ stack.app_cnames[1] }}{{ '%02d'|format(item.0) }}.codekvast.io"
       CNAME2: "{{ stack.app_cnames[2] }}{{ '%02d'|format(item.0) }}.codekvast.io"
+      CNAME3: "{{ stack.app_cnames[3] }}{{ '%02d'|format(item.0) }}.codekvast.io"
       LBCNAME: "{{ stack.app_cnames[0] }}.codekvast.io"
       LBCNAME0: "{{ stack.app_cnames[0] }}.codekvast.io"
       LBCNAME1: "{{ stack.app_cnames[1] }}.codekvast.io"
       LBCNAME2: "{{ stack.app_cnames[2] }}.codekvast.io"
+      LBCNAME3: "{{ stack.app_cnames[3] }}.codekvast.io"
   with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"

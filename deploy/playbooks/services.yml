@@ -5,3 +5,4 @@
 #---------------------------------------------------------------------------
 - {import_playbook: dashboard.yml, tags: [dashboard]}
 - {import_playbook: login.yml, tags: [login]}
+- {import_playbook: backoffice.yml, tags: [backoffice]}

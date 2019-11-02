@@ -8,10 +8,12 @@
 codekvast:
     dnsCname:                    localhost
     environment:                 dev
+    slackWebHookToken:
+    slackWebHookUrl:             https://hooks.slack.com/services
 
 logging:
     file:
-        name: build/log/rule-engine.log
+        name: build/log/backoffice.log
     level:
         io.codekvast: DEBUG
 
@@ -19,7 +21,7 @@ management:
     endpoints:
         enabled-by-default: true
         jmx:
-            domain: CodekvastRuleEngine
+            domain: CodekvastBackoffice
         web:
             base-path:        /management
             exposure.include: '*'
@@ -28,17 +30,17 @@ management:
             show-details:       "ALWAYS"
             cache.time-to-live: 1s
     server:
-        port: 9080
+        port: 9082
     metrics:
         web.server.request.autotime.enabled: true
         export.datadog.enabled:        false
         tags:
-            service: "codekvast-rule-engine"
+            service: "codekvast-backoffice"
             env:     dev
             host:    localhost
 
 server:
-    port:                8080
+    port:                8082
     servlet:
         context-path: /
         session:
@@ -57,7 +59,7 @@ server:
             enabled: false
 
 spring:
-    application.name:    Codekvast Rule Engine
+    application.name:    Codekvast Backoffice
     datasource:
         hikari:
             connection-test-query: SELECT 1 FROM DUAL

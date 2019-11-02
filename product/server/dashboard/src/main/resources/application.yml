@@ -18,7 +18,7 @@ codekvast:
     fileImportIntervalSeconds:      60
     loginBaseUrl:                   http://localhost:8080
     queuePath:                      /tmp/codekvast
-    slackWebHookToken:              ''
+    slackWebHookToken:
     slackWebHookUrl:                https://hooks.slack.com/services
 
 logging:

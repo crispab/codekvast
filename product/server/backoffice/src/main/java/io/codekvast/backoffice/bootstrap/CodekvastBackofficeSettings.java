@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.rule_engine.bootstrap;
+package io.codekvast.backoffice.bootstrap;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import lombok.Data;
@@ -44,7 +44,7 @@ import javax.annotation.PreDestroy;
 @Slf4j
 @ToString(exclude = {"slackWebHookToken"})
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
-public class CodekvastRuleEngineSettings implements CodekvastCommonSettings {
+public class CodekvastBackofficeSettings implements CodekvastCommonSettings {
 
     /**
      * The name of the application, injected from the build system.

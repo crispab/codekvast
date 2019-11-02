@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #------------------------------------------------------------------------------
-# Pushes ../product/server/dashboard/src/heroku/addon-manifest.json to Heroku after
+# Pushes ../product/server/login/src/heroku/addon-manifest.json to Heroku after
 # inserting the correct secrets.
 #------------------------------------------------------------------------------
 

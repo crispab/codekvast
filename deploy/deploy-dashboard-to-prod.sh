@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Deploys Codekvast dashboard to the production environment
+# Deploys Codekvast Dashboard to the production environment
 #---------------------------------------------------------------------------------------------------
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Deploys Codekvast dashboard to the staging environment
+# Deploys Codekvast Dashboard to the staging environment
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh

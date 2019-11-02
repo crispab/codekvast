@@ -2,11 +2,11 @@ apply from: "$rootDir/gradle/spring-boot-app.gradle"
 apply from: "$rootDir/gradle/spring-boot-jdbc.gradle"
 apply from: "$rootDir/gradle/spring-boot-web.gradle"
 
-description = 'The Codekvast Rule Engine'
-applicationName = 'codekvast-rule-engine'
-archivesBaseName = 'codekvast-rule-engine'
+description = 'The Codekvast Backoffice'
+applicationName = 'codekvast-backoffice'
+archivesBaseName = 'codekvast-backoffice'
 version = codekvastVersion
-mainClassName = 'io.codekvast.rule_engine.CodekvastRuleEngineApplication'
+mainClassName = 'io.codekvast.backoffice.CodekvastBackOfficeApplication'
 
 dependencies {
     implementation project(":product:server:common")
@@ -38,8 +38,8 @@ bootJar {
     launchScript {
         properties([
             'initInfoProvides'        : applicationName,
-            'initInfoShortDescription': 'Codekvast Rule Engine',
-            'initInfoDescription'     : 'Codekvast Rule Engine handles business rules',
+            'initInfoShortDescription': 'Codekvast Backoffice',
+            'initInfoDescription'     : 'Codekvast Backoffice offers a management interface for Codekvast',
         ])
     }
 }

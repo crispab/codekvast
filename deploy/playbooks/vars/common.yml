@@ -11,6 +11,7 @@ aws_stacks:
     - 'api-staging'
     - 'login-staging'
     - 'dashboard-staging'
+    - 'backoffice-staging'
     db_cname: 'db-staging'
     backend_count_a: 1
     backend_count_b: 1
@@ -24,6 +25,7 @@ aws_stacks:
     - 'api'
     - 'login'
     - 'dashboard'
+    - 'backoffice'
     db_cname: 'db'
     backend_count_a: 1
     backend_count_b: 1
@@ -44,6 +46,10 @@ ports:
     service: 8081
     management: 9081
     jvm_debugger: 5011
+  backoffice:
+    service: 8082
+    management: 9082
+    jvm_debugger: 5012
 
 datadog_config:
   hostname: "{{ tags.CNAME }}"

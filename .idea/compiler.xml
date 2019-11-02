@@ -8,7 +8,7 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.10/625fc0055674dff70dbc76efa36d0f2c89b04a24/lombok-1.18.10.jar" />
         </processorPath>
-        <module name="codekvast.product.server.rule-engine.test" />
+        <module name="codekvast.product.server.login.test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -23,7 +23,7 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.2.0.RELEASE/480bcedb42859abe66e98446b3b98f11222663b/spring-boot-configuration-processor-2.2.0.RELEASE.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.10/625fc0055674dff70dbc76efa36d0f2c89b04a24/lombok-1.18.10.jar" />
         </processorPath>
-        <module name="codekvast.product.server.rule-engine.main" />
+        <module name="codekvast.product.server.login.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -49,6 +49,8 @@
       <module name="codekvast.product.server-db-migration_test" target="11" />
       <module name="codekvast.product.server-login_main" target="11" />
       <module name="codekvast.product.server-login_test" target="11" />
+      <module name="codekvast.product.server.rule-engine.main" target="11" />
+      <module name="codekvast.product.server.rule-engine.test" target="11" />
       <module name="codekvast.sample-jenkins1_main" target="11" />
       <module name="codekvast.sample-jenkins1_test" target="11" />
       <module name="codekvast.sample-jenkins2_main" target="11" />
