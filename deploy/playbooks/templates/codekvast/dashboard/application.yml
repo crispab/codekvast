@@ -12,9 +12,10 @@ codekvast:
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
 
 logging:
-    file: "/var/log/codekvast/{{ service_name }}/application.log"
-    file.max-size: '10MB'
-    file.max-history: 10
+    file:
+        name: "/var/log/codekvast/{{ service_name }}/application.log"
+        max-size: '10MB'
+        max-history: 10
     level:
         io.codekvast: "{{ 'DEBUG' if tags.Env == 'staging' else 'INFO' }}"
         io.micrometer.datadog.DatadogMeterRegistry: OFF
