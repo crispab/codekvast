@@ -13,7 +13,7 @@ declare description=${2:-$(hostname)}
 declare groupName=codekvast-default-${environment}-management
 declare myIp=$(curl -s https://api.ipify.org)
 
-declare portsToOpen="22 3306 5010 5011 8080 8081 9080 9081 15672"
+declare portsToOpen="22 3306 5010 5011 5012 6010 6011 6012 8080 8081 8082 9080 9081 9082 15672"
 
 # Find the GroupId of the security group
 declare groupId=$($AWS_EC2 describe-security-groups --filters Name=group-name,Values=${groupName}|jq .SecurityGroups[0].GroupId|xargs)

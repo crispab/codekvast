@@ -12,6 +12,8 @@ ExecStart=/bin/sh -c "java \
                       -showversion \
                       -enableassertions \
                       -javaagent:/opt/codekvast/codekvast-javaagent-{{ codekvastVersion }}.jar \
+                      -Dcom.sun.management.jmxremote.port={{ ports[service_name].jmx }} \
+                      -Dcom.sun.management.jmxremote.authenticate=false \
                       -Dcodekvast.configuration=/opt/codekvast/{{ service_name }}/codekvast-agent.properties \
                       -jar /opt/codekvast/{{ service_name }}/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar \
                       > /dev/null"

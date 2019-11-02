@@ -42,15 +42,17 @@ ports:
     service: 8080
     management: 9080
     jvm_debugger: 5010
+    jmx: 6010
   dashboard:
     service: 8081
     management: 9081
     jvm_debugger: 5011
+    jmx: 6011
   backoffice:
     service: 8082
     management: 9082
     jvm_debugger: 5012
-
+    jmx: 6012
 datadog_config:
   hostname: "{{ tags.CNAME }}"
   tags:

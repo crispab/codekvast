@@ -7,6 +7,8 @@
 
 codekvast:
     dnsCname:                    localhost
+    dashboardJwtExpirationHours: 168
+    dashboardJwtSecret:          secret
     environment:                 dev
     slackWebHookToken:
     slackWebHookUrl:             https://hooks.slack.com/services
