@@ -91,6 +91,16 @@ public class CodekvastBackofficeSettings implements CodekvastCommonSettings {
      */
     private String slackWebHookToken;
 
+    /**
+     * Which secret should be used when creating a webapp JWT?
+     */
+    private String dashboardJwtSecret;
+
+    /**
+     * How many hours shall a JWT be valid?
+     */
+    private Long dashboardJwtExpirationHours;
+
     @PostConstruct
     public void logStartup() {
         //noinspection UseOfSystemOutOrSystemErr
@@ -103,15 +113,5 @@ public class CodekvastBackofficeSettings implements CodekvastCommonSettings {
         //noinspection UseOfSystemOutOrSystemErr
         System.out.printf("%s shuts down%n", this);
         logger.info("{} shuts down", this);
-    }
-
-    @Override
-    public String getDashboardJwtSecret() {
-        return null; // Not used
-    }
-
-    @Override
-    public Long getDashboardJwtExpirationHours() {
-        return 0L; // Not used
     }
 }

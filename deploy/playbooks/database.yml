@@ -116,8 +116,8 @@
     when: st1.stat.isdir is defined and st1.stat.isdir and not st2.stat.isdir is defined
 
   roles:
-  - {role: Datadog.datadog, tags: [metrics, datadog] }
-  - {role: codekvast.datadog, tags: [metrics, datadog] }
+  - {role: Datadog.datadog, tags: [metrics,monitoring,datadog] }
+  - {role: codekvast.datadog, tags: [metrics,monitoring,datadog] }
   - {role: geerlingguy.mysql, tags: [database, mariadb] }
 
   post_tasks:

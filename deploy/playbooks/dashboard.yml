@@ -22,9 +22,9 @@
     fileImportIntervalSeconds: 30
 
   roles:
-  - {role: Datadog.datadog, tags: [metrics, datadog] }
-  - {role: codekvast.datadog, tags: [metrics, datadog] }
-  - {role: codekvast.common, tags: [service, common]}
+  - {role: Datadog.datadog, tags: [metrics,monitoring,datadog] }
+  - {role: codekvast.datadog, tags: [metrics,monitoring,datadog] }
+  - {role: codekvast.common, tags: [common]}
   - {role: codekvast.spring-boot-service, tags: [service, dashboard]}
 
   post_tasks:

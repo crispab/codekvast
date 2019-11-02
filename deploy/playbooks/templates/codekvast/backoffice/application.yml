@@ -26,7 +26,7 @@ management:
         tags:
             service: "codekvast-{{ service_name }}"
             env: "{{ tags.Env }}"
-            host: "{{ tags.CNAME1 }}"
+            host: "{{ tags.CNAME3 }}"
         export.datadog:
             api-key: "{{ datadog_api_key }}"
             enabled: true

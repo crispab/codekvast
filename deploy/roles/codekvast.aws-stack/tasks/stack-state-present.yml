@@ -483,21 +483,29 @@
       SslPolicy: ELBSecurityPolicy-2015-05
       DefaultActions:
       - Type: forward
-        TargetGroupName: "{{ aws_target_group_dashboard }}"
+        TargetGroupName: "{{ aws_target_group_login }}"
       Rules:
         - Conditions:
           - Field: host-header
             Values:
-            - "{{ stack.app_cnames[1] }}.codekvast.io"
+            - "{{ stack.app_cnames[0] }}.codekvast.io" # api
           Priority: '1'
           Actions:
           - Type: forward
-            TargetGroupName: "{{ aws_target_group_backoffice }}"
+            TargetGroupName: "{{ aws_target_group_dashboard }}"
         - Conditions:
           - Field: host-header
             Values:
-            - "{{ stack.app_cnames[3] }}.codekvast.io"
+            - "{{ stack.app_cnames[2] }}.codekvast.io" # dashboard
           Priority: '2'
+          Actions:
+          - Type: forward
+            TargetGroupName: "{{ aws_target_group_dashboard }}"
+        - Conditions:
+          - Field: host-header
+            Values:
+            - "{{ stack.app_cnames[3] }}.codekvast.io" # backoffice
+          Priority: '3'
           Actions:
           - Type: forward
             TargetGroupName: "{{ aws_target_group_backoffice }}"

@@ -6,7 +6,7 @@ description = 'The Codekvast Backoffice'
 applicationName = 'codekvast-backoffice'
 archivesBaseName = 'codekvast-backoffice'
 version = codekvastVersion
-mainClassName = 'io.codekvast.backoffice.CodekvastBackOfficeApplication'
+mainClassName = 'io.codekvast.backoffice.CodekvastBackofficeApplication'
 
 dependencies {
     implementation project(":product:server:common")
