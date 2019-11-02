@@ -6,34 +6,20 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 codekvast:
-    cipherSecret:                someCipherSecret
-    dashboardBaseUrl:            http://localhost:8081
-    dashboardJwtExpirationHours: 168
-    dashboardJwtSecret:          secret
     dnsCname:                    localhost
     environment:                 dev
-    herokuOAuthBaseUrl:          https://id.heroku.com
-    herokuApiBaseUrl:            https://api.heroku.com
-    herokuApiPassword:           herokuApiPassword
-    herokuApiSsoSalt:            herokuApiSsoSalt
-    herokuCodekvastUrl:          http://localhost:8080
-    herokuOAuthClientId:         herokuOAuthClientId
-    herokuOAuthClientSecret:     herokuOAuthClientSecret
-    slackWebHookToken:
-    slackWebHookUrl:             https://hooks.slack.com/services
 
 logging:
     file:
-        name: build/log/login.log
+        name: build/log/rule-engine.log
     level:
         io.codekvast: DEBUG
-    group.web: debug
 
 management:
     endpoints:
         enabled-by-default: true
         jmx:
-            domain: CodekvastLogin
+            domain: CodekvastRuleEngine
         web:
             base-path:        /management
             exposure.include: '*'
@@ -47,7 +33,7 @@ management:
         web.server.request.autotime.enabled: true
         export.datadog.enabled:        false
         tags:
-            service: "codekvast-login"
+            service: "codekvast-rule-engine"
             env:     dev
             host:    localhost
 
@@ -71,7 +57,7 @@ server:
             enabled: false
 
 spring:
-    application.name:    Codekvast Login
+    application.name:    Codekvast Rule Engine
     datasource:
         hikari:
             connection-test-query: SELECT 1 FROM DUAL
@@ -84,6 +70,10 @@ spring:
             retry:
                 enabled: true
                 initial-interval: 2s
+        listener:
+            simple:
+                default-requeue-rejected: false
+
     flyway:
         validate-on-migrate: false
     groovy.template.configuration:

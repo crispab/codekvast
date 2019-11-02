@@ -19,28 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.spike;
+package io.codekvast.rule_engine;
 
-import io.codekvast.common.messaging.AbstractCodekvastEventListener;
-import io.codekvast.common.messaging.impl.MessageIdRepository;
-import io.codekvast.common.messaging.model.CodekvastEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
+ * The Spring Boot main for codekvast-rule-engine,
+ *
  * @author olle.hallin@crisp.se
  */
-@Component
-@Slf4j
-public class SampleCodekvastEventListener extends AbstractCodekvastEventListener {
+@SpringBootApplication
+@ComponentScan(basePackages = "io.codekvast")
+public class CodekvastRuleEngineApplication {
 
-    public SampleCodekvastEventListener(MessageIdRepository messageIdRepository) {
-        super(messageIdRepository);
-    }
-
-    @Override
-    public void onCodekvastEvent(CodekvastEvent event) throws Exception {
-        logger.debug("Received {}", event);
+    public static void main(String[] args) {
+        new SpringApplication(CodekvastRuleEngineApplication.class).run(args);
     }
 
 }
