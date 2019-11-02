@@ -27,14 +27,11 @@ import io.codekvast.dashboard.weeding.WeedingService
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.time.Clock
 import java.time.Duration
-import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-import kotlin.text.*
 
 /**
  * Service that keeps the database tidy by removing child-less rows in methods, applications and environments.
@@ -49,7 +46,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
     override fun performDataWeeding() {
-        val startedAt = Instant.now()
+        val startedAt = clock.instant()
         logger.debug("Performing data weeding")
 
         val invocationsBefore = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Int::class.java)!!
@@ -87,18 +84,21 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
         val deletedAgents = jdbcTemplate.update("DELETE FROM agent_state WHERE garbage = TRUE ")
 
-        val deletedRows = deletedAgents + deletedJvms + deletedMethodLocations + deletedMethods + deletedApplications + deletedEnvironments + deletedInvocations
+        val deletedRabbitMessageIds = jdbcTemplate.update("DELETE FROM rabbitmq_message_ids WHERE receivedAt < ?",
+            Timestamp.from(clock.instant().minus(1, ChronoUnit.HOURS)))
+
+        val deletedRows = deletedAgents + deletedJvms + deletedMethodLocations + deletedMethods + deletedApplications + deletedEnvironments + deletedInvocations + deletedRabbitMessageIds
         if (deletedRows > 0) {
-            logger.info(String.format("Deleted %,d database rows (%,d agents, %,d JVMs, %,d method locations, %,d methods, %,d applications, %,d environments and %,d invocations) in %s.",
+            logger.info(String.format("Deleted %,d database rows (%,d agents, %,d JVMs, %,d method locations, %,d methods, %,d applications, %,d environments, %,d invocations and %,d RabbitMQ messageIds) in %s.",
                 deletedRows, deletedAgents, deletedJvms, deletedMethodLocations, deletedMethods, deletedApplications, deletedEnvironments, deletedInvocations,
-                LoggingUtils.humanReadableDuration(Duration.between(startedAt, Instant.now()))))
+                deletedRabbitMessageIds, LoggingUtils.humanReadableDuration(Duration.between(startedAt, clock.instant()))))
         } else {
             logger.debug("Found nothing to delete")
         }
     }
 
     override fun findWeedingCandidates() {
-        val startedAt = Instant.now()
+        val startedAt = clock.instant()
         var sum = 0
         for (cd in customerService.customerData) {
             val retentionPeriodDays = cd.pricePlan.retentionPeriodDays
@@ -127,6 +127,6 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 sum += count
             }
         }
-        logger.debug("{} weeding candidates identified in {}", sum, LoggingUtils.humanReadableDuration(Duration.between(startedAt, Instant.now())))
+        logger.debug("{} weeding candidates identified in {}", sum, LoggingUtils.humanReadableDuration(Duration.between(startedAt, clock.instant())))
     }
 }
