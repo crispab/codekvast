@@ -59,6 +59,7 @@ jvm_opts:
     dashboard:   ''
     login:       '-Xms10m -Xmx100m'
 
+datadog_agent_version: '1:6.14.1-1'
 datadog_config:
     hostname:         "{{ tags.CNAME }}"
     tags:

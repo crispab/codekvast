@@ -10,7 +10,7 @@
   - vars/common.yml
 
   roles:
-  - {role: oefenweb.swapfile, tags: [os]}
+  - {role: oefenweb.swapfile, tags: [swapfile]}
 
   post_tasks:
   - name: Install swedish language pack

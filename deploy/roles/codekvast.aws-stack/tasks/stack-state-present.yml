@@ -538,7 +538,7 @@
   with_items: "{{ stack.app_cnames }}"
   tags: infra
 
-- name: Define database instances' CNAMEs
+- name: Define database instance's CNAMEs
   local_action:
     module: route53
     profile: codekvast # in ~/.boto
