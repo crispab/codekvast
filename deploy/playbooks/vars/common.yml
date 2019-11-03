@@ -70,8 +70,8 @@ datadog_config:
         scrub_args: true
 
 swapfile_size: 512MB
-swapfile_swappiness: 10
-swapfile_vfs_cache_pressure: 50
+swapfile_swappiness: '10'
+swapfile_vfs_cache_pressure: '50'
 
 health_check:
     healthy_threshold_count:   2
