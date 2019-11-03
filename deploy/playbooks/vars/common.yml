@@ -29,7 +29,7 @@ aws_stacks:
     db_cname:              'db'
     backend_count_a:       1
     backend_count_b:       1
-    backend_instance_type: 't2.micro'
+    backend_instance_type: 't3a.small'
     db_instance_type:      't2.micro'
 
 ports:
