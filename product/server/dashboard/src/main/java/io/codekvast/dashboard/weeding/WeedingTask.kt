@@ -23,6 +23,7 @@ package io.codekvast.dashboard.weeding
 
 import io.codekvast.common.lock.LockManager
 import io.codekvast.common.lock.LockManager.Lock
+import io.codekvast.common.messaging.CorrelationIdHolder
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -47,6 +48,7 @@ class WeedingTask
     fun performDataWeeding() {
         val oldThreadName = Thread.currentThread().name
         Thread.currentThread().name = "Codekvast Data Weeder"
+        CorrelationIdHolder.generateNew()
         try {
             val lock: Optional<Lock> = lockManager.acquireLock(Lock.WEEDER);
             if (lock.isPresent) {
@@ -58,6 +60,7 @@ class WeedingTask
                 }
             }
         } finally {
+            CorrelationIdHolder.clear()
             Thread.currentThread().name = oldThreadName
         }
     }

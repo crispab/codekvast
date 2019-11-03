@@ -56,7 +56,7 @@ public class FileImportTask {
         fixedDelayString = "${codekvast.fileImportIntervalSeconds}000")
     public void importPublicationFiles() {
         String oldThreadName = Thread.currentThread().getName();
-        Thread.currentThread().setName("Codekvast FileImport");
+        Thread.currentThread().setName("Codekvast File Import");
         try {
             File queuePath = settings.getQueuePath();
             logger.trace("Looking for files to import in {}", queuePath);
