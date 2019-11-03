@@ -1,0 +1,38 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: bionic
+    image: ubuntu:bionic
+    user: ${MOLECULE_USER}
+  - name: xenial
+    image: ubuntu:xenial
+    user: ${MOLECULE_USER}
+  - name: trusty
+    image: ubuntu:trusty
+    user: ${MOLECULE_USER}
+provisioner:
+  name: ansible
+  playbooks:
+    create: ../default/create.yml
+    prepare: ../default/prepare.yml
+    converge: ../../tests/test.yml
+    destroy: ../default/destroy.yml
+  config_options:
+    defaults:
+      callback_whitelist: profile_tasks,timer
+  lint:
+    name: ansible-lint
+scenario:
+  name: ubuntu
+verifier:
+  name: testinfra
+  directory: ../../tests/
+  options:
+    verbose: true
+  lint:
+    name: flake8
