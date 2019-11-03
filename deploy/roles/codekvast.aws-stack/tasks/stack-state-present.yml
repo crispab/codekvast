@@ -130,6 +130,7 @@
       - "{{ ports.login.management }}"
       - "{{ ports.dashboard.service }}"
       - "{{ ports.dashboard.management }}"
+      - "{{ ports.backoffice.management }}"
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
       group_desc: "Codekvast internet-facing security group"
     - proto: tcp
