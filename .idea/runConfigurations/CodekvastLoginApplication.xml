@@ -9,6 +9,7 @@
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.login.CodekvastLoginApplication" />
     <option name="ACTIVE_PROFILES" value="dev-secrets,dev-webpack-dev-server" />
+    <option name="VM_PARAMETERS" value="-Xms10m -Xmx100m" />
     <option name="PROGRAM_PARAMETERS" value="--project.codekvastDisplayVersion=dev" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_WORKING_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH" />

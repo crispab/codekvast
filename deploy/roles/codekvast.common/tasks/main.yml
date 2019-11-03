@@ -2,30 +2,9 @@
 - name: Setting timezone to UTC
   timezone: name=UTC
 
-# TODO: remove OpenJDK 8 once java11 version of Codekvast is deployed
-- name: Install OpenJDK 8
-  package: name=openjdk-8-jdk-headless state=present
-
-# Kludge until Ubuntu 18+ supports Java 11 from their official channels.
-# Currently, as in Ubuntu 18.04 LTS Bionic Beaver, openjdk-11-jdk is Java 10
-
-- set_fact: jdkDir=/usr/lib/jvm/jdk-11.0.2
-
-- name: Install OpenJDK 11 from tarball
-  unarchive:
-      creates: "{{ jdkDir }}"
-      src: https://download.java.net/java/GA/jdk11/7/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
-      remote_src: True
-      dest: /usr/lib/jvm
-
-- name: Define OpenJDK 11 as a Java alternative
-  shell: for bin in {{ jdkDir }}/bin/*; do update-alternatives --install /usr/bin/$(basename $bin) $(basename $bin) $bin 100; done
-
-- name: Set OpenJDK 11 as the default Java alternative
-  shell: for bin in {{ jdkDir }}/bin/*; do update-alternatives --set $(basename $bin) $bin; done
-
 - name: Create codekvast group
   group: name=codekvast state=present
 
 - name: Create codekvast user
   user: name=codekvast group=codekvast state=present home=/opt/codekvast
+

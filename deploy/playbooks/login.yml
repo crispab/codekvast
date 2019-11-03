@@ -25,4 +25,5 @@
   - {role: Datadog.datadog, tags: [metrics,monitoring,datadog] }
   - {role: codekvast.datadog, tags: [metrics,monitoring,datadog] }
   - {role: codekvast.common, tags: [common]}
+  - {role: Comcast.sdkman, tags: [common]}
   - {role: codekvast.spring-boot-service, tags: [service, login]}
