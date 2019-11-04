@@ -1,6 +1,10 @@
 package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.common.customer.*;
+import io.codekvast.common.messaging.EventService;
+import io.codekvast.common.messaging.model.AgentPolledAfterTrialPeriodExpiredEvent;
+import io.codekvast.common.messaging.model.AgentPolledInDisabledEnvironment;
+import io.codekvast.common.messaging.model.TooManyLiveAgents;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
@@ -38,6 +42,9 @@ public class AgentServiceImplTest {
     @Mock
     private CustomerService customerService;
 
+    @Mock
+    private EventService eventService;
+
     private final CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
     private final GetConfigRequest1 request = GetConfigRequest1.sample();
 
@@ -50,7 +57,7 @@ public class AgentServiceImplTest {
         settings.setQueuePath(temporaryFolder.getRoot());
         settings.setQueuePathPollIntervalSeconds(60);
 
-        service = new AgentServiceImpl(settings, customerService, agentDAO);
+        service = new AgentServiceImpl(settings, customerService, eventService, agentDAO);
 
         setupCustomerData(null, null);
     }
@@ -72,6 +79,8 @@ public class AgentServiceImplTest {
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
 
         verify(agentDAO).updateAgentEnabledState(1L, request.getJvmUuid(), true);
+
+        verifyNoInteractions(eventService);
     }
 
     @Test
@@ -91,6 +100,8 @@ public class AgentServiceImplTest {
 
         assertThat(response.getInvocationDataPublisherName(), is("http"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
+
+        verifyNoInteractions(eventService);
     }
 
     @Test
@@ -110,6 +121,8 @@ public class AgentServiceImplTest {
 
         assertThat(response.getInvocationDataPublisherName(), is("http"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=false"));
+
+        verify(eventService).send(any(AgentPolledAfterTrialPeriodExpiredEvent.class));
     }
 
     @Test
@@ -127,6 +140,8 @@ public class AgentServiceImplTest {
 
         assertThat(response.getInvocationDataPublisherName(), is("http"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=false"));
+
+        verify(eventService).send(any(TooManyLiveAgents.class));
     }
 
     @Test
@@ -134,6 +149,7 @@ public class AgentServiceImplTest {
         // given
         when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
         when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(FALSE);
+        when(agentDAO.getEnvironmentName(eq(1L), eq(request.getJvmUuid()))).thenReturn("environment");
 
         // when
         GetConfigResponse1 response = service.getConfig(request);
@@ -144,6 +160,8 @@ public class AgentServiceImplTest {
 
         assertThat(response.getInvocationDataPublisherName(), is("http"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=false"));
+
+        verify(eventService).send(any(AgentPolledInDisabledEnvironment.class));
     }
 
     @Test(expected = LicenseViolationException.class)
@@ -172,6 +190,8 @@ public class AgentServiceImplTest {
         assertThat(resultingFile.getName(), endsWith(".ser"));
         assertThat(resultingFile.exists(), is(true));
         assertThat(resultingFile.length(), is((long) contents.length()));
+
+        verifyNoInteractions(eventService);
     }
 
     @Test
@@ -189,6 +209,8 @@ public class AgentServiceImplTest {
         assertThat(resultingFile.getName(), endsWith(".ser"));
         assertThat(resultingFile.exists(), is(true));
         assertThat(resultingFile.length(), is((long) contents.length()));
+
+        verifyNoInteractions(eventService);
     }
 
     @Test(expected = NullPointerException.class)

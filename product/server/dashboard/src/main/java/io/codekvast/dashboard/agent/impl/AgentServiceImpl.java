@@ -25,6 +25,10 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlan;
+import io.codekvast.common.messaging.EventService;
+import io.codekvast.common.messaging.model.AgentPolledAfterTrialPeriodExpiredEvent;
+import io.codekvast.common.messaging.model.AgentPolledInDisabledEnvironment;
+import io.codekvast.common.messaging.model.TooManyLiveAgents;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
@@ -55,6 +59,7 @@ public class AgentServiceImpl implements AgentService {
 
     private final CodekvastDashboardSettings settings;
     private final CustomerService customerService;
+    private final EventService eventService;
     private final AgentDAO agentDAO;
 
     @Override
@@ -95,6 +100,13 @@ public class AgentServiceImpl implements AgentService {
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
         boolean enabledAgent = numOtherEnabledLiveAgents < maxNumberOfAgents;
         if (!enabledAgent) {
+            eventService.send(TooManyLiveAgents.builder()
+                                               .customerId(customerId)
+                                               .numOtherEnabledLiveAgents(numOtherEnabledLiveAgents)
+                                               .maxNumberOfAgents(maxNumberOfAgents)
+                                               .thisAgentJvmUuid(jvmUuid)
+                                               .build());
+
             logger.warn("Customer {} has already {} live agents (max is {})", customerId, numOtherEnabledLiveAgents, maxNumberOfAgents);
         } else {
             logger.debug("Customer {} now has {} live agents (max is {})", customerId, numOtherEnabledLiveAgents + 1, maxNumberOfAgents);
@@ -102,6 +114,14 @@ public class AgentServiceImpl implements AgentService {
 
         CustomerData cd = customerService.registerAgentPoll(customerData, now);
         if (cd.isTrialPeriodExpired(now)) {
+            if (cd.isTrialPeriodExpired(now)) {
+                eventService.send(AgentPolledAfterTrialPeriodExpiredEvent.builder()
+                                                                         .customerId(customerId)
+                                                                         .collectionStartedAt(cd.getCollectionStartedAt())
+                                                                         .trialPeriodEndedAt(cd.getTrialPeriodEndsAt())
+                                                                         .polledAt(now)
+                                                                         .build());
+            }
             enabledAgent = false;
         }
 
@@ -109,6 +129,11 @@ public class AgentServiceImpl implements AgentService {
 
         if (enabledAgent && !enabledEnvironment) {
             String envName = agentDAO.getEnvironmentName(customerId, jvmUuid);
+            eventService.send(AgentPolledInDisabledEnvironment.builder()
+                                                              .customerId(customerId)
+                                                              .environment(envName)
+                                                              .thisAgentJvmUuid(jvmUuid)
+                                                              .build());
             logger.debug("Disabling agent {}:{} since the environment '{}' is disabled", customerId, jvmUuid, envName);
             enabledAgent = false;
         }
@@ -128,7 +153,7 @@ public class AgentServiceImpl implements AgentService {
     }
 
     private File doSaveInputStream(PublicationType publicationType, Long customerId, InputStream inputStream) throws IOException {
-        try {
+        try (inputStream) {
             createDirectory(settings.getQueuePath());
 
             File result = File.createTempFile(publicationType + "-" + customerId + "-", ".ser", settings.getQueuePath());
@@ -136,8 +161,6 @@ public class AgentServiceImpl implements AgentService {
 
             logger.info("Saved uploaded {} publication to {}", publicationType, result);
             return result;
-        } finally {
-            inputStream.close();
         }
     }
 
@@ -146,7 +169,7 @@ public class AgentServiceImpl implements AgentService {
             logger.debug("Creating {}", settings.getQueuePath());
             settings.getQueuePath().mkdirs();
             if (!settings.getQueuePath().isDirectory()) {
-                throw new IOException("Could not create import directory");
+                throw new IOException("Could not create import directory " + settings.getQueuePath());
             }
             logger.info("Created {}", queuePath);
         }

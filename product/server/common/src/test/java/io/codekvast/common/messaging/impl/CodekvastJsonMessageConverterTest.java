@@ -75,6 +75,7 @@ class CodekvastJsonMessageConverterTest {
     private static Stream<Arguments> provideCodekvastEventSamples() {
         return Stream.of(
             Arguments.of(AgentPolledAfterTrialPeriodExpiredEvent.sample()),
+            Arguments.of(AgentPolledInDisabledEnvironment.sample()),
             Arguments.of(AppDetailsUpdatedEvent.sample()),
             Arguments.of(CodeBaseReceivedEvent.sample()),
             Arguments.of(CollectionStartedEvent.sample()),
@@ -83,6 +84,7 @@ class CodekvastJsonMessageConverterTest {
             Arguments.of(InvocationDataReceivedEvent.sample()),
             Arguments.of(PlanChangedEvent.sample()),
             Arguments.of(PlanOverridesDeletedEvent.sample()),
+            Arguments.of(TooManyLiveAgents.sample()),
             Arguments.of(TrialPeriodStartedEvent.sample()),
             Arguments.of(UserAuthenticatedEvent.sample()),
             Arguments.of(UserLoggedInEvent.sample()));

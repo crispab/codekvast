@@ -19,28 +19,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.rabbit;
+package io.codekvast.common.messaging.model;
 
-import io.codekvast.common.messaging.AbstractCodekvastEventListener;
-import io.codekvast.common.messaging.impl.MessageIdRepository;
-import io.codekvast.common.messaging.model.CodekvastEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
 /**
+ * An event that is sent when an agent polls in a disabled environment.
+ *
  * @author olle.hallin@crisp.se
  */
-@Component
-@Slf4j
-public class CodekvastEventListener extends AbstractCodekvastEventListener {
+@Value
+@Builder
+public class AgentPolledInDisabledEnvironment implements CodekvastEvent {
+    @NonNull Long customerId;
+    @NonNull String environment;
+    @NonNull String thisAgentJvmUuid;
 
-    public CodekvastEventListener(MessageIdRepository messageIdRepository) {
-        super(messageIdRepository);
-    }
-
-    @Override
-    public void onCodekvastEvent(CodekvastEvent event) throws Exception {
-        logger.info("Received {}", event);
-        // TODO: handle event
+    public static AgentPolledInDisabledEnvironment sample() {
+        return AgentPolledInDisabledEnvironment.builder().customerId(1L)
+                                               .environment("environment")
+                                               .thisAgentJvmUuid("jvmUuid")
+                                               .build();
     }
 }

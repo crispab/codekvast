@@ -19,28 +19,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.rabbit;
+package io.codekvast.common.messaging.model;
 
-import io.codekvast.common.messaging.AbstractCodekvastEventListener;
-import io.codekvast.common.messaging.impl.MessageIdRepository;
-import io.codekvast.common.messaging.model.CodekvastEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
 /**
+ * An event that is sent when an agent polls when there are too many other live agents.
+ *
  * @author olle.hallin@crisp.se
  */
-@Component
-@Slf4j
-public class CodekvastEventListener extends AbstractCodekvastEventListener {
+@Value
+@Builder
+public class TooManyLiveAgents implements CodekvastEvent {
+    @NonNull Long customerId;
+    @NonNull Integer numOtherEnabledLiveAgents;
+    @NonNull Integer maxNumberOfAgents;
+    @NonNull String thisAgentJvmUuid;
 
-    public CodekvastEventListener(MessageIdRepository messageIdRepository) {
-        super(messageIdRepository);
-    }
-
-    @Override
-    public void onCodekvastEvent(CodekvastEvent event) throws Exception {
-        logger.info("Received {}", event);
-        // TODO: handle event
+    public static TooManyLiveAgents sample() {
+        return TooManyLiveAgents.builder().customerId(1L)
+                                .maxNumberOfAgents(10)
+                                .numOtherEnabledLiveAgents(9)
+                                .thisAgentJvmUuid("jvmUuid")
+                                .build();
     }
 }

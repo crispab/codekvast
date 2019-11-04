@@ -143,14 +143,6 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             result = customerData;
         }
-        if (result.isTrialPeriodExpired(polledAt)) {
-            eventService.send(AgentPolledAfterTrialPeriodExpiredEvent.builder()
-                                                                     .customerId(result.getCustomerId())
-                                                                     .collectionStartedAt(result.getCollectionStartedAt())
-                                                                     .trialPeriodEndedAt(result.getTrialPeriodEndsAt())
-                                                                     .polledAt(polledAt)
-                                                                     .build());
-        }
         return result;
     }
 
@@ -459,6 +451,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         PricePlan pp = customerData.getPricePlan();
         if (numberOfMethods > pp.getMaxMethods()) {
+            // TODO: Send event
             throw new LicenseViolationException(
                 String.format("Too many methods: %d. The plan '%s' has a limit of %d methods",
                               numberOfMethods, customerData.getPricePlan().getName(), pp.getMaxMethods()));
