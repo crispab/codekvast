@@ -5,6 +5,6 @@
 #---------------------------------------------------------------------------
 - {import_playbook: database.yml, tags: [server, database]}
 - {import_playbook: rabbitmq.yml, tags: [server, rabbitmq]}
+- {import_playbook: backoffice.yml, tags: [server, service, backoffice]}
 - {import_playbook: dashboard.yml, tags: [server, service, dashboard]}
 - {import_playbook: login.yml, tags: [server, service, login]}
-- {import_playbook: backoffice.yml, tags: [server, service, backoffice]}

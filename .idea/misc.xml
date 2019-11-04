@@ -38,6 +38,7 @@
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="JRUBY" url="file://$PROJECT_DIR$/tools/prepare-workstation/ansible/roles/franklinkim.docker/Vagrantfile" />
+    <file type="Python" url="file://$PROJECT_DIR$/deploy/callback_plugins/datadog_callback.py" />
     <file type="Spring" url="file://$PROJECT_DIR$/playground" />
     <file type="web" url="file://$PROJECT_DIR$" />
   </component>

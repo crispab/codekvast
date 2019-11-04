@@ -3,6 +3,6 @@
 # Configures all services once the infrastructure has been provisioned and the database has been installed.
 # See also infrastructure.yml and servers.yml
 #---------------------------------------------------------------------------
+- {import_playbook: backoffice.yml, tags: [backoffice]}
 - {import_playbook: dashboard.yml, tags: [dashboard]}
 - {import_playbook: login.yml, tags: [login]}
-- {import_playbook: backoffice.yml, tags: [backoffice]}
