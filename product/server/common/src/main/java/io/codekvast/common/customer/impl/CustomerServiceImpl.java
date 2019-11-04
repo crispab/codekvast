@@ -118,7 +118,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public void assertDatabaseSize(long customerId) throws LicenseViolationException {
         CustomerData customerData = getCustomerDataByCustomerId(customerId);
-        long numberOfMethods = countMethods(customerId);
+        int numberOfMethods = countMethods(customerId);
 
         doAssertNumberOfMethods(customerData, numberOfMethods);
     }
@@ -446,15 +446,23 @@ public class CustomerServiceImpl implements CustomerService {
         return value != null ? value : defaultValue;
     }
 
-    private void doAssertNumberOfMethods(CustomerData customerData, long numberOfMethods) {
+    private void doAssertNumberOfMethods(CustomerData customerData, int numberOfMethods) {
         logger.debug("Asserting {} methods for {}", numberOfMethods, customerData);
 
         PricePlan pp = customerData.getPricePlan();
         if (numberOfMethods > pp.getMaxMethods()) {
-            // TODO: Send event
+            eventService.send(
+                LicenseViolationEvent.builder()
+                                     .customerId(customerData.getCustomerId())
+                                     .plan(pp.getName())
+                                     .attemptedMethods(numberOfMethods)
+                                     .defaultMaxMethods(PricePlanDefaults.fromDatabaseName(pp.getName()).getMaxMethods())
+                                     .effectiveMaxMethods(pp.getMaxMethods())
+                                     .build());
+
             throw new LicenseViolationException(
                 String.format("Too many methods: %d. The plan '%s' has a limit of %d methods",
-                              numberOfMethods, customerData.getPricePlan().getName(), pp.getMaxMethods()));
+                              numberOfMethods, pp.getName(), pp.getMaxMethods()));
         }
     }
 

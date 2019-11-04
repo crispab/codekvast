@@ -3,8 +3,8 @@ package io.codekvast.dashboard.agent.impl;
 import io.codekvast.common.customer.*;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledAfterTrialPeriodExpiredEvent;
-import io.codekvast.common.messaging.model.AgentPolledInDisabledEnvironment;
-import io.codekvast.common.messaging.model.TooManyLiveAgents;
+import io.codekvast.common.messaging.model.AgentPolledInDisabledEnvironmentEvent;
+import io.codekvast.common.messaging.model.TooManyLiveAgentsEvent;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
@@ -141,7 +141,7 @@ public class AgentServiceImplTest {
         assertThat(response.getInvocationDataPublisherName(), is("http"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=false"));
 
-        verify(eventService).send(any(TooManyLiveAgents.class));
+        verify(eventService).send(any(TooManyLiveAgentsEvent.class));
     }
 
     @Test
@@ -161,7 +161,7 @@ public class AgentServiceImplTest {
         assertThat(response.getInvocationDataPublisherName(), is("http"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=false"));
 
-        verify(eventService).send(any(AgentPolledInDisabledEnvironment.class));
+        verify(eventService).send(any(AgentPolledInDisabledEnvironmentEvent.class));
     }
 
     @Test(expected = LicenseViolationException.class)

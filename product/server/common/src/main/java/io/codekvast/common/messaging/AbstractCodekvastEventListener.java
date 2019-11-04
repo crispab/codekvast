@@ -43,13 +43,15 @@ public abstract class AbstractCodekvastEventListener {
 
     @RabbitListener(queues = CODEKVAST_EVENT_QUEUE, ackMode = "AUTO")
     public void onMessage(Message message, @Payload CodekvastEvent event) throws Exception {
+        logger.debug("Received {}", message);
         MessageProperties messageProperties = message.getMessageProperties();
-        logger.debug("Received {} from {}", event, messageProperties.getAppId());
         CorrelationIdHolder.set(messageProperties.getCorrelationId());
         try {
             String messageId = messageProperties.getMessageId();
-            if(!messageIdRepository.isDuplicate(messageId)) {
+            if (!messageIdRepository.isDuplicate(messageId)) {
+
                 onCodekvastEvent(event);
+
                 messageIdRepository.remember(messageId);
             }
         } finally {
@@ -62,8 +64,7 @@ public abstract class AbstractCodekvastEventListener {
      *
      * The event is guaranteed to be unique.
      *
-     * @param event The event to handle
-     *
+     * @param event The event to handle. Is never null.
      * @throws Exception If the event cannot be handled. Will cause the message to be moved to the dead letter queue.
      */
     public abstract void onCodekvastEvent(CodekvastEvent event) throws Exception;

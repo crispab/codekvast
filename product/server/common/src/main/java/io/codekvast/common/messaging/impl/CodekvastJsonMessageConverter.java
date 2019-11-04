@@ -57,13 +57,13 @@ public class CodekvastJsonMessageConverter implements MessageConverter {
     public @NonNull Message toMessage(@NonNull Object object, @Nullable MessageProperties messagePropertiesArg) throws MessageConversionException {
         logger.debug("Converting {} to JSON", object);
 
-        MessageProperties messageProperties = messagePropertiesArg;
-        if (messageProperties == null) {
-            messageProperties = new MessageProperties();
-        }
-
         try {
             byte[] bytes = gson.toJson(object).getBytes(StandardCharsets.UTF_8.name());
+
+            MessageProperties messageProperties = messagePropertiesArg;
+            if (messageProperties == null) {
+                messageProperties = new MessageProperties();
+            }
 
             messageProperties.setAppId(settings.getApplicationName());
             messageProperties.setContentEncoding(StandardCharsets.UTF_8.name());

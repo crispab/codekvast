@@ -43,7 +43,7 @@ public interface CustomerService {
      *
      * @param licenseKey The licenseKey to translate.
      * @return A CustomerData object.
-     * @throws org.springframework.security.authentication.AuthenticationCredentialsNotFoundException iff the licenseKey was invalid.
+     * @throws AuthenticationCredentialsNotFoundException iff the licenseKey was invalid.
      */
     CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException;
 
@@ -78,7 +78,7 @@ public interface CustomerService {
      *
      * @param customerData    The customer data.
      * @param publicationSize The size of the publication.
-     * @throws LicenseViolationException iff the license key is invalid
+     * @throws LicenseViolationException iff the publication is larger than the customer's plan permits.
      */
     void assertPublicationSize(CustomerData customerData, int publicationSize) throws LicenseViolationException;
 
@@ -86,6 +86,7 @@ public interface CustomerService {
      * Checks that the database does not contain too many methods for a certain customer.
      *
      * @param customerId The customer ID
+     * @throws LicenseViolationException iff the database contains more rows than the customer's plan permits.
      */
     void assertDatabaseSize(long customerId) throws LicenseViolationException;
 
@@ -154,7 +155,8 @@ public interface CustomerService {
 
     /**
      * Update the app name and the contact email.
-     *  @param appName      The new app name
+     *
+     * @param appName      The new app name
      * @param contactEmail the new contact email
      * @param customerId   Identifies the customer
      */

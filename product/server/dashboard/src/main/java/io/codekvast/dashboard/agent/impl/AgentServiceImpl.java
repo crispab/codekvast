@@ -27,8 +27,8 @@ import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledAfterTrialPeriodExpiredEvent;
-import io.codekvast.common.messaging.model.AgentPolledInDisabledEnvironment;
-import io.codekvast.common.messaging.model.TooManyLiveAgents;
+import io.codekvast.common.messaging.model.AgentPolledInDisabledEnvironmentEvent;
+import io.codekvast.common.messaging.model.TooManyLiveAgentsEvent;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
@@ -100,12 +100,12 @@ public class AgentServiceImpl implements AgentService {
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
         boolean enabledAgent = numOtherEnabledLiveAgents < maxNumberOfAgents;
         if (!enabledAgent) {
-            eventService.send(TooManyLiveAgents.builder()
-                                               .customerId(customerId)
-                                               .numOtherEnabledLiveAgents(numOtherEnabledLiveAgents)
-                                               .maxNumberOfAgents(maxNumberOfAgents)
-                                               .thisAgentJvmUuid(jvmUuid)
-                                               .build());
+            eventService.send(TooManyLiveAgentsEvent.builder()
+                                                    .customerId(customerId)
+                                                    .numOtherEnabledLiveAgents(numOtherEnabledLiveAgents)
+                                                    .maxNumberOfAgents(maxNumberOfAgents)
+                                                    .thisAgentJvmUuid(jvmUuid)
+                                                    .build());
 
             logger.warn("Customer {} has already {} live agents (max is {})", customerId, numOtherEnabledLiveAgents, maxNumberOfAgents);
         } else {
@@ -129,11 +129,11 @@ public class AgentServiceImpl implements AgentService {
 
         if (enabledAgent && !enabledEnvironment) {
             String envName = agentDAO.getEnvironmentName(customerId, jvmUuid);
-            eventService.send(AgentPolledInDisabledEnvironment.builder()
-                                                              .customerId(customerId)
-                                                              .environment(envName)
-                                                              .thisAgentJvmUuid(jvmUuid)
-                                                              .build());
+            eventService.send(AgentPolledInDisabledEnvironmentEvent.builder()
+                                                                   .customerId(customerId)
+                                                                   .environment(envName)
+                                                                   .jvmUuid(jvmUuid)
+                                                                   .build());
             logger.debug("Disabling agent {}:{} since the environment '{}' is disabled", customerId, jvmUuid, envName);
             enabledAgent = false;
         }

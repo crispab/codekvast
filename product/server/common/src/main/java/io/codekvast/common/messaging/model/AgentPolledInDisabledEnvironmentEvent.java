@@ -26,23 +26,21 @@ import lombok.NonNull;
 import lombok.Value;
 
 /**
- * An event that is sent when an agent polls when there are too many other live agents.
+ * An event that is sent when an agent polls in a disabled environment.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class TooManyLiveAgents implements CodekvastEvent {
+public class AgentPolledInDisabledEnvironmentEvent implements CodekvastEvent {
     @NonNull Long customerId;
-    @NonNull Integer numOtherEnabledLiveAgents;
-    @NonNull Integer maxNumberOfAgents;
-    @NonNull String thisAgentJvmUuid;
+    @NonNull String environment;
+    @NonNull String jvmUuid;
 
-    public static TooManyLiveAgents sample() {
-        return TooManyLiveAgents.builder().customerId(1L)
-                                .maxNumberOfAgents(10)
-                                .numOtherEnabledLiveAgents(9)
-                                .thisAgentJvmUuid("jvmUuid")
-                                .build();
+    public static AgentPolledInDisabledEnvironmentEvent sample() {
+        return AgentPolledInDisabledEnvironmentEvent.builder().customerId(1L)
+                                                    .environment("environment")
+                                                    .jvmUuid("jvmUuid")
+                                                    .build();
     }
 }
