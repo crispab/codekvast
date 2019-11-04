@@ -5,9 +5,10 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.SlackService;
+import io.codekvast.common.messaging.model.LicenseViolationEvent;
 import io.codekvast.common.metrics.CommonMetricsService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,10 +17,12 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class CustomerServiceImplTest {
 
@@ -37,8 +40,8 @@ public class CustomerServiceImplTest {
 
     private CustomerService service;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    public void beforeTest() {
         MockitoAnnotations.initMocks(this);
         service = new CustomerServiceImpl(jdbcTemplate, slackService, metricsService, eventService);
 
@@ -49,28 +52,47 @@ public class CustomerServiceImplTest {
         map.put("plan", "test");
         map.put("source", "source");
 
-        when(jdbcTemplate.queryForMap(anyString(), any())).thenReturn(map);
+        when(jdbcTemplate.queryForMap(startsWith("SELECT c.id, c.name, c.source"), any())).thenReturn(map);
     }
 
     @Test
     public void should_return_sensible_CustomerData() {
+        // Given
+
+        // When
         CustomerData data = service.getCustomerDataByLicenseKey("key");
+
+        // Then
         assertThat(data.getCustomerId(), is(1L));
         assertThat(data.getPricePlan().getName(), is("TEST"));
+
+        verifyNoInteractions(eventService);
     }
 
-    @Test(expected = LicenseViolationException.class)
+    @Test
     public void should_reject_too_many_methods() {
-        when(jdbcTemplate.queryForObject(anyString(), eq(String.class), eq(1L))).thenReturn("test");
-        when(jdbcTemplate.queryForObject(anyString(), eq(Long.class), eq(1L))).thenReturn(50_000L);
+        // Given
+        when(jdbcTemplate.queryForObject(startsWith("SELECT COUNT(1) FROM methods WHERE"), eq(Long.class), eq(1L))).thenReturn(50_000L);
 
-        service.assertDatabaseSize(1L);
+        // When
+        LicenseViolationException exception = assertThrows(LicenseViolationException.class,
+                                                           () -> service.assertDatabaseSize(1L));
+
+        // Then
+        assertThat(exception.getMessage(), containsString("Too many methods"));
+        assertThat(exception.getMessage(), containsString("50000"));
+
+        verify(eventService).send(any(LicenseViolationEvent.class));
     }
 
-    @Test(expected = LicenseViolationException.class)
+    @Test
     public void should_reject_too_big_codeBasePublication() {
-        when(jdbcTemplate.queryForObject(anyString(), eq(String.class), eq(1L))).thenReturn("test");
         CustomerData customerData = service.getCustomerDataByLicenseKey("");
-        service.assertPublicationSize(customerData, 100_000);
+
+        LicenseViolationException exception = assertThrows(LicenseViolationException.class,
+                     () -> service.assertPublicationSize(customerData, 100_000));
+        assertThat(exception.getMessage(), containsString("100000"));
+
+        verify(eventService).send(any(LicenseViolationEvent.class));
     }
 }
