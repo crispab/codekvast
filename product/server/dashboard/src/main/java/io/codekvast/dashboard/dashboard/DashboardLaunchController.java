@@ -13,7 +13,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
@@ -24,7 +24,6 @@ package io.codekvast.dashboard.dashboard;
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,8 +33,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A CORS-enabled REST controller that participates in the login dance with the codekvast-login app.
@@ -47,8 +46,6 @@ import java.net.URLEncoder;
 @RequiredArgsConstructor
 @Slf4j
 public class DashboardLaunchController {
-
-    private static final String UTF_8 = "UTF-8";
 
     private final SecurityService securityService;
     private final CodekvastDashboardSettings settings;
@@ -87,9 +84,8 @@ public class DashboardLaunchController {
         return String.format("redirect:%s/%s", settings.getDashboardBaseUrl(), sessionToken == null ? "not-logged-in" : "home");
     }
 
-    @SneakyThrows(UnsupportedEncodingException.class)
     private Cookie createCookie(String name, String value) {
-        Cookie cookie = new Cookie(name, value == null || value.isEmpty() ? "" : URLEncoder.encode(value, UTF_8));
+        Cookie cookie = new Cookie(name, value == null || value.isEmpty() ? "" : URLEncoder.encode(value, StandardCharsets.UTF_8));
         cookie.setPath("/");
         cookie.setMaxAge(value == null ? 0 : -1);
         return cookie;

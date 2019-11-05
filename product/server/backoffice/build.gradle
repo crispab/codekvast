@@ -10,6 +10,7 @@ mainClassName = 'io.codekvast.backoffice.CodekvastBackofficeApplication'
 
 dependencies {
     implementation project(":product:server:common")
+    implementation 'org.drools:drools-compiler:7.28.0.Final'
 
     runtimeOnly project(':product:server:db-migration')
 }
