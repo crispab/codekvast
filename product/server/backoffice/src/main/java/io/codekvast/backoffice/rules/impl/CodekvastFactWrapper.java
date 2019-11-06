@@ -19,32 +19,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.event;
+package io.codekvast.backoffice.rules.impl;
 
-import io.codekvast.backoffice.rules.RuleEngine;
-import io.codekvast.common.messaging.AbstractCodekvastEventListener;
-import io.codekvast.common.messaging.impl.MessageIdRepository;
-import io.codekvast.common.messaging.model.CodekvastEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import io.codekvast.backoffice.facts.CodekvastFact;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@Component
-@Slf4j
-public class CodekvastEventListener extends AbstractCodekvastEventListener {
+@Data
+@RequiredArgsConstructor
+public class CodekvastFactWrapper {
+    @NonNull
+    final Long id;
 
-    private final RuleEngine ruleEngine;
-
-    public CodekvastEventListener(MessageIdRepository messageIdRepository, RuleEngine ruleEngine) {
-        super(messageIdRepository);
-        this.ruleEngine = ruleEngine;
-    }
-
-    @Override
-    public void onCodekvastEvent(CodekvastEvent event) {
-        logger.info("Received {}", event);
-        ruleEngine.handle(event);
-    }
+    @NonNull
+    final CodekvastFact codekvastFact;
 }

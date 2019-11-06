@@ -19,32 +19,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.event;
+package io.codekvast.backoffice.rules.impl;
 
-import io.codekvast.backoffice.rules.RuleEngine;
-import io.codekvast.common.messaging.AbstractCodekvastEventListener;
-import io.codekvast.common.messaging.impl.MessageIdRepository;
-import io.codekvast.common.messaging.model.CodekvastEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
+import java.io.IOException;
+import java.time.Instant;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@Component
-@Slf4j
-public class CodekvastEventListener extends AbstractCodekvastEventListener {
+public class InstantTypeAdapter extends TypeAdapter<Instant> {
 
-    private final RuleEngine ruleEngine;
-
-    public CodekvastEventListener(MessageIdRepository messageIdRepository, RuleEngine ruleEngine) {
-        super(messageIdRepository);
-        this.ruleEngine = ruleEngine;
+    @Override
+    public void write(JsonWriter out, Instant instant) throws IOException {
+        out.value(instant.toString());
     }
 
     @Override
-    public void onCodekvastEvent(CodekvastEvent event) {
-        logger.info("Received {}", event);
-        ruleEngine.handle(event);
+    public Instant read(JsonReader in) throws IOException {
+        return Instant.parse(in.nextString());
     }
 }

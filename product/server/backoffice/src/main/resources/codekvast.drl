@@ -1,0 +1,25 @@
+import io.codekvast.common.messaging.model.UserAuthenticatedEvent
+import io.codekvast.backoffice.facts.UserAuthenticated
+
+global java.time.Clock clock
+
+rule "User has authenticated for the first time"
+when
+  $uae: UserAuthenticatedEvent()
+  not(UserAuthenticated(emailAddress == $uae.emailAddress, authenticationProvider == $uae.authenticationProvider))
+then
+   insert(UserAuthenticated.of($uae));
+   retract($uae)
+end
+
+rule "User has authenticated again"
+when
+  $uae: UserAuthenticatedEvent()
+  $uaf: UserAuthenticated(emailAddress == $uae.emailAddress, authenticationProvider == $uae.authenticationProvider)
+then
+   modify($uaf) {
+      setCount($uaf.getCount() + 1),
+      setInstant(clock.instant())
+   }
+   retract($uae)
+end
