@@ -34,13 +34,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CodekvastEventListener extends AbstractCodekvastEventListener {
 
-    public CodekvastEventListener(MessageIdRepository messageIdRepository) {
+    private final EventHandler eventHandler;
+
+    public CodekvastEventListener(MessageIdRepository messageIdRepository, EventHandler eventHandler) {
         super(messageIdRepository);
+        this.eventHandler = eventHandler;
     }
 
     @Override
     public void onCodekvastEvent(CodekvastEvent event) throws Exception {
         logger.info("Received {}", event);
-        // TODO: handle event
+        eventHandler.handle(event);
     }
 }

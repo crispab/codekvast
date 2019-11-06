@@ -333,6 +333,7 @@ public class CustomerServiceImpl implements CustomerService {
         deleteFromTable("agent_state", customerId);
         deleteFromTable("price_plan_overrides", customerId);
         deleteFromTable("heroku_details", customerId);
+        deleteFromTable("facts", customerId);
         deleteFromTable("customers", customerId);
 
         eventService.send(CustomerDeletedEvent.builder()

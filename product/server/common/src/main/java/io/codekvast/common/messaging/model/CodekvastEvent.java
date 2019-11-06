@@ -29,4 +29,9 @@ import io.codekvast.common.messaging.EventService;
  * @author olle.hallin@crisp.se
  */
 public interface CodekvastEvent {
+
+    /**
+     * @return The customer the event is related to. In case no customer is associated, return -1L.
+     */
+    Long getCustomerId();
 }

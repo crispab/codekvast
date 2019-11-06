@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 /**
- * Contains classes dealing with data weeding, the act of removing redundant collected data.
+ * Classes that deal with data weeding, the act of removing redundant collected data.
  *
  * @author olle.hallin@crisp.se
  */

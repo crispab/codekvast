@@ -1,6 +1,7 @@
 apply from: "$rootDir/gradle/spring-boot-app.gradle"
 apply from: "$rootDir/gradle/spring-boot-jdbc.gradle"
 apply from: "$rootDir/gradle/spring-boot-web.gradle"
+apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
 
 description = 'The Codekvast Backoffice'
 applicationName = 'codekvast-backoffice'
@@ -11,6 +12,7 @@ mainClassName = 'io.codekvast.backoffice.CodekvastBackofficeApplication'
 dependencies {
     implementation project(":product:server:common")
     implementation 'org.drools:drools-compiler:7.28.0.Final'
+    implementation "com.google.code.gson:gson:$gsonVersion"
 
     runtimeOnly project(':product:server:db-migration')
 }

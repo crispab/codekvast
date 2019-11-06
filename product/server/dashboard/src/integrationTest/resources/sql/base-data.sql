@@ -7,6 +7,7 @@ DELETE FROM applications;
 DELETE FROM environments;
 DELETE FROM price_plan_overrides;
 DELETE FROM heroku_details;
+DELETE FROM facts;
 DELETE FROM customers;
 DELETE FROM price_plans;
 
@@ -81,3 +82,8 @@ INSERT INTO users (id, customerId, email, lastLoginSource, numberOfLogins, first
 VALUES
   (1, 1, 'email1', 'source1', 1, NOW(), NOW()),
   (2, 1, 'email2', 'source2', 2, NOW(), NOW());
+
+INSERT INTO facts(id, customerId, type, data)
+VALUES
+  (1, 1, 'type1', 'data1'),
+  (2, 1, 'type2', 'data2');

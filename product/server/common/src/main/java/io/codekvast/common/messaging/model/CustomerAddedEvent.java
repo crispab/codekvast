@@ -35,8 +35,8 @@ import lombok.Value;
 @Value
 @Builder
 public class CustomerAddedEvent implements CodekvastEvent {
-    @NonNull String source;
     @NonNull Long customerId;
+    @NonNull String source;
     @NonNull String name;
     @NonNull String plan;
 
