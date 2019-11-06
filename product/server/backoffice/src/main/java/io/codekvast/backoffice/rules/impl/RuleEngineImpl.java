@@ -23,6 +23,7 @@ package io.codekvast.backoffice.rules.impl;
 
 import io.codekvast.backoffice.facts.CodekvastFact;
 import io.codekvast.backoffice.rules.RuleEngine;
+import io.codekvast.backoffice.service.MailSender;
 import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,7 @@ import java.util.Map;
 public class RuleEngineImpl implements RuleEngine {
 
     private final FactDAO factDAO;
+    private final MailSender mailSender;
     private final Clock clock;
 
     private KieServices kieServices = KieServices.Factory.get();
@@ -57,8 +59,11 @@ public class RuleEngineImpl implements RuleEngine {
     public void handle(CodekvastEvent event) {
         KieSession session = kieContainer.newKieSession();
         session.setGlobal("clock", clock);
-        session.addEventListener(new DebugRuleRuntimeEventListener());
-        session.addEventListener(new DebugAgendaEventListener());
+        session.setGlobal("customerId", event.getCustomerId());
+        session.setGlobal("mailSender", mailSender);
+
+        // session.addEventListener(new DebugRuleRuntimeEventListener());
+        // session.addEventListener(new DebugAgendaEventListener());
 
         // First load all old facts from the database, and remember their fact handles...
         Map<FactHandle, Long> factHandleMap = new HashMap<>();

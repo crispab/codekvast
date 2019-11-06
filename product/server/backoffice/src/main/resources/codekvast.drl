@@ -1,7 +1,11 @@
+import io.codekvast.common.messaging.model.CollectionStartedEvent
 import io.codekvast.common.messaging.model.UserAuthenticatedEvent
+import io.codekvast.backoffice.facts.CollectionStarted
 import io.codekvast.backoffice.facts.UserAuthenticated
 
 global java.time.Clock clock
+global Long customerId
+global io.codekvast.backoffice.service.MailSender mailSender
 
 rule "User has authenticated for the first time"
 when
@@ -22,4 +26,23 @@ then
       setInstant(clock.instant())
    }
    retract($uae)
+end
+
+rule "Detect that collection has started"
+when
+  $cse: CollectionStartedEvent()
+  not(CollectionStarted())
+then
+   insert(CollectionStarted.of($cse));
+   retract($cse)
+end
+
+rule "Send welcome mail when collection has started"
+when
+  $cs: CollectionStarted(welcomeMailSent == false)
+then
+  mailSender.sendMail("welcome-collection-has-started", customerId);
+  modify($cs) {
+    setWelcomeMailSent(true)
+  }
 end
