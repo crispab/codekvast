@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 public class CodekvastCommonSettingsForTestImpl implements CodekvastCommonSettings {
 
-    private String dashboardJwtSecret = "secret";
-    private Long dashboardJwtExpirationHours = 1L;
+    private String jwtSecret = "secret";
+    private Long jwtExpirationHours = 1L;
 
     // not used in test
     private String applicationName = null;

@@ -94,12 +94,12 @@ public class CodekvastBackofficeSettings implements CodekvastCommonSettings {
     /**
      * Which secret should be used when creating a webapp JWT?
      */
-    private String dashboardJwtSecret;
+    private String jwtSecret;
 
     /**
      * How many hours shall a JWT be valid?
      */
-    private Long dashboardJwtExpirationHours;
+    private Long jwtExpirationHours;
 
     @PostConstruct
     public void logStartup() {

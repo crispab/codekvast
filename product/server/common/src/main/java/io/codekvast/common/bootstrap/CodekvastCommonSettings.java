@@ -36,9 +36,9 @@ public interface CodekvastCommonSettings {
 
     String getSlackWebHookUrl();
 
-    String getDashboardJwtSecret();
+    String getJwtSecret();
 
-    Long getDashboardJwtExpirationHours();
+    Long getJwtExpirationHours();
 
     String getEnvironment();
 }

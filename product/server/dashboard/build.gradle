@@ -51,7 +51,7 @@ run {
 
     args = ["--logging.file.name=$buildDir/log/${applicationName}.log",
             '--codekvast.fileImportIntervalSeconds=10',
-            '--codekvast.dashboardJwtExpirationHours=-5'
+            '--codekvast.jwtExpirationHours=-5'
     ]
 }
 

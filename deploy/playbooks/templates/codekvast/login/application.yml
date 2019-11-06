@@ -3,8 +3,8 @@
 codekvast:
     cipherSecret: "{{ codekvast_cipherSecret }}"
     dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
-    dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
-    dashboardJwtSecret: "{{ codekvast_dashboardJwtSecret }}"
+    jwtExpirationHours: "{{ codekvast_jwtExpirationHours }}"
+    jwtSecret: "{{ codekvast_jwtSecret }}"
     dnsCname: "{{ tags.CNAME1 }}"
     environment: "{{ tags.Env }}"
     herokuApiPassword: "{{ codekvast_herokuApiPassword }}"

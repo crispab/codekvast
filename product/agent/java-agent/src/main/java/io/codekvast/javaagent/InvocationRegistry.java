@@ -90,7 +90,7 @@ public class InvocationRegistry {
     }
 
     /**
-     * Record that this method signature was invoked in the current recording interval.
+     * Record this method invocation in the current recording interval.
      * <p>
      * Thread-safe.
      *
@@ -99,8 +99,10 @@ public class InvocationRegistry {
     public void registerMethodInvocation(Signature signature) {
         String sig = SignatureUtils.signatureToString(signature);
 
-        // HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
-        // a background worker thread.
+        /*
+         HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
+         a background worker thread.
+        */
         if (!invocations[currentInvocationIndex].contains(sig)) {
             queue.add(sig);
         }

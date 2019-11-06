@@ -48,7 +48,7 @@ ext.launchCommands = [
         "--management.server.port=${allocateFreePort()} " +
         "--spring.datasource.url=$jdbcUrl " +
         "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-        "--codekvast.dashboardJwtSecret=secret " +
+        "--codekvast.jwtSecret=secret " +
         "--logging.file.name=${buildDir}/system-test-backoffice.log ",
 
     'dashboard': "$java -jar ${bootJars['dashboard'].asPath} " +
@@ -56,7 +56,7 @@ ext.launchCommands = [
         "--management.server.port=${allocateFreePort()} " +
         "--spring.datasource.url=$jdbcUrl " +
         "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-        "--codekvast.dashboardJwtSecret=secret " +
+        "--codekvast.jwtSecret=secret " +
         "--logging.file.name=${buildDir}/system-test-dashboard.log ",
 
     'login'    : "$java -jar ${bootJars['login'].asPath} " +
@@ -65,7 +65,7 @@ ext.launchCommands = [
         "--spring.datasource.url=$jdbcUrl " +
         "--spring.rabbitmq.addresses=$rabbitmqUrl " +
         "--spring.profiles.active=system-test " +
-        "--codekvast.dashboardJwtSecret=secret " +
+        "--codekvast.jwtSecret=secret " +
         "--logging.file.name=${buildDir}/system-test-login.log "
 ]
 

@@ -84,13 +84,13 @@ public class SecurityServiceImpl implements SecurityService {
 
     @PostConstruct
     public void postConstruct() {
-        String secret = settings.getDashboardJwtSecret();
+        String secret = settings.getJwtSecret();
         if (secret == null) {
             secret = "";
         }
 
         this.tokenFactory = TokenFactory.builder()
-                                        .jwtExpirationHours(settings.getDashboardJwtExpirationHours())
+                                        .jwtExpirationHours(settings.getJwtExpirationHours())
                                         .jwtSecret(secret)
                                         .build();
         this.jwtSecret = secret.getBytes(StandardCharsets.UTF_8);
@@ -117,10 +117,10 @@ public class SecurityServiceImpl implements SecurityService {
     public String createCodeForWebappToken(Long customerId, WebappCredentials credentials) {
         String token = tokenFactory.createWebappToken(customerId, credentials);
         String code = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-
+        Instant expiresAt = Instant.now().plusSeconds(300);
         jdbcTemplate.update("INSERT INTO tokens(code, token, expiresAtSeconds) VALUES(?, ?, ?)", code, token,
-                            Instant.now().plusSeconds(300).getEpochSecond());
-        logger.info("Inserted token with code '{}' into database", maskSecondHalf(code));
+                            expiresAt.getEpochSecond());
+        logger.info("Inserted token with code '{}' into the database, expires at {}", maskSecondHalf(code), expiresAt);
         return code;
     }
 
@@ -238,7 +238,7 @@ public class SecurityServiceImpl implements SecurityService {
         private final String jwtSecret;
 
         private Date calculateExpirationDate() {
-            Long hours = jwtExpirationHours;
+            long hours = jwtExpirationHours;
             Duration duration = hours <= 0L ? Duration.ofMinutes(-hours) : Duration.ofHours(hours);
             logger.debug("The session token will live for {}", duration);
             return Date.from(Instant.now().plus(duration));

@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.rabbit;
+package io.codekvast.backoffice.event;
 
 import io.codekvast.common.messaging.AbstractCodekvastEventListener;
 import io.codekvast.common.messaging.impl.MessageIdRepository;

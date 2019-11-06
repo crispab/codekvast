@@ -46,7 +46,7 @@ import static com.google.common.base.Preconditions.checkState;
 @Validated
 @Data
 @Slf4j
-@ToString(exclude = {"cipherSecret", "dashboardJwtSecret", "herokuApiPassword", "herokuApiSsoSalt", "herokuOAuthClientSecret", "slackWebHookToken"})
+@ToString(exclude = {"cipherSecret", "jwtSecret", "herokuApiPassword", "herokuApiSsoSalt", "herokuOAuthClientSecret", "slackWebHookToken"})
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
 public class CodekvastLoginSettings implements CodekvastCommonSettings {
 
@@ -143,12 +143,12 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
     /**
      * Which secret should be used when creating a webapp JWT?
      */
-    private String dashboardJwtSecret;
+    private String jwtSecret;
 
     /**
      * How many hours shall a JWT be valid?
      */
-    private Long dashboardJwtExpirationHours;
+    private Long jwtExpirationHours;
 
     @PostConstruct
     public void validateCipherSecret() throws CipherException {

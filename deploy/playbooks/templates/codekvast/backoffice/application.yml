@@ -1,8 +1,8 @@
 # {{ ansible_managed }}
 
 codekvast:
-    dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
-    dashboardJwtSecret: "{{ codekvast_dashboardJwtSecret }}"
+    jwtExpirationHours: "{{ codekvast_jwtExpirationHours }}"
+    jwtSecret: "{{ codekvast_jwtSecret }}"
     dnsCname: "{{ tags.CNAME3 }}"
     environment: "{{ tags.Env }}"
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"

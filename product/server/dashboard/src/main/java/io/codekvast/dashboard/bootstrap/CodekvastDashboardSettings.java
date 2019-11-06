@@ -43,7 +43,7 @@ import java.io.File;
 // @Validated
 @Data
 @Slf4j
-@ToString(exclude = {"dashboardJwtSecret", "slackWebHookToken"})
+@ToString(exclude = {"jwtSecret", "slackWebHookToken"})
 public class CodekvastDashboardSettings implements CodekvastCommonSettings {
 
     /**
@@ -89,12 +89,12 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
     /**
      * What secret should be used for signing JWT tokens?
      */
-    private String dashboardJwtSecret;
+    private String jwtSecret;
 
     /**
      * How long shall a webapp authentication token live?
      */
-    private Long dashboardJwtExpirationHours = 8760L;
+    private Long jwtExpirationHours = 8760L;
 
     /**
      * What is the dashboard base url?

@@ -2,8 +2,8 @@
 
 codekvast:
     dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
-    dashboardJwtExpirationHours: "{{ codekvast_dashboardJwtExpirationHours }}"
-    dashboardJwtSecret: "{{ codekvast_dashboardJwtSecret }}"
+    jwtExpirationHours: "{{ codekvast_jwtExpirationHours }}"
+    jwtSecret: "{{ codekvast_jwtSecret }}"
     dnsCname: "{{ tags.CNAME2 }}"
     environment: "{{ tags.Env }}"
     fileImportIntervalSeconds: "{{ fileImportIntervalSeconds }}"

@@ -8,8 +8,8 @@
 codekvast:
     cipherSecret:                someCipherSecret
     dashboardBaseUrl:            http://localhost:8081
-    dashboardJwtExpirationHours: 168
-    dashboardJwtSecret:          secret
+    jwtExpirationHours: 168
+    jwtSecret:          secret
     dnsCname:                    localhost
     environment:                 dev
     herokuOAuthBaseUrl:          https://id.heroku.com
