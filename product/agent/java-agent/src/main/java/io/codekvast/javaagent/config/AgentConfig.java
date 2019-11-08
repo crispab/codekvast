@@ -125,7 +125,7 @@ public class AgentConfig implements Serializable {
     }
 
     public String getPollConfigRequestEndpoint() {
-        return String.format("%s%s", serverUrl, V1_POLL_CONFIG);
+        return String.format("%s%s", serverUrl, V2_POLL_CONFIG);
     }
 
     public String getCodeBaseUploadEndpoint() {

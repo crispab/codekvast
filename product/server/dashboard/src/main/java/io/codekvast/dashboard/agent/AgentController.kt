@@ -29,6 +29,8 @@ import io.codekvast.dashboard.util.LoggingUtils.humanReadableByteCount
 import io.codekvast.javaagent.model.Endpoints.Agent.*
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
+import io.codekvast.javaagent.model.v2.GetConfigRequest2
+import io.codekvast.javaagent.model.v2.GetConfigResponse2
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.*
@@ -58,6 +60,17 @@ class AgentController @Inject constructor(private val agentService: AgentService
     @Suppress("DEPRECATION")
     @PostMapping(value = [V1_POLL_CONFIG], consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun getConfig1(@Valid @RequestBody request: GetConfigRequest1): GetConfigResponse1 {
+        logger.debug("Received {}", request)
+
+        val response = agentService.getConfig(request)
+
+        logger.debug("Responds with {}", response)
+        return response
+    }
+
+    @Suppress("DEPRECATION")
+    @PostMapping(value = [V2_POLL_CONFIG], consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
+    fun getConfig2(@Valid @RequestBody request: GetConfigRequest2): GetConfigResponse2 {
         logger.debug("Received {}", request)
 
         val response = agentService.getConfig(request)

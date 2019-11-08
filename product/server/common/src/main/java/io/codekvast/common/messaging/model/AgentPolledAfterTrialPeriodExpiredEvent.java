@@ -36,6 +36,8 @@ import java.time.Instant;
 @Builder
 public class AgentPolledAfterTrialPeriodExpiredEvent implements CodekvastEvent {
     @NonNull Long customerId;
+    @NonNull String appName;
+    @NonNull String environment;
     @NonNull Instant collectionStartedAt;
     @NonNull Instant trialPeriodEndedAt;
     @NonNull Instant polledAt;
@@ -43,6 +45,8 @@ public class AgentPolledAfterTrialPeriodExpiredEvent implements CodekvastEvent {
     public static AgentPolledAfterTrialPeriodExpiredEvent sample() {
         return AgentPolledAfterTrialPeriodExpiredEvent.builder()
                                                       .customerId(1L)
+                                                      .appName("appName")
+                                                      .environment("environment")
                                                       .collectionStartedAt(Instant.now())
                                                       .trialPeriodEndedAt(Instant.now())
                                                       .polledAt(Instant.now())

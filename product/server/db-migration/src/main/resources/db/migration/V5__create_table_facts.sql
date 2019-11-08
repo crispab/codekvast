@@ -23,13 +23,13 @@
 CREATE TABLE facts (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     customerId BIGINT                              NOT NULL,
-    type       VARCHAR(100)                        NOT NULL,
-    data       VARCHAR(1000)                       NOT NULL COMMENT 'JSON representation of a Java object of type type.',
+    type       VARCHAR(75)                         NOT NULL,
+    data       VARCHAR(900)                        NOT NULL COMMENT 'JSON representation of a Java object of type type.',
     createdAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updatedAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT ix_facts_identity UNIQUE (customerId, type, data),
     CONSTRAINT ix_facts_customerId FOREIGN KEY (customerId) REFERENCES customers(id)
 );
 
-INSERT INTO customers(id, licenseKey, source, name, plan, notes)
-VALUE (-1, UUID(), 'system', 'no-customer', 'demo', 'Owner of facts that are not related to any customer')
+INSERT IGNORE INTO customers(id, licenseKey, source, name, plan, notes) VALUE (-1, UUID(), 'system', 'no-customer', 'demo',
+                                                                               'Owner of facts that are not related to any customer')

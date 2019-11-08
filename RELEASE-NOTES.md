@@ -4,6 +4,7 @@
 
 1. Upgraded to Spring Boot 2.2
 1. Upgraded to MariaDB 10.4
+1. New field "environment" in the GetConfigPoll (java-agent 1.1 is still supported)
 
 ## 1.1
 

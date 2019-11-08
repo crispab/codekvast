@@ -2,7 +2,7 @@ package io.codekvast.javaagent.scheduler;
 
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
-import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
@@ -54,7 +54,7 @@ public class SchedulerTest {
 
     private final long T1 = System.currentTimeMillis();
 
-    private final GetConfigResponse1 configResponse = GetConfigResponse1.sample()
+    private final GetConfigResponse2 configResponse = GetConfigResponse2.sample()
                                                                         .toBuilder()
                                                                         .configPollIntervalSeconds(0)
                                                                         .configPollRetryIntervalSeconds(0)

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -94,12 +95,12 @@ public class AgentDAOImpl implements AgentDAO {
     }
 
     @Override
-    public String getEnvironmentName(long customerId, String thisJvmUuid) {
-        List<String> list = jdbcTemplate.queryForList("SELECT name FROM environments e, jvms j " +
-                                                          "WHERE e.customerId = ? AND e.id = j.environmentId AND j.uuid = ? ",
-                                                      String.class, customerId, thisJvmUuid);
-        // If this is the first poll, return null.
-        return list.isEmpty() ? null : list.get(0);
+    public Optional<String> getEnvironmentName(String jvmUuid) {
+        List<String> names = jdbcTemplate.queryForList("SELECT name FROM environments e, jvms j " +
+                                                          "WHERE e.id = j.environmentId AND j.uuid = ? ",
+                                                      String.class, jvmUuid);
+        // If this is the first poll, return empty.
+        return names.isEmpty() ? Optional.empty() : Optional.of(names.get(0));
     }
 
     @Override

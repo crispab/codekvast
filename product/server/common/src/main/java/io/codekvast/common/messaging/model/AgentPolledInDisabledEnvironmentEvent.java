@@ -34,11 +34,14 @@ import lombok.Value;
 @Builder
 public class AgentPolledInDisabledEnvironmentEvent implements CodekvastEvent {
     @NonNull Long customerId;
+    @NonNull String appName;
     @NonNull String environment;
     @NonNull String jvmUuid;
 
     public static AgentPolledInDisabledEnvironmentEvent sample() {
-        return AgentPolledInDisabledEnvironmentEvent.builder().customerId(1L)
+        return AgentPolledInDisabledEnvironmentEvent.builder()
+                                                    .customerId(1L)
+                                                    .appName("appName")
                                                     .environment("environment")
                                                     .jvmUuid("jvmUuid")
                                                     .build();

@@ -25,7 +25,7 @@ import io.codekvast.javaagent.CodekvastThreadFactory;
 import io.codekvast.javaagent.InvocationRegistry;
 import io.codekvast.javaagent.appversion.AppVersionResolver;
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
@@ -60,7 +60,7 @@ public class Scheduler implements Runnable {
     // Mutable state
     private long stopWaitingForResolvedAppVersionAtMillis;
 
-    private GetConfigResponse1 dynamicConfig;
+    private GetConfigResponse2 dynamicConfig;
     private final SchedulerState pollState;
 
     private final SchedulerState codeBasePublisherState;

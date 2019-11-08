@@ -14,6 +14,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 public class CustomerServiceImplTest {
+
+    private static final Instant NOW = Instant.now();
 
     @Mock
     private JdbcTemplate jdbcTemplate;
@@ -38,12 +42,17 @@ public class CustomerServiceImplTest {
     @Mock
     private EventService eventService;
 
+    @Mock
+    private Clock clock;
+
     private CustomerService service;
 
     @BeforeEach
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        service = new CustomerServiceImpl(jdbcTemplate, slackService, metricsService, eventService);
+        when(clock.instant()).thenReturn(NOW);
+
+        service = new CustomerServiceImpl(jdbcTemplate, slackService, metricsService, eventService, clock);
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", 1L);

@@ -31,6 +31,7 @@ public interface Endpoints {
 
     interface Agent {
         String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
+        String V2_POLL_CONFIG = "/javaagent/v2/pollConfig";
         String V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
         String V2_UPLOAD_CODEBASE = "/javaagent/v2/uploadCodeBase";
         String V3_UPLOAD_CODEBASE = "/javaagent/v3/uploadCodeBase";

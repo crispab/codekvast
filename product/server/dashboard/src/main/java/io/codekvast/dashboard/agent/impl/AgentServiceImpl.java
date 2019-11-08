@@ -33,12 +33,16 @@ import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.GetConfigRequest2;
+import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.Size;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +61,8 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @Slf4j
 public class AgentServiceImpl implements AgentService {
 
+    public static final String UNKNOWN_ENVIRONMENT = "<UNKNOWN>";
+
     private final CodekvastDashboardSettings settings;
     private final CustomerService customerService;
     private final EventService eventService;
@@ -65,13 +71,21 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
+        val environment = agentDAO.getEnvironmentName(request.getJvmUuid()).orElse(UNKNOWN_ENVIRONMENT);
+        val request2 = GetConfigRequest2.fromFormat1(request, environment);
+        return GetConfigResponse2.toFormat1(getConfig(request2));
+    }
+
+    @Override
+    @Transactional
+    public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
 
-        boolean isAgentEnabled = updateAgentState(customerData, request.getJvmUuid());
+        boolean isAgentEnabled = updateAgentState(customerData, request.getJvmUuid(), request.getAppName(), request.getEnvironment());
 
         String publisherConfig = isAgentEnabled ? "enabled=true" : "enabled=false";
         PricePlan pp = customerData.getPricePlan();
-        return GetConfigResponse1
+        return GetConfigResponse2
             .builder()
             .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
             .codeBasePublisherConfig(publisherConfig)
@@ -87,7 +101,8 @@ public class AgentServiceImpl implements AgentService {
             .build();
     }
 
-    private boolean updateAgentState(CustomerData customerData, String jvmUuid) {
+    private boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName,
+                                     @NonNull @Size(min = 1, message = "environment must be at least 1 characters") String environment) {
         long customerId = customerData.getCustomerId();
         Instant now = Instant.now();
 
@@ -102,6 +117,8 @@ public class AgentServiceImpl implements AgentService {
         if (!enabledAgent) {
             eventService.send(TooManyLiveAgentsEvent.builder()
                                                     .customerId(customerId)
+                                                    .appName(appName)
+                                                    .environment(environment)
                                                     .numOtherEnabledLiveAgents(numOtherEnabledLiveAgents)
                                                     .maxNumberOfAgents(maxNumberOfAgents)
                                                     .thisAgentJvmUuid(jvmUuid)
@@ -114,27 +131,27 @@ public class AgentServiceImpl implements AgentService {
 
         CustomerData cd = customerService.registerAgentPoll(customerData, now);
         if (cd.isTrialPeriodExpired(now)) {
-            if (cd.isTrialPeriodExpired(now)) {
-                eventService.send(AgentPolledAfterTrialPeriodExpiredEvent.builder()
-                                                                         .customerId(customerId)
-                                                                         .collectionStartedAt(cd.getCollectionStartedAt())
-                                                                         .trialPeriodEndedAt(cd.getTrialPeriodEndsAt())
-                                                                         .polledAt(now)
-                                                                         .build());
-            }
+            eventService.send(AgentPolledAfterTrialPeriodExpiredEvent.builder()
+                                                                     .customerId(customerId)
+                                                                     .appName(appName)
+                                                                     .environment(environment)
+                                                                     .collectionStartedAt(cd.getCollectionStartedAt())
+                                                                     .trialPeriodEndedAt(cd.getTrialPeriodEndsAt())
+                                                                     .polledAt(now)
+                                                                     .build());
             enabledAgent = false;
         }
 
         boolean enabledEnvironment = agentDAO.isEnvironmentEnabled(customerId, jvmUuid);
 
         if (enabledAgent && !enabledEnvironment) {
-            String envName = agentDAO.getEnvironmentName(customerId, jvmUuid);
             eventService.send(AgentPolledInDisabledEnvironmentEvent.builder()
                                                                    .customerId(customerId)
-                                                                   .environment(envName)
+                                                                   .appName(appName)
+                                                                   .environment(environment)
                                                                    .jvmUuid(jvmUuid)
                                                                    .build());
-            logger.debug("Disabling agent {}:{} since the environment '{}' is disabled", customerId, jvmUuid, envName);
+            logger.debug("Disabling agent {}:{} since the environment '{}' is disabled", customerId, jvmUuid, environment);
             enabledAgent = false;
         }
 

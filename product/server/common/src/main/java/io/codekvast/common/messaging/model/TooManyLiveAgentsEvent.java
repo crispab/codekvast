@@ -34,12 +34,17 @@ import lombok.Value;
 @Builder
 public class TooManyLiveAgentsEvent implements CodekvastEvent {
     @NonNull Long customerId;
+    @NonNull String appName;
+    @NonNull String environment;
     @NonNull Integer numOtherEnabledLiveAgents;
     @NonNull Integer maxNumberOfAgents;
     @NonNull String thisAgentJvmUuid;
 
     public static TooManyLiveAgentsEvent sample() {
-        return TooManyLiveAgentsEvent.builder().customerId(1L)
+        return TooManyLiveAgentsEvent.builder()
+                                     .customerId(1L)
+                                     .appName("appName")
+                                     .environment("environment")
                                      .maxNumberOfAgents(10)
                                      .numOtherEnabledLiveAgents(9)
                                      .thisAgentJvmUuid("jvmUuid")

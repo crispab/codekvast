@@ -23,8 +23,8 @@ package io.codekvast.javaagent.scheduler;
 
 import com.google.gson.Gson;
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
-import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.GetConfigRequest2;
+import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import io.codekvast.javaagent.util.Constants;
 import lombok.extern.java.Log;
 import okhttp3.MediaType;
@@ -40,7 +40,7 @@ import java.io.IOException;
 @Log
 public class ConfigPollerImpl implements ConfigPoller {
     private final AgentConfig config;
-    private final GetConfigRequest1 requestTemplate;
+    private final GetConfigRequest2 requestTemplate;
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -48,9 +48,10 @@ public class ConfigPollerImpl implements ConfigPoller {
 
     public ConfigPollerImpl(AgentConfig config) {
         this.config = config;
-        this.requestTemplate = GetConfigRequest1.builder()
+        this.requestTemplate = GetConfigRequest2.builder()
                                                 .appName(config.getAppName())
                                                 .appVersion("to-be-resolved")
+                                                .environment(config.getEnvironment())
                                                 .agentVersion(Constants.AGENT_VERSION)
                                                 .computerId(Constants.COMPUTER_ID)
                                                 .hostname(Constants.HOST_NAME)
@@ -61,19 +62,19 @@ public class ConfigPollerImpl implements ConfigPoller {
     }
 
     @Override
-    public GetConfigResponse1 doPoll() throws Exception {
-        GetConfigRequest1 request = expandRequestTemplate();
+    public GetConfigResponse2 doPoll() throws Exception {
+        GetConfigRequest2 request = expandRequestTemplate();
 
         logger.fine(String.format("Posting %s to %s", request, config.getPollConfigRequestEndpoint()));
 
-        GetConfigResponse1 response =
-            gson.fromJson(doHttpPost(gson.toJson(request)), GetConfigResponse1.class);
+        GetConfigResponse2 response =
+            gson.fromJson(doHttpPost(gson.toJson(request)), GetConfigResponse2.class);
 
         logger.fine("Received " + response + " in response");
         return response;
     }
 
-    private GetConfigRequest1 expandRequestTemplate() {
+    private GetConfigRequest2 expandRequestTemplate() {
         return requestTemplate.toBuilder()
                               .appVersion(config.getResolvedAppVersion())
                               .build();

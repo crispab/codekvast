@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.GetConfigRequest2;
+import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -44,30 +46,30 @@ public class AgentControllerTest {
     }
 
     @Test
-    public void getConfig1_should_reject_invalid_method() throws Exception {
-        mockMvc.perform(get(V1_POLL_CONFIG).contentType(APPLICATION_JSON))
+    public void pollConfig2_should_reject_invalid_method() throws Exception {
+        mockMvc.perform(get(V2_POLL_CONFIG).contentType(APPLICATION_JSON))
                .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
-    public void getConfig1_should_reject_invalid_media_type() throws Exception {
-        mockMvc.perform(post(V1_POLL_CONFIG).contentType(TEXT_PLAIN))
+    public void pollConfig2_should_reject_invalid_media_type() throws Exception {
+        mockMvc.perform(post(V2_POLL_CONFIG).contentType(TEXT_PLAIN))
                .andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
-    public void getConfig1_should_reject_invalid_json() throws Exception {
-        mockMvc.perform(post(V1_POLL_CONFIG)
+    public void pollConfig2_should_reject_invalid_json() throws Exception {
+        mockMvc.perform(post(V2_POLL_CONFIG)
                             .content("invalid json")
                             .contentType(APPLICATION_JSON))
                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void getConfig1_should_reject_invalid_request() throws Exception {
-        mockMvc.perform(post(V1_POLL_CONFIG)
+    public void pollConfig2_should_reject_invalid_request() throws Exception {
+        mockMvc.perform(post(V2_POLL_CONFIG)
                             .content(gson.toJson(
-                                GetConfigRequest1.sample()
+                                GetConfigRequest2.sample()
                                                  .toBuilder()
                                                  .appName("")
                                                  .build()))
@@ -76,17 +78,17 @@ public class AgentControllerTest {
     }
 
     @Test
-    public void getConfig1_should_reject_invalid_licenseKey() throws Exception {
-        when(agentService.getConfig(any(GetConfigRequest1.class))).thenThrow(new LicenseViolationException("foobar"));
+    public void pollConfig2_should_reject_invalid_licenseKey() throws Exception {
+        when(agentService.getConfig(any(GetConfigRequest2.class))).thenThrow(new LicenseViolationException("foobar"));
 
-        mockMvc.perform(post(V1_POLL_CONFIG)
-                            .content(gson.toJson(GetConfigRequest1.sample()))
+        mockMvc.perform(post(V2_POLL_CONFIG)
+                            .content(gson.toJson(GetConfigRequest2.sample()))
                             .contentType(APPLICATION_JSON))
                .andExpect(status().isForbidden());
     }
 
     @Test
-    public void getConfig1_should_accept_valid_request_with_accept_application_json() throws Exception {
+    public void pollConfig1_should_accept_valid_request_with_accept_application_json_1() throws Exception {
         when(agentService.getConfig(any(GetConfigRequest1.class))).thenReturn(
             GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build());
 
@@ -100,13 +102,27 @@ public class AgentControllerTest {
     }
 
     @Test
-    public void getConfig1_should_accept_valid_request_with_accept_application_json_utf8() throws Exception {
-        when(agentService.getConfig(any(GetConfigRequest1.class))).thenReturn(
-            GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build());
+    public void pollConfig2_should_accept_valid_request_with_accept_application_json_2() throws Exception {
+        when(agentService.getConfig(any(GetConfigRequest2.class))).thenReturn(
+            GetConfigResponse2.sample().toBuilder().codeBasePublisherName("foobar").build());
 
         //noinspection deprecation
-        mockMvc.perform(post(V1_POLL_CONFIG)
-                            .content(gson.toJson(GetConfigRequest1.sample()))
+        mockMvc.perform(post(V2_POLL_CONFIG)
+                            .content(gson.toJson(GetConfigRequest2.sample()))
+                            .contentType(APPLICATION_JSON))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+               .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
+    }
+
+    @Test
+    public void pollConfig2_should_accept_valid_request_with_accept_application_json_utf8() throws Exception {
+        when(agentService.getConfig(any(GetConfigRequest2.class))).thenReturn(
+            GetConfigResponse2.sample().toBuilder().codeBasePublisherName("foobar").build());
+
+        //noinspection deprecation
+        mockMvc.perform(post(V2_POLL_CONFIG)
+                            .content(gson.toJson(GetConfigRequest2.sample()))
                             .contentType(APPLICATION_JSON_UTF8))
                .andExpect(status().isOk())
                .andExpect(content().contentType(APPLICATION_JSON_UTF8))

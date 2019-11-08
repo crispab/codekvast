@@ -22,15 +22,12 @@ import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.weeding.WeedingTask;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
-import io.codekvast.javaagent.model.v2.CommonPublicationData2;
-import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
-import io.codekvast.javaagent.model.v2.SignatureStatus2;
+import io.codekvast.javaagent.model.v2.*;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.testsupport.docker.RabbitmqContainerReadyChecker;
-import lombok.SneakyThrows;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.internal.jdbc.TransactionTemplate;
 import org.junit.*;
@@ -130,7 +127,8 @@ public class DashboardIntegrationTest {
                                                                                              .timeoutSeconds(30)
                                                                                              .username("admin")
                                                                                              .password("secret")
-                                                                                             .assignRabbitUrlToSystemProperty("spring.rabbitmq.addresses")
+                                                                                             .assignRabbitUrlToSystemProperty(
+                                                                                                 "spring.rabbitmq.addresses")
                                                                                              .build())
                                                             .build();
 
@@ -583,7 +581,7 @@ public class DashboardIntegrationTest {
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_getConfig_for_enabled_agent() {
+    public void should_getConfig_for_enabled_agent_1() {
         // given
         new Timestamps(jdbcTemplate).invoke();
 
@@ -607,13 +605,37 @@ public class DashboardIntegrationTest {
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
+    public void should_getConfig_for_enabled_agent_2() {
+        // given
+        new Timestamps(jdbcTemplate).invoke();
+
+        // when
+        GetConfigResponse2 response = agentService.getConfig(
+            GetConfigRequest2.sample().toBuilder()
+                             .jvmUuid("uuid1")
+                             .licenseKey("")
+                             .startedAtMillis(Instant.now().minus(2, HOURS).toEpochMilli())
+                             .build());
+
+        // then
+        assertConfigPollResponse(response, "enabled=true");
+
+        // Assert all dead agents are marked as disabled as well
+        assertAgentEnabled("uuid1", TRUE);
+        assertAgentEnabled("uuid2", FALSE);
+        assertAgentEnabled("uuid3", FALSE);
+        assertAgentEnabled("uuid4", FALSE);
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
     public void should_getConfig_for_disabled_agent() {
         // given
         new Timestamps(jdbcTemplate).invoke();
 
         // when
-        GetConfigResponse1 response = agentService.getConfig(
-            GetConfigRequest1.sample().toBuilder()
+        GetConfigResponse2 response = agentService.getConfig(
+            GetConfigRequest2.sample().toBuilder()
                              .jvmUuid("uuid2")
                              .licenseKey("")
                              .startedAtMillis(Instant.now().minus(2, HOURS).toEpochMilli())
@@ -649,13 +671,13 @@ public class DashboardIntegrationTest {
     @Test
     @Sql(scripts = "/sql/base-data.sql")
     public void unknown_agent_environment_should_have_null_name() {
-        assertThat(agentDAO.getEnvironmentName(4711L, "foobar"), is(nullValue()));
+        assertThat(agentDAO.getEnvironmentName("foobar"), is(Optional.empty()));
     }
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
     public void should_get_known_agent_environment_name() {
-        assertThat(agentDAO.getEnvironmentName(1L, "uuid1"), is("env1"));
+        assertThat(agentDAO.getEnvironmentName("uuid1"), is(Optional.of("env1")));
     }
 
     @Test
@@ -839,6 +861,22 @@ public class DashboardIntegrationTest {
     private void assertConfigPollResponse(GetConfigResponse1 response, String publisherConfig) {
         PricePlanDefaults pp = PricePlanDefaults.DEMO;
         assertThat(response, is(GetConfigResponse1.sample().toBuilder()
+                                                  .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
+                                                  .codeBasePublisherConfig(publisherConfig)
+                                                  .codeBasePublisherName("http")
+                                                  .codeBasePublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+                                                  .configPollIntervalSeconds(pp.getPollIntervalSeconds())
+                                                  .configPollRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+                                                  .invocationDataPublisherConfig(publisherConfig)
+                                                  .invocationDataPublisherIntervalSeconds(pp.getPublishIntervalSeconds())
+                                                  .invocationDataPublisherName("http")
+                                                  .invocationDataPublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+                                                  .build()));
+    }
+
+    private void assertConfigPollResponse(GetConfigResponse2 response, String publisherConfig) {
+        PricePlanDefaults pp = PricePlanDefaults.DEMO;
+        assertThat(response, is(GetConfigResponse2.sample().toBuilder()
                                                   .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
                                                   .codeBasePublisherConfig(publisherConfig)
                                                   .codeBasePublisherName("http")

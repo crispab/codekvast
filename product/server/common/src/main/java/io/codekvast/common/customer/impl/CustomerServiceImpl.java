@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.*;
 
@@ -59,6 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final SlackService slackService;
     private final CommonMetricsService metricsService;
     private final EventService eventService;
+    private final Clock clock;
 
     @Override
     @Transactional(readOnly = true)
@@ -133,31 +135,25 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerData registerAgentPoll(CustomerData customerData, Instant polledAt) {
-        final CustomerData result;
+        CustomerData result = customerData;
 
+        if (customerData.getCollectionStartedAt() == null) {
+            result = recordCollectionStarted(result, polledAt);
+        }
         if (customerData.getPricePlan().getTrialPeriodDays() > 0
             && customerData.getTrialPeriodEndsAt() == null) {
-            result = startTrialPeriod(customerData, polledAt);
-        } else if (customerData.getCollectionStartedAt() == null) {
-            result = recordCollectionStarted(customerData, polledAt);
-        } else {
-            result = customerData;
+            result = startTrialPeriod(result, polledAt);
         }
         return result;
     }
 
     private CustomerData startTrialPeriod(CustomerData customerData, Instant instant) {
         CustomerData result = customerData.toBuilder()
-                                          .collectionStartedAt(instant)
                                           .trialPeriodEndsAt(instant.plus(customerData.getPricePlan().getTrialPeriodDays(), DAYS))
                                           .build();
 
-        int updated = jdbcTemplate.update("UPDATE customers SET updatedAt = ?, collectionStartedAt = ?, trialPeriodEndsAt = ? " +
-                                              "WHERE id = ? ",
-                                          Timestamp.from(Instant.now()),
-                                          Timestamp.from(result.getCollectionStartedAt()),
-                                          Timestamp.from(result.getTrialPeriodEndsAt()),
-                                          customerData.getCustomerId());
+        int updated = jdbcTemplate.update("UPDATE customers SET trialPeriodEndsAt = ? WHERE id = ? ",
+                                          Timestamp.from(result.getTrialPeriodEndsAt()), customerData.getCustomerId());
 
         if (updated <= 0) {
             logger.warn("Failed to start trial period for {}", result);
@@ -178,11 +174,8 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerData recordCollectionStarted(CustomerData customerData, Instant instant) {
         CustomerData result = customerData.toBuilder().collectionStartedAt(instant).build();
 
-        int updated = jdbcTemplate.update("UPDATE customers SET updatedAt = ?, collectionStartedAt = ? " +
-                                              "WHERE id = ? ",
-                                          Timestamp.from(Instant.now()),
-                                          Timestamp.from(result.getCollectionStartedAt()),
-                                          customerData.getCustomerId());
+        int updated = jdbcTemplate.update("UPDATE customers SET collectionStartedAt = ? WHERE id = ? ",
+                                          Timestamp.from(result.getCollectionStartedAt()), customerData.getCustomerId());
 
         if (updated <= 0) {
             logger.warn("Failed to record collection started for {}", result);

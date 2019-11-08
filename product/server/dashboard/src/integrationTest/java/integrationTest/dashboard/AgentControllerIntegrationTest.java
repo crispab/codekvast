@@ -7,6 +7,8 @@ import io.codekvast.dashboard.agent.AgentController;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.GetConfigRequest2;
+import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
+import static io.codekvast.javaagent.model.Endpoints.Agent.V2_POLL_CONFIG;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
@@ -64,7 +67,7 @@ public class AgentControllerIntegrationTest {
     private CommonMetricsService commonMetricsService;
 
     @Test
-    public void should_accept_post_to_agentPollConfig_with_accept_application_json() throws Exception {
+    public void should_accept_post_to_agentPollConfig_with_accept_application_json_1() throws Exception {
         GetConfigRequest1 request = GetConfigRequest1.sample();
         when(agentService.getConfig(request)).thenReturn(GetConfigResponse1.sample().toBuilder()
                                                                            .codeBasePublisherName("foobar")
@@ -81,14 +84,31 @@ public class AgentControllerIntegrationTest {
     }
 
     @Test
-    public void should_accept_post_to_agentPollConfig_with_accept_application_json_utf8() throws Exception {
-        GetConfigRequest1 request = GetConfigRequest1.sample();
-        when(agentService.getConfig(request)).thenReturn(GetConfigResponse1.sample().toBuilder()
+    public void should_accept_post_to_agentPollConfig_with_accept_application_json_2() throws Exception {
+        GetConfigRequest2 request = GetConfigRequest2.sample();
+        when(agentService.getConfig(request)).thenReturn(GetConfigResponse2.sample().toBuilder()
                                                                            .codeBasePublisherName("foobar")
                                                                            .build());
 
         //noinspection deprecation
-        mvc.perform(post(V1_POLL_CONFIG)
+        mvc.perform(post(V2_POLL_CONFIG)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+           .andExpect(status().isOk())
+           .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+           .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
+    }
+
+    @Test
+    public void should_accept_post_to_agentPollConfig_with_accept_application_json_utf8() throws Exception {
+        GetConfigRequest2 request = GetConfigRequest2.sample();
+        when(agentService.getConfig(request)).thenReturn(GetConfigResponse2.sample().toBuilder()
+                                                                           .codeBasePublisherName("foobar")
+                                                                           .build());
+
+        //noinspection deprecation
+        mvc.perform(post(V2_POLL_CONFIG)
                         .accept(APPLICATION_JSON_UTF8)
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(objectMapper.writeValueAsString(request)))

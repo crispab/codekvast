@@ -25,6 +25,8 @@ import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
+import io.codekvast.javaagent.model.v2.GetConfigRequest2;
+import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 
@@ -54,6 +56,15 @@ public interface AgentService {
      * @throws LicenseViolationException when license is violated
      */
     GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException;
+
+    /**
+     * What config parameters should this javaagent use?
+     *
+     * @param request The request object
+     * @return Does never return null
+     * @throws LicenseViolationException when license is violated
+     */
+    GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException;
 
     /**
      * Save an uploaded publication into the import area where it will be processed by another thread.

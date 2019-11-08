@@ -7,8 +7,8 @@ import io.codekvast.common.messaging.model.AgentPolledInDisabledEnvironmentEvent
 import io.codekvast.common.messaging.model.TooManyLiveAgentsEvent;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
-import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.GetConfigRequest2;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.time.Instant;
+import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -46,7 +47,7 @@ public class AgentServiceImplTest {
     private EventService eventService;
 
     private final CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
-    private final GetConfigRequest1 request = GetConfigRequest1.sample();
+    private final GetConfigRequest2 request = GetConfigRequest2.sample();
 
     private AgentService service;
 
@@ -69,7 +70,7 @@ public class AgentServiceImplTest {
         when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
 
         // when
-        GetConfigResponse1 response = service.getConfig(request);
+        val response = service.getConfig(request);
 
         // then
         assertThat(response.getCodeBasePublisherName(), is("http"));
@@ -92,7 +93,7 @@ public class AgentServiceImplTest {
         when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
 
         // when
-        GetConfigResponse1 response = service.getConfig(request);
+        val response = service.getConfig(request);
 
         // then
         assertThat(response.getCodeBasePublisherName(), is("http"));
@@ -113,7 +114,7 @@ public class AgentServiceImplTest {
         when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
 
         // when
-        GetConfigResponse1 response = service.getConfig(request);
+        val response = service.getConfig(request);
 
         // then
         assertThat(response.getCodeBasePublisherName(), is("http"));
@@ -132,7 +133,7 @@ public class AgentServiceImplTest {
         when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
 
         // when
-        GetConfigResponse1 response = service.getConfig(request);
+        val response = service.getConfig(request);
 
         // then
         assertThat(response.getCodeBasePublisherName(), is("http"));
@@ -149,10 +150,10 @@ public class AgentServiceImplTest {
         // given
         when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
         when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(FALSE);
-        when(agentDAO.getEnvironmentName(eq(1L), eq(request.getJvmUuid()))).thenReturn("environment");
+        when(agentDAO.getEnvironmentName(eq(request.getJvmUuid()))).thenReturn(Optional.of("environment"));
 
         // when
-        GetConfigResponse1 response = service.getConfig(request);
+        val response = service.getConfig(request);
 
         // then
         assertThat(response.getCodeBasePublisherName(), is("http"));

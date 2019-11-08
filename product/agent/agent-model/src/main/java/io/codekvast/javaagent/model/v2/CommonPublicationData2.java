@@ -111,19 +111,6 @@ public class CommonPublicationData2 implements Serializable {
             publishedAtMillis);
     }
 
-    private static List<String> toList(String commaSeparatedList) {
-        String parts[] = commaSeparatedList.split(",");
-        List<String> result = new ArrayList<>();
-        for (String part : parts) {
-            String s = part.trim();
-            if (!s.isEmpty()) {
-                result.add(s);
-            }
-        }
-
-        return result;
-    }
-
     public static CommonPublicationData2 sampleCommonPublicationData() {
         return builder()
             .agentVersion("agentVersion")

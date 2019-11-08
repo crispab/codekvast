@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.agent.impl;
 
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * Data Access Object used by AgentServiceImpl.
@@ -69,13 +70,12 @@ public interface AgentDAO {
     boolean isEnvironmentEnabled(long customerId, String thisJvmUuid);
 
     /**
-     * Retrieves the name of the environment a certain JVM executes in. Used for logging purposes.
+     * Retrieves the name of the environment a certain JVM executes in. Used for upgrading a GetConfigRequest2 to format 2.
      *
-     * @param customerId  The customer ID.
-     * @param thisJvmUuid The JVM UUID of this (the polling) agent.
-     * @return The name of the environment. Returns null of unknown environment.
+     * @param jvmUuid The JVM UUID of this (the polling) agent.
+     * @return The name of the environment. Returns empty of unknown environment.
      */
-    String getEnvironmentName(long customerId, String thisJvmUuid);
+    Optional<String> getEnvironmentName(String jvmUuid);
 
     /**
      * At the end of the poll, the result that is returned to the agent should also be stored in the database so that

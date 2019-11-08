@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import io.codekvast.javaagent.AspectjMessageHandler;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
-import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.testsupport.ProcessUtils;
 import lombok.RequiredArgsConstructor;
@@ -169,9 +169,9 @@ public class JavaAgentIntegrationTest {
         // given
         boolean enabledByServer = testConfig.agentState == ENABLED_IN_CONFIG_AND_SERVER;
 
-        givenThat(post(V1_POLL_CONFIG)
+        givenThat(post(V2_POLL_CONFIG)
                       .willReturn(okJson(gson.toJson(
-                          GetConfigResponse1.builder()
+                          GetConfigResponse2.builder()
                                             .codeBasePublisherName("http")
                                             .codeBasePublisherConfig("enabled=" + enabledByServer)
                                             .customerId(1L)
@@ -213,7 +213,7 @@ public class JavaAgentIntegrationTest {
         }
         assertSampleAppOutput(stdout);
 
-        verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
+        verify(postRequestedFor(urlEqualTo(V2_POLL_CONFIG)));
 
         if (enabledByServer) {
             verify(postRequestedFor(urlEqualTo(V3_UPLOAD_CODEBASE)));
