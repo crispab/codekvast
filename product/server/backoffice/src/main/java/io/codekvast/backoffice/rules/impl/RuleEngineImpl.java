@@ -57,26 +57,29 @@ public class RuleEngineImpl implements RuleEngine {
     @Override
     @Transactional
     public void handle(CodekvastEvent event) {
+        final Long customerId = event.getCustomerId();
+
         KieSession session = kieContainer.newKieSession();
         session.setGlobal("clock", clock);
-        session.setGlobal("customerId", event.getCustomerId());
+        session.setGlobal("customerId", customerId);
         session.setGlobal("mailSender", mailSender);
 
-        // session.addEventListener(new DebugRuleRuntimeEventListener());
         // session.addEventListener(new DebugAgendaEventListener());
 
         // First load all old facts from the database, and remember their fact handles...
         Map<FactHandle, Long> factHandleMap = new HashMap<>();
-        for (FactWrapper w : factDAO.getFacts(event.getCustomerId())) {
+        for (FactWrapper w : factDAO.getFacts(customerId)) {
             FactHandle handle = session.insert(w.getFact());
             factHandleMap.put(handle, w.getId());
         }
 
-        // Add this transient event
+        // Add this event as a transient fact...
         session.insert(event);
 
-        // Attach an event listener that will persist all changes...
-        session.addEventListener(new FactPersistenceEventListener(factHandleMap, event.getCustomerId()));
+        // Attach an event listener that will persist all changes caused by the event...
+        session.addEventListener(new FactPersistenceEventListener(factHandleMap, customerId));
+
+        // Fire the rules...
         session.fireAllRules();
         session.dispose();
     }
@@ -91,6 +94,7 @@ public class RuleEngineImpl implements RuleEngine {
             Object object = event.getObject();
             if (object instanceof PersistentFact) {
                 Long id = factDAO.addFact(customerId, (PersistentFact) object);
+                logger.debug("Added fact {}:{}:{}", id, customerId, object);
                 factHandleMap.put(event.getFactHandle(), id);
             }
         }
@@ -101,6 +105,7 @@ public class RuleEngineImpl implements RuleEngine {
             Long id = factHandleMap.get(event.getFactHandle());
             if (object instanceof PersistentFact && id != null) {
                 factDAO.updateFact(id, customerId, object);
+                logger.debug("Updated fact {}:{}:{}", id, customerId, object);
             }
         }
 
@@ -110,6 +115,7 @@ public class RuleEngineImpl implements RuleEngine {
             Long id = factHandleMap.get(event.getFactHandle());
             if (object instanceof PersistentFact && id != null) {
                 factDAO.removeFact(id, customerId);
+                logger.debug("Deleted fact {}:{}:{}", id, customerId, object);
             }
         }
     }

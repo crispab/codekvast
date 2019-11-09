@@ -24,6 +24,7 @@ package io.codekvast.backoffice.facts;
 import io.codekvast.common.messaging.model.UserAuthenticatedEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
 
 import java.time.Instant;
 
@@ -33,12 +34,18 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 public class UserAuthenticated implements PersistentFact {
+    @NonNull
     private final String emailAddress;
+
+    @NonNull
     private final String authenticationProvider;
+
+    @NonNull
     private Instant instant;
+
     private int count;
 
     public static UserAuthenticated of(UserAuthenticatedEvent event) {
-        return new UserAuthenticated(event.getEmailAddress(), event.getAuthenticationProvider(), Instant.now(),1);
+        return new UserAuthenticated(event.getEmailAddress(), event.getAuthenticationProvider(), Instant.now(), 1);
     }
 }

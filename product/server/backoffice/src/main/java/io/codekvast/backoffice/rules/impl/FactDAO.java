@@ -73,9 +73,7 @@ public class FactDAO {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int inserted = jdbcTemplate.update(new AddFactStatementCreator(customerId, getType(fact), gson.toJson(fact)), keyHolder);
         long id = keyHolder.getKey().longValue();
-        if (inserted > 0) {
-            logger.debug("Inserted fact {}:{}", id, customerId);
-        } else {
+        if (inserted <= 0) {
             logger.warn("Attempt to insert duplicate fact {}:{}", id, customerId);
         }
         return id;
@@ -85,9 +83,7 @@ public class FactDAO {
     public void updateFact(Long id, Long customerId, PersistentFact fact) {
         int updated = jdbcTemplate.update("UPDATE facts SET type = ?, data = ? WHERE id = ? AND customerId = ?",
                                           getType(fact), gson.toJson(fact), id, customerId);
-        if (updated > 0) {
-            logger.debug("Updated fact {}:{}", id, customerId);
-        } else {
+        if (updated <= 0) {
             logger.warn("Failed to update fact {}:{}", id, customerId);
         }
     }
@@ -96,9 +92,7 @@ public class FactDAO {
     public void removeFact(Long id, Long customerId) {
         int deleted = jdbcTemplate
             .update("DELETE FROM facts WHERE id = ? AND customerId = ?", id, customerId);
-        if (deleted > 0) {
-            logger.debug("Deleted fact {}:{}", id, customerId);
-        } else {
+        if (deleted <= 0) {
             logger.warn("Failed to delete fact {}:{}", id, customerId);
         }
     }

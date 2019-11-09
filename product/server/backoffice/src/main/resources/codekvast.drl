@@ -1,7 +1,8 @@
-import io.codekvast.common.messaging.model.CollectionStartedEvent
-import io.codekvast.common.messaging.model.UserAuthenticatedEvent
 import io.codekvast.backoffice.facts.CollectionStarted
 import io.codekvast.backoffice.facts.UserAuthenticated
+import io.codekvast.common.messaging.model.CodekvastEvent
+import io.codekvast.common.messaging.model.CollectionStartedEvent
+import io.codekvast.common.messaging.model.UserAuthenticatedEvent
 
 global java.time.Clock clock
 global Long customerId
@@ -13,7 +14,6 @@ when
   not(UserAuthenticated(emailAddress == $uae.emailAddress, authenticationProvider == $uae.authenticationProvider))
 then
    insert(UserAuthenticated.of($uae));
-   retract($uae)
 end
 
 rule "User has authenticated again"
@@ -25,7 +25,6 @@ then
       setCount($uaf.getCount() + 1),
       setInstant(clock.instant())
    }
-   retract($uae)
 end
 
 rule "Detect that collection has started"
@@ -34,7 +33,6 @@ when
   not(CollectionStarted())
 then
    insert(CollectionStarted.of($cse));
-   retract($cse)
 end
 
 rule "Send welcome mail when collection has started"
@@ -45,4 +43,12 @@ then
   modify($cs) {
     setWelcomeMailSent(true)
   }
+end
+
+rule "Retract transient event facts"
+salience -1000
+when
+  $ce: CodekvastEvent()
+then
+   retract($ce)
 end
