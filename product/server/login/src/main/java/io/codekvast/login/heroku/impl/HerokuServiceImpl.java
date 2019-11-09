@@ -133,8 +133,7 @@ public class HerokuServiceImpl implements HerokuService {
         if (accessToken == null) {
             String refreshToken = herokuDetailsDAO.getRefreshToken(customerId);
             if (refreshToken != null) {
-                HerokuOAuthTokenResponse response =
-                    herokuApiWrapper.refreshAccessToken(refreshToken);
+                HerokuOAuthTokenResponse response = herokuApiWrapper.refreshAccessToken(refreshToken);
                 accessToken = response.getAccess_token();
                 Instant expiresAt = Instant.now().plusSeconds(response.getExpires_in());
                 herokuDetailsDAO.updateAccessToken(customerId, accessToken, expiresAt);
