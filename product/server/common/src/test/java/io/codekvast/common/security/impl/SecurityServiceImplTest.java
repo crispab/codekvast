@@ -124,14 +124,14 @@ public class SecurityServiceImplTest {
         String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
         // when
-        securityService.doHerokuSingleSignOn(token, "externalId", "someEmail", timestampSeconds + 60 + 1, "salt");
+        securityService.doHerokuSingleSignOn(token, "externalId", "someEmail", timestampSeconds + 60 + 2, "salt");
 
         // then
         // Kaboom!
     }
 
     @Test
-    public void should_mask_string_with_event_length() {
+    public void should_mask_string_with_even_length() {
         assertThat(SecurityServiceImpl.maskSecondHalf("12345678901234567890"), is("1234567890XXXXXXXXXX"));
     }
 

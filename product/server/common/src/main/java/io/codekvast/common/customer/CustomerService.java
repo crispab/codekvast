@@ -50,10 +50,10 @@ public interface CustomerService {
     /**
      * Translates an externalId to customer data.
      *
-     * @param source The external system which has generated externalId
+     * @param source The external system that has generated externalId
      * @param externalId The externalId to translate.
      * @return A CustomerData object.
-     * @throws AuthenticationCredentialsNotFoundException iff the externalId was invalid.
+     * @throws AuthenticationCredentialsNotFoundException iff source+externalId combo was invalid.
      */
     CustomerData getCustomerDataByExternalId(@NonNull String source, @NonNull String externalId) throws AuthenticationCredentialsNotFoundException;
 
@@ -129,7 +129,7 @@ public interface CustomerService {
     /**
      * Change plan for an existing customer
      *
-     * @param source
+     * @param source The external system that has generated externalId
      * @param externalId  The external customer ID.
      * @param newPlanName The name of the new plan.
      */
@@ -138,7 +138,7 @@ public interface CustomerService {
     /**
      * Deletes a customer
      *
-     * @param source
+     * @param source The external system that has generated externalId
      * @param externalId The external id
      */
     void deleteCustomerByExternalId(@NonNull String source, String externalId);

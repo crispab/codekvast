@@ -51,7 +51,7 @@ public interface HerokuApiWrapper {
     /**
      * Retrieve Heroku app details for a certain app.
      *
-     * @param externalId  The Heroku identity of a particular Codekvast addon
+     * @param externalId  The Heroku identity of a particular app that has Codekvast attached
      * @param accessToken The OAuth bearer token.
      * @return A HerokuAppDetails object.
      */

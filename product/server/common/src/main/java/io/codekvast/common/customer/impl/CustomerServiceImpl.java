@@ -105,7 +105,7 @@ public class CustomerServiceImpl implements CustomerService {
         try {
             return getCustomerData("c.source = ? AND c.externalId = ?", source, externalId);
         } catch (DataAccessException e) {
-            throw new AuthenticationCredentialsNotFoundException("Invalid externalId: " + externalId);
+            throw new AuthenticationCredentialsNotFoundException("Invalid source/externalId: " + source + "/" + externalId);
         }
     }
 
@@ -258,7 +258,7 @@ public class CustomerServiceImpl implements CustomerService {
             return;
         }
 
-        int count = jdbcTemplate.update("UPDATE customers SET plan = ? WHERE externalId = ?", newPlanName, externalId);
+        int count = jdbcTemplate.update("UPDATE customers SET plan = ? WHERE source = ? AND externalId = ?", newPlanName, source, externalId);
 
         if (count == 0) {
             logger.error("Failed to change plan for customer {} from '{}' to '{}'", customerData.getDisplayName(), oldPlanName, newPlanName);

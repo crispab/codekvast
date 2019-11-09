@@ -285,7 +285,7 @@ public class DashboardIntegrationTest {
                                                                                        .plan("test")
                                                                                        .build());
 
-        Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE externalId = ?", Long.class, "externalId");
+        Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE source = ? AND externalId = ?", Long.class, "source", "externalId");
 
         assertThat(count, is(1L));
 
@@ -293,7 +293,7 @@ public class DashboardIntegrationTest {
 
         customerService.deleteCustomerByExternalId("source", "externalId");
 
-        count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE externalId = ?", Long.class, "externalId");
+        count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE source= ? AND externalId = ?", Long.class, "source", "externalId");
         assertThat(count, is(0L));
     }
 
