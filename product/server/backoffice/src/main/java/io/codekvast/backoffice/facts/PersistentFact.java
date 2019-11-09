@@ -26,5 +26,5 @@ package io.codekvast.backoffice.facts;
  *
  * @author olle.hallin@crisp.se
  */
-public interface CodekvastFact {
+public interface PersistentFact {
 }

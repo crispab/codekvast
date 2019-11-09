@@ -61,8 +61,8 @@ public class RuleEngineImplTest {
         ruleEngine.handle(event);
 
         // then
-        // verify(factDAO).addFact(eq(customerId), eq(CollectionStarted.of(event)));
+        // verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), false)));
         verify(mailSender).sendMail("welcome-collection-has-started", customerId);
-        verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(event.getCollectionStartedAt(), true)));
+        verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), true)));
     }
 }

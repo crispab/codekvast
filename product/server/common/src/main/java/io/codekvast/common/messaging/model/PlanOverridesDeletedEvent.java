@@ -21,8 +21,7 @@
  */
 package io.codekvast.common.messaging.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.customer.PricePlanDefaults;
 import lombok.Builder;
 import lombok.NonNull;
@@ -37,14 +36,14 @@ import lombok.Value;
 @Builder
 public class PlanOverridesDeletedEvent implements CodekvastEvent {
     @NonNull Long customerId;
-    @NonNull String plan;
-    @NonNull PricePlanDefaults pricePlanDefaults;
+    @NonNull PricePlan oldEffectivePlan;
+    @NonNull PricePlan newEffectivePlan;
 
     public static PlanOverridesDeletedEvent sample() {
         return PlanOverridesDeletedEvent.builder()
                                         .customerId(1L)
-                                        .plan("plan")
-                                        .pricePlanDefaults(PricePlanDefaults.DEMO)
+                                        .oldEffectivePlan(PricePlan.of(PricePlanDefaults.TEST))
+                                        .newEffectivePlan(PricePlan.of(PricePlanDefaults.DEMO))
                                         .build();
     }
 }

@@ -128,10 +128,10 @@ public interface CustomerService {
     /**
      * Change plan for an existing customer
      *
-     * @param externalId The external customer ID.
-     * @param newPlan    The name of the new plan.
+     * @param externalId  The external customer ID.
+     * @param newPlanName The name of the new plan.
      */
-    void changePlanForExternalId(String externalId, String newPlan);
+    void changePlanForExternalId(String externalId, String newPlanName);
 
     /**
      * Deletes a customer

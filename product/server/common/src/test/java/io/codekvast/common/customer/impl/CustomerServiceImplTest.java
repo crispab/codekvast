@@ -1,10 +1,9 @@
 package io.codekvast.common.customer.impl;
 
-import io.codekvast.common.customer.CustomerData;
-import io.codekvast.common.customer.CustomerService;
-import io.codekvast.common.customer.LicenseViolationException;
+import io.codekvast.common.customer.*;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.SlackService;
+import io.codekvast.common.messaging.model.CollectionStartedEvent;
 import io.codekvast.common.messaging.model.LicenseViolationEvent;
 import io.codekvast.common.metrics.CommonMetricsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +18,10 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
@@ -56,7 +57,7 @@ public class CustomerServiceImplTest {
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", 1L);
-        map.put("createdAt", new Timestamp(System.currentTimeMillis()));
+        map.put("createdAt", Timestamp.from(NOW));
         map.put("name", "name");
         map.put("plan", "test");
         map.put("source", "source");
@@ -103,5 +104,69 @@ public class CustomerServiceImplTest {
         assertThat(exception.getMessage(), containsString("100000"));
 
         verify(eventService).send(any(LicenseViolationEvent.class));
+    }
+
+    @Test
+    void should_update_customers_and_start_trial_period_when_agent_polls_the_first_time_and_trial_period_days() {
+        // given
+        CustomerData customerData = CustomerData.builder()
+                                                .customerId(1L)
+                                                .source("test")
+                                                .customerName("customerName")
+                                                .collectionStartedAt(null)
+                                                .pricePlan(PricePlan.of(PricePlanDefaults.TEST).toBuilder().trialPeriodDays(10).build())
+                                                .build();
+        when(jdbcTemplate.update(anyString(), any(Timestamp.class), any(Timestamp.class), anyLong())).thenReturn(1);
+
+        // when
+        CustomerData data = service.registerAgentPoll(customerData, NOW);
+
+        // then
+        assertThat(data.getCollectionStartedAt(), is(NOW));
+        verify(jdbcTemplate).update(startsWith("UPDATE customers"), eq(Timestamp.from(NOW)), eq(Timestamp.from(NOW.plus(10, DAYS))), eq(1L));
+        verify(eventService).send(any(CollectionStartedEvent.class));
+    }
+
+    @Test
+    void should_update_customers_but_not_start_trial_period_when_agent_polls_the_first_time_and_no_trial_period_days() {
+        // given
+        CustomerData customerData = CustomerData.builder()
+                                                .customerId(1L)
+                                                .source("test")
+                                                .customerName("customerName")
+                                                .collectionStartedAt(null)
+                                                .pricePlan(PricePlan.of(PricePlanDefaults.TEST).toBuilder().trialPeriodDays(-1).build())
+                                                .build();
+        when(jdbcTemplate.update(anyString(), any(Timestamp.class), isNull(), anyLong())).thenReturn(1);
+
+        // when
+        CustomerData data = service.registerAgentPoll(customerData, NOW);
+
+        // then
+        assertThat(data.getCollectionStartedAt(), is(NOW));
+        verify(jdbcTemplate).update(startsWith("UPDATE customers SET"), eq(Timestamp.from(NOW)), eq(null), eq(1L));
+        verify(eventService).send(any(CollectionStartedEvent.class));
+    }
+
+    @Test
+    void should_not_update_customers_when_agent_polls_the_second_time() {
+        // given
+        Instant inThePast = NOW.minus(3, DAYS);
+        Instant inTheFuture = NOW.plus(7, DAYS);
+        CustomerData customerData = CustomerData.builder()
+                                                .customerId(1L)
+                                                .source("test")
+                                                .customerName("customerName")
+                                                .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
+                                                .collectionStartedAt(inThePast)
+                                                .trialPeriodEndsAt(inTheFuture)
+                                                .build();
+        // when
+        CustomerData data = service.registerAgentPoll(customerData, NOW);
+
+        // then
+        assertThat(data.getCollectionStartedAt(), is(inThePast));
+        assertThat(data.getTrialPeriodEndsAt(), is(inTheFuture));
+        verifyNoInteractions(jdbcTemplate, eventService);
     }
 }

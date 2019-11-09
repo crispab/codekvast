@@ -21,7 +21,7 @@
  */
 package io.codekvast.backoffice.rules.impl;
 
-import io.codekvast.backoffice.facts.CodekvastFact;
+import io.codekvast.backoffice.facts.PersistentFact;
 import io.codekvast.backoffice.rules.RuleEngine;
 import io.codekvast.backoffice.service.MailSender;
 import io.codekvast.common.messaging.model.CodekvastEvent;
@@ -67,8 +67,8 @@ public class RuleEngineImpl implements RuleEngine {
 
         // First load all old facts from the database, and remember their fact handles...
         Map<FactHandle, Long> factHandleMap = new HashMap<>();
-        for (CodekvastFactWrapper w : factDAO.getFacts(event.getCustomerId())) {
-            FactHandle handle = session.insert(w.getCodekvastFact());
+        for (FactWrapper w : factDAO.getFacts(event.getCustomerId())) {
+            FactHandle handle = session.insert(w.getFact());
             factHandleMap.put(handle, w.getId());
         }
 
@@ -89,17 +89,17 @@ public class RuleEngineImpl implements RuleEngine {
         @Override
         public void objectInserted(ObjectInsertedEvent event) {
             Object object = event.getObject();
-            if (object instanceof CodekvastFact) {
-                Long id = factDAO.addFact(customerId, (CodekvastFact) object);
+            if (object instanceof PersistentFact) {
+                Long id = factDAO.addFact(customerId, (PersistentFact) object);
                 factHandleMap.put(event.getFactHandle(), id);
             }
         }
 
         @Override
         public void objectUpdated(ObjectUpdatedEvent event) {
-            CodekvastFact object = (CodekvastFact) event.getObject();
+            PersistentFact object = (PersistentFact) event.getObject();
             Long id = factHandleMap.get(event.getFactHandle());
-            if (object instanceof CodekvastFact && id != null) {
+            if (object instanceof PersistentFact && id != null) {
                 factDAO.updateFact(id, customerId, object);
             }
         }
@@ -108,7 +108,7 @@ public class RuleEngineImpl implements RuleEngine {
         public void objectDeleted(ObjectDeletedEvent event) {
             Object object = event.getOldObject();
             Long id = factHandleMap.get(event.getFactHandle());
-            if (object instanceof CodekvastFact && id != null) {
+            if (object instanceof PersistentFact && id != null) {
                 factDAO.removeFact(id, customerId);
             }
         }

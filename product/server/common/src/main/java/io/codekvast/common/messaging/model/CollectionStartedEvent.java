@@ -39,11 +39,13 @@ import java.time.Instant;
 public class CollectionStartedEvent implements CodekvastEvent {
     @NonNull Long customerId;
     @NonNull Instant collectionStartedAt;
+    Instant trialPeriodEndsAt;
 
     public static CollectionStartedEvent sample() {
         return CollectionStartedEvent.builder()
                                      .customerId(1L)
                                      .collectionStartedAt(Instant.now())
+                                     .trialPeriodEndsAt(null)
                                      .build();
     }
 }

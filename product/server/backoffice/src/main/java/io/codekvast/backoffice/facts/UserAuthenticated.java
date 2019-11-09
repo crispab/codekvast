@@ -32,7 +32,7 @@ import java.time.Instant;
  */
 @Data
 @AllArgsConstructor
-public class UserAuthenticated implements CodekvastFact {
+public class UserAuthenticated implements PersistentFact {
     private final String emailAddress;
     private final String authenticationProvider;
     private Instant instant;

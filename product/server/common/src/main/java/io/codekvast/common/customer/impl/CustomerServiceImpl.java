@@ -30,6 +30,7 @@ import io.codekvast.common.security.Roles;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -136,53 +137,33 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public CustomerData registerAgentPoll(CustomerData customerData, Instant polledAt) {
         CustomerData result = customerData;
-
         if (customerData.getCollectionStartedAt() == null) {
             result = recordCollectionStarted(result, polledAt);
-        }
-        if (customerData.getPricePlan().getTrialPeriodDays() > 0
-            && customerData.getTrialPeriodEndsAt() == null) {
-            result = startTrialPeriod(result, polledAt);
-        }
-        return result;
-    }
-
-    private CustomerData startTrialPeriod(CustomerData customerData, Instant instant) {
-        CustomerData result = customerData.toBuilder()
-                                          .trialPeriodEndsAt(instant.plus(customerData.getPricePlan().getTrialPeriodDays(), DAYS))
-                                          .build();
-
-        int updated = jdbcTemplate.update("UPDATE customers SET trialPeriodEndsAt = ? WHERE id = ? ",
-                                          Timestamp.from(result.getTrialPeriodEndsAt()), customerData.getCustomerId());
-
-        if (updated <= 0) {
-            logger.warn("Failed to start trial period for {}", result);
-        } else {
-            eventService.send(TrialPeriodStartedEvent.builder()
-                                                     .customerId(result.getCustomerId())
-                                                     .collectionStartedAt(result.getCollectionStartedAt())
-                                                     .trialPeriodEndsAt(result.getTrialPeriodEndsAt())
-                                                     .build());
-            slackService.sendNotification(
-                String.format("Trial period started for `%s`, ends at %s", result, result.getTrialPeriodEndsAt()),
-                SlackService.Channel.BUSINESS_EVENTS);
-            logger.info("Started trial period for {}", result);
         }
         return result;
     }
 
     private CustomerData recordCollectionStarted(CustomerData customerData, Instant instant) {
-        CustomerData result = customerData.toBuilder().collectionStartedAt(instant).build();
+        val builder = customerData.toBuilder().collectionStartedAt(instant);
 
-        int updated = jdbcTemplate.update("UPDATE customers SET collectionStartedAt = ? WHERE id = ? ",
-                                          Timestamp.from(result.getCollectionStartedAt()), customerData.getCustomerId());
+        int trialPeriodDays = customerData.getPricePlan().getTrialPeriodDays();
+        if (trialPeriodDays > 0) {
+            builder.trialPeriodEndsAt(instant.plus(trialPeriodDays, DAYS));
+        }
+        val result = builder.build();
+
+        int updated = jdbcTemplate.update("UPDATE customers SET collectionStartedAt = ?, trialPeriodEndsAt = ? WHERE id = ? ",
+                                          Timestamp.from(result.getCollectionStartedAt()),
+                                          Optional.ofNullable(result.getTrialPeriodEndsAt()).map(Timestamp::from).orElse(null),
+                                          customerData.getCustomerId());
 
         if (updated <= 0) {
-            logger.warn("Failed to record collection started for {}", result);
+            logger.error("Failed to record collection started for {}", result);
         } else {
             eventService.send(CollectionStartedEvent.builder()
                                                     .customerId(result.getCustomerId())
                                                     .collectionStartedAt(result.getCollectionStartedAt())
+                                                    .trialPeriodEndsAt(result.getTrialPeriodEndsAt())
                                                     .build());
 
             slackService.sendNotification(String.format("Collection started for `%s`", result), SlackService.Channel.BUSINESS_EVENTS);
@@ -203,7 +184,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (updated > 0) {
             logger.debug("Updated user {}", request);
             updated = jdbcTemplate
-                .update("UPDATE users SET firstLoginAt = ? WHERE UNIX_TIMESTAMP(firstLoginAt) = 0 AND customerId = ? AND email = ?",
+                .update("UPDATE users SET firstLoginAt = ? WHERE numberOfLogins = 1 AND customerId = ? AND email = ?",
                         now, request.getCustomerId(), request.getEmail());
             if (updated > 0) {
                 logger.debug("Assigned {} as firstLoginAt for {}", now, request);
@@ -269,43 +250,45 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public void changePlanForExternalId(@NonNull String externalId, @NonNull String newPlan) {
+    public void changePlanForExternalId(@NonNull String externalId, @NonNull String newPlanName) {
         CustomerData customerData = getCustomerDataByExternalId(externalId);
+        PricePlan oldEffectivePricePlan = customerData.getPricePlan();
+        String oldPlanName = oldEffectivePricePlan.getName();
 
-        String oldPlan = customerData.getPricePlan().getName();
-        if (newPlan.equals(oldPlan)) {
-            logger.info("{} is already on plan '{}'", customerData, newPlan);
+        if (newPlanName.equals(oldPlanName)) {
+            logger.info("{} is already on plan '{}'", customerData, newPlanName);
             return;
         }
 
-        int count = jdbcTemplate.update("UPDATE customers SET plan = ? WHERE externalId = ?", newPlan, externalId);
+        int count = jdbcTemplate.update("UPDATE customers SET plan = ? WHERE externalId = ?", newPlanName, externalId);
 
         if (count == 0) {
-            logger.warn("Failed to change plan for {} to '{}'", customerData, newPlan);
-        } else {
-            logger.info("Changed plan for {} to '{}'", customerData, newPlan);
+            logger.error("Failed to change plan for customer {} from '{}' to '{}'", customerData.getDisplayName(), oldPlanName, newPlanName);
+            return;
+        }
 
-            eventService.send(PlanChangedEvent.builder()
-                                              .customerId(customerData.getCustomerId())
-                                              .oldPlan(oldPlan)
-                                              .newPlan(newPlan)
-                                              .build());
+        String logMessage = String.format("Changed plan for customer %s from '%s' to '%s'", customerData.getDisplayName(), oldPlanName, newPlanName);
+        logger.info(logMessage);
+        slackService.sendNotification(logMessage, SlackService.Channel.BUSINESS_EVENTS);
 
-            slackService.sendNotification(String.format("Changed plan for `%s` to '%s'", customerData, newPlan),
-                                          SlackService.Channel.BUSINESS_EVENTS);
+        eventService.send(PlanChangedEvent.builder()
+                                          .customerId(customerData.getCustomerId())
+                                          .oldPlan(oldPlanName)
+                                          .newPlan(newPlanName)
+                                          .build());
 
-            count = jdbcTemplate.update("DELETE FROM price_plan_overrides WHERE customerId = ?", customerData.getCustomerId());
-            if (count > 0) {
-                PricePlanDefaults ppd = PricePlanDefaults.fromDatabaseName(newPlan);
-                eventService.send(PlanOverridesDeletedEvent.builder()
-                                                           .customerId(customerData.getCustomerId())
-                                                           .plan(newPlan)
-                                                           .pricePlanDefaults(ppd)
-                                                           .build());
-                slackService.sendNotification("Removed price plan override, new effective price plan is `" + ppd + "`",
-                                              SlackService.Channel.BUSINESS_EVENTS);
-                logger.warn("Removed price plan override, new effective price plan is {}", ppd);
-            }
+        count = jdbcTemplate.update("DELETE FROM price_plan_overrides WHERE customerId = ?", customerData.getCustomerId());
+        if (count > 0) {
+            PricePlan newEffectivePricePlan = PricePlan.of(PricePlanDefaults.fromDatabaseName(newPlanName));
+            eventService.send(PlanOverridesDeletedEvent.builder()
+                                                       .customerId(customerData.getCustomerId())
+                                                       .oldEffectivePlan(oldEffectivePricePlan)
+                                                       .newEffectivePlan(newEffectivePricePlan)
+                                                       .build());
+            String pricePlanOverridesMessage = String.format("Removed price plan overrides for customer %s, effective price plan changed from `%s` to `%s`",
+                                          customerData.getDisplayName(), oldEffectivePricePlan, newEffectivePricePlan);
+            slackService.sendNotification(pricePlanOverridesMessage, SlackService.Channel.BUSINESS_EVENTS);
+            logger.warn(pricePlanOverridesMessage);
         }
     }
 

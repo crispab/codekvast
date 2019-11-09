@@ -23,7 +23,7 @@ package io.codekvast.backoffice.rules.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.codekvast.backoffice.facts.CodekvastFact;
+import io.codekvast.backoffice.facts.PersistentFact;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -50,14 +50,14 @@ public class FactDAO {
     private final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public List<CodekvastFactWrapper> getFacts(Long customerId) {
-        List<CodekvastFactWrapper> wrappers = jdbcTemplate.query("SELECT id, type, data FROM facts WHERE customerId = ?", (rs, rowNum) -> {
+    public List<FactWrapper> getFacts(Long customerId) {
+        List<FactWrapper> wrappers = jdbcTemplate.query("SELECT id, type, data FROM facts WHERE customerId = ?", (rs, rowNum) -> {
             Long id = rs.getLong("id");
             String type = rs.getString("type");
             String data = rs.getString("data");
             try {
                 Object fact = gson.fromJson(data, Class.forName(type));
-                return new CodekvastFactWrapper(id, (CodekvastFact) fact);
+                return new FactWrapper(id, (PersistentFact) fact);
             } catch (ClassCastException | ClassNotFoundException e) {
                 throw new SQLDataException("Cannot load fact of type '" + type + "'", e);
             }
@@ -69,7 +69,7 @@ public class FactDAO {
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public Long addFact(Long customerId, CodekvastFact fact) {
+    public Long addFact(Long customerId, PersistentFact fact) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int inserted = jdbcTemplate.update(new AddFactStatementCreator(customerId, getType(fact), gson.toJson(fact)), keyHolder);
         long id = keyHolder.getKey().longValue();
@@ -82,7 +82,7 @@ public class FactDAO {
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void updateFact(Long id, Long customerId, CodekvastFact fact) {
+    public void updateFact(Long id, Long customerId, PersistentFact fact) {
         int updated = jdbcTemplate.update("UPDATE facts SET type = ?, data = ? WHERE id = ? AND customerId = ?",
                                           getType(fact), gson.toJson(fact), id, customerId);
         if (updated > 0) {
@@ -103,7 +103,7 @@ public class FactDAO {
         }
     }
 
-    private String getType(CodekvastFact fact) {
+    private String getType(PersistentFact fact) {
         return fact.getClass().getName();
     }
 

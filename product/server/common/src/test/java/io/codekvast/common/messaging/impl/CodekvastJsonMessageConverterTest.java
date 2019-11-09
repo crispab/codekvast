@@ -84,7 +84,6 @@ class CodekvastJsonMessageConverterTest {
             Arguments.of(LicenseViolationEvent.sample()),
             Arguments.of(PlanChangedEvent.sample()),
             Arguments.of(PlanOverridesDeletedEvent.sample()),
-            Arguments.of(TrialPeriodStartedEvent.sample()),
             Arguments.of(UserAuthenticatedEvent.sample()),
             Arguments.of(UserLoggedInEvent.sample()));
     }

@@ -19,33 +19,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.messaging.model;
+package io.codekvast.backoffice.rules.impl;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Builder;
+import io.codekvast.backoffice.facts.PersistentFact;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.Value;
-
-import java.time.Instant;
+import lombok.RequiredArgsConstructor;
 
 /**
- * An event that is sent when a customer starts a trial period by sending it's first data.
+ * A wrapper for a persistent fact that pairs it with its database primary key.
  *
  * @author olle.hallin@crisp.se
  */
-@Value
-@Builder
-public class TrialPeriodStartedEvent implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull Instant collectionStartedAt;
-    @NonNull Instant trialPeriodEndsAt;
+@Data
+@RequiredArgsConstructor
+public class FactWrapper {
+    @NonNull
+    final Long id;
 
-    public static TrialPeriodStartedEvent sample() {
-        return TrialPeriodStartedEvent.builder()
-                                      .customerId(1L)
-                                      .collectionStartedAt(Instant.now())
-                                      .trialPeriodEndsAt(Instant.now())
-                                      .build();
-    }
+    @NonNull
+    final PersistentFact fact;
 }

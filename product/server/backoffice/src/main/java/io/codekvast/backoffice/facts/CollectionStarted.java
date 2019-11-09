@@ -33,11 +33,12 @@ import java.time.Instant;
  */
 @Data
 @AllArgsConstructor
-public class CollectionStarted implements CodekvastFact {
+public class CollectionStarted implements PersistentFact {
     @NonNull final Instant collectionStartedAt;
+    final Instant trialPeriodEndsAt;
     boolean welcomeMailSent;
 
     public static CollectionStarted of (CollectionStartedEvent event) {
-        return new CollectionStarted(event.getCollectionStartedAt(), false);
+        return new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), false);
     }
 }
