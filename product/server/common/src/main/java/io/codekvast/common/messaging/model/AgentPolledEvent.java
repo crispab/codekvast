@@ -43,6 +43,7 @@ public class AgentPolledEvent implements CodekvastEvent {
     @NonNull Boolean disabledEnvironment;
     @NonNull Boolean afterTrialPeriod;
     @NonNull Boolean tooManyLiveAgents;
+    Instant trialPeriodEndsAt;
 
     public boolean isAgentEnabled() {
         return !disabledEnvironment && !afterTrialPeriod && !tooManyLiveAgents;
@@ -50,14 +51,15 @@ public class AgentPolledEvent implements CodekvastEvent {
 
     public static AgentPolledEvent sample() {
         return AgentPolledEvent.builder()
-                               .customerId(1L)
+                               .afterTrialPeriod(false)
                                .appName("appName")
+                               .customerId(1L)
+                               .disabledEnvironment(false)
                                .environment("environment")
                                .jvmUuid("jvmUuid")
                                .polledAt(Instant.now())
-                               .disabledEnvironment(false)
-                               .afterTrialPeriod(false)
                                .tooManyLiveAgents(false)
+                               .trialPeriodEndsAt(null)
                                .build();
     }
 }

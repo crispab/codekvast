@@ -243,7 +243,7 @@ public class DashboardIntegrationTest {
     @Test
     @Sql(scripts = "/sql/base-data.sql")
     public void should_accept_valid_getCustomerDataByExternalId_with_pricePlanOverride() {
-        CustomerData customerData = customerService.getCustomerDataByExternalId("external-1");
+        CustomerData customerData = customerService.getCustomerDataByExternalId("test", "external-1");
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
         assertThat(customerData.getPricePlan().getName(), is("DEMO"));
@@ -253,7 +253,7 @@ public class DashboardIntegrationTest {
     @Test
     @Sql(scripts = "/sql/base-data.sql")
     public void should_accept_valid_getCustomerDataByExternalId_without_pricePlanOverride() {
-        CustomerData customerData = customerService.getCustomerDataByExternalId("external-2");
+        CustomerData customerData = customerService.getCustomerDataByExternalId("test", "external-2");
         assertThat(customerData.getCustomerId(), is(2L));
         assertThat(customerData.getPricePlan().getOverrideBy(), nullValue());
         assertThat(customerData.isTrialPeriodExpired(Instant.now()), is(false));
@@ -263,7 +263,7 @@ public class DashboardIntegrationTest {
     @Sql(scripts = "/sql/base-data.sql")
     public void should_accept_valid_getCustomerDataByExternalId_trialPeriodExpired() {
         Instant now = Instant.parse("2017-09-21T16:21:19Z").plus(1, DAYS); // see base-data.sql
-        CustomerData customerData = customerService.getCustomerDataByExternalId("external-3");
+        CustomerData customerData = customerService.getCustomerDataByExternalId("test", "external-3");
         assertThat(customerData.getCustomerId(), is(3L));
         assertThat(customerData.isTrialPeriodExpired(now), is(true));
     }
@@ -271,7 +271,7 @@ public class DashboardIntegrationTest {
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
     @Sql(scripts = "/sql/base-data.sql")
     public void should_reject_invalid_getCustomerDataByExternalId() {
-        customerService.getCustomerDataByExternalId("undefined");
+        customerService.getCustomerDataByExternalId("test", "undefined");
     }
 
     @Test
@@ -279,7 +279,7 @@ public class DashboardIntegrationTest {
     public void should_handle_add_delete_customer() {
         CustomerService.AddCustomerResponse response = customerService.addCustomer(CustomerService.AddCustomerRequest
                                                                                        .builder()
-                                                                                       .source("test")
+                                                                                       .source("source")
                                                                                        .externalId("externalId")
                                                                                        .name("customerName")
                                                                                        .plan("test")
@@ -291,7 +291,7 @@ public class DashboardIntegrationTest {
 
         assertThat(response.getLicenseKey(), notNullValue());
 
-        customerService.deleteCustomerByExternalId("externalId");
+        customerService.deleteCustomerByExternalId("source", "externalId");
 
         count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE externalId = ?", Long.class, "externalId");
         assertThat(count, is(0L));
@@ -303,7 +303,7 @@ public class DashboardIntegrationTest {
         Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers", Long.class);
         assertThat(count, is(3L));
 
-        customerService.deleteCustomerByExternalId("external-1");
+        customerService.deleteCustomerByExternalId("test", "external-1");
 
         count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers", Long.class);
         assertThat(count, is(2L));
@@ -326,24 +326,6 @@ public class DashboardIntegrationTest {
         customerService.registerLogin(LoginRequest.builder()
                                                   .customerId(1L)
                                                   .source("source2")
-                                                  .email("email")
-                                                  .build());
-
-        // then
-        assertThat(countRowsInTable("users"), is(1));
-    }
-
-    @Test
-    @Sql(scripts = "/sql/base-data.sql")
-    public void should_register_interactive_activity() {
-
-        // given
-        jdbcTemplate.update("DELETE FROM users");
-
-        // when
-        customerService.registerLogin(LoginRequest.builder()
-                                                  .customerId(1L)
-                                                  .source("source1")
                                                   .email("email")
                                                   .build());
 
@@ -380,7 +362,7 @@ public class DashboardIntegrationTest {
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_start_trial_period_at_first_agent_publishing() {
+    public void should_start_trial_period_at_first_agent_poll() {
         // given
         Instant now = Instant.now();
         jdbcTemplate.update("UPDATE customers SET plan = 'test', collectionStartedAt = NULL, trialPeriodEndsAt = NULL WHERE id = 1");
@@ -400,6 +382,27 @@ public class DashboardIntegrationTest {
         assertThat(customerData.getTrialPeriodEndsAt(), is(now.plus(days, DAYS)));
         assertThat(customerData.isTrialPeriodExpired(now.plus(days - 1, DAYS)), is(false));
         assertThat(customerData.isTrialPeriodExpired(now.plus(days + 1, DAYS)), is(true));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_not_start_trial_period_at_first_agent_poll() {
+        // given
+        Instant now = Instant.now();
+        CustomerData customerData = customerService.getCustomerDataByCustomerId(1L);
+
+        assertThat(customerData.getPricePlan().getTrialPeriodDays(), is(PricePlanDefaults.DEMO.getTrialPeriodDays()));
+        assertThat(customerData.getCollectionStartedAt(), is(nullValue()));
+        assertThat(customerData.getTrialPeriodEndsAt(), is(nullValue()));
+        assertThat(customerData.isTrialPeriodExpired(now), is(false));
+
+        // when
+        customerData = customerService.registerAgentPoll(customerData, now);
+
+        // then
+        assertThat(customerData.getCollectionStartedAt(), is(now));
+        assertThat(customerData.getTrialPeriodEndsAt(), is(nullValue()));
+        assertThat(customerData.isTrialPeriodExpired(now), is(false));
     }
 
     @Test

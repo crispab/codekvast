@@ -110,7 +110,7 @@ public class HerokuServiceImpl implements HerokuService {
     public void changePlan(String externalId, HerokuChangePlanRequest request) throws HerokuException {
         logger.debug("Received {} for customers.externalId={}", request, externalId);
         try {
-            customerService.changePlanForExternalId(externalId, request.getPlan());
+            customerService.changePlanForExternalId(CustomerService.Source.HEROKU, externalId, request.getPlan());
         } catch (Exception e) {
             throw new HerokuException("Could not execute " + request + " for externalId '" + externalId + "'", e);
         }
@@ -119,7 +119,7 @@ public class HerokuServiceImpl implements HerokuService {
     @Override
     public void deprovision(String externalId) throws HerokuException {
         try {
-            customerService.deleteCustomerByExternalId(externalId);
+            customerService.deleteCustomerByExternalId(CustomerService.Source.HEROKU, externalId);
         } catch (Exception e) {
             throw new HerokuException("Could not deprovision externalId '" + externalId + "'", e);
         }

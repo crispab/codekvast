@@ -43,7 +43,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
-import java.time.Clock;
 import java.time.Instant;
 import java.util.*;
 
@@ -61,7 +60,6 @@ public class CustomerServiceImpl implements CustomerService {
     private final SlackService slackService;
     private final CommonMetricsService metricsService;
     private final EventService eventService;
-    private final Clock clock;
 
     @Override
     @Transactional(readOnly = true)
@@ -103,9 +101,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public CustomerData getCustomerDataByExternalId(@NonNull String externalId) throws AuthenticationCredentialsNotFoundException {
+    public CustomerData getCustomerDataByExternalId(@NonNull String source, @NonNull String externalId) throws AuthenticationCredentialsNotFoundException {
         try {
-            return getCustomerData("c.externalId = ?", externalId);
+            return getCustomerData("c.source = ? AND c.externalId = ?", source, externalId);
         } catch (DataAccessException e) {
             throw new AuthenticationCredentialsNotFoundException("Invalid externalId: " + externalId);
         }
@@ -250,8 +248,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public void changePlanForExternalId(@NonNull String externalId, @NonNull String newPlanName) {
-        CustomerData customerData = getCustomerDataByExternalId(externalId);
+    public void changePlanForExternalId(String source, @NonNull String externalId, @NonNull String newPlanName) {
+        CustomerData customerData = getCustomerDataByExternalId(source, externalId);
         PricePlan oldEffectivePricePlan = customerData.getPricePlan();
         String oldPlanName = oldEffectivePricePlan.getName();
 
@@ -294,8 +292,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public void deleteCustomerByExternalId(String externalId) {
-        CustomerData customerData = getCustomerDataByExternalId(externalId);
+    public void deleteCustomerByExternalId(@NonNull String source, String externalId) {
+        CustomerData customerData = getCustomerDataByExternalId(source, externalId);
 
         long customerId = customerData.getCustomerId();
 
@@ -371,7 +369,7 @@ public class CustomerServiceImpl implements CustomerService {
         logger.debug("Deleted {} {}", count, table);
     }
 
-    private CustomerData getCustomerData(String where_clause, java.io.Serializable identifier) {
+    private CustomerData getCustomerData(String where_clause, java.io.Serializable... identifiers) {
         Map<String, Object> result = jdbcTemplate.queryForMap("SELECT " +
                                                                   "c.id, c.name, c.source, c.plan, c.createdAt, c.collectionStartedAt, " +
                                                                   "c.trialPeriodEndsAt, c.notes AS customerNotes, " +
@@ -381,7 +379,7 @@ public class CustomerServiceImpl implements CustomerService {
                                                                   "ppo.trialPeriodDays, ppo.retentionPeriodDays " +
                                                                   "FROM customers c LEFT JOIN price_plan_overrides ppo " +
                                                                   "ON ppo.customerId = c.id " +
-                                                                  "WHERE " + where_clause, identifier);
+                                                                  "WHERE " + where_clause, identifiers);
 
         String planName = (String) result.get("plan");
         Timestamp createdAt = (Timestamp) result.get("createdAt");

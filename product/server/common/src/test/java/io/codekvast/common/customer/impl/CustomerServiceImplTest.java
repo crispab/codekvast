@@ -43,17 +43,13 @@ public class CustomerServiceImplTest {
     @Mock
     private EventService eventService;
 
-    @Mock
-    private Clock clock;
-
     private CustomerService service;
 
     @BeforeEach
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        when(clock.instant()).thenReturn(NOW);
 
-        service = new CustomerServiceImpl(jdbcTemplate, slackService, metricsService, eventService, clock);
+        service = new CustomerServiceImpl(jdbcTemplate, slackService, metricsService, eventService);
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", 1L);

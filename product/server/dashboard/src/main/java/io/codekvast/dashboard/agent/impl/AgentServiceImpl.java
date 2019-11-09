@@ -110,18 +110,17 @@ public class AgentServiceImpl implements AgentService {
 
         CustomerData cd = customerService.registerAgentPoll(customerData, now);
         int numOtherEnabledLiveAgents = agentDAO.getNumOtherAliveAgents(customerId, jvmUuid, now.minusSeconds(10));
-        boolean tooManyLiveAgents = numOtherEnabledLiveAgents >= customerData.getPricePlan().getMaxNumberOfAgents();
-        boolean disabledEnvironment = !agentDAO.isEnvironmentEnabled(customerId, jvmUuid);
-        boolean isTrialPeriodExpired = cd.isTrialPeriodExpired(now);
 
         val event = AgentPolledEvent.builder()
-                                    .customerId(customerId)
+                                    .afterTrialPeriod(cd.isTrialPeriodExpired(now))
                                     .appName(appName)
+                                    .customerId(customerId)
+                                    .disabledEnvironment(!agentDAO.isEnvironmentEnabled(customerId, jvmUuid))
                                     .environment(environment)
+                                    .jvmUuid(jvmUuid)
                                     .polledAt(now)
-                                    .afterTrialPeriod(isTrialPeriodExpired)
-                                    .disabledEnvironment(disabledEnvironment)
-                                    .tooManyLiveAgents(tooManyLiveAgents)
+                                    .tooManyLiveAgents(numOtherEnabledLiveAgents >= customerData.getPricePlan().getMaxNumberOfAgents())
+                                    .trialPeriodEndsAt(cd.getTrialPeriodEndsAt())
                                     .build();
 
         logger.debug("Agent {} is {}", jvmUuid, event.isAgentEnabled() ? "enabled" : "disable");

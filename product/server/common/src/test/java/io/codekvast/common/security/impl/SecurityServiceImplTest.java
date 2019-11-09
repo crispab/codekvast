@@ -72,11 +72,11 @@ public class SecurityServiceImplTest {
         CustomerData customerData = CustomerData.builder()
                                                 .customerId(1L)
                                                 .customerName("someCustomerName")
-                                                .source("someSource")
+                                                .source("heroku")
                                                 .pricePlan(PricePlan.of(PricePlanDefaults.DEMO))
                                                 .build();
 
-        when(customerService.getCustomerDataByExternalId("externalId")).thenReturn(customerData);
+        when(customerService.getCustomerDataByExternalId("heroku","externalId")).thenReturn(customerData);
 
         // when
         String jwt = securityService.doHerokuSingleSignOn(token, "externalId", "someEmail", timestampSeconds, "salt");

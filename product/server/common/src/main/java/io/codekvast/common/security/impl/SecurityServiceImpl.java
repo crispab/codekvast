@@ -213,7 +213,7 @@ public class SecurityServiceImpl implements SecurityService {
             throw new BadCredentialsException("Invalid token");
         }
 
-        CustomerData customerData = customerService.getCustomerDataByExternalId(externalId);
+        CustomerData customerData = customerService.getCustomerDataByExternalId(CustomerService.Source.HEROKU, externalId);
 
         customerService.registerLogin(CustomerService.LoginRequest.builder()
                                                                   .customerId(customerData.getCustomerId())

@@ -78,8 +78,7 @@ public class AgentServiceImplTest {
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
 
         verify(agentDAO).updateAgentEnabledState(1L, request.getJvmUuid(), true);
-
-        verifyNoInteractions(eventService);
+        verify(eventService).send(any(AgentPolledEvent.class));
     }
 
     @Test
@@ -100,7 +99,7 @@ public class AgentServiceImplTest {
         assertThat(response.getInvocationDataPublisherName(), is("http"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
 
-        verifyNoInteractions(eventService);
+        verify(eventService).send(any(AgentPolledEvent.class));
     }
 
     @Test

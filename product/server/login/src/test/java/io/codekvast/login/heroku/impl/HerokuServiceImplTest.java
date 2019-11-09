@@ -9,10 +9,8 @@ import io.codekvast.login.heroku.HerokuException;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -86,7 +84,7 @@ public class HerokuServiceImplTest {
         service.deprovision("externalId");
 
         // then
-        verify(customerService).deleteCustomerByExternalId("externalId");
+        verify(customerService).deleteCustomerByExternalId("heroku", "externalId");
     }
 
     @Test
