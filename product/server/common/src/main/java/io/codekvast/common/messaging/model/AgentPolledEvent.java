@@ -25,25 +25,39 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.time.Instant;
+
 /**
- * An event that is sent when an agent polls in a disabled environment.
+ * An event that is sent when an agent polls after the expiration of the trial period.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class AgentPolledInDisabledEnvironmentEvent implements CodekvastEvent {
+public class AgentPolledEvent implements CodekvastEvent {
     @NonNull Long customerId;
     @NonNull String appName;
     @NonNull String environment;
     @NonNull String jvmUuid;
+    @NonNull Instant polledAt;
+    @NonNull Boolean disabledEnvironment;
+    @NonNull Boolean afterTrialPeriod;
+    @NonNull Boolean tooManyLiveAgents;
 
-    public static AgentPolledInDisabledEnvironmentEvent sample() {
-        return AgentPolledInDisabledEnvironmentEvent.builder()
-                                                    .customerId(1L)
-                                                    .appName("appName")
-                                                    .environment("environment")
-                                                    .jvmUuid("jvmUuid")
-                                                    .build();
+    public boolean isAgentEnabled() {
+        return !disabledEnvironment && !afterTrialPeriod && !tooManyLiveAgents;
+    }
+
+    public static AgentPolledEvent sample() {
+        return AgentPolledEvent.builder()
+                               .customerId(1L)
+                               .appName("appName")
+                               .environment("environment")
+                               .jvmUuid("jvmUuid")
+                               .polledAt(Instant.now())
+                               .disabledEnvironment(false)
+                               .afterTrialPeriod(false)
+                               .tooManyLiveAgents(false)
+                               .build();
     }
 }
