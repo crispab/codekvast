@@ -5,7 +5,9 @@ import io.codekvast.backoffice.rules.RuleEngine;
 import io.codekvast.backoffice.service.MailSender;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.messaging.model.CodekvastEvent;
 import io.codekvast.common.messaging.model.CollectionStartedEvent;
+import lombok.Value;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -13,7 +15,9 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,7 +68,6 @@ public class RuleEngineImplTest {
         ruleEngine.handle(event);
 
         // then
-        // verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), false)));
         verify(mailSender).sendMail("welcome-collection-has-started", customerId, "some-email-address");
         verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), true)));
     }
@@ -86,5 +89,40 @@ public class RuleEngineImplTest {
 
         // then
         verifyNoInteractions(mailSender);
+    }
+
+    @Test
+    public void should_send_welcome_email_on_any_event_after_collection_starts_when_contact_email_becomes_defined() {
+        // given
+        long customerId = 1L;
+        Long factId = 4711L;
+        CollectionStarted fact = new CollectionStarted(NOW.minus(3, ChronoUnit.DAYS), null, false);
+        when(factDAO.getFacts(customerId)).thenReturn(
+            List.of(new FactWrapper(factId, fact)));
+
+        when(customerService.getCustomerDataByCustomerId(customerId))
+            .thenReturn(CustomerData.sample().toBuilder().contactEmail(null).build());
+
+        // when
+        ruleEngine.handle(new AnyEvent(customerId));
+
+        // then
+        verifyNoInteractions(mailSender);
+
+        // given
+        when(customerService.getCustomerDataByCustomerId(customerId))
+            .thenReturn(CustomerData.sample().toBuilder().contactEmail("contactEmail").build());
+
+        // when
+        ruleEngine.handle(new AnyEvent(customerId));
+
+        // then
+        verify(mailSender).sendMail("welcome-collection-has-started", customerId, "contactEmail");
+        verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(fact.getCollectionStartedAt(), fact.getTrialPeriodEndsAt(), true)));
+    }
+
+    @Value
+    private static class AnyEvent implements CodekvastEvent {
+        private final Long customerId;
     }
 }
