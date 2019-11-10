@@ -25,5 +25,12 @@ package io.codekvast.backoffice.service;
  * @author olle.hallin@crisp.se
  */
 public interface MailSender {
-    void sendMail(String template, Long customerId);
+    /**
+     * Sends an email using a named temolate to a given email address.
+     *
+     * @param templateName The name of the template.
+     * @param customerId   The customer ID.
+     * @param emailAddress The email address to send to.
+     */
+    void sendMail(String templateName, Long customerId, String emailAddress);
 }

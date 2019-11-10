@@ -212,11 +212,20 @@ public class DashboardIntegrationTest {
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_accept_valid_getCustomerDataByCustomerId() {
+    public void should_accept_valid_getCustomerDataByCustomerId_1() {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(1L);
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
         assertThat(customerData.getPricePlan().getName(), is("DEMO"));
+        assertThat(customerData.getContactEmail(), is("contactEmail1"));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_accept_valid_getCustomerDataByCustomerId_2() {
+        CustomerData customerData = customerService.getCustomerDataByCustomerId(2L);
+        assertThat(customerData.getCustomerId(), is(2L));
+        assertThat(customerData.getContactEmail(), nullValue());
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)

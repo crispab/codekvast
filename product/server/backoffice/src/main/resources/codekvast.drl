@@ -1,8 +1,7 @@
 import io.codekvast.backoffice.facts.CollectionStarted
-import io.codekvast.backoffice.facts.UserAuthenticated
+import io.codekvast.backoffice.facts.ContactDetails
 import io.codekvast.common.messaging.model.CodekvastEvent
 import io.codekvast.common.messaging.model.CollectionStartedEvent
-import io.codekvast.common.messaging.model.UserAuthenticatedEvent
 
 global java.time.Clock clock
 global Long customerId
@@ -19,14 +18,15 @@ end
 rule "Send welcome mail when collection has started"
 when
   $cs: CollectionStarted(welcomeMailSent == false)
+  $cd: ContactDetails()
 then
-  mailSender.sendMail("welcome-collection-has-started", customerId);
+  mailSender.sendMail("welcome-collection-has-started", customerId, $cd.getContactEmail());
   modify($cs) {
     setWelcomeMailSent(true)
   }
 end
 
-rule "Retract transient event facts"
+rule "Retract event facts"
 salience -1000
 when
   $ce: CodekvastEvent()

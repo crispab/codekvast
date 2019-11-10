@@ -13,8 +13,8 @@ DELETE FROM price_plans;
 
 INSERT INTO price_plans (name) VALUES ('test'), ('demo');
 
-INSERT INTO customers (id, source, externalId, name, plan, licenseKey)
-VALUES (1, 'test', 'external-1', 'Demo', 'demo', '');
+INSERT INTO customers (id, source, externalId, name, plan, licenseKey, contactEmail)
+VALUES (1, 'test', 'external-1', 'Demo', 'demo', '', 'contactEmail1');
 
 INSERT INTO customers (id, source, externalId, name, plan, licenseKey)
 VALUES (2, 'test', 'external-2', 'Demo', 'demo', 'licenseKey2');

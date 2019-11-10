@@ -21,14 +21,20 @@
  */
 package io.codekvast.backoffice.rules.impl;
 
+import io.codekvast.backoffice.facts.ContactDetails;
 import io.codekvast.backoffice.facts.PersistentFact;
+import io.codekvast.backoffice.facts.TransientFact;
 import io.codekvast.backoffice.rules.RuleEngine;
 import io.codekvast.backoffice.service.MailSender;
+import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kie.api.KieServices;
-import org.kie.api.event.rule.*;
+import org.kie.api.event.rule.ObjectDeletedEvent;
+import org.kie.api.event.rule.ObjectInsertedEvent;
+import org.kie.api.event.rule.ObjectUpdatedEvent;
+import org.kie.api.event.rule.RuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
@@ -36,8 +42,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author olle.hallin@crisp.se
@@ -49,6 +54,7 @@ public class RuleEngineImpl implements RuleEngine {
 
     private final FactDAO factDAO;
     private final MailSender mailSender;
+    private final CustomerService customerService;
     private final Clock clock;
 
     private KieServices kieServices = KieServices.Factory.get();
@@ -73,19 +79,33 @@ public class RuleEngineImpl implements RuleEngine {
             factHandleMap.put(handle, w.getId());
         }
 
+        // Add some facts about the customer from the database. These may change anytime, and are not communicated as events.
+        for (TransientFact fact : getTransientFacts(customerId)) {
+            session.insert(fact);
+        }
+
         // Add this event as a transient fact...
         session.insert(event);
 
         // Attach an event listener that will persist all changes caused by the event...
-        session.addEventListener(new FactPersistenceEventListener(factHandleMap, customerId));
+        session.addEventListener(new PersistentFactEventListener(factHandleMap, customerId));
 
         // Fire the rules...
         session.fireAllRules();
         session.dispose();
     }
 
+    private List<TransientFact> getTransientFacts(Long customerId) {
+        List<TransientFact> result = new ArrayList<>();
+        Optional.ofNullable(customerService.getCustomerDataByCustomerId(customerId).getContactEmail())
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .ifPresent( s-> result.add(ContactDetails.builder().contactEmail(s).build()));
+        return result;
+    }
+
     @RequiredArgsConstructor
-    private class FactPersistenceEventListener implements RuleRuntimeEventListener {
+    private class PersistentFactEventListener implements RuleRuntimeEventListener {
         private final Map<FactHandle, Long> factHandleMap;
         private final Long customerId;
 

@@ -44,6 +44,8 @@ public class CustomerData {
     @NonNull
     private String source;
 
+    private String contactEmail;
+
     private String customerNotes;
 
     @NonNull
@@ -61,5 +63,14 @@ public class CustomerData {
 
     public String getDisplayName() {
         return customerNotes != null ? customerNotes : customerName;
+    }
+
+    public static CustomerData sample() {
+        return CustomerData.builder()
+                           .customerId(1L)
+                           .customerName("customerName")
+                           .source("source")
+                           .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
+                           .build();
     }
 }
