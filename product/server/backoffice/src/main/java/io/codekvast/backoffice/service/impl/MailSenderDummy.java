@@ -19,31 +19,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.service;
+package io.codekvast.backoffice.service.impl;
 
-import lombok.Getter;
+import io.codekvast.backoffice.service.MailSender;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
 
 /**
  * @author olle.hallin@crisp.se
  */
-public interface MailSender {
+@Service
+@Slf4j
+@Profile("no-mail-sender")
+public class MailSenderDummy implements MailSender {
 
-    @RequiredArgsConstructor
-    @Getter
-    enum Template {
-        WELCOME_COLLECTION_HAS_STARTED("Welcome to Codekvast!");
-
-        private final String subject;
+    @Override
+    public void sendMail(Template template, Long customerId, String emailAddress) {
+        logger.info("Not sending mail {} to {}", template, emailAddress);
     }
-
-    /**
-     * Sends an email using a named template to a given email address.
-     *
-     * @param template     The template to use.
-     * @param customerId   The customer ID.
-     * @param emailAddress The email address to send to.
-     */
-    void sendMail(Template template, Long customerId, String emailAddress);
 }

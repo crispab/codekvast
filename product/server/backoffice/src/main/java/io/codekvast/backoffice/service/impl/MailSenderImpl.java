@@ -24,6 +24,9 @@ package io.codekvast.backoffice.service.impl;
 import io.codekvast.backoffice.service.MailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,11 +35,25 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Profile("!no-mail-sender")
 public class MailSenderImpl implements MailSender {
 
+    private final JavaMailSender javaMailSender;
+
     @Override
-    public void sendMail(String templateName, Long customerId, String emailAddress) {
-        // TODO: implement mail sending.
-        logger.debug("Would have sent mail using template '{}' to customer {}:{}", templateName, customerId, emailAddress);
+    public void sendMail(Template template, Long customerId, String emailAddress) {
+        logger.info("Sending mail {} to {}", template, emailAddress);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(emailAddress);
+        message.setFrom("no-reply@codekvast.io");
+        message.setSubject(template.getSubject());
+        message.setText("Lorem ipsum"); // TODO: expand template
+
+        javaMailSender.send(message);
+    }
+
+    private String getTemplateFile(Template template) {
+        return String.format("mail/%s.html", template.name().toLowerCase());
     }
 }

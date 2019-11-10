@@ -8,6 +8,7 @@
       </pattern>
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.backoffice.CodekvastBackofficeApplication" />
+    <option name="ACTIVE_PROFILES" value="no-mail-sender" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
       <option name="Gradle.BeforeRunTask" enabled="true" tasks="startDockerContainers" externalProjectPath="$PROJECT_DIR$/product/server/backoffice" vmOptions="" scriptParameters="" />

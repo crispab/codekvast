@@ -19,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 
+import static io.codekvast.backoffice.service.MailSender.Template.WELCOME_COLLECTION_HAS_STARTED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -68,7 +69,7 @@ public class RuleEngineImplTest {
         ruleEngine.handle(event);
 
         // then
-        verify(mailSender).sendMail("welcome-collection-has-started", customerId, "some-email-address");
+        verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, customerId, "some-email-address");
         verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), true)));
     }
 
@@ -117,7 +118,7 @@ public class RuleEngineImplTest {
         ruleEngine.handle(new AnyEvent(customerId));
 
         // then
-        verify(mailSender).sendMail("welcome-collection-has-started", customerId, "contactEmail");
+        verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, customerId, "contactEmail");
         verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(fact.getCollectionStartedAt(), fact.getTrialPeriodEndsAt(), true)));
     }
 

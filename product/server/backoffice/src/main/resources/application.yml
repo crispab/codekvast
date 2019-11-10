@@ -87,3 +87,13 @@ spring:
         converters.preferred-json-mapper: gson
         log-request-details:              true
     output.ansi.enabled: detect
+    mail:
+        host: email-smtp.eu-central-1.amazonaws.com
+        port: 587
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enabled: true
+                        required: true

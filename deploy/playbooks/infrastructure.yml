@@ -45,7 +45,7 @@
       owner: 'AWS Simple Email Services'
     - name: '_amazonses.codekvast.io'
       type: TXT
-      value: '"ANhwmN6zcU+GrPdkurz7p3HwZiQBRlnqsH5k/23s/CY="'
+      value: '"eieDOHvpRK2mPPjSTt2A8FJC2U+/dBAsrLzoaxvAW6Y="'
       owner: 'AWS Simple Email Services'
 
   tasks:
@@ -163,8 +163,8 @@
     connection: local
     tags: email
 
-  - name: Run 'npm install' for aws-ses-forwarder
-    shell: npm install chdir="files/aws-ses-forwarder"
+  - name: Run 'npm ci' for aws-ses-forwarder
+    shell: npm ci chdir="files/aws-ses-forwarder"
     connection: local
     tags: email
 
@@ -179,7 +179,7 @@
   - name: Install email forwarder lambda
     lambda:
         profile: codekvast
-        region: "eu-west-1"
+        region: "eu-central-1"
         name: "mail-forwarder"
         role: "arn:aws:iam::186662504461:role/Mail-forwarder"
         handler: "index.handler"

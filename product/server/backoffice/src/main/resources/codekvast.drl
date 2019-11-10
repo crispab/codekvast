@@ -2,6 +2,7 @@ import io.codekvast.backoffice.facts.CollectionStarted
 import io.codekvast.backoffice.facts.ContactDetails
 import io.codekvast.common.messaging.model.CodekvastEvent
 import io.codekvast.common.messaging.model.CollectionStartedEvent
+import io.codekvast.backoffice.service.MailSender
 
 global java.time.Clock clock
 global Long customerId
@@ -20,7 +21,7 @@ when
   $cs: CollectionStarted(welcomeMailSent == false)
   $cd: ContactDetails()
 then
-  mailSender.sendMail("welcome-collection-has-started", customerId, $cd.getContactEmail());
+  mailSender.sendMail(MailSender.Template.WELCOME_COLLECTION_HAS_STARTED, customerId, $cd.getContactEmail());
   modify($cs) {
     setWelcomeMailSent(true)
   }

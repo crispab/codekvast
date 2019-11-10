@@ -20,6 +20,9 @@ exports.handler = function(event, context, callback) {
       forwardMapping: {
         "support@codekvast.io": [
           "codekvast-support@hit.se" // NOTE: This email address must be validated in the SES console!
+        ],
+        "no-reply@codekvast.io": [
+          "codekvast-no-reply@hit.se" // NOTE: This email address must be validated in the SES console!
         ]
       }
     }

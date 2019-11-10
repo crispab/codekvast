@@ -1,0 +1,19 @@
+// --- Integration test stuff -------------------------------------------------------------------------------
+
+testSets {
+    integrationTest
+}
+
+dependencies {
+    integrationTestCompile project(':product:testsupport')
+    integrationTestCompile 'org.springframework.amqp:spring-rabbit'
+}
+
+integrationTest {
+    doFirst {
+        mkdir "$buildDir/log"
+    }
+}
+
+integrationTest.mustRunAfter test
+check.dependsOn integrationTest
