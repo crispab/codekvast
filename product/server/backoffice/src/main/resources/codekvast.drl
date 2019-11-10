@@ -8,26 +8,7 @@ global java.time.Clock clock
 global Long customerId
 global io.codekvast.backoffice.service.MailSender mailSender
 
-rule "User has authenticated for the first time"
-when
-  $uae: UserAuthenticatedEvent()
-  not(UserAuthenticated(emailAddress == $uae.emailAddress, authenticationProvider == $uae.authenticationProvider))
-then
-   insert(UserAuthenticated.of($uae));
-end
-
-rule "User has authenticated again"
-when
-  $uae: UserAuthenticatedEvent()
-  $uaf: UserAuthenticated(emailAddress == $uae.emailAddress, authenticationProvider == $uae.authenticationProvider)
-then
-   modify($uaf) {
-      setCount($uaf.getCount() + 1),
-      setInstant(clock.instant())
-   }
-end
-
-rule "Detect that collection has started"
+rule "Collection has started"
 when
   $cse: CollectionStartedEvent()
   not(CollectionStarted())

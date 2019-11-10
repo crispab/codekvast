@@ -21,14 +21,12 @@
  */
 package io.codekvast.common.messaging.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 /**
- * An event that is sent when a user logs in.
+ * An event that is sent when an authenticated user has selected a project.
  *
  * @author olle.hallin@crisp.se
  */
