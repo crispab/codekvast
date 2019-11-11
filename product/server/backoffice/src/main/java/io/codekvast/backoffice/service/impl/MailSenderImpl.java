@@ -21,13 +21,23 @@
  */
 package io.codekvast.backoffice.service.impl;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.samskivert.mustache.Mustache;
 import io.codekvast.backoffice.service.MailSender;
+import io.codekvast.common.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.context.annotation.Profile;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author olle.hallin@crisp.se
@@ -39,21 +49,36 @@ import org.springframework.stereotype.Service;
 public class MailSenderImpl implements MailSender {
 
     private final JavaMailSender javaMailSender;
+    private final Mustache.Compiler compiler;
+    private final CustomerService customerService;
 
     @Override
+    @SneakyThrows(MessagingException.class)
     public void sendMail(Template template, Long customerId, String emailAddress) {
         logger.info("Sending mail {} to {}", template, emailAddress);
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(emailAddress);
-        message.setFrom("no-reply@codekvast.io");
-        message.setSubject(template.getSubject());
-        message.setText("Lorem ipsum"); // TODO: expand template
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+        helper.setSubject(template.getSubject());
+        helper.setFrom("no-reply@codekvast.io");
+        helper.setTo(emailAddress);
+        helper.setText(renderTemplate(template, customerId), true);
 
-        javaMailSender.send(message);
+        javaMailSender.send(mimeMessage);
     }
 
-    private String getTemplateFile(Template template) {
-        return String.format("mail/%s.html", template.name().toLowerCase());
+    @VisibleForTesting
+    String renderTemplate(Template template, Long customerId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("customerData", customerService.getCustomerDataByCustomerId(customerId));
+        data.put("loginUrl", "https://login.codekvast.io");
+        data.put("homepageUrl", "https://www.codekvast.io");
+        data.put("supportEmail", "support@codekvast.io");
+
+        return compiler.loadTemplate(getTemplateName(template)).execute(data);
+    }
+
+    private String getTemplateName(Template template) {
+        return String.format("mail/%s", template.name().toLowerCase());
     }
 }

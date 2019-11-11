@@ -1,4 +1,4 @@
-var LambdaForwarder = require("aws-lambda-ses-forwarder");
+const LambdaForwarder = require("aws-lambda-ses-forwarder");
 
 exports.handler = function(event, context, callback) {
   // Configure the S3 bucket and key prefix for stored raw emails, and the
@@ -12,20 +12,20 @@ exports.handler = function(event, context, callback) {
   // - forwardMapping: Object where the key is the email address from which to
   //   forward and the value is an array of email addresses to which to send the
   //   message.
-  var overrides = {
-    config: {
-      subjectPrefix: "",
-      emailBucket: "mailbox.codekvast.io",
-      emailKeyPrefix: "inbox/",
-      forwardMapping: {
-        "support@codekvast.io": [
-          "codekvast-support@hit.se" // NOTE: This email address must be validated in the SES console!
-        ],
-        "no-reply@codekvast.io": [
-          "codekvast-no-reply@hit.se" // NOTE: This email address must be validated in the SES console!
-        ]
-      }
-    }
-  };
-  LambdaForwarder.handler(event, context, callback, overrides);
+    const overrides = {
+        config: {
+            subjectPrefix: "",
+            emailBucket: "mailbox.codekvast.io",
+            emailKeyPrefix: "inbox/",
+            forwardMapping: {
+                "support@codekvast.io": [
+                    "codekvast-support@hit.se" // NOTE: This email address must be validated in the SES console!
+                ],
+                "info@codekvast.io": [
+                    "codekvast-info@hit.se" // NOTE: This email address must be validated in the SES console!
+                ]
+            }
+        }
+    };
+    LambdaForwarder.handler(event, context, callback, overrides);
 };

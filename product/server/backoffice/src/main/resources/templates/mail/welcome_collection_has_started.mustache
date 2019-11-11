@@ -1,7 +1,20 @@
-This is WELCOME_COLLECTION_HAS_STARTED.
+<html>
+<head>
+    <title>Welcome to Codekvast!</title>
+</head>
+<body>
+<h3>Welcome to Codekvast!</h3>
 
-Welcome {{email}}!
+<p>This mail proves that you have attached the Codekvast Java Agent correctly, and that it is able to call the Codekvast server.</p>
+<p>{{#codekvast}}{{displayVersion }}{{/codekvast}}</p>
 
-This mail proves that you have configured the Codekvast Java Agent correctly, and that it is able to upload data to
-the Codekvast server.
+<p>{{customerData}}</p>
 
+<p>You can log in to the Codekvast server and browse your data at <a href="{{ loginUrl }}">{{ loginUrl }}</a>.</p>
+
+<p>More information about Codekvast is found at <a href="{{ homepageUrl }}"></a>{{ homepageUrl }}</p>.
+
+<p>Need more help? Drop a mail to <a href="mailto:{{ supportEmail }}" target="_blank">{{ supportEmail }}</a>, and we will be happy to help.</p>
+
+</body>
+</html>

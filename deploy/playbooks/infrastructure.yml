@@ -30,10 +30,7 @@
         zone_id:
             cloudfront: 'Z2FDTNDATAQYW2'
 
-    other_dns_records:
-    - name: '_d60ed2fdbf07f3f631a87cbe4b31da89.codekvast.io'
-      value: '_1f2bc564036706f4ddbb398053c86ab4.acm-validations.aws'
-      owner: 'AWS Certificate Manager'
+    email_dns_records:
     - name: 'lgjaccttx36w4jfk5vwoxqqbiq6lfydj._domainkey.codekvast.io'
       value: 'lgjaccttx36w4jfk5vwoxqqbiq6lfydj.dkim.amazonses.com'
       owner: 'AWS Simple Email Services'
@@ -47,6 +44,15 @@
       type: TXT
       value: '"eieDOHvpRK2mPPjSTt2A8FJC2U+/dBAsrLzoaxvAW6Y="'
       owner: 'AWS Simple Email Services'
+    - name: 'codekvast.io'
+      type: MX
+      value: '10 inbound-smtp.eu-west-1.amazonaws.com'
+      owner: 'AWS Simple Email Services'
+
+    other_dns_records:
+    - name: '_d60ed2fdbf07f3f631a87cbe4b31da89.codekvast.io'
+      value: '_1f2bc564036706f4ddbb398053c86ab4.acm-validations.aws'
+      owner: 'AWS Certificate Manager'
 
   tasks:
   - name: Create S3 buckets for static websites
@@ -127,6 +133,24 @@
         label: "{{ item[0] }}: {{ item[1].item.name }} -> {{ item[1].domain_name }}"
     tags: static-web-sites
 
+  - name: Create email-related DNS records
+    route53:
+      profile: codekvast # in ~/.boto
+      zone: codekvast.io
+      command: "{{ item.command | default('create') }}"
+      overwrite: yes
+      record: "{{ item.name }}"
+      ttl: 86400
+      type: "{{ item.type | default('CNAME') }}"
+      value: "{{ item.value }}"
+      alias: "{{ item.alias | default(False) }}"
+      alias_hosted_zone_id: "{{ item.alias_zone_id | default(None) }}"
+    connection: local
+    with_items: "{{ email_dns_records }}"
+    loop_control:
+      label: "{{ item.type | default('CNAME') }} {{ item.name }} -> {{ item.value }}"
+    tags: [email, dns]
+
   - name: Create other DNS records
     route53:
       profile: codekvast # in ~/.boto
@@ -166,7 +190,7 @@
   - name: Run 'npm ci' for aws-ses-forwarder
     shell: npm ci chdir="files/aws-ses-forwarder"
     connection: local
-    tags: email
+    tags: [email, email-forwarder, lambda]
 
   - name: Create aws-ses-forwarder.zip
     archive:
@@ -174,12 +198,12 @@
         dest: /tmp/aws-ses-forwarder.zip
         format: zip
     connection: local
-    tags: email
+    tags: [email, email-forwarder, lambda]
 
   - name: Install email forwarder lambda
     lambda:
         profile: codekvast
-        region: "eu-central-1"
+        region: "eu-west-1"
         name: "mail-forwarder"
         role: "arn:aws:iam::186662504461:role/Mail-forwarder"
         handler: "index.handler"
@@ -188,4 +212,4 @@
         tags:
             Owner: Codekvast
     connection: local
-    tags: email
+    tags: [email, email-forwarder, lambda]

@@ -23,7 +23,6 @@ package io.codekvast.backoffice.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 
 /**
  * @author olle.hallin@crisp.se
