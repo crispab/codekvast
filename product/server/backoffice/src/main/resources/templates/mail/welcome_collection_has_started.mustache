@@ -6,15 +6,19 @@
 <h3>Welcome to Codekvast!</h3>
 
 <p>This mail proves that you have attached the Codekvast Java Agent correctly, and that it is able to call the Codekvast server.</p>
-<p>{{#codekvast}}{{displayVersion }}{{/codekvast}}</p>
 
-<p>{{customerData}}</p>
+{{#inTrialPeriod}}
+    <p>Your trial period ends at {{ trialPeriodEndsAt }}. After that, no uploaded data will be accepted. Already uploaded data will be
+        available for in the Codekvast Dashboard.</p>
+{{/inTrialPeriod}}
 
 <p>You can log in to the Codekvast server and browse your data at <a href="{{ loginUrl }}">{{ loginUrl }}</a>.</p>
 
 <p>More information about Codekvast is found at <a href="{{ homepageUrl }}"></a>{{ homepageUrl }}</p>.
 
-<p>Need more help? Drop a mail to <a href="mailto:{{ supportEmail }}" target="_blank">{{ supportEmail }}</a>, and we will be happy to help.</p>
-
+<p>Need more help? Drop a mail to <a href="mailto:{{ supportEmail }}" target="_blank">{{ supportEmail }}</a>, and we will be happy to help.
+</p>
+<hr>
+<p><small>Sent by Codekvast {{ codekvastDisplayVersion }}</small></p>
 </body>
 </html>

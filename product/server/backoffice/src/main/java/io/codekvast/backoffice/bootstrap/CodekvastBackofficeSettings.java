@@ -101,6 +101,21 @@ public class CodekvastBackofficeSettings implements CodekvastCommonSettings {
      */
     private Long jwtExpirationHours;
 
+    /**
+     * What is the login base url?
+     */
+    private String loginBaseUrl = "https://login.codekvast.io";
+
+    /**
+     * What is the homepage base url?
+     */
+    private String homepageBaseUrl = "https://www.codekvast.io";
+
+    /**
+     * What is the support email?
+     */
+    private String supportEmail = "support@codekvast.io";
+
     @PostConstruct
     public void logStartup() {
         //noinspection UseOfSystemOutOrSystemErr

@@ -18,7 +18,7 @@ import static org.junit.Assume.assumeTrue;
 @SpringBootTest(
     classes = {CodekvastBackofficeApplication.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"integrationTest", "dev-secrets"})
+@ActiveProfiles({"integrationTest", "dev-secrets", "no-mail-sender"})
 @Transactional
 public class BackofficeIntegrationTest {
 

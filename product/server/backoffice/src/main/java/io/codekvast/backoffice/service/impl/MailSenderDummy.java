@@ -22,6 +22,7 @@
 package io.codekvast.backoffice.service.impl;
 
 import io.codekvast.backoffice.service.MailSender;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,12 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @Profile("no-mail-sender")
+@RequiredArgsConstructor
 public class MailSenderDummy implements MailSender {
+    private final MailTemplateRenderer mailTemplateRenderer;
 
     @Override
     public void sendMail(Template template, Long customerId, String emailAddress) {
-        logger.info("Not sending {} to {}", template, emailAddress);
+        logger.info("Not sending '{}' to {}", mailTemplateRenderer.renderTemplate(template, customerId), emailAddress);
     }
 }
