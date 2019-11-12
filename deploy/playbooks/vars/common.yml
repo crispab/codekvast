@@ -55,7 +55,7 @@ ports:
         jmx:          6010
 
 jvm_opts:
-    backoffice:  '-Xms10m -Xmx50m'
+    backoffice:  '-Xms10m -Xmx100m'
     dashboard:   ''
     login:       '-Xms10m -Xmx100m'
 

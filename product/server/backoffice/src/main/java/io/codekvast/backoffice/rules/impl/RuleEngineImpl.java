@@ -30,7 +30,9 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.kie.api.KieServices;
+import org.kie.api.builder.*;
 import org.kie.api.event.rule.ObjectDeletedEvent;
 import org.kie.api.event.rule.ObjectInsertedEvent;
 import org.kie.api.event.rule.ObjectUpdatedEvent;
@@ -38,10 +40,18 @@ import org.kie.api.event.rule.RuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.internal.io.ResourceFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -51,14 +61,43 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 public class RuleEngineImpl implements RuleEngine {
+    private static final String RULES_PATH = "rules/";
 
     private final FactDAO factDAO;
     private final MailSender mailSender;
     private final CustomerService customerService;
     private final Clock clock;
 
-    private KieServices kieServices = KieServices.Factory.get();
-    private KieContainer kieContainer = kieServices.getKieClasspathContainer();
+    private KieContainer kieContainer;
+
+    @PostConstruct
+    public RuleEngine configureDrools() throws IOException {
+        Instant startedAt = Instant.now();
+        KieServices kieServices = KieServices.Factory.get();
+        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
+        for (Resource file : getRuleFiles()) {
+            val resource = ResourceFactory.newClassPathResource(RULES_PATH + file.getFilename(), "UTF-8");
+            logger.debug("Loading rule resource {}", resource);
+            kieFileSystem.write(resource);
+        }
+        KieRepository kieRepository = kieServices.getRepository();
+        kieRepository.addKieModule(new KieModule() {
+            public ReleaseId getReleaseId() {
+                return kieRepository.getDefaultReleaseId();
+            }
+        });
+
+        KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
+        kieBuilder.buildAll();
+        kieContainer = kieServices.newKieContainer(kieRepository.getDefaultReleaseId());
+        logger.debug("Configured Drools in {}", Duration.between(startedAt, Instant.now()));
+        return this;
+    }
+
+    private Resource[] getRuleFiles() throws IOException {
+        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+        return resourcePatternResolver.getResources("classpath*:" + RULES_PATH + "**/*.*");
+    }
 
     @Override
     @Transactional

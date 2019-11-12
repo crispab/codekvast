@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -46,11 +47,11 @@ public class RuleEngineImplTest {
     private RuleEngine ruleEngine;
 
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
         MockitoAnnotations.initMocks(this);
         when(clock.instant()).thenReturn(NOW);
 
-        ruleEngine = new RuleEngineImpl(factDAO, mailSender, customerService, clock);
+        ruleEngine = new RuleEngineImpl(factDAO, mailSender, customerService, clock).configureDrools();
     }
 
     @Test
