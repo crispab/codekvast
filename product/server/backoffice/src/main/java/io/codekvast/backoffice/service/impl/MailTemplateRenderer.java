@@ -21,7 +21,6 @@
  */
 package io.codekvast.backoffice.service.impl;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.samskivert.mustache.Mustache;
 import io.codekvast.backoffice.bootstrap.CodekvastBackofficeSettings;
 import io.codekvast.backoffice.service.MailSender;
@@ -30,6 +29,7 @@ import io.codekvast.common.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,18 +47,32 @@ public class MailTemplateRenderer {
         Map<String, Object> data = new HashMap<>();
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
         data.put("codekvastDisplayVersion", settings.getDisplayVersion());
-        data.put("customerData", customerData);
-        data.put("loginUrl", settings.getLoginBaseUrl());
+        data.put("customerName", customerData.getDisplayName());
         data.put("homepageUrl", settings.getHomepageBaseUrl());
+        data.put("loginUrl", settings.getLoginBaseUrl());
+        data.put("pricePlan", customerData.getPricePlan());
         data.put("supportEmail", settings.getSupportEmail());
-        data.put("inTrialPeriod", customerData.getTrialPeriodEndsAt() != null);
+        data.put("inTrialPeriod", customerData.getCollectionStartedAt() != null && customerData.getTrialPeriodEndsAt() != null);
         data.put("trialPeriodEndsAt", customerData.getTrialPeriodEndsAt());
+        data.put("trialPeriodStartedAt", customerData.getCollectionStartedAt());
 
-        return compiler.loadTemplate(getTemplateName(template)).execute(data);
+        return compiler.withFormatter(new CodekvastFormatter()).loadTemplate(getTemplateName(template)).execute(data);
     }
 
     private String getTemplateName(MailSender.Template template) {
         return String.format("mail/%s", template.name().toLowerCase());
     }
 
+    private class CodekvastFormatter implements Mustache.Formatter {
+        @Override
+        public String format(Object value) {
+            if (value instanceof Instant) {
+                return value.toString().replace("T", " ").replaceAll("\\.[0-9]+", "").replaceAll("Z$", " UTC");
+            }
+            if (value instanceof Integer) {
+                return String.format("%,d", value);
+            }
+            return String.valueOf(value);
+        }
+    }
 }

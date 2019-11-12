@@ -5,20 +5,33 @@
 <body>
 <h3>Welcome to Codekvast!</h3>
 
-<p>This mail proves that you have attached the Codekvast Java Agent correctly, and that it is able to call the Codekvast server.</p>
+<p>This mail proves that your system <b>{{ customerName }}</b> has the Codekvast Java Agent correctly attached, and that it is able to reach the Codekvast server.</p>
+
+{{#pricePlan}}
+    <p>You are using the plan {{name}}, which means:</p>
+    <ul>
+        <li>Max number of tracked methods: {{maxMethods}}. If your system is bigger than this, data will be rejected.</li>
+        <li>Max number of attached agents: {{maxNumberOfAgents}}. More agents will be ignored.</li>
+        <li>Collection granularity: {{publishIntervalSeconds}} seconds. The agent(s) will upload data at this interval.</li>
+        <li>Data retention: {{retentionPeriodDays}} days. Older data will be deleted on a daily basis.</li>
+        {{#trialPeriodDays}}
+            <li>Trial period: {{trialPeriodDays}} days.</li>
+        {{/trialPeriodDays}}
+    </ul>
+{{/pricePlan}}
 
 {{#inTrialPeriod}}
-    <p>Your trial period ends at {{ trialPeriodEndsAt }}. After that, no uploaded data will be accepted. Already uploaded data will be
-        available for in the Codekvast Dashboard.</p>
+    <p>Your trial period started at <b>{{ trialPeriodStartedAt }}</b> and ends at <b>{{ trialPeriodEndsAt }}</b>.</p>
+    <p>After that, no uploaded data will be accepted.</p>
+    <p>Already uploaded data will be available for in the Codekvast Dashboard until the retention period has passed.</p>
 {{/inTrialPeriod}}
 
 <p>You can log in to the Codekvast server and browse your data at <a href="{{ loginUrl }}">{{ loginUrl }}</a>.</p>
 
-<p>More information about Codekvast is found at <a href="{{ homepageUrl }}"></a>{{ homepageUrl }}</p>.
+<p>More information about Codekvast is found at <a href="{{ homepageUrl }}">{{ homepageUrl }}</a>.</p>
 
-<p>Need more help? Drop a mail to <a href="mailto:{{ supportEmail }}" target="_blank">{{ supportEmail }}</a>, and we will be happy to help.
-</p>
+<p>Need more help? Drop a mail to <a href="mailto:{{ supportEmail }}">{{ supportEmail }}</a>, and we will be happy to help.</p>
 <hr>
-<p><small>Sent by Codekvast {{ codekvastDisplayVersion }}</small></p>
+<p><small>This is an automatic mail sent by Codekvast {{ codekvastDisplayVersion }}</small></p>
 </body>
 </html>
