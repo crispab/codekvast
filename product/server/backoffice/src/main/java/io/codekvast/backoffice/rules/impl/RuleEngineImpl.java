@@ -41,6 +41,8 @@ import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.io.ResourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -67,6 +69,8 @@ public class RuleEngineImpl implements RuleEngine {
     private final MailSender mailSender;
     private final CustomerService customerService;
     private final Clock clock;
+
+    private final Logger droolsLogger = LoggerFactory.getLogger(RuleEngine.class.getPackageName() + ".Drools");
 
     private KieContainer kieContainer;
 
@@ -107,6 +111,7 @@ public class RuleEngineImpl implements RuleEngine {
         KieSession session = kieContainer.newKieSession();
         session.setGlobal("clock", clock);
         session.setGlobal("customerId", customerId);
+        session.setGlobal("logger", droolsLogger);
         session.setGlobal("mailSender", mailSender);
 
         // session.addEventListener(new DebugAgendaEventListener());

@@ -63,8 +63,8 @@ public class FactDAO {
             }
         }, customerId);
 
-        logger.trace("Retrieved the facts {} for customer {}", wrappers, customerId);
-        logger.debug("Retrieved {} facts for customer {}", wrappers.size(), customerId);
+        logger.trace("Retrieved the persistent facts {} for customer {}", wrappers, customerId);
+        logger.debug("Retrieved {} persistent facts for customer {}", wrappers.size(), customerId);
         return wrappers;
     }
 
@@ -74,7 +74,7 @@ public class FactDAO {
         int inserted = jdbcTemplate.update(new AddFactStatementCreator(customerId, getType(fact), gson.toJson(fact)), keyHolder);
         long id = keyHolder.getKey().longValue();
         if (inserted <= 0) {
-            logger.warn("Attempt to insert duplicate fact {}:{}", id, customerId);
+            logger.error("Attempt to insert duplicate fact {}:{}", id, customerId);
         }
         return id;
     }
@@ -84,7 +84,7 @@ public class FactDAO {
         int updated = jdbcTemplate.update("UPDATE facts SET type = ?, data = ? WHERE id = ? AND customerId = ?",
                                           getType(fact), gson.toJson(fact), id, customerId);
         if (updated <= 0) {
-            logger.warn("Failed to update fact {}:{}", id, customerId);
+            logger.error("Failed to update fact {}:{}", id, customerId);
         }
     }
 
@@ -93,7 +93,7 @@ public class FactDAO {
         int deleted = jdbcTemplate
             .update("DELETE FROM facts WHERE id = ? AND customerId = ?", id, customerId);
         if (deleted <= 0) {
-            logger.warn("Failed to delete fact {}:{}", id, customerId);
+            logger.error("Failed to delete fact {}:{}", id, customerId);
         }
     }
 
