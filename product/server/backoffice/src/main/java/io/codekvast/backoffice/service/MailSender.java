@@ -41,8 +41,8 @@ public interface MailSender {
      * Sends an email using a named template to a given email address.
      *
      * @param template     The template to use.
-     * @param customerId   The customer ID.
      * @param emailAddress The email address to send to.
+     * @param args         The arguments to the template.
      */
-    void sendMail(Template template, Long customerId, String emailAddress);
+    void sendMail(Template template, String emailAddress, Object... args);
 }

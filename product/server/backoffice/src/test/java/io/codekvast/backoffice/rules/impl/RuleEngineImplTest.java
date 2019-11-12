@@ -69,7 +69,7 @@ public class RuleEngineImplTest {
         ruleEngine.handle(event);
 
         // then
-        verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, customerId, "some-email-address");
+        verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, "some-email-address", customerId);
         verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), true)));
     }
 
@@ -118,7 +118,7 @@ public class RuleEngineImplTest {
         ruleEngine.handle(new AnyEvent(customerId));
 
         // then
-        verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, customerId, "contactEmail");
+        verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, "contactEmail", customerId);
         verify(factDAO).updateFact(eq(factId), eq(customerId), eq(new CollectionStarted(fact.getCollectionStartedAt(), fact.getTrialPeriodEndsAt(), true)));
     }
 

@@ -44,7 +44,7 @@ public class CustomerDataTest {
     @Test
     public void should_have_decent_toString_without_trialPeriod() {
         assertThat(customerData.toString(),
-                   is("CustomerData(customerId=17, customerName=foo, source=bar, customerNotes=null, pricePlan=PricePlan(name=DEMO, " +
+                   is("CustomerData(customerId=17, customerName=foo, source=bar, contactEmail=null, customerNotes=null, pricePlan=PricePlan(name=DEMO, " +
                           "overrideBy=null, note=null, maxMethods=25000, maxNumberOfAgents=1, pollIntervalSeconds=5, " +
                           "publishIntervalSeconds=5, retentionPeriodDays=30, retryIntervalSeconds=5, trialPeriodDays=-1), createdAt=null, " +
                           "collectionStartedAt=null, trialPeriodEndsAt=null)"));
@@ -59,7 +59,7 @@ public class CustomerDataTest {
                                       .trialPeriodEndsAt(TRIAL_PERIOD_END)
                                       .build();
         assertThat(cd.toString(),
-                   is("CustomerData(customerId=17, customerName=foo, source=bar, customerNotes=null, pricePlan=PricePlan(name=DEMO, " +
+                   is("CustomerData(customerId=17, customerName=foo, source=bar, contactEmail=null, customerNotes=null, pricePlan=PricePlan(name=DEMO, " +
                           "overrideBy=null, note=null, maxMethods=25000, maxNumberOfAgents=1, pollIntervalSeconds=5, " +
                           "publishIntervalSeconds=5, retentionPeriodDays=30, retryIntervalSeconds=5, trialPeriodDays=-1), " +
                           "createdAt=2017-08-21T16:21:19.695Z, collectionStartedAt=2017-08-21T16:21:19.695Z, " +

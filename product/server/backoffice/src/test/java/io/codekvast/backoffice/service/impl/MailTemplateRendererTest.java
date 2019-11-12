@@ -5,11 +5,10 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import javax.inject.Inject;
 import java.io.FileWriter;
@@ -32,8 +31,8 @@ import static org.mockito.Mockito.when;
  * @author olle.hallin@crisp.se
  */
 @SpringBootTest(classes = {CodekvastBackofficeSettings.class, MustacheAutoConfiguration.class, MailTemplateRenderer.class})
-@RunWith(SpringRunner.class)
-class MailTemplateRendererTest {
+@SpringJUnitConfig
+public class MailTemplateRendererTest {
 
     @MockBean
     private CustomerService customerService;

@@ -43,20 +43,36 @@ public class MailTemplateRenderer {
     private final CustomerService customerService;
     private final CodekvastBackofficeSettings settings;
 
-    String renderTemplate(MailSender.Template template, Long customerId) {
-        Map<String, Object> data = new HashMap<>();
+    String renderTemplate(MailSender.Template template, Object... args) {
+        Map<String, Object> data = collectCommonData();
+
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (template) {
+        case WELCOME_COLLECTION_HAS_STARTED:
+            Long customerId = (Long) args[0];
+            collectWelcomeCollectionHasStartedData(data, customerId);
+            break;
+        }
+
+        return compiler.withFormatter(new CodekvastFormatter()).loadTemplate(getTemplateName(template)).execute(data);
+    }
+
+    private void collectWelcomeCollectionHasStartedData(Map<String, Object> data, Long customerId) {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
-        data.put("codekvastDisplayVersion", settings.getDisplayVersion());
         data.put("customerName", customerData.getDisplayName());
-        data.put("homepageUrl", settings.getHomepageBaseUrl());
-        data.put("loginUrl", settings.getLoginBaseUrl());
         data.put("pricePlan", customerData.getPricePlan());
-        data.put("supportEmail", settings.getSupportEmail());
         data.put("inTrialPeriod", customerData.getCollectionStartedAt() != null && customerData.getTrialPeriodEndsAt() != null);
         data.put("trialPeriodEndsAt", customerData.getTrialPeriodEndsAt());
         data.put("trialPeriodStartedAt", customerData.getCollectionStartedAt());
+    }
 
-        return compiler.withFormatter(new CodekvastFormatter()).loadTemplate(getTemplateName(template)).execute(data);
+    private Map<String, Object> collectCommonData() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("codekvastDisplayVersion", settings.getDisplayVersion());
+        data.put("homepageUrl", settings.getHomepageBaseUrl());
+        data.put("loginUrl", settings.getLoginBaseUrl());
+        data.put("supportEmail", settings.getSupportEmail());
+        return data;
     }
 
     private String getTemplateName(MailSender.Template template) {
@@ -64,6 +80,7 @@ public class MailTemplateRenderer {
     }
 
     private class CodekvastFormatter implements Mustache.Formatter {
+        @SuppressWarnings("ChainOfInstanceofChecks")
         @Override
         public String format(Object value) {
             if (value instanceof Instant) {

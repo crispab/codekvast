@@ -21,14 +21,10 @@
  */
 package io.codekvast.backoffice.service.impl;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.samskivert.mustache.Mustache;
 import io.codekvast.backoffice.service.MailSender;
-import io.codekvast.common.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -36,8 +32,6 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author olle.hallin@crisp.se
@@ -53,7 +47,7 @@ public class MailSenderImpl implements MailSender {
 
     @Override
     @SneakyThrows(MessagingException.class)
-    public void sendMail(Template template, Long customerId, String emailAddress) {
+    public void sendMail(Template template, String emailAddress, Object... args) {
         logger.info("Sending mail {} to {}", template, emailAddress);
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -62,7 +56,7 @@ public class MailSenderImpl implements MailSender {
         helper.setSubject(template.getSubject());
         helper.setFrom("no-reply@codekvast.io");
         helper.setTo(emailAddress);
-        helper.setText(mailTemplateRenderer.renderTemplate(template, customerId), true);
+        helper.setText(mailTemplateRenderer.renderTemplate(template, args), true);
 
         javaMailSender.send(mimeMessage);
     }

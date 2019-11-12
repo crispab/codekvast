@@ -8,7 +8,7 @@ global java.time.Clock clock
 global Long customerId
 global io.codekvast.backoffice.service.MailSender mailSender
 
-rule "Collection has started"
+rule "Register that collection has started"
 when
   $cse: CollectionStartedEvent()
   not(CollectionStarted())
@@ -21,7 +21,7 @@ when
   $cs: CollectionStarted(welcomeMailSent == false)
   $cd: ContactDetails()
 then
-  mailSender.sendMail(MailSender.Template.WELCOME_COLLECTION_HAS_STARTED, customerId, $cd.getContactEmail());
+  mailSender.sendMail(MailSender.Template.WELCOME_COLLECTION_HAS_STARTED, $cd.getContactEmail(), customerId);
   modify($cs) {
     setWelcomeMailSent(true)
   }
