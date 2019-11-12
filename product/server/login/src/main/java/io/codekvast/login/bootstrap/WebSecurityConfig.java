@@ -55,9 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String LOGOUT_URL = "/logout";
     private static final String LOGIN_URL = "/login";
-    private final CustomerService customerService;
 
-    private final RestTemplateBuilder restTemplateBuilder;
+    private final CustomerService customerService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -104,7 +103,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 } else if (authority instanceof SimpleGrantedAuthority) {
                     logger.debug("Ignoring extra authority {}", authority);
                 } else {
-                    logger.warn("Don't know how to extract the email address from a {}", authority.getClass().getName());
+                    logger.debug("Don't know how to extract the email address from a {}", authority.getClass().getName());
                 }
 
                 if (email != null) {
