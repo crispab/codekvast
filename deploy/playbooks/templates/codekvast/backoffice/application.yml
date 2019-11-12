@@ -49,3 +49,10 @@ spring:
             retry:
                 enabled: true
                 initial-interval: 2s
+
+    mail:
+        username: "{{ aws.credentials.ses.username }}"
+        password: "{{ aws.credentials.ses.password }}"
+
+    profiles:
+        active: no-mail-sender
