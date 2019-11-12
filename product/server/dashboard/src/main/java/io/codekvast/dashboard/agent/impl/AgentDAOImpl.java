@@ -49,7 +49,7 @@ public class AgentDAOImpl implements AgentDAO {
         // Disable all agents that have been dead for more than two file import intervals...
         int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
                                               "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND nextPollExpectedAt < ? " +
-                                              "ORDER BY id ",
+                                              "ORDER BY jvmUuid ",
                                           customerId, thisJvmUuid, Timestamp.from(nextPollExpectedBefore));
         if (updated > 0) {
             logger.info("Disabled {} dead agents for customer {}", updated, customerId);
