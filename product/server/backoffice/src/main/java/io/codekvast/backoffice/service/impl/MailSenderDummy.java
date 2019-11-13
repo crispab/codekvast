@@ -39,6 +39,6 @@ public class MailSenderDummy implements MailSender {
 
     @Override
     public void sendMail(Template template, String emailAddress, Object... args) {
-        logger.info("Not sending '{}' to {}", mailTemplateRenderer.renderTemplate(template, args), emailAddress);
+        logger.info("Would have sent '{}' to {}", mailTemplateRenderer.renderTemplate(template, args), emailAddress);
     }
 }

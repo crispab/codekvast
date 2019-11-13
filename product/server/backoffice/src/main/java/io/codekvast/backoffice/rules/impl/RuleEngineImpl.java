@@ -76,7 +76,7 @@ public class RuleEngineImpl implements RuleEngine {
 
     @PostConstruct
     public RuleEngine configureDrools() throws IOException {
-        Instant startedAt = Instant.now();
+        Instant startedAt = clock.instant();
         KieServices kieServices = KieServices.Factory.get();
         KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
         for (Resource file : getRuleFiles()) {
@@ -94,7 +94,7 @@ public class RuleEngineImpl implements RuleEngine {
         KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
         kieBuilder.buildAll();
         kieContainer = kieServices.newKieContainer(kieRepository.getDefaultReleaseId());
-        logger.debug("Configured Drools in {}", Duration.between(startedAt, Instant.now()));
+        logger.debug("Configured Drools in {}", Duration.between(startedAt, clock.instant()));
         return this;
     }
 
@@ -106,6 +106,7 @@ public class RuleEngineImpl implements RuleEngine {
     @Override
     @Transactional
     public void handle(CodekvastEvent event) {
+        Instant startedAt = clock.instant();
         final Long customerId = event.getCustomerId();
 
         KieSession session = kieContainer.newKieSession();
@@ -137,6 +138,7 @@ public class RuleEngineImpl implements RuleEngine {
         // Fire the rules...
         session.fireAllRules();
         session.dispose();
+        logger.debug("Rules executed in {}", Duration.between(startedAt, clock.instant()));
     }
 
     private List<TransientFact> getTransientFacts(Long customerId) {

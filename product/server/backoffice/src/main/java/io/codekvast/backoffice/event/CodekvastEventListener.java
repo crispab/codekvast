@@ -44,7 +44,7 @@ public class CodekvastEventListener extends AbstractCodekvastEventListener {
 
     @Override
     public void onCodekvastEvent(CodekvastEvent event) {
-        logger.info("Received {}", event);
+        logger.debug("Received {}", event);
         ruleEngine.handle(event);
     }
 }
