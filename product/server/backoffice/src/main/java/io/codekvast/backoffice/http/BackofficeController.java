@@ -19,28 +19,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.bootstrap;
+package io.codekvast.backoffice.http;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author olle.hallin@crisp.se
  */
-public interface CodekvastCommonSettings {
+@Controller
+@RequiredArgsConstructor
+@Slf4j
+public class BackofficeController {
 
-    String getApplicationName();
-
-    String getDisplayVersion();
-
-    String getDnsCname();
-
-    String getSlackWebHookToken();
-
-    default String getSlackWebHookUrl() {
-        return "https://hooks.slack.com/services";
+    @GetMapping({"/", "/index", "/home"})
+    public String index(HttpServletRequest request, Authentication authentication, Model model) {
+        logger.debug("index(): Request.contextPath={}", request.getContextPath());
+        model.addAttribute("title", "");
+        return "index";
     }
-
-    String getJwtSecret();
-
-    Long getJwtExpirationHours();
-
-    String getEnvironment();
 }

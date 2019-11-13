@@ -19,28 +19,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.bootstrap;
+package io.codekvast.backoffice.http;
+
+import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author olle.hallin@crisp.se
  */
-public interface CodekvastCommonSettings {
+@Controller
+public class ErrorController extends AbstractErrorController {
 
-    String getApplicationName();
-
-    String getDisplayVersion();
-
-    String getDnsCname();
-
-    String getSlackWebHookToken();
-
-    default String getSlackWebHookUrl() {
-        return "https://hooks.slack.com/services";
+    public ErrorController(ErrorAttributes errorAttributes) {
+        super(errorAttributes);
     }
 
-    String getJwtSecret();
+    @Override
+    public String getErrorPath() {
+        return "/error";
+    }
 
-    Long getJwtExpirationHours();
-
-    String getEnvironment();
+    @GetMapping("/error")
+    public String handleError(HttpServletRequest request, Model model) {
+        HttpStatus status = getStatus(request);
+        model.addAttribute("title", "Error");
+        model.addAttribute("status", status);
+        return "error";
+    }
 }

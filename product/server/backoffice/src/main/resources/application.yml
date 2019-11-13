@@ -7,11 +7,10 @@
 
 codekvast:
     dnsCname:                    localhost
-    jwtExpirationHours: 168
-    jwtSecret:          secret
+    jwtExpirationHours:          168
+    jwtSecret:                   secret
     environment:                 dev
     slackWebHookToken:
-    slackWebHookUrl:             https://hooks.slack.com/services
 
 logging:
     file:
@@ -35,14 +34,14 @@ management:
         port: 9082
     metrics:
         web.server.request.autotime.enabled: true
-        export.datadog.enabled:        false
+        export.datadog.enabled:              false
         tags:
             service: "codekvast-backoffice"
             env:     dev
             host:    localhost
 
 server:
-    port:                8082
+    port:                     8082
     servlet:
         context-path: /
         session:
@@ -72,7 +71,7 @@ spring:
         addresses: "amqp://admin:secret@localhost:5672"
         template:
             retry:
-                enabled: true
+                enabled:          true
                 initial-interval: 2s
         listener:
             simple:
@@ -80,9 +79,6 @@ spring:
 
     flyway:
         validate-on-migrate: false
-    groovy.template.configuration:
-        auto-new-line: true
-        auto-indent:   true
     http:
         converters.preferred-json-mapper: gson
         log-request-details:              true
@@ -95,5 +91,5 @@ spring:
                 smtp:
                     auth: true
                     starttls:
-                        enabled: true
+                        enabled:  true
                         required: true

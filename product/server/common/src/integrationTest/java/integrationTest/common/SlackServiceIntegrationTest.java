@@ -40,7 +40,6 @@ public class SlackServiceIntegrationTest {
         Properties props = new Properties();
         props.load(getClass().getResourceAsStream("/secrets.properties"));
 
-        settings.setSlackWebHookUrl("https://hooks.slack.com/services");
         settings.setSlackWebHookToken(props.getProperty("codekvast.slackWebHookToken"));
         slackService = new SlackServiceImpl(settings, metricsService);
     }

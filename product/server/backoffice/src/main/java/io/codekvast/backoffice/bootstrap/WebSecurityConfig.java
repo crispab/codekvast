@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .ignoringAntMatchers("/management/**")
             .and()
                 .authorizeRequests()
-                .antMatchers("/favicon.ico", "/robots.txt", "/management/**", "/assets/**").permitAll()
+                .antMatchers("/", "/home", "/index", "/favicon.ico", "/robots.txt", "/management/**", "/assets/**", "/error").permitAll()
                 .anyRequest().authenticated();
         //@formatter:on
     }

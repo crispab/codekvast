@@ -20,7 +20,6 @@ codekvast:
     herokuOAuthClientId:         herokuOAuthClientId
     herokuOAuthClientSecret:     herokuOAuthClientSecret
     slackWebHookToken:
-    slackWebHookUrl:             https://hooks.slack.com/services
 
 logging:
     file:
@@ -86,9 +85,6 @@ spring:
                 initial-interval: 2s
     flyway:
         validate-on-migrate: false
-    groovy.template.configuration:
-        auto-new-line: true
-        auto-indent:   true
     http:
         converters.preferred-json-mapper: gson
         log-request-details:              true

@@ -18,5 +18,4 @@ public class CodekvastCommonSettingsForTestImpl implements CodekvastCommonSettin
     private String dnsCname = null;
     private String environment = null;
     private String slackWebHookToken = null;
-    private String slackWebHookUrl = null;
 }

@@ -107,11 +107,6 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
     private String loginBaseUrl;
 
     /**
-     * Which is the Slack Incoming Webhook URL?
-     */
-    private String slackWebHookUrl;
-
-    /**
      * Which is the token to use when posting to slackWebHookUrl?
      */
     private String slackWebHookToken;

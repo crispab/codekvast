@@ -82,11 +82,6 @@ public class CodekvastBackofficeSettings implements CodekvastCommonSettings {
     private String environment;
 
     /**
-     * To where should we POST slack messages?
-     */
-    private String slackWebHookUrl;
-
-    /**
      * Which token should we use when POSTing to Slack?
      */
     private String slackWebHookToken;

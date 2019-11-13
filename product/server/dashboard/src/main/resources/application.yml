@@ -19,7 +19,6 @@ codekvast:
     loginBaseUrl:                   http://localhost:8080
     queuePath:                      /tmp/codekvast
     slackWebHookToken:
-    slackWebHookUrl:                https://hooks.slack.com/services
 
 logging:
     file:
