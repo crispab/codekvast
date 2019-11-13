@@ -36,9 +36,6 @@ public class RuleEngineImplTest {
     private FactDAO factDAO;
 
     @Mock
-    private Clock clock;
-
-    @Mock
     private MailSender mailSender;
 
     @Mock
@@ -49,9 +46,8 @@ public class RuleEngineImplTest {
     @Before
     public void beforeTest() throws IOException {
         MockitoAnnotations.initMocks(this);
-        when(clock.instant()).thenReturn(NOW);
 
-        ruleEngine = new RuleEngineImpl(factDAO, mailSender, customerService, clock).configureDrools();
+        ruleEngine = new RuleEngineImpl(factDAO, mailSender, customerService, Clock.systemUTC()).configureDrools();
     }
 
     @Test

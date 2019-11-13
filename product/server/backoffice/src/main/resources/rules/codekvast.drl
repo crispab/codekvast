@@ -27,12 +27,3 @@ then
     setWelcomeMailSent(true)
   }
 end
-
-rule "Retract event facts"
-salience -1000
-when
-  $ce: CodekvastEvent()
-then
-   logger.debug("Consumed {}", $ce);
-   retract($ce)
-end
