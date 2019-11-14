@@ -54,6 +54,11 @@ public abstract class AbstractCodekvastEventListener {
 
                 messageIdRepository.remember(messageId);
             }
+        } catch (Exception e) {
+            logger.error("Failed to process " + event, e);
+
+            // Move the message to the DLQ for later inspection
+            throw e;
         } finally {
             CorrelationIdHolder.clear();
         }

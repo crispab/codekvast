@@ -3,6 +3,8 @@ package io.codekvast.backoffice.service.impl;
 import io.codekvast.backoffice.bootstrap.CodekvastBackofficeSettings;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.customer.PricePlan;
+import io.codekvast.common.customer.PricePlanDefaults;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
@@ -58,12 +60,14 @@ public class MailTemplateRendererTest {
         verify(customerService).getCustomerDataByCustomerId(1L);
         assertThat(message, containsString("Codekvast " + displayVersion));
 
+        System.out.println("The rendered template = '" + message + "'");
+
         Path path = Files.createTempFile(getClass().getSimpleName() + "-", ".html");
         PrintWriter writer = new PrintWriter(new FileWriter(path.toFile()));
         writer.println(message);
         writer.close();
-        System.out.println("Rendered template in " + path);
-    }
+        System.out.println("A copy of the rendered template is available in " + path);
+  }
 
     static Stream<CustomerData> customerDataProvider() {
         Instant now = Instant.now();
@@ -72,6 +76,9 @@ public class MailTemplateRendererTest {
             CustomerData.sample().toBuilder()
                         .collectionStartedAt(now)
                         .trialPeriodEndsAt(now.plus(14, ChronoUnit.DAYS))
+                        .build(),
+            CustomerData.sample().toBuilder()
+                        .pricePlan(PricePlan.of(PricePlanDefaults.TEST).toBuilder().trialPeriodDays(-1).build())
                         .build()
         );
     }

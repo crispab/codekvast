@@ -62,6 +62,7 @@ public class MailTemplateRenderer {
         data.put("customerName", customerData.getDisplayName());
         data.put("pricePlan", customerData.getPricePlan());
         data.put("inTrialPeriod", customerData.getCollectionStartedAt() != null && customerData.getTrialPeriodEndsAt() != null);
+        data.put("hasTrialPeriodDays", customerData.getPricePlan().getTrialPeriodDays() > 0);
         data.put("trialPeriodEndsAt", customerData.getTrialPeriodEndsAt());
         data.put("trialPeriodStartedAt", customerData.getCollectionStartedAt());
     }

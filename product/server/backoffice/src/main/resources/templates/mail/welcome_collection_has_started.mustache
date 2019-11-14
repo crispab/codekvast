@@ -14,9 +14,9 @@
         <li>Max number of attached agents: {{maxNumberOfAgents}}. More agents will be ignored.</li>
         <li>Collection granularity: {{publishIntervalSeconds}} seconds. The agent(s) will upload data at this interval.</li>
         <li>Data retention: {{retentionPeriodDays}} days. Older data will be deleted on a daily basis.</li>
-        {{#trialPeriodDays}}
+        {{#hasTrialPeriodDays}}
             <li>Trial period: {{trialPeriodDays}} days.</li>
-        {{/trialPeriodDays}}
+        {{/hasTrialPeriodDays}}
     </ul>
 {{/pricePlan}}
 
