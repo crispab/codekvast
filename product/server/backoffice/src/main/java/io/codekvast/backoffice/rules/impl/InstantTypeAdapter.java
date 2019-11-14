@@ -35,7 +35,7 @@ public class InstantTypeAdapter extends TypeAdapter<Instant> {
 
     @Override
     public void write(JsonWriter out, Instant instant) throws IOException {
-        out.value(instant.toString());
+        out.value(instant == null ? null : instant.toString());
     }
 
     @Override
