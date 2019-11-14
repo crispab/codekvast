@@ -8,22 +8,22 @@
 <p>This mail proves that your system <b>{{ customerName }}</b> has the Codekvast Java agent correctly attached, and that it is able to reach the Codekvast server.</p>
 
 {{#pricePlan}}
-    <p>You are using the plan {{name}}, which means:</p>
-    <ul>
-        <li>Max number of tracked methods: {{maxMethods}}. If your system is bigger than this, data will be rejected.</li>
-        <li>Max number of attached agents: {{maxNumberOfAgents}}. More agents will be ignored.</li>
-        <li>Collection granularity: {{publishIntervalSeconds}} seconds. The agent(s) will upload data at this interval.</li>
-        <li>Data retention: {{retentionPeriodDays}} days. Older data will be deleted on a daily basis.</li>
-        {{#hasTrialPeriodDays}}
-            <li>Trial period: {{trialPeriodDays}} days.</li>
-        {{/hasTrialPeriodDays}}
-    </ul>
+<p>You are using the plan {{name}}, which means:</p>
+<ul>
+    <li>Max number of tracked methods: {{maxMethods}}. If your system is bigger than this, data will be rejected.</li>
+    <li>Max number of attached agents: {{maxNumberOfAgents}}. More agents will be ignored.</li>
+    <li>Collection granularity: {{publishIntervalSeconds}} seconds. The agent(s) will upload data at this interval.</li>
+    <li>Data retention: {{retentionPeriodDays}} days. Older data will be deleted on a daily basis.</li>
+    {{#hasTrialPeriodDays}}
+    <li>Trial period: {{trialPeriodDays}} days.</li>
+    {{/hasTrialPeriodDays}}
+</ul>
 {{/pricePlan}}
 
 {{#inTrialPeriod}}
-    <p>Your trial period started at <b>{{ trialPeriodStartedAt }}</b> and ends at <b>{{ trialPeriodEndsAt }}</b>.</p>
-    <p>After that, no uploaded data will be accepted.</p>
-    <p>Already uploaded data will be available for in the Codekvast Dashboard until the retention period has passed.</p>
+<p>Your trial period started at <b>{{ trialPeriodStartedAt }}</b> and ends at <b>{{ trialPeriodEndsAt }}</b>.</p>
+<p>After that, no uploaded data will be accepted.</p>
+<p>Already uploaded data will be available for in the Codekvast Dashboard until the retention period has passed.</p>
 {{/inTrialPeriod}}
 
 <p>You can log in to the Codekvast server and browse your data at <a href="{{ loginUrl }}">{{ loginUrl }}</a>.</p>

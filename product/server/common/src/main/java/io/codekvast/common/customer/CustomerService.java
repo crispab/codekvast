@@ -102,7 +102,7 @@ public interface CustomerService {
     /**
      * Register that an agent has polled.
      *
-     * It might result in the start of a trial period, if this is the first time and the customer has a price plan with a limitation on
+     * It might result in the start of a trial period, if this is the first poll, and the customer has a price plan with a limitation on
      * trialPeriodDays.
      *
      * @param customerData The customer's data

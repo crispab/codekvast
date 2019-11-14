@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import static io.codekvast.backoffice.service.MailSender.Template.WELCOME_COLLECTION_HAS_STARTED;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,8 +47,26 @@ public class MailTemplateRendererTest {
     private MailTemplateRenderer mailTemplateRenderer;
 
     @ParameterizedTest
-    @MethodSource("customerDataProvider")
-    void should_render_template_in_trial_period(CustomerData customerData) throws IOException {
+    @MethodSource("formatterDataProvider")
+    void should_format_values_correctly(Object value, String expected) {
+        assertThat(new MailTemplateRenderer.CodekvastFormatter().format(value), is(expected));
+    }
+
+    static Object[][] formatterDataProvider() {
+        return new Object[][]{
+            {123, "123"},
+            {123456, "123,456"},
+            {123456L, "123,456"},
+            {123456D, "123456.0"},
+            {123456F, "123456.0"},
+            {Instant.parse("2019-11-14T22:33:50.1234Z"), "2019-11-14 22:33:50 UTC"},
+            {"foobar", "foobar"}
+        };
+    }
+
+    @ParameterizedTest
+    @MethodSource("welcomeDataProvider")
+    void should_render_welcome_collection_has_started(CustomerData customerData) throws IOException {
         // given
         String displayVersion = "1.2.3-abcde";
         settings.setDisplayVersion(displayVersion);
@@ -67,16 +86,18 @@ public class MailTemplateRendererTest {
         writer.println(message);
         writer.close();
         System.out.println("A copy of the rendered template is available in " + path);
-  }
+    }
 
-    static Stream<CustomerData> customerDataProvider() {
+    static Stream<CustomerData> welcomeDataProvider() {
         Instant now = Instant.now();
         return Stream.of(
             CustomerData.sample(),
+
             CustomerData.sample().toBuilder()
                         .collectionStartedAt(now)
                         .trialPeriodEndsAt(now.plus(14, ChronoUnit.DAYS))
                         .build(),
+
             CustomerData.sample().toBuilder()
                         .pricePlan(PricePlan.of(PricePlanDefaults.TEST).toBuilder().trialPeriodDays(-1).build())
                         .build()

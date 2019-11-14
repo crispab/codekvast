@@ -30,7 +30,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -52,6 +54,8 @@ public class MailTemplateRenderer {
             Long customerId = (Long) args[0];
             collectWelcomeCollectionHasStartedData(data, customerId);
             break;
+        default:
+            throw new IllegalArgumentException("Don't know how to render " + template);
         }
 
         return compiler.withFormatter(new CodekvastFormatter()).loadTemplate(getTemplateName(template)).execute(data);
@@ -80,15 +84,20 @@ public class MailTemplateRenderer {
         return String.format("mail/%s", template.name().toLowerCase());
     }
 
-    private class CodekvastFormatter implements Mustache.Formatter {
+    static class CodekvastFormatter implements Mustache.Formatter {
         @SuppressWarnings("ChainOfInstanceofChecks")
         @Override
         public String format(Object value) {
             if (value instanceof Instant) {
-                return value.toString().replace("T", " ").replaceAll("\\.[0-9]+", "").replaceAll("Z$", " UTC");
+                return value.toString()
+                            .replace("T", " ") // the 'T' between date and time
+                            .replaceAll("\\.[0-9]+Z$", " UTC"); // the milliseconds and timezone part
             }
             if (value instanceof Integer) {
-                return String.format("%,d", value);
+                return new Formatter(Locale.ENGLISH).format("%,d", value).toString();
+            }
+            if (value instanceof Long) {
+                return new Formatter(Locale.ENGLISH).format("%,d", value).toString();
             }
             return String.valueOf(value);
         }
