@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -48,8 +49,6 @@ public class MailSenderImpl implements MailSender {
     @Override
     @SneakyThrows(MessagingException.class)
     public void sendMail(Template template, String emailAddress, Object... args) {
-        logger.info("Sending mail {} to {}", template, emailAddress);
-
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
@@ -59,8 +58,13 @@ public class MailSenderImpl implements MailSender {
         String body = mailTemplateRenderer.renderTemplate(template, args);
         helper.setText(body, true);
 
-        logger.info("Sending mail with subject {} and body '{}' to {}", template.getSubject(), body, emailAddress);
-        javaMailSender.send(mimeMessage);
+        try {
+            javaMailSender.send(mimeMessage);
+            logger.info("Sent mail with subject='{}' and body='{}' to {}", template.getSubject(), body, emailAddress);
+        } catch (MailSendException e) {
+            logger.warn("Failed to send mail with subject='{}' and body='{}' to {}: {}", template.getSubject(), body, emailAddress, e.toString());
+            // Do not rethrow. Avoid spamming the log with stack traces.
+        }
     }
 
 }
