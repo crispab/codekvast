@@ -56,8 +56,10 @@ public class MailSenderImpl implements MailSender {
         helper.setSubject(template.getSubject());
         helper.setFrom("no-reply@codekvast.io");
         helper.setTo(emailAddress);
-        helper.setText(mailTemplateRenderer.renderTemplate(template, args), true);
+        String body = mailTemplateRenderer.renderTemplate(template, args);
+        helper.setText(body, true);
 
+        logger.info("Sending mail with subject {} and body '{}' to {}", template.getSubject(), body, emailAddress);
         javaMailSender.send(mimeMessage);
     }
 
