@@ -31,14 +31,14 @@
             cloudfront: 'Z2FDTNDATAQYW2'
 
     email_dns_records:
-    - name: 'lgjaccttx36w4jfk5vwoxqqbiq6lfydj._domainkey.codekvast.io'
-      value: 'lgjaccttx36w4jfk5vwoxqqbiq6lfydj.dkim.amazonses.com'
+    - name: '7gs2gnhqp5ao2xoef4gv3vpr54ckn3zq._domainkey.codekvast.io'
+      value: '7gs2gnhqp5ao2xoef4gv3vpr54ckn3zq.dkim.amazonses.com'
       owner: 'AWS Simple Email Services'
-    - name: 'u2mxpq6jjxgvyvybo7m5lbat4ioquvze._domainkey.codekvast.io'
-      value: 'u2mxpq6jjxgvyvybo7m5lbat4ioquvze.dkim.amazonses.com'
+    - name: 'ayjc6qn6thqgrnu4bcjt5ugslxhkbrjb._domainkey.codekvast.io'
+      value: 'ayjc6qn6thqgrnu4bcjt5ugslxhkbrjb.dkim.amazonses.com'
       owner: 'AWS Simple Email Services'
-    - name: 'wxob5eurnqsq5fkhny42wt77p2u5ex2h._domainkey.codekvast.io'
-      value: 'wxob5eurnqsq5fkhny42wt77p2u5ex2h.dkim.amazonses.com'
+    - name: 'gepcir4h22qqcmdpxogxyg3tuvteeedv._domainkey.codekvast.io'
+      value: 'gepcir4h22qqcmdpxogxyg3tuvteeedv.dkim.amazonses.com'
       owner: 'AWS Simple Email Services'
     - name: '_amazonses.codekvast.io'
       type: TXT
