@@ -1,26 +1,26 @@
 import io.codekvast.backoffice.facts.CollectionStarted
 import io.codekvast.backoffice.facts.ContactDetails
-import io.codekvast.common.messaging.model.CodekvastEvent
-import io.codekvast.common.messaging.model.CollectionStartedEvent
 import io.codekvast.backoffice.service.MailSender
+import io.codekvast.common.messaging.model.AgentPolledEvent
+import io.codekvast.common.messaging.model.CodekvastEvent
 
 global java.time.Clock clock
 global Long customerId
 global io.codekvast.backoffice.service.MailSender mailSender
 global org.slf4j.Logger logger
 
-rule "Register that collection has started"
+rule "Register that agent has polled"
 when
-  $cse: CollectionStartedEvent()
+  event: AgentPolledEvent()
   not(CollectionStarted())
 then
-   insert(CollectionStarted.of($cse));
+   insert(CollectionStarted.of(event));
 end
 
-rule "Send welcome mail when collection has started"
+rule "Send welcome mail unless done before"
 when
   $cs: CollectionStarted(welcomeMailSent == false)
-  $cd: ContactDetails()
+  $cd: ContactDetails(contactEmail not matches "^!.*")
 then
   mailSender.sendMail(MailSender.Template.WELCOME_COLLECTION_HAS_STARTED, $cd.getContactEmail(), customerId);
   modify($cs) {

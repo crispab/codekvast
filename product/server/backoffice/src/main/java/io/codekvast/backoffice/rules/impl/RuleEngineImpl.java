@@ -143,10 +143,12 @@ public class RuleEngineImpl implements RuleEngine {
 
     private List<TransientFact> getTransientFacts(Long customerId) {
         List<TransientFact> result = new ArrayList<>();
+
         Optional.ofNullable(customerService.getCustomerDataByCustomerId(customerId).getContactEmail())
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .ifPresent( s-> result.add(ContactDetails.builder().contactEmail(s).build()));
+
         return result;
     }
 

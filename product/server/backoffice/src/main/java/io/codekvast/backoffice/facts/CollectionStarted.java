@@ -21,6 +21,7 @@
  */
 package io.codekvast.backoffice.facts;
 
+import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.common.messaging.model.CollectionStartedEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,5 +41,9 @@ public class CollectionStarted implements PersistentFact {
 
     public static CollectionStarted of (CollectionStartedEvent event) {
         return new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), false);
+    }
+
+    public static CollectionStarted of (AgentPolledEvent event) {
+        return new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), false);
     }
 }
