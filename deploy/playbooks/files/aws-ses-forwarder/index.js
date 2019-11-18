@@ -18,11 +18,14 @@ exports.handler = function(event, context, callback) {
             emailBucket: "mailbox.codekvast.io",
             emailKeyPrefix: "inbox/",
             forwardMapping: {
-                "support@codekvast.io": [
-                    "codekvast-support@hit.se" // NOTE: This email address must be validated in the SES console!
-                ],
                 "info@codekvast.io": [
                     "codekvast-info@hit.se" // NOTE: This email address must be validated in the SES console!
+                ],
+                "postmaster@codekvast.io": [
+                    "codekvast-postmaster@hit.se" // NOTE: This email address must be validated in the SES console!
+                ],
+                "support@codekvast.io": [
+                    "codekvast-support@hit.se" // NOTE: This email address must be validated in the SES console!
                 ]
             }
         }

@@ -24,7 +24,6 @@ package io.codekvast.dashboard.weeding
 import io.codekvast.common.lock.LockManager
 import io.codekvast.common.lock.LockManager.Lock
 import io.codekvast.common.messaging.CorrelationIdHolder
-import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -41,7 +40,7 @@ class WeedingTask
 @Inject constructor(private val lockManager: LockManager, private val weedingService: WeedingService) {
 
     /**
-     * Scheduled task that invokes the data weeding service.
+     * A scheduled task that invokes the data weeding service.
      */
     @Scheduled(initialDelayString = "\${codekvast.dataWeedingInitialDelaySeconds}000", fixedDelayString = "\${codekvast.dataWeedingIntervalSeconds}000")
     @Transactional
@@ -63,10 +62,6 @@ class WeedingTask
             CorrelationIdHolder.clear()
             Thread.currentThread().name = oldThreadName
         }
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(WeedingTask::class.java.name)!!
     }
 
 }

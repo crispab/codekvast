@@ -50,6 +50,7 @@ public class MailSenderImpl implements MailSender {
     @SneakyThrows(MessagingException.class)
     public void sendMail(Template template, String emailAddress, Object... args) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        mimeMessage.setHeader("Return-Path", "postmaster@codekvast.io");
 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
         helper.setSubject(template.getSubject());
