@@ -48,7 +48,7 @@
       owner: 'AWS Simple Email Services'
     - name: 'codekvast.io'
       type: MX
-      value: '10 inbound-smtp.eu-west-1.amazonaws.com'
+      value: '10 inbound-smtp.eu-west-1.amazonaws.com' # Frankfurt does not handle incoming mail
       owner: 'AWS Simple Email Services'
 
     other_dns_records:
@@ -205,7 +205,7 @@
   - name: Install email forwarder lambda
     lambda:
         profile: codekvast
-        region: "eu-west-1"
+        region: "eu-west-1" # Codekvast's MX record points to eu-west-1
         name: "mail-forwarder"
         role: "arn:aws:iam::186662504461:role/Mail-forwarder"
         handler: "index.handler"
