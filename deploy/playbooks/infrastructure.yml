@@ -42,7 +42,9 @@
       owner: 'AWS Simple Email Services'
     - name: '_amazonses.codekvast.io'
       type: TXT
-      value: '"eieDOHvpRK2mPPjSTt2A8FJC2U+/dBAsrLzoaxvAW6Y="'
+      value:
+        - '"eieDOHvpRK2mPPjSTt2A8FJC2U+/dBAsrLzoaxvAW6Y="' # Frankfurt
+        - '"ANhwmN6zcU+GrPdkurz7p3HwZiQBRlnqsH5k/23s/CY="' # Ireland
       owner: 'AWS Simple Email Services'
     - name: 'codekvast.io'
       type: MX
