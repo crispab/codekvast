@@ -775,6 +775,7 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("invocations"), is(2));
         assertThat(countRowsInTable("applications"), is(5));
         assertThat(countRowsInTable("environments"), is(5));
+        assertThat(countRowsInTable("method_locations"), is(6));
         assertThat(countRowsInTable("methods"), is(10));
         assertThat(countRowsInTable("jvms"), is(5));
         assertThat(countRowsInTable("agent_state"), is(5));
@@ -786,6 +787,7 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("invocations"), is(1));
         assertThat(countRowsInTable("applications"), is(4));
         assertThat(countRowsInTable("environments"), is(4));
+        assertThat(countRowsInTable("method_locations"), is(3));
         assertThat(countRowsInTable("methods"), is(1));
         assertThat(countRowsInTable("jvms"), is(4));
         assertThat(countRowsInTable("agent_state"), is(4));
@@ -799,6 +801,7 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("applications"), not(is(0)));
         assertThat(countRowsInTable("environments"), not(is(0)));
         assertThat(countRowsInTable("methods"), not(is(0)));
+        assertThat(countRowsInTable("method_locations"), not(is(0)));
         assertThat(countRowsInTable("jvms"), is(4));
         assertThat(countRowsInTable("agent_state"), is(4));
 
@@ -810,6 +813,7 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("applications"), is(0));
         assertThat(countRowsInTable("environments"), is(0));
         assertThat(countRowsInTable("methods"), is(0));
+        assertThat(countRowsInTable("method_locations"), is(0));
         assertThat(countRowsInTable("jvms"), is(0));
         assertThat(countRowsInTable("agent_state"), is(0));
     }

@@ -63,7 +63,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
             deletedMethodLocations = jdbcTemplate.update("""
                 DELETE ml FROM method_locations AS ml
-                LEFT JOIN invocations AS i ON ml.id = i.methodId
+                LEFT JOIN invocations AS i ON ml.methodId = i.methodId
                 WHERE i.methodId IS NULL""")
 
             deletedMethods = jdbcTemplate.update("""

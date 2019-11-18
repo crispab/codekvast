@@ -46,7 +46,7 @@ public class CachingConfig {
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCaffeineSpec(CaffeineSpec.parse("expireAfterAccess=60s, weakKeys, weakValues, recordStats"));
+        cacheManager.setCaffeineSpec(CaffeineSpec.parse("expireAfterAccess=10m, weakKeys, weakValues, recordStats"));
         return cacheManager;
     }
 
