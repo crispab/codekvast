@@ -31,6 +31,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -63,6 +65,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("customers")
     public CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("c.licenseKey = ?", licenseKey);
@@ -73,6 +76,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("customers")
     public CustomerData getCustomerDataByCustomerId(long customerId) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("c.id = ?", customerId);
@@ -83,6 +87,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("customers")
     public List<CustomerData> getCustomerDataByUserEmail(String email) {
         List<CustomerData> result = new ArrayList<>();
 
@@ -101,6 +106,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("customers")
     public CustomerData getCustomerDataByExternalId(@NonNull String source, @NonNull String externalId) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("c.source = ? AND c.externalId = ?", source, externalId);
@@ -154,7 +160,6 @@ public class CustomerServiceImpl implements CustomerService {
                                           Timestamp.from(result.getCollectionStartedAt()),
                                           Optional.ofNullable(result.getTrialPeriodEndsAt()).map(Timestamp::from).orElse(null),
                                           customerData.getCustomerId());
-
         if (updated <= 0) {
             logger.error("Failed to record collection started for {}", result);
         } else {
@@ -208,6 +213,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "customers", allEntries = true)
     public AddCustomerResponse addCustomer(AddCustomerRequest request) {
         Long newCustomerId = null;
         String licenseKey = null;
@@ -222,7 +228,7 @@ public class CustomerServiceImpl implements CustomerService {
                 licenseKey = (String) result.get("licenseKey");
                 logger.info("Found existing Heroku customerId={}, licenseKey '{}'", newCustomerId, licenseKey);
             } catch (IncorrectResultSizeDataAccessException e) {
-                logger.debug("Heroku request was not a retry");
+                logger.debug("The Heroku request was not a retried attempt");
             }
         }
 
@@ -248,6 +254,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "customers", allEntries = true)
     public void changePlanForExternalId(String source, @NonNull String externalId, @NonNull String newPlanName) {
         CustomerData customerData = getCustomerDataByExternalId(source, externalId);
         PricePlan oldEffectivePricePlan = customerData.getPricePlan();
@@ -292,6 +299,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "customers", allEntries = true)
     public void deleteCustomerByExternalId(@NonNull String source, String externalId) {
         CustomerData customerData = getCustomerDataByExternalId(source, externalId);
 
@@ -324,6 +332,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("roles")
     public List<String> getRoleNamesByUserEmail(String email) {
         logger.debug("Getting role names for {}", email);
         return jdbcTemplate.queryForList("SELECT roleName FROM roles WHERE email = ? ", String.class, email);
@@ -348,6 +357,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "customers", allEntries = true)
     public void updateAppDetails(String appName, String contactEmail, Long customerId) {
         int count = jdbcTemplate.update("UPDATE customers SET name = ?, contactEmail = ? WHERE id = ? ",
                                         appName, contactEmail, customerId);

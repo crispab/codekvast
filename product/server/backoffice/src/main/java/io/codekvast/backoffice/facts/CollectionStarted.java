@@ -37,13 +37,14 @@ import java.time.Instant;
 public class CollectionStarted implements PersistentFact {
     @NonNull final Instant collectionStartedAt;
     final Instant trialPeriodEndsAt;
-    boolean welcomeMailSent;
+    String welcomeMailSentTo;
+    Instant welcomeMailSentAt;
 
     public static CollectionStarted of (CollectionStartedEvent event) {
-        return new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), false);
+        return new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), null, null);
     }
 
     public static CollectionStarted of (AgentPolledEvent event) {
-        return new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), false);
+        return new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), null, null);
     }
 }

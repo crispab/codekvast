@@ -23,6 +23,7 @@ package io.codekvast.dashboard.agent.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -85,6 +86,7 @@ public class AgentDAOImpl implements AgentDAO {
     }
 
     @Override
+    @Cacheable("environments")
     public boolean isEnvironmentEnabled(long customerId, String thisJvmUuid) {
         // At the first poll from a new environment, no data has yet been published. The environment is part of the common publication data.
         List<Boolean> list = jdbcTemplate.queryForList("SELECT enabled FROM environments e, jvms j " +
@@ -95,6 +97,7 @@ public class AgentDAOImpl implements AgentDAO {
     }
 
     @Override
+    @Cacheable("environments")
     public Optional<String> getEnvironmentName(String jvmUuid) {
         List<String> names = jdbcTemplate.queryForList("SELECT name FROM environments e, jvms j " +
                                                           "WHERE e.id = j.environmentId AND j.uuid = ? ",

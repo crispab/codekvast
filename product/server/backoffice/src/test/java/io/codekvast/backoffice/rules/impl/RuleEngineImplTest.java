@@ -17,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
@@ -42,13 +43,15 @@ public class RuleEngineImplTest {
     @Mock
     private CustomerService customerService;
 
+    private Clock clock = Clock.fixed(NOW, ZoneId.of("Z"));
+
     private RuleEngine ruleEngine;
 
     @Before
     public void beforeTest() throws IOException {
         MockitoAnnotations.initMocks(this);
 
-        ruleEngine = new RuleEngineImpl(factDAO, mailSender, customerService, Clock.systemUTC()).configureDrools();
+        ruleEngine = new RuleEngineImpl(factDAO, mailSender, customerService, clock).configureDrools();
     }
 
     @Test
@@ -69,7 +72,7 @@ public class RuleEngineImplTest {
         // then
         verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, "some-email-address", customerId);
         verify(factDAO).updateFact(eq(factId), eq(customerId),
-                                   eq(new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), true)));
+                                   eq(new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), "some-email-address", NOW)));
     }
 
     @Test
@@ -115,10 +118,11 @@ public class RuleEngineImplTest {
         // given
         long customerId = 1L;
         Long factId = 4711L;
-        CollectionStarted fact = new CollectionStarted(NOW.minus(3, ChronoUnit.DAYS), null, false);
+        CollectionStarted fact = new CollectionStarted(NOW.minus(3, ChronoUnit.DAYS), null, null, null);
         when(factDAO.getFacts(customerId)).thenReturn(List.of(new FactWrapper(factId, fact)));
 
-        when(customerService.getCustomerDataByCustomerId(customerId)).thenReturn(CustomerData.sample().toBuilder().contactEmail(null).build());
+        when(customerService.getCustomerDataByCustomerId(customerId))
+            .thenReturn(CustomerData.sample().toBuilder().contactEmail(null).build());
 
         // when
         ruleEngine.handle(new AnyEvent(customerId));
@@ -136,7 +140,8 @@ public class RuleEngineImplTest {
         // then
         verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, "contactEmail", customerId);
         verify(factDAO).updateFact(eq(factId), eq(customerId),
-                                   eq(new CollectionStarted(fact.getCollectionStartedAt(), fact.getTrialPeriodEndsAt(), true)));
+                                   eq(new CollectionStarted(fact.getCollectionStartedAt(), fact.getTrialPeriodEndsAt(), "contactEmail",
+                                                            NOW)));
     }
 
     @Value

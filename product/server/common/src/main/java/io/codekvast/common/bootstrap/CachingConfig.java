@@ -22,23 +22,17 @@
 package io.codekvast.common.bootstrap;
 
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
-import org.springframework.cache.interceptor.KeyGenerator;
-import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.lang.reflect.Method;
 
 /**
  * @author olle.hallin@crisp.se
  */
-// TODO: @Configuration
-// TODO: @EnableCaching
+@Configuration
+@EnableCaching
 public class CachingConfig {
 
     public static final String KEY_GENERATOR = "codekvastKeyGenerator";
@@ -48,26 +42,6 @@ public class CachingConfig {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeineSpec(CaffeineSpec.parse("expireAfterAccess=10m, weakKeys, weakValues, recordStats"));
         return cacheManager;
-    }
-
-    @Bean(name = KEY_GENERATOR)
-    public KeyGenerator codekvastKeyGenerator() {
-        return new MethodNameAndAllArgsKeyGenerator();
-    }
-
-    /**
-     * A cache key generator that includes the method name and all parameters.
-     * <p>
-     * The default {@link org.springframework.cache.interceptor.SimpleKeyGenerator} includes only the parameters in the key,
-     * which makes it useless when there are more than one {@link Cacheable} method with similar signatures in a class.
-     */
-    @Slf4j
-    public static class MethodNameAndAllArgsKeyGenerator implements KeyGenerator {
-        @Override
-        public Object generate(Object target, Method method, Object... params) {
-            SimpleKey key = new SimpleKey(method, params);
-            return key;
-        }
     }
 
 }
