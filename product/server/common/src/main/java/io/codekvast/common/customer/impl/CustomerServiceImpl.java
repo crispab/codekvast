@@ -58,6 +58,9 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
+    private static final String CUSTOMERS_CACHE = "customers";
+    private static final String ROLES_CACHE = "roles";
+
     private final JdbcTemplate jdbcTemplate;
     private final SlackService slackService;
     private final CommonMetricsService metricsService;
@@ -65,7 +68,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("customers")
+    @Cacheable(CUSTOMERS_CACHE)
+
     public CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("c.licenseKey = ?", licenseKey);
@@ -76,7 +80,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("customers")
+    @Cacheable(CUSTOMERS_CACHE)
     public CustomerData getCustomerDataByCustomerId(long customerId) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("c.id = ?", customerId);
@@ -87,7 +91,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("customers")
+    @Cacheable(CUSTOMERS_CACHE)
     public List<CustomerData> getCustomerDataByUserEmail(String email) {
         List<CustomerData> result = new ArrayList<>();
 
@@ -106,7 +110,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("customers")
+    @Cacheable(CUSTOMERS_CACHE)
     public CustomerData getCustomerDataByExternalId(@NonNull String source, @NonNull String externalId) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("c.source = ? AND c.externalId = ?", source, externalId);
@@ -213,7 +217,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "customers", allEntries = true)
+    @CacheEvict(value = CUSTOMERS_CACHE, allEntries = true)
     public AddCustomerResponse addCustomer(AddCustomerRequest request) {
         Long newCustomerId = null;
         String licenseKey = null;
@@ -254,7 +258,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "customers", allEntries = true)
+    @CacheEvict(value = CUSTOMERS_CACHE, allEntries = true)
     public void changePlanForExternalId(String source, @NonNull String externalId, @NonNull String newPlanName) {
         CustomerData customerData = getCustomerDataByExternalId(source, externalId);
         PricePlan oldEffectivePricePlan = customerData.getPricePlan();
@@ -299,7 +303,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "customers", allEntries = true)
+    @CacheEvict(value = CUSTOMERS_CACHE, allEntries = true)
     public void deleteCustomerByExternalId(@NonNull String source, String externalId) {
         CustomerData customerData = getCustomerDataByExternalId(source, externalId);
 
@@ -332,7 +336,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("roles")
+    @Cacheable(ROLES_CACHE)
     public List<String> getRoleNamesByUserEmail(String email) {
         logger.debug("Getting role names for {}", email);
         return jdbcTemplate.queryForList("SELECT roleName FROM roles WHERE email = ? ", String.class, email);
@@ -357,7 +361,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "customers", allEntries = true)
+    @CacheEvict(value = CUSTOMERS_CACHE, allEntries = true)
     public void updateAppDetails(String appName, String contactEmail, Long customerId) {
         int count = jdbcTemplate.update("UPDATE customers SET name = ?, contactEmail = ? WHERE id = ? ",
                                         appName, contactEmail, customerId);

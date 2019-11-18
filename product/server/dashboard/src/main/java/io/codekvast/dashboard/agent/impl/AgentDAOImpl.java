@@ -43,6 +43,8 @@ import static java.lang.Boolean.TRUE;
 @Slf4j
 public class AgentDAOImpl implements AgentDAO {
 
+    private static final String ENVIRONMENTS_CACHE = "environments";
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -86,7 +88,7 @@ public class AgentDAOImpl implements AgentDAO {
     }
 
     @Override
-    @Cacheable("environments")
+    @Cacheable(ENVIRONMENTS_CACHE)
     public boolean isEnvironmentEnabled(long customerId, String thisJvmUuid) {
         // At the first poll from a new environment, no data has yet been published. The environment is part of the common publication data.
         List<Boolean> list = jdbcTemplate.queryForList("SELECT enabled FROM environments e, jvms j " +
@@ -97,7 +99,7 @@ public class AgentDAOImpl implements AgentDAO {
     }
 
     @Override
-    @Cacheable("environments")
+    @Cacheable(ENVIRONMENTS_CACHE)
     public Optional<String> getEnvironmentName(String jvmUuid) {
         List<String> names = jdbcTemplate.queryForList("SELECT name FROM environments e, jvms j " +
                                                           "WHERE e.id = j.environmentId AND j.uuid = ? ",
