@@ -70,3 +70,17 @@ ${GRADLEW} ${GRADLE_OPTS} :product:dist:uploadToS3
 
 echo "Uploading codekvast-agent-${CODEKVAST_VERSION}.jar to jcenter ..."
 ${GRADLEW} ${GRADLE_OPTS} :product:agent:java-agent:bintrayUpload
+
+cat << EOF
+----------------------------------------------------------------------------------------------------------------------------------------
+
+Don't forget to update the following pages in codekvast-site:
+
+* src/jbake/content/pages/getting-started.adoc
+* src/jbake/content/pages/heroku-add-on.md
+
+Also, don't forget to copy heroku-add-on.md to
+https://devcenter.heroku.com/admin/articles/4065/edit
+
+----------------------------------------------------------------------------------------------------------------------------------------
+EOF
