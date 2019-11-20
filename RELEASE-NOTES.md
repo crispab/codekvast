@@ -5,6 +5,8 @@
 1. Upgraded to Spring Boot 2.2
 1. Upgraded to MariaDB 10.4
 1. New field "environment" in the GetConfigPoll (java-agent 1.1 is still supported)
+1. The agent now supports overriding of config parameters with system properties.
+   Example: -Dcodekvast.appVersion=1.2.3 will override appVersion=xxx in codekvast.conf
 
 ## 1.1
 

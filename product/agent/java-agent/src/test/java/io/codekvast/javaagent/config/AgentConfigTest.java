@@ -13,6 +13,9 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertNotNull;
@@ -23,13 +26,22 @@ public class AgentConfigTest {
     private File file = classpathResourceAsFile("/codekvast1.conf");
     private AgentConfig config = AgentConfigFactory.parseAgentConfig(file, null);
 
+    private Set<String> modifiedSystemProps = new HashSet<>();
+
+    private void setSystemProperty(String key, String value) {
+        System.setProperty(key, value);
+        modifiedSystemProps.add(key);
+    }
+
     @After
     public void afterTest() {
-        System.clearProperty(AgentConfigFactory.SYSPROP_OPTS);
+        for (String key : modifiedSystemProps) {
+            System.clearProperty(key);
+        }
     }
 
     @Test
-    public void testParseConfigFileWithOverride() {
+    public void should_override_file_values_with_command_line_args() {
         AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, "appName=appName2;enabled=false");
         assertThat(config, not(is(config2)));
         assertThat(config.getAppName(), is("appName1"));
@@ -40,19 +52,35 @@ public class AgentConfigTest {
     }
 
     @Test
-    public void testParseConfigFilePathWithSyspropAndCmdLineOverride() {
-        System.setProperty(AgentConfigFactory.SYSPROP_OPTS, "codeBase=/path/to/$appName");
+    public void should_override_file_values_with_individual_system_props() {
+        // given
+        setSystemProperty("codekvast.enabled", "false");
+        String appVersion = UUID.randomUUID().toString();
+        setSystemProperty("codekvast.appVersion", appVersion);
+
+        // when
+        AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, null);
+
+        // then
+        assertThat(config2.isEnabled(), is(false));
+        assertThat(config2.getAppVersion(), is(appVersion));
+    }
+
+    @Test
+    public void should_override_file_values_with_command_line_args_and_codekvast_opts() {
+        setSystemProperty(AgentConfigFactory.SYSPROP_OPTS, "codeBase=/path/to/$appName");
+
         AgentConfig config = AgentConfigFactory.parseAgentConfig(
             classpathResourceAsFile("/incomplete-agent-config.conf"),
-            "appName=some-app-name;appVersion=version;");
+            "appName=some-app-name;appVersion=some-version;");
         assertThat(config.getAppName(), is("some-app-name"));
-        assertThat(config.getAppVersion(), is("version"));
+        assertThat(config.getAppVersion(), is("some-version"));
         assertThat(config.getCodeBase(), is("/path/to/some-app-name"));
         assertThat(config.getHostname(), is(Constants.HOST_NAME));
     }
 
     @Test
-    public void testGetFilenamePrefix() {
+    public void should_normalize_filename_prefix() {
         AgentConfig config = AgentConfigFactory
             .createTemplateConfig()
             .toBuilder()

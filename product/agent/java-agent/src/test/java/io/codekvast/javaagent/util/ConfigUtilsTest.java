@@ -22,6 +22,7 @@ public class ConfigUtilsTest {
     private static final String MY_PROP1 = ConfigUtilsTest.class.getName() + ".prop1";
     private static final String MY_PROP2 = ConfigUtilsTest.class.getName() + ".prop2";
     private static final String MY_PROP3 = ConfigUtilsTest.class.getName() + ".prop3";
+    private static final String CODEKVAST_APP_VERSION = "codekvast.appVersion";
 
     @Rule
     public OutputCaptureRule output = new JulAwareOutputCapture();
@@ -30,12 +31,19 @@ public class ConfigUtilsTest {
     public void afterTest() {
         System.getProperties().remove(MY_PROP1);
         System.getProperties().remove(MY_PROP2);
+        System.getProperties().remove(MY_PROP3);
+        System.getProperties().remove(CODEKVAST_APP_VERSION);
     }
 
     @Test
     public void should_compute_codekvast_prefixed_env_var_names() {
         assertThat(getEnvVarName("foo"), is("CODEKVAST_FOO"));
         assertThat(getEnvVarName("fooBarBaz"), is("CODEKVAST_FOO_BAR_BAZ"));
+    }
+
+    @Test
+    public void should_compute_codekvast_prefixed_system_property_names() {
+        assertThat(getSystemPropertyName("fooBar"), is("codekvast.fooBar"));
     }
 
     @Test
@@ -82,6 +90,7 @@ public class ConfigUtilsTest {
 
     @Test
     public void should_expand_variables() {
+        // given
         System.setProperty(MY_PROP1, "XXX");
         System.setProperty(MY_PROP2, "YYY");
         String userVariableName;
@@ -93,10 +102,22 @@ public class ConfigUtilsTest {
         Properties props = new Properties();
         props.setProperty(MY_PROP1, "XXX_from_props");
         props.setProperty(MY_PROP3, "ZZZ");
-        assertThat(expandVariables(props, userVariableName + " ${" + MY_PROP1 + "} foo ${" + MY_PROP2 + "} bar ${" + MY_PROP3
-                           + "}"),
-                   is(System.getProperty("user.name") + " XXX foo YYY bar ZZZ"));
 
+        // when
+        String actual = expandVariables(props, userVariableName + " ${" + MY_PROP1 + "} foo ${" + MY_PROP2 + "} bar ${" + MY_PROP3 + "}");
+
+        // then
+        assertThat(actual, is(System.getProperty("user.name") + " XXX foo YYY bar ZZZ"));
+    }
+
+    @Test
+    public void should_detect_codekvast_system_properties() {
+        System.setProperty(CODEKVAST_APP_VERSION, "sysprop-appVersion");
+
+        Properties props = new Properties();
+        props.setProperty("appVersion", "some-app-version");
+
+        assertThat(expandVariables(props, "appVersion", "default-app-version"), is("sysprop-appVersion"));
     }
 
     @Test

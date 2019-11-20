@@ -69,8 +69,11 @@ public final class ConfigUtils {
         return expandVariables(props, propertyName, defaultValue);
     }
 
-    private static String expandVariables(Properties props, String key, String defaultValue) {
+    static String expandVariables(Properties props, String key, String defaultValue) {
         String value = System.getenv(getEnvVarName(key));
+        if (value == null) {
+            value = System.getProperty(getSystemPropertyName(key));
+        }
         if (value == null) {
             value = props.getProperty(key, defaultValue);
         }
@@ -111,6 +114,10 @@ public final class ConfigUtils {
 
     static String getEnvVarName(String propertyName) {
         return "CODEKVAST_" + propertyName.replaceAll("([A-Z])", "_$1").toUpperCase();
+    }
+
+    static String getSystemPropertyName(String key) {
+        return "codekvast." + key;
     }
 
     public static boolean getOptionalBooleanValue(Properties props, String key, boolean defaultValue) {
