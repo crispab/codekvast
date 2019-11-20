@@ -79,8 +79,10 @@ Don't forget to update the following pages in codekvast-site:
 * src/jbake/content/pages/getting-started.adoc
 * src/jbake/content/pages/heroku-add-on.md
 
-Also, don't forget to copy heroku-add-on.md to
+Then copy heroku-add-on.md to
 https://devcenter.heroku.com/admin/articles/4065/edit
+(without the front matter).
 
+Finally, step codekvastVersion in gradle.properties.
 ----------------------------------------------------------------------------------------------------------------------------------------
 EOF
