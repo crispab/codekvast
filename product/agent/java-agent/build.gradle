@@ -191,9 +191,9 @@ publishing {
                 packaging 'jar'
             }
 
-            project.shadow.component(publication)
-            artifact sourcesJar { classifier "sources" }
-            artifact javadocJar { classifier "javadoc" }
+            artifact file("build/libs/codekvast-javaagent-${codekvastVersion}.jar")
+            artifact sourcesJar
+            artifact javadocJar
         }
     }
 }
@@ -207,6 +207,7 @@ bintray {
 
     dryRun = false
     publish = true
+    override = true
 
     pkg {
         userOrg = 'crisp'
@@ -219,7 +220,7 @@ bintray {
         licenses = ['MIT']
         githubRepo = 'crispab/codekvast'
         githubReleaseNotesFile = 'RELEASE-NOTES.md'
-        publicDownloadNumbers = true
+        publicDownloadNumbers = false
 
         version {
             name = project.codekvastVersion
@@ -230,4 +231,4 @@ bintray {
     }
 }
 
-bintrayUpload.dependsOn build, "generatePomFileForShadowJarPublication"
+bintrayUpload.dependsOn build, generatePomFileForShadowJarPublication
