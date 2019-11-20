@@ -70,9 +70,9 @@ public final class ConfigUtils {
     }
 
     static String expandVariables(Properties props, String key, String defaultValue) {
-        String value = System.getenv(getEnvVarName(key));
+        String value = System.getProperty(getSystemPropertyName(key));
         if (value == null) {
-            value = System.getProperty(getSystemPropertyName(key));
+            value = System.getenv(getEnvVarName(key));
         }
         if (value == null) {
             value = props.getProperty(key, defaultValue);

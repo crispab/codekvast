@@ -74,15 +74,23 @@ ${GRADLEW} ${GRADLE_OPTS} :product:agent:java-agent:bintrayUpload
 cat << EOF
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-Don't forget to update the following pages in codekvast-site:
+Almost done.
 
-* src/jbake/content/pages/getting-started.adoc
-* src/jbake/content/pages/heroku-add-on.md
+Here's the ToDo-list for post-release stuff:
 
-Then copy heroku-add-on.md to
-https://devcenter.heroku.com/admin/articles/4065/edit
-(without the front matter).
+* Step codekvastVersion in gradle.properties
 
-Finally, step codekvastVersion in gradle.properties.
+* Start a new version in RELEASE-NOTES.md
+
+* Edit src/html/index.html and add the previous version
+
+    * gradlew :product:dist:uploadToS3
+
+* Update codekvast-site:
+    * Write a news flash about the new version
+    * Update src/jbake/content/pages/getting-started.adoc
+    * Update src/jbake/content/pages/heroku-add-on.md
+    * Copy heroku-add-on.md to https://devcenter.heroku.com/admin/articles/4065/edit (without the front matter).
+
 ----------------------------------------------------------------------------------------------------------------------------------------
 EOF
