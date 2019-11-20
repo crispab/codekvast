@@ -1,5 +1,7 @@
 # Codekvast Release Notes
 
+## 1.3
+
 ## 1.2
 
 1. Upgraded to Spring Boot 2.2

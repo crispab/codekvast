@@ -78,13 +78,13 @@ Almost done.
 
 Here's the ToDo-list for post-release stuff:
 
+* Edit product/dist/src/html/index.html and add the previous version to the list of older versions
+
+* gradlew :product:dist:uploadToS3
+
 * Step codekvastVersion in gradle.properties
 
 * Start a new version in RELEASE-NOTES.md
-
-* Edit src/html/index.html and add the previous version
-
-    * gradlew :product:dist:uploadToS3
 
 * Update codekvast-site:
     * Write a news flash about the new version
