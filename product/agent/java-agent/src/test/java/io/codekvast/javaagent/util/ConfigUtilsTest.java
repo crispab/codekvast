@@ -89,7 +89,7 @@ public class ConfigUtilsTest {
     }
 
     @Test
-    public void should_expand_variables() {
+    public void should_expand_variables_with_braces() {
         // given
         System.setProperty(MY_PROP1, "XXX");
         System.setProperty(MY_PROP2, "YYY");
@@ -108,6 +108,28 @@ public class ConfigUtilsTest {
 
         // then
         assertThat(actual, is(System.getProperty("user.name") + " XXX foo YYY bar ZZZ"));
+    }
+
+    @Test
+    public void should_expand_variables_without_braces() {
+        // given
+        System.setProperty(MY_PROP1, "XXX");
+        System.setProperty(MY_PROP2, "YYY");
+        String userVariableName;
+        if (System.getProperty("os.name").startsWith(("Windows"))) {
+            userVariableName = "$USERNAME";
+        } else {
+             userVariableName = "$USER";
+        }
+        Properties props = new Properties();
+        props.setProperty(MY_PROP1, "XXX_from_props");
+        props.setProperty(MY_PROP3, "ZZZ");
+
+        // when
+        String actual = expandVariables(props, userVariableName + " $" + MY_PROP1 + " foo $" + MY_PROP2 + " bar $" + MY_PROP3 + "${user.name}baz");
+
+        // then
+        assertThat(actual, is(System.getProperty("user.name") + " XXX foo YYY bar ZZZ" + System.getProperty("user.name") + "baz"));
     }
 
     @Test
