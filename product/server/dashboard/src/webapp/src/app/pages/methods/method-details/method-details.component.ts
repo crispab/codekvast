@@ -1,6 +1,7 @@
 import {ActivatedRoute, Params} from '@angular/router';
 import {AgePipe} from '../../../pipes/age.pipe';
 import {ClientSettings} from '../../../model/client-settings';
+import {ClipboardService} from 'ngx-clipboard';
 import {Component, OnInit} from '@angular/core';
 import {DashboardApiService} from '../../../services/dashboard-api.service';
 import {DatePipe, Location} from '@angular/common';
@@ -20,7 +21,7 @@ export class MethodDetailsComponent implements OnInit {
     settings: ClientSettings;
 
     constructor(private route: ActivatedRoute, private location: Location, private stateService: StateService,
-                private api: DashboardApiService, private agePipe: AgePipe) {
+                private api: DashboardApiService, private agePipe: AgePipe, private clipboardService: ClipboardService) {
     }
 
     ngOnInit(): void {
@@ -47,5 +48,11 @@ export class MethodDetailsComponent implements OnInit {
     communicationFailure() {
         let now = this.agePipe.transform(new Date(), this.settings.dateFormat);
         return now + ': Communication failure';
+    }
+
+    copySignatureToClipboard() {
+        let lparen = this.method.signature.indexOf('(');
+
+        this.clipboardService.copyFromContent(this.method.signature.slice(0, lparen < 0 ? this.method.signature.length : lparen));
     }
 }

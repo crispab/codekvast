@@ -3,6 +3,7 @@ import {APP_BASE_HREF, registerLocaleData} from '@angular/common';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserModule, Title} from '@angular/platform-browser';
+import {ClipboardModule} from 'ngx-clipboard';
 import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './pages/home/home.component';
@@ -56,7 +57,7 @@ function selectBestLocale() {
 
 @NgModule({
     imports: [
-        AppRoutingModule, BrowserModule, CookieModule.forRoot(), FormsModule, HttpClientModule, NgbModule
+        AppRoutingModule, BrowserModule, ClipboardModule, CookieModule.forRoot(), FormsModule, HttpClientModule, NgbModule
     ],
     declarations: [
         AgePipe,

@@ -25,6 +25,7 @@
         "@angular/router": "7.2.6",
         "@ng-bootstrap/ng-bootstrap": "4.2.2",
         "core-js": "2.6.5",
+        "ngx-clipboard": "12.2.1",
         "ngx-cookie": "4.0.2",
         "rxjs": "6.4.0",
         "tslib": "1.9.0",
