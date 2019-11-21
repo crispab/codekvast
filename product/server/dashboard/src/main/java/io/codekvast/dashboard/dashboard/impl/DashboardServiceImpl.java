@@ -72,7 +72,7 @@ public class DashboardServiceImpl implements DashboardService {
         // See io.codekvast.dashboard.dashboard.impl.DashboardServiceImplSyntheticSignatureTest
         SYNTHETIC_SIGNATURE_PATTERN = Pattern.compile(
             ".*(\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\$[a-z]+\\(\\)$|\\.\\.anonfun\\..*|\\.\\.(Enhancer|FastClass)" +
-                "BySpringCGLIB\\.\\..*)");
+                "BySpringCGLIB\\.\\..*|\\.canEqual\\(java\\.lang\\.Object\\))");
     }
 
     private final JdbcTemplate jdbcTemplate;

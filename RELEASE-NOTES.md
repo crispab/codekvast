@@ -3,7 +3,7 @@
 ## 1.3
 
 1. Fixed some UX glitches in Dashboard's Method form.
-1. Added 'boolean canEqual(Object))' to trivial methods that are excluded from tracking.
+1. Added '*.canEqual(java.lang.Object)' to synthetic methods
 
 ## 1.2
 

@@ -50,7 +50,6 @@ public abstract class AbstractMethodExecutionAspect {
     @SuppressWarnings("NoopMethodInAbstractClass")
     @Pointcut("execution(int compareTo(Object)) " +
         "|| execution(boolean equals(Object)) " +
-        "|| execution(boolean canEqual(Object)) " +
         "|| execution(int hashCode()) " +
         "|| execution(String toString()) ")
     public void trivialMethodExecution() {

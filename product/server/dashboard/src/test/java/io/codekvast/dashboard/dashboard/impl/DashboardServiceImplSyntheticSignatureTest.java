@@ -75,6 +75,7 @@ public class DashboardServiceImplSyntheticSignatureTest {
             {true, "support.customer1.application.view.magazine.Article.$lessinit$greater$default$10()"},
             {true, "views.html.customer1.application.export.header.copy$default$1()"},
             {true, "views.html.defaultpages.devError.copy$default$1()"},
+            {true, "io.codekvast.backoffice.facts.CollectionStarted.canEqual(java.lang.Object)"},
             };
         // @formatter:on
     }
