@@ -51,8 +51,6 @@ export class MethodDetailsComponent implements OnInit {
     }
 
     copySignatureToClipboard() {
-        let lparen = this.method.signature.indexOf('(');
-
-        this.clipboardService.copyFromContent(this.method.signature.slice(0, lparen < 0 ? this.method.signature.length : lparen));
+        this.clipboardService.copyFromContent(Method.stripArgumentsFromSignature(this.method));
     }
 }

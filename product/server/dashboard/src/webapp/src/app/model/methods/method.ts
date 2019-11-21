@@ -24,4 +24,9 @@ export class Method {
     static hasInconsistentTracking(m: Method) {
         return m.trackedPercent > 0 && m.trackedPercent < 100;
     }
+
+    static stripArgumentsFromSignature(m: Method) {
+        let lparen = m.signature.indexOf('(');
+        return m.signature.slice(0, lparen < 0 ? m.signature.length : lparen);
+    }
 }
