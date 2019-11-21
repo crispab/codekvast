@@ -2,6 +2,9 @@
 
 ## 1.3
 
+1. Fixed some UX glitches in Dashboard's Method form.
+1. Added 'boolean canEqual(Object))' to trivial methods that are excluded from tracking.
+
 ## 1.2
 
 1. Upgraded to Spring Boot 2.2
