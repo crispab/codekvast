@@ -15,6 +15,8 @@ import {StateService} from '../../services/state.service';
     providers: [AgePipe, DatePipe]
 })
 export class MethodsComponent implements OnInit {
+    static readonly PROBABLY_GONE_DAYS = 7;
+
     settings: ClientSettings;
     state: MethodsComponentState;
 
@@ -49,5 +51,13 @@ export class MethodsComponent implements OnInit {
 
     hasInconsistentTracking(m: Method) {
         return Method.hasInconsistentTracking(m);
+    }
+
+    isProbablyGone(method: Method) {
+        return Method.isProbablyGone(method, MethodsComponent.PROBABLY_GONE_DAYS);
+    }
+
+    getProbablyGoneDays() {
+        return MethodsComponent.PROBABLY_GONE_DAYS;
     }
 }

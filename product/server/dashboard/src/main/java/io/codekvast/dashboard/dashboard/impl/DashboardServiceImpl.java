@@ -127,7 +127,8 @@ public class DashboardServiceImpl implements DashboardService {
         String sql = "SELECT\n" +
             "    m.id, m.signature, MAX(i.status) AS status, " +
             "    ((TO_SECONDS(:now) - TO_SECONDS(MIN(j.startedAt))) DIV 86400) AS collectedDays,\n" +
-            "    MAX(i.invokedAtMillis) AS lastInvokedAtMillis\n" +
+            "    MAX(i.invokedAtMillis) AS lastInvokedAtMillis," +
+            " MAX(j.publishedAt) AS lastPublishedAt\n" +
             "FROM invocations i, methods m, jvms j\n" +
             "WHERE " + whereClause + " AND i.methodId = m.id AND i.jvmId = j.id AND j.garbage = FALSE\n" +
             "GROUP BY m.signature\n" +
@@ -169,8 +170,8 @@ public class DashboardServiceImpl implements DashboardService {
                                  .trackedPercent(status.isTracked() ? 100 : 0)
                                  .collectedDays(collectedDays)
                                  .lastInvokedAtMillis(pricePlan.adjustTimestampMillis(rs.getLong("lastInvokedAtMillis"), clock))
+                                 .collectedToMillis(rs.getTimestamp("lastPublishedAt").getTime())
                                  .build());
-
         });
 
 

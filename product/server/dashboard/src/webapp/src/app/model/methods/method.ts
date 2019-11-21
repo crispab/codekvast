@@ -31,9 +31,7 @@ export class Method {
     }
 
     static isProbablyGone(m: Method, days: number) {
-        let lastReportAtMillis = m.occursInApplications.map(a => a.publishedAtMillis)
-                                  .reduce((previousValue, currentValue) => Math.max(previousValue, currentValue));
-        let lastReportAgeInMillis = new Date().getTime() - lastReportAtMillis;
+        let lastReportAgeInMillis = new Date().getTime() - m.collectedToMillis;
         let lastReportAgeInDays = lastReportAgeInMillis / 1000 / 60 / 60 / 24;
         return lastReportAgeInDays >= days;
     }

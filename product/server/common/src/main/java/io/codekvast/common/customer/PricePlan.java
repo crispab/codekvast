@@ -111,7 +111,7 @@ public class PricePlan {
     /**
      * Adjusts an instant with respect to the retention period.
      *
-     * If a retention period is defined, the the returned instant will not be
+     * If a retention period is defined, the returned instant will not be
      * before the start of the retention period.
      *
      * @param realTimestampMillis The real instant. May be null.
@@ -119,7 +119,7 @@ public class PricePlan {
      * @return The value to present to the user (or null).
      */
     public Long adjustTimestampMillis(Long realTimestampMillis, Clock clock) {
-        if (realTimestampMillis == null || realTimestampMillis == 0L || retentionPeriodDays < 0) {
+        if (realTimestampMillis == null || realTimestampMillis == 0L || retentionPeriodDays <= 0) {
             return realTimestampMillis;
         }
         long retentionPeriodStart = clock.instant().minus(retentionPeriodDays, DAYS).toEpochMilli();

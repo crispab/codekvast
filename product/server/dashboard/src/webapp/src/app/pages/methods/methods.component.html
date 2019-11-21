@@ -268,6 +268,7 @@
                     <th (click)="state.sortByAge()" class="age-column">
                         Last Invoked <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i>
                     </th>
+                    <td class="row-icon-column"><i class="fas fa-question-circle invisible" aria-hidden="true"></i></td>
                     <td class="row-icon-column"><i class="fas fa-ellipsis-h invisible" aria-hidden="true"></i></td>
                 </tr>
                 </thead>
@@ -286,12 +287,25 @@
                     <td class="age-column wrap-word">
                         {{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}
                     </td>
-                    <td class="icon-column">
+                    <td class="row-icon-column">
+                        <span *ngIf="isProbablyGone(method)"
+                              [ngbPopover]="probablyGonePopover"
+                              triggers="mouseenter:mouseleave"
+                              placement="left"
+                              class="text-success">
+                            <i class="fas fa-question" aria-hidden="true"></i>
+                        </span>
+                    </td>
+
+                    <td class="row-icon-column">
                         <i [ngClass]="state.rowIconClasses(method.id)" aria-hidden="true"></i>
                     </td>
                 </tr>
                 </tbody>
             </table>
+            <ng-template #probablyGonePopover>
+                This method is probably gone from the codebase. It has not been reported by any application in any environment in {{ getProbablyGoneDays() }} days.
+            </ng-template>
         </div>
     </div>
 </div>

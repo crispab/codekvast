@@ -1,7 +1,7 @@
 import {ActivatedRoute, Params} from '@angular/router';
 import {AgePipe} from '../../../pipes/age.pipe';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component} from '@angular/core';
+import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
 import {InvocationStatusPipe} from '../../../pipes/invocation-status.pipe';
 import {MethodDetailsComponent} from './method-details.component';
 import {Observable} from 'rxjs';
@@ -50,8 +50,8 @@ describe('MethodDetailsComponent', () => {
                                }
                            } as DashboardApiService
                        }
-                   ]
-
+                   ],
+                   schemas: [NO_ERRORS_SCHEMA],
                })
                .compileComponents();
     }));

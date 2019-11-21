@@ -47,4 +47,7 @@ public class MethodDescriptor2 {
 
     @NonNull
     private Long lastInvokedAtMillis;
+
+    @NonNull
+    private Long collectedToMillis;
 }

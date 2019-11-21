@@ -9,6 +9,7 @@ import {InvocationStatusPipe} from '../../../pipes/invocation-status.pipe';
 import {Method} from '../../../model/methods/method';
 import {StateService} from '../../../services/state.service';
 import {switchMap} from 'rxjs/operators';
+import {MethodsComponent} from '../methods.component';
 
 @Component({
     selector: 'app-method-details',
@@ -16,7 +17,6 @@ import {switchMap} from 'rxjs/operators';
     providers: [AgePipe, DatePipe, InvocationStatusPipe]
 })
 export class MethodDetailsComponent implements OnInit {
-    static readonly PROBABLY_GONE_DAYS = 7;
 
     method: Method;
     errorMessage: string;
@@ -57,9 +57,8 @@ export class MethodDetailsComponent implements OnInit {
     }
 
     probablyGoneClasses() {
-        let probablyGone = Method.isProbablyGone(this.method, MethodDetailsComponent.PROBABLY_GONE_DAYS);
-        console.log(`${this.method.signature} is probably gone: ${probablyGone}`);
-        return  {
+        let probablyGone = Method.isProbablyGone(this.method, MethodsComponent.PROBABLY_GONE_DAYS);
+        return {
             invisible: !probablyGone,
             rounded: probablyGone,
             'bg-success': probablyGone,
@@ -67,10 +66,10 @@ export class MethodDetailsComponent implements OnInit {
             'font-italic': probablyGone,
             'p-1': probablyGone,
             'ml-3': probablyGone
-        }
+        };
     }
 
     getProbablyGoneDays() {
-        return MethodDetailsComponent.PROBABLY_GONE_DAYS;
+        return MethodsComponent.PROBABLY_GONE_DAYS;
     }
 }
