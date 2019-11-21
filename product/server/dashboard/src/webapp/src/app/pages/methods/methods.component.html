@@ -161,7 +161,7 @@
                                    [(ngModel)]="state.req.minCollectedDays"
                                    required
                                    min="0"
-                                   max="3650"
+                                   max="{{ state.minCollectedDaysMax() }}"
                                    type="number">
                             <div class="input-group-append">
                                 <span class="input-group-text font-italic">days</span>

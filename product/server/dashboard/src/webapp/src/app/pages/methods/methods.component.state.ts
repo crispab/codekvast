@@ -33,6 +33,7 @@ export class MethodsComponentState {
     applications: CheckboxState[] = [];
     environments: CheckboxState[] = [];
     retentionPeriodDays = -1;
+    firstTime = true;
 
     constructor(private api: DashboardApiService) {
     }
@@ -55,15 +56,24 @@ export class MethodsComponentState {
             copyNames.call(null, this.applications, data.applications);
             copyNames.call(null, this.environments, data.environments);
             this.retentionPeriodDays = data.retentionPeriodDays;
-            this.req.minCollectedDays = this.retentionPeriodDays > 0 ? this.retentionPeriodDays : 30;
 
-            if (!this.anyEnvironmentSelected()) {
-                // Try to pre-select any environment named 'prod*'
-                this.environments.forEach(e => {
-                    if (e.name.toLowerCase().startsWith('prod')) {
-                        e.selected = true;
-                    }
-                });
+            if (this.firstTime) {
+                if (!this.anyApplicationSelected()) {
+                    // pre-select all applications
+                    this.applications.forEach(a => a.selected = true);
+                };
+
+                if (!this.anyEnvironmentSelected()) {
+                    // Try to pre-select any environment named '*prod*'
+                    this.environments.forEach(e => {
+                        if (e.name.toLowerCase().indexOf('prod') >= 0) {
+                            e.selected = true;
+                        }
+                    });
+                }
+
+                this.req.minCollectedDays = this.retentionPeriodDays > 0 ? this.retentionPeriodDays : 30;
+                this.firstTime = false;
             }
         });
     }
@@ -172,6 +182,10 @@ export class MethodsComponentState {
 
     isSelectedMethod(m: Method) {
         return this.selectedMethod && this.selectedMethod.id === m.id;
+    }
+
+    minCollectedDaysMax() {
+        return this.retentionPeriodDays > 0 ? this.retentionPeriodDays : 3650;
     }
 
     private sortBy(column: string) {
