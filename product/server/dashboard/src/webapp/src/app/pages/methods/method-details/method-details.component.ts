@@ -16,6 +16,8 @@ import {switchMap} from 'rxjs/operators';
     providers: [AgePipe, DatePipe, InvocationStatusPipe]
 })
 export class MethodDetailsComponent implements OnInit {
+    static readonly PROBABLY_GONE_DAYS = 7;
+
     method: Method;
     errorMessage: string;
     settings: ClientSettings;
@@ -52,5 +54,23 @@ export class MethodDetailsComponent implements OnInit {
 
     copySignatureToClipboard() {
         this.clipboardService.copyFromContent(Method.stripArgumentsFromSignature(this.method));
+    }
+
+    probablyGoneClasses() {
+        let probablyGone = Method.isProbablyGone(this.method, MethodDetailsComponent.PROBABLY_GONE_DAYS);
+        console.log(`${this.method.signature} is probably gone: ${probablyGone}`);
+        return  {
+            invisible: !probablyGone,
+            rounded: probablyGone,
+            'bg-success': probablyGone,
+            'text-white': probablyGone,
+            'font-italic': probablyGone,
+            'p-1': probablyGone,
+            'ml-3': probablyGone
+        }
+    }
+
+    getProbablyGoneDays() {
+        return MethodDetailsComponent.PROBABLY_GONE_DAYS;
     }
 }

@@ -29,4 +29,12 @@ export class Method {
         let lparen = m.signature.indexOf('(');
         return m.signature.slice(0, lparen < 0 ? m.signature.length : lparen);
     }
+
+    static isProbablyGone(m: Method, days: number) {
+        let lastReportAtMillis = m.occursInApplications.map(a => a.publishedAtMillis)
+                                  .reduce((previousValue, currentValue) => Math.max(previousValue, currentValue));
+        let lastReportAgeInMillis = new Date().getTime() - lastReportAtMillis;
+        let lastReportAgeInDays = lastReportAgeInMillis / 1000 / 60 / 60 / 24;
+        return lastReportAgeInDays >= days;
+    }
 }
