@@ -180,6 +180,11 @@ task javaagents(type: Sync) {
     into "$buildDir/javaagents"
 }
 
+tasks.withType(Zip) { task ->
+    task.doLast {
+        ant.checksum algorithm: "sha-1", file: it.archivePath
+    }
+}
 
 publishing {
     publications {
@@ -189,11 +194,22 @@ publishing {
             version codekvastVersion
             pom {
                 packaging 'jar'
+                name = "Codekvast Java Agent"
+                url = "https://www.codekvast.io"
+                licenses {
+                    license {
+                        name = 'The MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
             }
 
-            artifact file("build/libs/codekvast-javaagent-${codekvastVersion}.jar")
-            artifact sourcesJar
-            artifact javadocJar
+            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}.jar")
+            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}.jar.sha-1"), extension: "jar.sha-1"
+            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-sources.jar"), classifier: "sources"
+            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-sources.jar.sha-1"), classifier: "sources", extension: "jar.sha-1"
+            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-javadoc.jar"), classifier: "javadoc"
+            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-javadoc.jar.sha-1"), classifier: "javadoc", extension: "jar.sha-1"
         }
     }
 }
@@ -207,7 +223,7 @@ bintray {
 
     dryRun = false
     publish = true
-    override = true
+    override = false
 
     pkg {
         userOrg = 'crisp'
