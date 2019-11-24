@@ -126,11 +126,11 @@ Preconditions:
 1. Clean workspace (no work in progress).
 1. On the master branch.
 1. Synced with origin (pushed and pulled).
-1. Bintray credentials either in environment variables `BINTRAY_USER` and `BINTRAY_KEY` or as values in in  `~/.gradle/gradle.properties`: 
+1. Bintray credentials either in environment variables `CODEKVAST_BINTRAY_USER` and `CODEKVAST_BINTRAY_KEY` or as values in in  `~/.gradle/gradle.properties`: 
     
-    `bintrayUser=my-bintray-user`
+    `codekvast.bintray.user=my-bintray-user`
     
-    `bintrayKey=my-bintray-key`
+    `codekvast.bintray.key=my-bintray-key`
     
 1. `my-bintray-user` must be member of the Crisp organisation at Bintray.
 

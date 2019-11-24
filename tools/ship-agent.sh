@@ -5,21 +5,21 @@ source $(dirname $0)/.build-common.sh
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 
 echo "Checking that we have Bintray credentials..."
-if [[ -n "$BINTRAY_USER" && -n "$BINTRAY_KEY" ]]; then
-    echo "Environment variables BINTRAY_USER and BINTRAY_KEY are defined"
+if [[ -n "$CODEKVAST_BINTRAY_USER" && -n "$CODEKVAST_BINTRAY_KEY" ]]; then
+    echo "Environment variables CODEKVAST_BINTRAY_USER and CODEKVAST_BINTRAY_KEY are defined"
 else
     if [[ ! -e  ${GRADLE_PROPERTIES} ]]; then
-        echo "$GRADLE_PROPERTIES is missing and BINTRAY_USER and/or BINTRAY_KEY is undefined"
+        echo "$GRADLE_PROPERTIES is missing and CODEKVAST_BINTRAY_USER and/or CODEKVAST_BINTRAY_KEY is undefined"
         exit 1
     fi
 
-    egrep --quiet '^\s*bintrayUser\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
-        echo "bintrayUser=xxx is missing in $GRADLE_PROPERTIES"
+    egrep --quiet '^\s*codekvast.bintray.user\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
+        echo "codekvast.bintray.user=xxx is missing in $GRADLE_PROPERTIES"
         exit 1
     }
 
-    egrep --quiet '^\s*bintrayKey\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
-        echo "bintrayKey=xxx is missing in $GRADLE_PROPERTIES"
+    egrep --quiet '^\s*codekvast.bintray.key\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
+        echo "codekvast.bintray.key=xxx is missing in $GRADLE_PROPERTIES"
         exit 1
     }
     echo "Found Bintray credentials in  $GRADLE_PROPERTIES"

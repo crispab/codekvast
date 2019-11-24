@@ -170,11 +170,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
 task javaagents(type: Sync) {
     from tasks.shadowJar
     into "$buildDir/javaagents"
@@ -188,7 +183,7 @@ tasks.withType(Zip) { task ->
 
 publishing {
     publications {
-        shadowJar(MavenPublication) { publication ->
+        mavenShadowJar(MavenPublication) { publication ->
             groupId 'io.codekvast'
             artifactId 'codekvast-agent'
             version codekvastVersion
@@ -216,8 +211,8 @@ publishing {
 
 bintray {
     // These are supposed to be defined in $HOME/.gradle/gradle.properties
-    user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
-    key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
+    user = project.findProperty('codekvast.bintray.user') ?: System.getenv('CODEKVAST_BINTRAY_USER')
+    key = project.findProperty('codekvast.bintray.key') ?: System.getenv('CODEKVAST_BINTRAY_KEY')
 
     publications = ['shadowJar']
 
