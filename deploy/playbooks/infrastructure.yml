@@ -178,7 +178,7 @@
       loop_var: stack
     tags: infra
 
-  - name: Create S3 buckets for incoming mail
+  - name: Create an S3 bucket for incoming mail
     s3_bucket:
         profile: codekvast
         region: "eu-central-1"
@@ -186,6 +186,18 @@
         policy: "{{ lookup('file', 's3-mailbox.json') }}"
         tags:
             Owner: Codekvast
+    connection: local
+    tags: email
+
+  - name: Set up a lifecycle rule for the mailbox bucket
+    s3_lifecycle:
+        profile: codekvast
+        region: "eu-central-1"
+        rule_id: "Expire old emails"
+        name: "mailbox.codekvast.io"
+        expiration_days: 30
+        status: enabled
+        state: present
     connection: local
     tags: email
 
