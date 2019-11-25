@@ -221,7 +221,7 @@
         name: "mail-forwarder"
         role: "arn:aws:iam::186662504461:role/Mail-forwarder"
         handler: "index.handler"
-        runtime: "nodejs8.10"
+        runtime: "nodejs12.x"
         zip_file: "/tmp/aws-ses-forwarder.zip"
         tags:
             Owner: Codekvast
