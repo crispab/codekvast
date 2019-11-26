@@ -181,6 +181,11 @@ tasks.withType(Zip) { task ->
     }
 }
 
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
 publishing {
     publications {
         mavenShadowJar(MavenPublication) { publication ->
@@ -214,7 +219,7 @@ bintray {
     user = project.findProperty('codekvast.bintray.user') ?: System.getenv('CODEKVAST_BINTRAY_USER')
     key = project.findProperty('codekvast.bintray.key') ?: System.getenv('CODEKVAST_BINTRAY_KEY')
 
-    publications = ['shadowJar']
+    publications = ['mavenShadowJar']
 
     dryRun = false
     publish = true
