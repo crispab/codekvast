@@ -42,13 +42,13 @@ public class AgentConfigTest {
 
     @Test
     public void should_override_file_values_with_command_line_args() {
-        AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, "appName=appName2;enabled=false");
+        AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, "appName=appName2;appVersion=1.2.3");
         assertThat(config, not(is(config2)));
         assertThat(config.getAppName(), is("appName1"));
         assertThat(config.isEnabled(), is(true));
         assertThat(config.getHostname(), is("some-hostname"));
         assertThat(config2.getAppName(), is("appName2"));
-        assertThat(config2.isEnabled(), is(false));
+        assertThat(config2.getAppVersion(), is("1.2.3"));
     }
 
     @Test
@@ -77,6 +77,16 @@ public class AgentConfigTest {
         assertThat(config.getAppVersion(), is("some-version"));
         assertThat(config.getCodeBase(), is("/path/to/some-app-name"));
         assertThat(config.getHostname(), is(Constants.HOST_NAME));
+    }
+
+    @Test
+    public void should_accept_incomplete_config_when_disabled() {
+        setSystemProperty(AgentConfigFactory.SYSPROP_ENABLED, "false");
+
+        AgentConfig config = AgentConfigFactory.parseAgentConfig(classpathResourceAsFile("/incomplete-agent-config.conf"), null);
+        assertThat(config.isEnabled(), is(false));
+        assertThat(config.getAppName(), is("appName"));
+        assertThat(config.getCodeBase(), is("codeBase"));
     }
 
     @Test

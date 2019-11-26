@@ -35,6 +35,7 @@ import java.util.Properties;
 public class AgentConfigFactory {
 
     static final String SYSPROP_OPTS = "codekvast.options";
+    static final String SYSPROP_ENABLED = "codekvast.enabled";
 
     private static final boolean DEFAULT_ENABLED = true;
     private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL = false;
@@ -104,15 +105,16 @@ public class AgentConfigFactory {
 
     private static AgentConfig buildAgentConfig(Properties props) {
 
+        boolean enabled = ConfigUtils.getOptionalBooleanValue(props, "enabled", DEFAULT_ENABLED);
         return AgentConfig.builder()
-                          .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
+                          .appName(ConfigUtils.getMandatoryStringValue(props, "appName", enabled))
                           .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
                           .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                           .bridgeAspectjMessagesToJUL(
                               ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToJUL",
                                                                   DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL))
-                          .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
-                          .enabled(ConfigUtils.getOptionalBooleanValue(props, "enabled", DEFAULT_ENABLED))
+                          .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase", enabled))
+                          .enabled(enabled)
                           .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
                           .excludePackages(ConfigUtils.getOptionalStringValue(props, "excludePackages", ""))
                           .httpConnectTimeoutSeconds(
@@ -132,7 +134,7 @@ public class AgentConfigFactory {
                           .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
                           .methodVisibility(
                               ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
-                          .packages(ConfigUtils.getMandatoryStringValue(props, "packages"))
+                          .packages(ConfigUtils.getMandatoryStringValue(props, "packages", enabled))
                           .serverUrl(ConfigUtils.getOptionalStringValue(props, "serverUrl", DEFAULT_SERVER_URL))
                           .schedulerInitialDelayMillis(
                               ConfigUtils.getOptionalIntValue(props, "schedulerInitialDelayMillis", DEFAULT_SCHEDULER_INITIAL_DELAY_MILLIS))

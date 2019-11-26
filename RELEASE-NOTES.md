@@ -2,6 +2,7 @@
 
 ## 1.3
 
+1. codekvast-agent does not require any mandatory parameters when $CODEKVAST_ENABLED=false or -Dcodekvast.enabled=false 
 1. Fixed some UX glitches in Dashboard's Method form.
 1. Added '*.canEqual(java.lang.Object)' to synthetic methods
 

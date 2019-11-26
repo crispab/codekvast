@@ -128,7 +128,12 @@ public final class ConfigUtils {
         return Integer.valueOf(getOptionalStringValue(props, key, Integer.toString(defaultValue)));
     }
 
-    public static String getMandatoryStringValue(Properties props, String propertyName) {
+    public static String getMandatoryStringValue(Properties props, String propertyName, boolean enabled) {
+        if (!enabled) {
+            // short-cut
+            return propertyName;
+        }
+
         String value = expandVariables(props, propertyName, null);
         if (value == null || value.trim().isEmpty()) {
             throw new IllegalArgumentException("Missing property: " + propertyName + " (or environment variable $" + getEnvVarName(propertyName) + ")");

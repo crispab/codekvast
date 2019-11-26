@@ -188,15 +188,23 @@ public class ConfigUtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_when_missing_mandatory_string_value() {
-        getMandatoryStringValue(new Properties(), "key");
+        getMandatoryStringValue(new Properties(), "key", true);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void should_throw_when_empty_mandatory_string_value() {
+    public void should_throw_when_empty_mandatory_string_value_and_enabled() {
         Properties props = new Properties();
         props.setProperty("key", "");
 
-        getMandatoryStringValue(props, "key");
+        getMandatoryStringValue(props, "key", true);
+    }
+
+    @Test
+    public void should_not_throw_when_empty_mandatory_string_value_but_disabled() {
+        Properties props = new Properties();
+        props.setProperty("key", "");
+
+        assertThat(getMandatoryStringValue(props, "key", false), is("key"));
     }
 
     @Test
@@ -204,6 +212,14 @@ public class ConfigUtilsTest {
         Properties props = new Properties();
         props.setProperty("key", "value");
 
-        assertThat(getMandatoryStringValue(props, "key"), is("value"));
+        assertThat(getMandatoryStringValue(props, "key", true), is("value"));
+    }
+
+    @Test
+    public void should_ignore_mandatory_string_value_when_disabled() {
+        Properties props = new Properties();
+        props.setProperty("key", "value");
+
+        assertThat(getMandatoryStringValue(props, "key", false), is("key"));
     }
 }
