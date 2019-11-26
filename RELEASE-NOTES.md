@@ -1,5 +1,7 @@
 # Codekvast Release Notes
 
+## 1.4
+
 ## 1.3
 
 1. codekvast-agent does not require any mandatory parameters when $CODEKVAST_ENABLED=false or -Dcodekvast.enabled=false 
