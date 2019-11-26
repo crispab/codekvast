@@ -1,6 +1,8 @@
 # Codekvast Release Notes
 
-## 1.4
+## 1.3.1
+
+1. codekvast-agent logs a warning about missing mandatory properties and refuses to start even if codekvast.enabled=true.
 
 ## 1.3
 

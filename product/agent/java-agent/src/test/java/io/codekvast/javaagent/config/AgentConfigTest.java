@@ -42,13 +42,26 @@ public class AgentConfigTest {
 
     @Test
     public void should_override_file_values_with_command_line_args() {
-        AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, "appName=appName2;appVersion=1.2.3");
+        AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, "appName = appName2 ; appVersion = 1.2.3 ");
         assertThat(config, not(is(config2)));
         assertThat(config.getAppName(), is("appName1"));
         assertThat(config.isEnabled(), is(true));
         assertThat(config.getHostname(), is("some-hostname"));
         assertThat(config2.getAppName(), is("appName2"));
         assertThat(config2.getAppVersion(), is("1.2.3"));
+    }
+
+    @Test
+    public void should_override_file_values_with_command_line_args_that_are_empty() {
+        AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, "appName= ; appVersion=");
+        assertThat(config, not(is(config2)));
+        assertThat(config.getAppName(), is("appName1"));
+        assertThat(config.isEnabled(), is(true));
+        assertThat(config.getHostname(), is("some-hostname"));
+
+        assertThat(config2.getAppName(), is("missing-appName"));
+        assertThat(config2.getAppVersion(), is("unspecified"));
+        assertThat(config2.isEnabled(), is(false));
     }
 
     @Test
@@ -85,8 +98,8 @@ public class AgentConfigTest {
 
         AgentConfig config = AgentConfigFactory.parseAgentConfig(classpathResourceAsFile("/incomplete-agent-config.conf"), null);
         assertThat(config.isEnabled(), is(false));
-        assertThat(config.getAppName(), is("appName"));
-        assertThat(config.getCodeBase(), is("codeBase"));
+        assertThat(config.getAppName(), is("missing-appName"));
+        assertThat(config.getCodeBase(), is("missing-codeBase"));
     }
 
     @Test

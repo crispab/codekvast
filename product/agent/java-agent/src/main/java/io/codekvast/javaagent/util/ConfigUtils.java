@@ -25,10 +25,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,11 +62,23 @@ public final class ConfigUtils {
     }
 
 
-    public static String getOptionalStringValue(Properties props, String propertyName, String defaultValue) {
-        return expandVariables(props, propertyName, defaultValue);
+    public static String getStringValue(Properties props, String propertyName, String defaultValue) {
+        return expandVariables(props, propertyName, null).orElse(defaultValue);
     }
 
-    static String expandVariables(Properties props, String key, String defaultValue) {
+    public static Optional<String> getStringValue(Properties props, String propertyName) {
+        return expandVariables(props, propertyName, null);
+    }
+
+    public static boolean getBooleanValue(Properties props, String key, boolean defaultValue) {
+        return Boolean.parseBoolean(getStringValue(props, key, Boolean.toString(defaultValue)));
+    }
+
+    public static int getIntValue(Properties props, String key, int defaultValue) {
+        return Integer.parseInt(getStringValue(props, key, Integer.toString(defaultValue)));
+    }
+
+    static Optional<String> expandVariables(Properties props, String key, String defaultValue) {
         String value = System.getProperty(getSystemPropertyName(key));
         if (value == null) {
             value = System.getenv(getEnvVarName(key));
@@ -77,14 +86,10 @@ public final class ConfigUtils {
         if (value == null) {
             value = props.getProperty(key, defaultValue);
         }
-        return expandVariables(props, value);
+        return value == null || value.trim().isEmpty() ? Optional.empty() : Optional.of(expandVariables(props, value));
     }
 
     static String expandVariables(Properties props, String value) {
-        if (value == null) {
-            return null;
-        }
-
         Pattern pattern = Pattern.compile("\\$(\\{([a-zA-Z0-9._-]+)}|([a-zA-Z0-9._-]+))");
         Matcher matcher = pattern.matcher(value);
         StringBuffer sb = new StringBuffer();
@@ -112,33 +117,12 @@ public final class ConfigUtils {
         return sb.toString();
     }
 
-    static String getEnvVarName(String propertyName) {
+    public static String getEnvVarName(String propertyName) {
         return "CODEKVAST_" + propertyName.replaceAll("([A-Z])", "_$1").toUpperCase();
     }
 
-    static String getSystemPropertyName(String key) {
+    public static String getSystemPropertyName(String key) {
         return "codekvast." + key;
-    }
-
-    public static boolean getOptionalBooleanValue(Properties props, String key, boolean defaultValue) {
-        return Boolean.valueOf(getOptionalStringValue(props, key, Boolean.toString(defaultValue)));
-    }
-
-    public static int getOptionalIntValue(Properties props, String key, int defaultValue) {
-        return Integer.valueOf(getOptionalStringValue(props, key, Integer.toString(defaultValue)));
-    }
-
-    public static String getMandatoryStringValue(Properties props, String propertyName, boolean enabled) {
-        if (!enabled) {
-            // short-cut
-            return propertyName;
-        }
-
-        String value = expandVariables(props, propertyName, null);
-        if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("Missing property: " + propertyName + " (or environment variable $" + getEnvVarName(propertyName) + ")");
-        }
-        return value;
     }
 
     public static List<File> getCommaSeparatedFileValues(String uriValues) {

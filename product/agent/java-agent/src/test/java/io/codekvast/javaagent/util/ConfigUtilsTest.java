@@ -8,6 +8,7 @@ import org.springframework.boot.test.system.OutputCaptureRule;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static io.codekvast.javaagent.util.ConfigUtils.*;
@@ -139,12 +140,7 @@ public class ConfigUtilsTest {
         Properties props = new Properties();
         props.setProperty("appVersion", "some-app-version");
 
-        assertThat(expandVariables(props, "appVersion", "default-app-version"), is("sysprop-appVersion"));
-    }
-
-    @Test
-    public void should_expand_null() {
-        assertThat(expandVariables(new Properties(), null), nullValue());
+        assertThat(expandVariables(props, "appVersion", "default-app-version"), is(Optional.of("sysprop-appVersion")));
     }
 
     @Test
@@ -166,60 +162,45 @@ public class ConfigUtilsTest {
     public void should_getOptionalIntValue_when_present_value() {
         Properties props = new Properties();
         props.setProperty("key", "4711");
-        assertThat(getOptionalIntValue(props, "key", 17), is(4711));
+        assertThat(getIntValue(props, "key", 17), is(4711));
     }
 
     @Test
     public void should_getOptionalIntValue_when_missing_value() {
-        assertThat(getOptionalIntValue(new Properties(), "key", 17), is(17));
+        assertThat(getIntValue(new Properties(), "key", 17), is(17));
     }
 
     @Test
-    public void should_getOptionalBooleanValue_when_present_value() {
+    public void should_getBooleanValue_when_present_value() {
         Properties props = new Properties();
         props.setProperty("key", "false");
-        assertThat(getOptionalBooleanValue(props, "key", true), is(false));
+        assertThat(getBooleanValue(props, "key", true), is(false));
     }
 
     @Test
     public void should_getOptionalBooleanValue_when_missing_value() {
-        assertThat(getOptionalBooleanValue(new Properties(), "key", true), is(true));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void should_throw_when_missing_mandatory_string_value() {
-        getMandatoryStringValue(new Properties(), "key", true);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void should_throw_when_empty_mandatory_string_value_and_enabled() {
-        Properties props = new Properties();
-        props.setProperty("key", "");
-
-        getMandatoryStringValue(props, "key", true);
+        assertThat(getBooleanValue(new Properties(), "key", true), is(true));
     }
 
     @Test
-    public void should_not_throw_when_empty_mandatory_string_value_but_disabled() {
-        Properties props = new Properties();
-        props.setProperty("key", "");
-
-        assertThat(getMandatoryStringValue(props, "key", false), is("key"));
+    public void should_return_empty_when_missing_string_value() {
+        assertThat(getStringValue(new Properties(), "key"), is(Optional.empty()));
     }
 
     @Test
-    public void should_get_mandatory_string_value() {
+    public void should_return_empty_when_blank_string_value() {
+        Properties props = new Properties();
+        props.setProperty("key", " ");
+
+        assertThat(getStringValue(new Properties(), "key"), is(Optional.empty()));
+    }
+
+    @Test
+    public void should_get_string_value() {
         Properties props = new Properties();
         props.setProperty("key", "value");
 
-        assertThat(getMandatoryStringValue(props, "key", true), is("value"));
+        assertThat(getStringValue(props, "key"), is(Optional.of("value")));
     }
 
-    @Test
-    public void should_ignore_mandatory_string_value_when_disabled() {
-        Properties props = new Properties();
-        props.setProperty("key", "value");
-
-        assertThat(getMandatoryStringValue(props, "key", false), is("key"));
-    }
 }
