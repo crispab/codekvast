@@ -242,4 +242,4 @@ bintray {
     }
 }
 
-bintrayUpload.dependsOn build, generatePomFileForShadowJarPublication
+bintrayUpload.dependsOn build, generatePomFileForMavenShadowJarPublication

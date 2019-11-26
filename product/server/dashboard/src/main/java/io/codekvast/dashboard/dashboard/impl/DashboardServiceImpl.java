@@ -53,7 +53,6 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -65,21 +64,12 @@ import java.util.stream.Collectors;
 @Validated
 public class DashboardServiceImpl implements DashboardService {
 
-    private static final Pattern SYNTHETIC_SIGNATURE_PATTERN;
-
-    static {
-        // TODO: Make this database driven
-        // See io.codekvast.dashboard.dashboard.impl.DashboardServiceImplSyntheticSignatureTest
-        SYNTHETIC_SIGNATURE_PATTERN = Pattern.compile(
-            ".*(\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\$[a-z]+\\(\\)$|\\.\\.anonfun\\..*|\\.\\.(Enhancer|FastClass)" +
-                "BySpringCGLIB\\.\\..*|\\.canEqual\\(java\\.lang\\.Object\\))");
-    }
-
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final CustomerIdProvider customerIdProvider;
     private final CustomerService customerService;
     private final Clock clock;
+    private final SyntheticSignatureService syntheticSignatureService;
 
     @Override
     @Transactional(readOnly = true)
@@ -146,7 +136,7 @@ public class DashboardServiceImpl implements DashboardService {
 
             String signature = rs.getString("signature");
 
-            if (request.isSuppressSyntheticMethods() && isSyntheticMethod(signature)) {
+            if (request.isSuppressSyntheticMethods() && syntheticSignatureService.isSyntheticMethod(signature)) {
                 logger.trace("Suppressing synthetic method {}", signature);
                 return;
             }
@@ -194,7 +184,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         List<Long> ids = namedParameterJdbcTemplate
             .queryForList("SELECT id FROM " + tableName + " WHERE customerId = :customerId AND name IN (:names)", params, Long.class);
-        logger.debug("Mapped {} {} to {} for customer {}", tableName, names, ids, customerIdProvider.getCustomerId());
+        logger.debug("Mapped {} {} to {} for the customer {}", tableName, names, ids, customerIdProvider.getCustomerId());
         return ids;
     }
 
@@ -439,7 +429,7 @@ public class DashboardServiceImpl implements DashboardService {
             boolean synthetic = rs.getBoolean("synthetic");
 
             // Throw away unwanted synthetic signatures as early as possible
-            if (suppressSyntheticMethods && (bridge || synthetic || isSyntheticMethod(signature))) {
+            if (suppressSyntheticMethods && (bridge || synthetic || syntheticSignatureService.isSyntheticMethod(signature))) {
                 logger.trace("Throwing away synthetic method: {}", signature);
                 return;
             }
@@ -545,12 +535,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     }
 
-    static boolean isSyntheticMethod(String signature) {
-        return SYNTHETIC_SIGNATURE_PATTERN.matcher(signature).matches();
-    }
-
     @RequiredArgsConstructor
-    private class QueryState {
+    private static class QueryState {
         private final long methodId;
 
         private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();

@@ -45,6 +45,9 @@ public class DashboardServiceImplTest {
     @Mock
     private CustomerIdProvider customerIdProvider;
 
+    @Mock
+    private SyntheticSignatureService syntheticSignatureService;
+
     private final Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
     private final Instant now = clock.instant();
 
@@ -53,7 +56,7 @@ public class DashboardServiceImplTest {
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        dashboardService = new DashboardServiceImpl(jdbcTemplate, namedParameterJdbcTemplate, customerIdProvider, customerService, clock);
+        dashboardService = new DashboardServiceImpl(jdbcTemplate, namedParameterJdbcTemplate, customerIdProvider, customerService, clock, syntheticSignatureService);
     }
 
     @Test
