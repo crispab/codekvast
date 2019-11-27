@@ -2,7 +2,8 @@
 
 ## 1.3.1
 
-1. codekvast-agent logs a warning about missing mandatory properties and refuses to start even if codekvast.enabled=true.
+1. codekvast-agent logs a warning about missing mandatory properties and simply does not start even if codekvast.enabled=true.
+   It does not throw an exception as before.
 
 ## 1.3
 
