@@ -1,8 +1,12 @@
 {{>layout/header}}
 
-{{^hasProject}}
+{{#hasErrorMessage}}
+<div class="alert alert-danger" role="alert">{{errorMessage}}</div>
+{{/hasErrorMessage}}
+
+{{#hasNoProject}}
 <div class="alert alert-danger" role="alert">{{email}} hasn't access to any Codekvast project</div>
-{{/hasProject}}
+{{/hasNoProject}}
 
 {{#hasProject}}
 <div class='alert alert-success'>{{email}} has access to the following Codekvast projects:</div>

@@ -76,7 +76,10 @@ public class LoginController {
         logger.debug("roles={}", roles);
 
         model.addAttribute("title", "Projects");
+        model.addAttribute("hasErrorMessage", user.getErrorMessage() != null);
+        model.addAttribute("errorMessage", user.getErrorMessage());
         model.addAttribute("email", user.getEmail());
+        model.addAttribute("hasNoProject", user.getErrorMessage() == null && user.getCustomerData().size() == 0);
         model.addAttribute("hasProject", user.getCustomerData().size() > 0);
         model.addAttribute("projects", user.getCustomerData().stream().map(ProjectInfo::new).collect(Collectors.toList()));
         model.addAttribute("isAdmin", roles.contains("ROLE_ADMIN"));

@@ -34,8 +34,8 @@ import java.util.List;
 @Value
 @Builder
 public class User {
-    @NonNull
     String email;
+    String errorMessage;
 
     @NonNull
     List<CustomerData> customerData;

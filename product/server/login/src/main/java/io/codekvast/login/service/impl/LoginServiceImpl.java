@@ -38,7 +38,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
+
+import static org.springframework.util.StringUtils.capitalize;
 
 /**
  * @author olle.hallin@crisp.se
@@ -92,6 +95,13 @@ public class LoginServiceImpl implements LoginService {
         logger.debug("Details={}", details);
 
         String email = (String) details.get("email");
+
+        if (email == null) {
+            return User.builder()
+                       .errorMessage(String.format("Your email addresses on %s are private.", capitalize(clientRegistrationId)))
+                       .customerData(Collections.emptyList())
+                       .build();
+        }
 
         User user = User.builder()
                         .email(email)
