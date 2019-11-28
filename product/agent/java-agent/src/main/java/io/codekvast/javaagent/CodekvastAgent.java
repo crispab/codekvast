@@ -207,7 +207,7 @@ public class CodekvastAgent {
 
         File aopXml = new File(tmpDir, "META-INF/aop.xml");
 
-        logger.info("META-INF/aop.xml = " + aopXml.getAbsolutePath());
+        logger.fine("META-INF/aop.xml = " + aopXml.getAbsolutePath());
 
         FileUtils.writeToFile(xml, aopXml);
 
