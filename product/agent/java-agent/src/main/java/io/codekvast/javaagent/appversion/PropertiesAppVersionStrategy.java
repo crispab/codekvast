@@ -138,7 +138,7 @@ public class PropertiesAppVersionStrategy extends AbstractAppVersionStrategy {
         return value;
     }
 
-    private String join(String args[]) {
+    private String join(String[] args) {
         StringBuilder sb = new StringBuilder();
         String delimiter ="";
         for (String arg : args) {

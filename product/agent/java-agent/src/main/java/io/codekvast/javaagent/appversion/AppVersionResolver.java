@@ -46,7 +46,7 @@ public class AppVersionResolver {
     }
 
     public String resolveAppVersion() {
-        String args[] = version.split("\\s+");
+        String[] args = version.split("\\s+");
 
         for (AppVersionStrategy strategy : appVersionStrategies) {
             if (strategy.canHandle(args)) {

@@ -85,11 +85,7 @@ public class RuleEngineImpl implements RuleEngine {
             kieFileSystem.write(resource);
         }
         KieRepository kieRepository = kieServices.getRepository();
-        kieRepository.addKieModule(new KieModule() {
-            public ReleaseId getReleaseId() {
-                return kieRepository.getDefaultReleaseId();
-            }
-        });
+        kieRepository.addKieModule(() -> kieRepository.getDefaultReleaseId());
 
         KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
         kieBuilder.buildAll();

@@ -27,10 +27,11 @@ import lombok.extern.java.Log;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.Set;
 import java.util.TreeSet;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * An immutable fingerprint of a code base. Used for comparing different code bases for equality.
@@ -86,10 +87,9 @@ public class CodeBaseFingerprint {
         @SneakyThrows
         public CodeBaseFingerprint build() {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            Charset utf8 = Charset.forName("UTF-8");
-            md.update(config.getNormalizedPackages().toString().getBytes(utf8));
-            md.update(config.getNormalizedExcludePackages().toString().getBytes(utf8));
-            md.update(config.getMethodAnalyzer().toString().getBytes(utf8));
+            md.update(config.getNormalizedPackages().toString().getBytes(UTF_8));
+            md.update(config.getNormalizedExcludePackages().toString().getBytes(UTF_8));
+            md.update(config.getMethodAnalyzer().toString().getBytes(UTF_8));
             md.update(longToBytes(files.size()));
 
             int numClassFiles = 0;
@@ -98,7 +98,7 @@ public class CodeBaseFingerprint {
             for (File file : files) {
                 md.update(longToBytes(file.length()));
                 md.update(longToBytes(file.lastModified()));
-                md.update(file.getName().getBytes(utf8));
+                md.update(file.getName().getBytes(UTF_8));
 
                 if (file.getName().endsWith(".class")) {
                     numClassFiles += 1;

@@ -27,10 +27,11 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @author olle.hallin@crisp.se
@@ -38,7 +39,6 @@ import java.util.Base64;
 @UtilityClass
 public class CipherUtils {
 
-    private static final String UTF_8 = "UTF-8";
     private static final String CIPHER_INSTANCE = "AES/ECB/PKCS5Padding";
 
     /**
@@ -79,11 +79,11 @@ public class CipherUtils {
         }
     }
 
-    private static Key stringToKey(String key) throws UnsupportedEncodingException {
+    private static Key stringToKey(String key) {
         return new SecretKeySpec(key.getBytes(UTF_8), "AES");
     }
 
-    static String generateRandomKey() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    static String generateRandomKey() throws NoSuchAlgorithmException {
         KeyGenerator generator = KeyGenerator.getInstance("AES");
         generator.init(128);
         SecretKey key = generator.generateKey();

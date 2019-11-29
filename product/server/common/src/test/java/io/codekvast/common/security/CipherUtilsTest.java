@@ -2,7 +2,6 @@ package io.codekvast.common.security;
 
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -50,7 +49,7 @@ public class CipherUtilsTest {
     }
 
     @Test
-    public void should_encrypt_decrypt_with_various_keys() throws CipherException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    public void should_encrypt_decrypt_with_various_keys() throws CipherException, NoSuchAlgorithmException {
         for (int i = 0; i < 10; i++) {
             String key = CipherUtils.generateRandomKey();
             System.out.println(key);

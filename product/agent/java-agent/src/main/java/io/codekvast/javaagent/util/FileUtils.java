@@ -25,9 +25,9 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Properties;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Low-level file utilities used by the codekvast agent.
@@ -37,8 +37,6 @@ import java.util.Properties;
 @UtilityClass
 @Log
 public final class FileUtils {
-
-    private static final String UTF_8 = "UTF-8";
 
     public static Properties readPropertiesFrom(File file) throws IOException {
         if (!file.exists()) {
