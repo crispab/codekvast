@@ -1,6 +1,7 @@
 package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.common.customer.*;
+import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.agent.AgentService;
@@ -44,6 +45,9 @@ public class AgentServiceImplTest {
     @Mock
     private EventService eventService;
 
+    @Mock
+    private LockManager lockManager;
+
     private final CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
     private final GetConfigRequest2 request = GetConfigRequest2.sample();
 
@@ -56,9 +60,41 @@ public class AgentServiceImplTest {
         settings.setQueuePath(temporaryFolder.getRoot());
         settings.setQueuePathPollIntervalSeconds(60);
 
-        service = new AgentServiceImpl(settings, customerService, eventService, agentDAO);
+        when(lockManager.acquireLock(LockManager.Lock.AGENT_STATE)).thenReturn(Optional.of(LockManager.Lock.AGENT_STATE));
+        service = new AgentServiceImpl(settings, customerService, eventService, agentDAO, lockManager);
 
         setupCustomerData(null, null);
+    }
+
+    @Test
+    public void should_acquire_and_release_lock() {
+        // given
+        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
+        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
+        when(lockManager.acquireLock(LockManager.Lock.AGENT_STATE)).thenReturn(Optional.of(LockManager.Lock.AGENT_STATE));
+
+        // when
+        val response = service.getConfig(request);
+
+        verify(lockManager).acquireLock(LockManager.Lock.AGENT_STATE);
+        verify(lockManager).releaseLock(LockManager.Lock.AGENT_STATE);
+
+        assertThat(response.getCodeBasePublisherConfig(), is("enabled=true"));
+    }
+
+    @Test
+    public void should_give_up_when_failed_to_acquire_lock() {
+        // given
+        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
+        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
+        when(lockManager.acquireLock(LockManager.Lock.AGENT_STATE)).thenReturn(Optional.empty());
+
+        // when
+        val response = service.getConfig(request);
+
+        verify(lockManager, never()).releaseLock(LockManager.Lock.AGENT_STATE);
+
+        assertThat(response.getCodeBasePublisherConfig(), is("enabled=false"));
     }
 
     @Test

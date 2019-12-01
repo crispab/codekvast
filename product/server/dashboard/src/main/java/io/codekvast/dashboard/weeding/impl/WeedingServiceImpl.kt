@@ -130,6 +130,6 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 sum += count
             }
         }
-        logger.debug("{} weeding candidates identified in {}", sum, LoggingUtils.humanReadableDuration(Duration.between(startedAt, clock.instant())))
+        logger.info("{} weeding candidates identified in {}", sum, LoggingUtils.humanReadableDuration(Duration.between(startedAt, clock.instant())))
     }
 }

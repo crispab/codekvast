@@ -21,6 +21,9 @@
  */
 package io.codekvast.common.lock;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Optional;
 
 /**
@@ -28,12 +31,19 @@ import java.util.Optional;
  */
 public interface LockManager {
 
-    enum Lock {EVENT_QUEUE, WEEDER}
+    @RequiredArgsConstructor
+    @Getter
+    enum Lock {
+        WEEDER(0),
+        AGENT_STATE(10);
+
+        private final int lockWaitSeconds;
+    }
 
     /**
      * Acquire a lock. Must be invoked inside {@code @Transactional}
      *
-     * @param lock The lock to acquire.
+     * @param lock        The lock to acquire.
      * @return A filled optional if the lock was acquired, else an empty optional.
      */
     Optional<Lock> acquireLock(Lock lock);

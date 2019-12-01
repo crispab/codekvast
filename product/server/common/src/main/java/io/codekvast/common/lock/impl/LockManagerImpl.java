@@ -58,11 +58,11 @@ public class LockManagerImpl implements LockManager {
     public Optional<Lock> acquireLock(Lock lock) {
         try {
             String s =
-                jdbcTemplate.queryForObject("SELECT name FROM internal_locks WHERE name = ? FOR UPDATE NOWAIT", String.class, lock.name());
+                jdbcTemplate.queryForObject("SELECT name FROM internal_locks WHERE name = ? FOR UPDATE WAIT ?", String.class, lock.name(), lock.getLockWaitSeconds());
             logger.debug("Acquired lock {}", lock);
             return Optional.of(lock);
         } catch (DataAccessException e) {
-            logger.info("Failed to acquire lock {}", lock);
+            logger.info("Failed to acquire lock {} within {} s", lock, lock.getLockWaitSeconds());
             return Optional.empty();
         }
     }

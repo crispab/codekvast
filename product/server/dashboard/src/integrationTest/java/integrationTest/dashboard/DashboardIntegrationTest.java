@@ -28,8 +28,9 @@ import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.testsupport.docker.RabbitmqContainerReadyChecker;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.flywaydb.core.Flyway;
-import org.flywaydb.core.internal.jdbc.TransactionTemplate;
 import org.junit.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,13 +51,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
@@ -73,7 +72,7 @@ import static org.junit.Assume.assumeTrue;
  */
 @SuppressWarnings({"SpringAutowiredFieldsWarningInspection", "ClassWithTooManyFields"})
 @SpringBootTest(
-    classes = {CodekvastDashboardApplication.class},
+    classes = {CodekvastDashboardApplication.class, DashboardIntegrationTest.LockContentionTestHelper.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationTest")
 @Transactional
@@ -170,6 +169,9 @@ public class DashboardIntegrationTest {
 
     @Inject
     private LockManager lockManager;
+
+    @Inject
+    private LockContentionTestHelper lockContentionTestHelper;
 
     @Before
     public void beforeTest() {
@@ -838,27 +840,10 @@ public class DashboardIntegrationTest {
     }
 
     @Test
-    @Ignore("Causes deadlock")
     public void should_handle_lock_contention() throws InterruptedException {
         CountDownLatch[] latches = {new CountDownLatch(1), new CountDownLatch(1), new CountDownLatch(1)};
 
-        new Thread(() -> {
-            TransactionTemplate transactionTemplate = null;
-            try {
-                transactionTemplate = new TransactionTemplate(jdbcTemplate.getDataSource().getConnection());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            transactionTemplate.execute((Callable<Void>) () -> {
-                Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.WEEDER);
-                latches[0].countDown();
-
-                latches[1].await();
-                lock.ifPresent(lockManager::releaseLock);
-                latches[2].countDown();
-                return null;
-            });
-        }).start();
+        new Thread(() -> lockContentionTestHelper.doSteps(latches)).start();
 
         latches[0].await();
         assertThat(lockManager.acquireLock(LockManager.Lock.WEEDER).isPresent(), is(false));
@@ -867,6 +852,39 @@ public class DashboardIntegrationTest {
 
         latches[2].await();
         assertThat(lockManager.acquireLock(LockManager.Lock.WEEDER).isPresent(), is(true));
+    }
+
+    @Test
+    public void should_handle_lock_wait() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        new Thread(() -> lockContentionTestHelper.lockSleepUnlock(latch, 500L)).start();
+
+        latch.await();
+        assertThat(lockManager.acquireLock(LockManager.Lock.WEEDER).isPresent(), is(true));
+    }
+
+    @RequiredArgsConstructor
+    public static class LockContentionTestHelper {
+        private final LockManager lockManager;
+
+        @Transactional
+        @SneakyThrows
+        public void doSteps(CountDownLatch[] latches) {
+            Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.WEEDER);
+            latches[0].countDown();
+            latches[1].await();
+            lock.ifPresent(lockManager::releaseLock);
+            latches[2].countDown();
+        }
+
+        @Transactional
+        @SneakyThrows
+        public void lockSleepUnlock(CountDownLatch latch, long sleepMillis) {
+            Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.WEEDER);
+            latch.countDown();
+            Thread.sleep(sleepMillis);
+            lock.ifPresent(lockManager::releaseLock);
+        }
     }
 
     private void assertAgentEnabled(String jvmUuid, Boolean expectedEnabled) {

@@ -23,7 +23,6 @@ package io.codekvast.dashboard.dashboard.impl;
 
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.ToString;
 import lombok.Value;
 
 /**
@@ -31,7 +30,6 @@ import lombok.Value;
  */
 @Value
 @Builder
-@ToString(exclude = "example")
 class SyntheticSignaturePattern {
     @NonNull
     private final Long id;

@@ -25,6 +25,7 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlan;
+import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.agent.AgentService;
@@ -40,12 +41,12 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.Size;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.Instant;
+import java.util.Optional;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -65,6 +66,7 @@ public class AgentServiceImpl implements AgentService {
     private final CustomerService customerService;
     private final EventService eventService;
     private final AgentDAO agentDAO;
+    private final LockManager lockManager;
 
     @Override
     @Transactional
@@ -99,8 +101,20 @@ public class AgentServiceImpl implements AgentService {
             .build();
     }
 
-    private boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName,
-                                     @NonNull @Size(min = 1, message = "environment must be at least 1 characters") String environment) {
+    private boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment) {
+        Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.AGENT_STATE);
+        if (lock.isPresent()) {
+            try {
+                return doUpdateAgentState(customerData, jvmUuid, appName, environment);
+            } finally {
+                lockManager.releaseLock(lock.get());
+            }
+        }
+        logger.error("Failed to acquire lock, treating agent as disabled.");
+        return false;
+    }
+
+    private boolean doUpdateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment) {
         long customerId = customerData.getCustomerId();
         Instant now = Instant.now();
 
@@ -123,7 +137,7 @@ public class AgentServiceImpl implements AgentService {
                                     .trialPeriodEndsAt(cd.getTrialPeriodEndsAt())
                                     .build();
 
-        logger.debug("Agent {} is {}", jvmUuid, event.isAgentEnabled() ? "enabled" : "disable");
+        logger.debug("Agent {} is {}", jvmUuid, event.isAgentEnabled() ? "enabled" : "disabled");
         eventService.send(event);
         agentDAO.updateAgentEnabledState(customerId, jvmUuid, event.isAgentEnabled());
         return event.isAgentEnabled();
@@ -134,7 +148,9 @@ public class AgentServiceImpl implements AgentService {
     public File savePublication(@NonNull PublicationType publicationType, @NonNull String licenseKey, int publicationSize,
                                 InputStream inputStream) throws LicenseViolationException, IOException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(licenseKey);
-        customerService.assertPublicationSize(customerData, publicationSize);
+        if (publicationType == PublicationType.CODEBASE) {
+            customerService.assertPublicationSize(customerData, publicationSize);
+        }
 
         return doSaveInputStream(publicationType, customerData.getCustomerId(), inputStream);
     }

@@ -49,18 +49,36 @@ class WeedingTask
         Thread.currentThread().name = "Codekvast Data Weeder"
         CorrelationIdHolder.generateNew()
         try {
-            val lock: Optional<Lock> = lockManager.acquireLock(Lock.WEEDER)
-            if (lock.isPresent) {
-                try {
-                    weedingService.findWeedingCandidates()
-                    weedingService.performDataWeeding()
-                } finally {
-                    lockManager.releaseLock(lock.get())
-                }
+            if (findWeedingCandidates()) {
+                performWeeding()
             }
         } finally {
             CorrelationIdHolder.clear()
             Thread.currentThread().name = oldThreadName
+        }
+    }
+
+    private fun findWeedingCandidates(): Boolean {
+        val lock: Optional<Lock> = lockManager.acquireLock(Lock.AGENT_STATE)
+        if (lock.isPresent) {
+            try {
+                weedingService.findWeedingCandidates()
+                return true
+            } finally {
+                lockManager.releaseLock(lock.get())
+            }
+        }
+        return false
+    }
+
+    private fun performWeeding() {
+        val lock: Optional<Lock> = lockManager.acquireLock(Lock.WEEDER)
+        if (lock.isPresent) {
+            try {
+                weedingService.performDataWeeding()
+            } finally {
+                lockManager.releaseLock(lock.get())
+            }
         }
     }
 
