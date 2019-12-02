@@ -20,9 +20,6 @@
 -- THE SOFTWARE.
 --
 
--- Stop database updates
-SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
-
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Remove duplicate method_locations (keep the oldest)
