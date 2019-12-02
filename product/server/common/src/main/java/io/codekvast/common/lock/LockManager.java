@@ -36,13 +36,13 @@ public interface LockManager {
     enum Lock {
         WEEDER(1),
         AGENT_STATE(10),
-        IMPORT(60);
+        IMPORT(120);
 
         private final int lockWaitSeconds;
     }
 
     /**
-     * Acquire a lock. Must be invoked inside {@code @Transactional}
+     * Acquire a lock. <em>Must</em> be invoked inside {@code @Transactional}
      *
      * @param lock        The lock to acquire.
      * @return A filled optional if the lock was acquired, else an empty optional.

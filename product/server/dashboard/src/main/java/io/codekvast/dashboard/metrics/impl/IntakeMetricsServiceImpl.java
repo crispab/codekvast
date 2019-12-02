@@ -55,7 +55,7 @@ public class IntakeMetricsServiceImpl implements IntakeMetricsService {
     public void countImportedPublication(PublicationKind kind, int size, Duration duration) {
         meterRegistry.counter("codekvast.intake.accepted", KIND_TAG, asTag(kind)).increment();
         meterRegistry.gauge("codekvast.intake.publicationSize", asList(Tag.of(KIND_TAG, asTag(kind))), size);
-        meterRegistry.gauge("codekvast.intake.durationMillis", asList(Tag.of(KIND_TAG, asTag(kind))), duration.toMillis());
+        meterRegistry.timer("codekvast.intake.duration.millis", asList(Tag.of(KIND_TAG, asTag(kind)))).record(duration);
     }
 
     private String asTag(PublicationKind kind) {

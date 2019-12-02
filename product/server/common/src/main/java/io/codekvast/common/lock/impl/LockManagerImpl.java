@@ -22,6 +22,7 @@
 package io.codekvast.common.lock.impl;
 
 import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.metrics.CommonMetricsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -31,7 +32,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author olle.hallin@crisp.se
@@ -42,6 +46,9 @@ import java.util.Optional;
 public class LockManagerImpl implements LockManager {
 
     private final JdbcTemplate jdbcTemplate;
+    private final CommonMetricsService metricsService;
+
+    private final ConcurrentHashMap<Lock, Instant> locksAcquiredAt = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void populateLocksTable() {
@@ -60,6 +67,7 @@ public class LockManagerImpl implements LockManager {
             String s =
                 jdbcTemplate.queryForObject("SELECT name FROM internal_locks WHERE name = ? FOR UPDATE WAIT ?", String.class, lock.name(), lock.getLockWaitSeconds());
             logger.debug("Acquired lock {}", lock);
+            locksAcquiredAt.put(lock, Instant.now());
             return Optional.of(lock);
         } catch (DataAccessException e) {
             logger.info("Failed to acquire lock {} within {} s", lock, lock.getLockWaitSeconds());
@@ -71,6 +79,12 @@ public class LockManagerImpl implements LockManager {
     @Transactional(propagation = Propagation.MANDATORY)
     public void releaseLock(Lock lock) {
         logger.debug("Releasing lock {}", lock);
-        // No-op, the lock is automatically released when the transaction ends.
+        Instant acquiredAt = locksAcquiredAt.remove(lock);
+        if (acquiredAt == null) {
+            logger.warn("Attempt to release lock {} which were not previously acquired", lock);
+        } else {
+            metricsService.recordLockDuration(lock, Duration.between(acquiredAt, Instant.now()));
+        }
+        // No-op against the database, the lock is automatically released when the transaction ends.
     }
 }

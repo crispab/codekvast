@@ -21,10 +21,13 @@
  */
 package io.codekvast.common.metrics.impl;
 
+import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
 
 /**
  * @author olle.hallin@crisp.se
@@ -34,6 +37,7 @@ import org.springframework.stereotype.Component;
 public class CommonMetricsServiceImpl implements CommonMetricsService {
 
     private static final String EVENT_TAG = "event";
+    public static final String LOCK_TAG = "lock";
 
     private final MeterRegistry meterRegistry;
 
@@ -63,5 +67,10 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
         meterRegistry.counter("codekvast.login.count" + "." + source).increment();
     }
 
+    @Override
+    public void recordLockDuration(LockManager.Lock lock, Duration duration) {
+        meterRegistry.counter("codekvast.lock.acquired", LOCK_TAG, lock.name()).increment();
+        meterRegistry.timer("codekvast.lock.duration.millis", LOCK_TAG, lock.name()).record(duration);
+    }
 
 }

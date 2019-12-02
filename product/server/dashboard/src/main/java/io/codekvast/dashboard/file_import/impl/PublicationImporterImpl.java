@@ -117,7 +117,7 @@ public class PublicationImporterImpl implements PublicationImporter {
                 lockManager.releaseLock(lock.get());
             }
         }
-        logger.warn("Failed to acquire lock, will try again");
+        logger.warn("Failed to acquire {} lock, will try again", LockManager.Lock.IMPORT);
         return false;
     }
 

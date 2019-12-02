@@ -21,6 +21,10 @@
  */
 package io.codekvast.common.metrics;
 
+import io.codekvast.common.lock.LockManager;
+
+import java.time.Duration;
+
 /**
  * Base interface for metrics-related services
  *
@@ -56,4 +60,12 @@ public interface CommonMetricsService {
      * @param source The authentication source, e.g., "google", "github" etc.
      */
     void countLogin(String source);
+
+    /**
+     * Gauges how long a lock was held
+     *
+     * @param lock     The lock
+     * @param duration The duration of the lock
+     */
+    void recordLockDuration(LockManager.Lock lock, Duration duration);
 }

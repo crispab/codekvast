@@ -119,8 +119,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 }
                 sum += count
 
-                count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? AND garbage = FALSE " +
-                    "ORDER BY uuid ",
+                count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? AND garbage = FALSE ",
                     cd.customerId, Timestamp.from(retentionPeriodStart))
                 if (count == 0) {
                     logger.debug("Found no dead JVMs for customer {}", cd.customerId)
