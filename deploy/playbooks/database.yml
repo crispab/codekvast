@@ -151,14 +151,6 @@
     with_items:
     - mysqldump-backup
 
-  - name: Remove obsolete backup scripts
-    file: path={{ item }} state=absent
-    with_items:
-    - /root/mariabackup-backup
-    - /root/mariabackup-restore
-    - /etc/cron.daily/mariabackup-backup
-    - /etc/cron.daily/mariabackup-restore
-
   - name: Create MySQL user for Datadog
     shell: mysql -e "{{ item }};"
     ignore_errors: yes
@@ -177,17 +169,29 @@
     template: src=database/datadog/config.yaml.j2 dest=/etc/datadog-agent/conf.d/mysql.d/conf.yaml mode=644
     notify: restart datadog-agent
 
-  - name: Remove xtrabackup stuff
+  - name: Remove obsolete stuff
     file: path={{ item }} state=absent
     with_items:
-    - /etc/cron.daily/xtrabackup-backup
-    - /root/xtrabackup-backup
-    - /root/xtrabackup-restore
-    - /backups/mariadb/xtrabackup-monday.tar.gz
-    - /backups/mariadb/xtrabackup-tuesday.tar.gz
-    - /backups/mariadb/xtrabackup-wednesday.tar.gz
-    - /backups/mariadb/xtrabackup-thursday.tar.gz
+    - /backups/mariadb/mariabackup-extra.tar.gz
+    - /backups/mariadb/mariabackup-friday.tar.gz
+    - /backups/mariadb/mariabackup-monday.tar.gz
+    - /backups/mariadb/mariabackup-saturday.tar.gz
+    - /backups/mariadb/mariabackup-sunday.tar.gz
+    - /backups/mariadb/mariabackup-thursday.tar.gz
+    - /backups/mariadb/mariabackup-tuesday.tar.gz
+    - /backups/mariadb/mariabackup-wednesday.tar.gz
+    - /backups/mariadb/xtrabackup-extra.tar.gz
     - /backups/mariadb/xtrabackup-friday.tar.gz
+    - /backups/mariadb/xtrabackup-monday.tar.gz
     - /backups/mariadb/xtrabackup-saturday.tar.gz
     - /backups/mariadb/xtrabackup-sunday.tar.gz
-    - /backups/mariadb/xtrabackup-extra.tar.gz
+    - /backups/mariadb/xtrabackup-thursday.tar.gz
+    - /backups/mariadb/xtrabackup-tuesday.tar.gz
+    - /backups/mariadb/xtrabackup-wednesday.tar.gz
+    - /etc/cron.daily/mariabackup-backup
+    - /etc/cron.daily/mariabackup-restore
+    - /etc/cron.daily/xtrabackup-backup
+    - /root/mariabackup-backup
+    - /root/mariabackup-restore
+    - /root/xtrabackup-backup
+    - /root/xtrabackup-restore
