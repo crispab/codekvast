@@ -20,33 +20,30 @@
 -- THE SOFTWARE.
 --
 
+SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
+
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Remove duplicate method_locations (keep the oldest)
-DELETE ml1
-    FROM method_locations       ml1
-             INNER JOIN methods m1 ON ml1.methodId = m1.id
-             INNER JOIN methods m2
-    WHERE m2.id > m1.id AND m1.signature = m2.signature;
-
--- Remove duplicate invocations (keep the oldest)
-DELETE i1
-    FROM invocations            i1
-             INNER JOIN methods m1 ON i1.methodId = m1.id
-             INNER JOIN methods m2
-    WHERE m2.id > m1.id AND m1.signature = m2.signature;
-
 -- Remove duplicate methods (keep the oldest)
-DELETE m1
-    FROM methods                m1
-             INNER JOIN methods m2
-    WHERE m1.id > m2.id AND m1.signature = m2.signature;
+ALTER TABLE methods
+    MODIFY signature VARCHAR(3000) NOT NULL,
+    ADD INDEX ix_method_signature(signature(3000));
+
+DELETE m1 FROM methods m1 INNER JOIN methods m2
+    WHERE m1.signature = m2.signature AND m1.id > m2.id;
+
+-- Remove orphan method_locations
+DELETE ml1 FROM method_locations ml1 LEFT JOIN methods m1 ON ml1.methodId = m1.id
+    WHERE m1.id IS NULL;
+
+-- Remove orphan invocations
+DELETE i1 FROM invocations i1 LEFT JOIN methods m1 ON i1.methodId = m1.id
+    WHERE m1.id IS NULL;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Now prevent duplicates from appearing again
 -- (We can do this now since imports are done with a lock).
 ALTER TABLE methods
-    MODIFY signature VARCHAR(3000) NOT NULL,
     DROP INDEX ix_method_signature,
     ADD UNIQUE INDEX ix_method_identity(customerId, signature);
