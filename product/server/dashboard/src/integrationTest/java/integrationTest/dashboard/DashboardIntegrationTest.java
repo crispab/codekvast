@@ -19,6 +19,7 @@ import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
+import io.codekvast.dashboard.file_import.PublicationImporter;
 import io.codekvast.dashboard.weeding.WeedingTask;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
@@ -30,6 +31,7 @@ import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.testsupport.docker.RabbitmqContainerReadyChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.val;
 import org.flywaydb.core.Flyway;
 import org.junit.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,6 +53,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
@@ -157,6 +163,9 @@ public class DashboardIntegrationTest {
 
     @Inject
     private AgentDAO agentDAO;
+
+    @Inject
+    private PublicationImporter publicationImporter;
 
     @Inject
     private CodeBaseImporter codeBaseImporter;
@@ -416,6 +425,33 @@ public class DashboardIntegrationTest {
         assertThat(customerData.getCollectionStartedAt(), is(now));
         assertThat(customerData.getTrialPeriodEndsAt(), is(nullValue()));
         assertThat(customerData.isTrialPeriodExpired(now), is(false));
+    }
+
+    @Test
+    public void should_import_publication_file() {
+        // given
+        CodeBasePublication3 publication = CodeBasePublication3.builder()
+                                                               .commonData(CommonPublicationData2.sampleCommonPublicationData())
+                                                               .entries(Arrays.asList(CodeBaseEntry3.sampleCodeBaseEntry()))
+                                                               .build();
+        File file = writeToTempFile(publication);
+
+        // when
+        publicationImporter.importPublicationFile(file);
+
+        // then
+
+    }
+
+    @SneakyThrows
+    private File writeToTempFile(Object publication) {
+        File file = File.createTempFile(getClass().getSimpleName(), ".ser");
+        file.deleteOnExit();
+        try (val oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
+            oos.writeObject(publication);
+            oos.flush();
+        }
+        return file;
     }
 
     @Test
