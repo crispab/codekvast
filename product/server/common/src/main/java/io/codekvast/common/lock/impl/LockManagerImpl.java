@@ -64,13 +64,16 @@ public class LockManagerImpl implements LockManager {
     @Transactional(propagation = Propagation.MANDATORY)
     public Optional<Lock> acquireLock(Lock lock) {
         try {
+            Instant acquireStartedAt = Instant.now();
             String s =
                 jdbcTemplate.queryForObject("SELECT name FROM internal_locks WHERE name = ? FOR UPDATE WAIT ?", String.class, lock.name(), lock.getLockWaitSeconds());
             logger.debug("Acquired lock {}", lock);
-            locksAcquiredAt.put(lock, Instant.now());
+            metricsService.recordLockWait(lock, Duration.between(acquireStartedAt, Instant.now()));
+            locksAcquiredAt.put(lock, acquireStartedAt);
             return Optional.of(lock);
         } catch (DataAccessException e) {
             logger.info("Failed to acquire lock {} within {} s", lock, lock.getLockWaitSeconds());
+            metricsService.countLockFailure(lock);
             return Optional.empty();
         }
     }

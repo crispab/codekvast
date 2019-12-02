@@ -62,10 +62,25 @@ public interface CommonMetricsService {
     void countLogin(String source);
 
     /**
-     * Gauges how long a lock was held
+     * Records how long a lock was held
      *
      * @param lock     The lock
      * @param duration The duration of the lock
      */
     void recordLockDuration(LockManager.Lock lock, Duration duration);
+
+    /**
+     * Records how long we had to wait for a lock
+     *
+     * @param lock     The lock
+     * @param duration The duration of the wait
+     */
+    void recordLockWait(LockManager.Lock lock, Duration duration);
+
+    /**
+     * Count a failure to get a lock.
+     *
+     * @param lock The lock
+     */
+    void countLockFailure(LockManager.Lock lock);
 }
