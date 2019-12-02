@@ -13,4 +13,20 @@ Accept: application/json
 GET http://{{server1}}.codekvast.io:9080/management/lbhealth
 Accept: application/json
 
+### Dashboard 0
+GET http://{{server0}}.codekvast.io:9081/management/lbhealth
+Accept: application/json
+
+### Dashboard 1
+GET http://{{server1}}.codekvast.io:9081/management/lbhealth
+Accept: application/json
+
+### Backoffice 0
+GET http://{{server0}}.codekvast.io:9082/management/lbhealth
+Accept: application/json
+
+### Backoffice 1
+GET http://{{server1}}.codekvast.io:9082/management/lbhealth
+Accept: application/json
+
 ###
