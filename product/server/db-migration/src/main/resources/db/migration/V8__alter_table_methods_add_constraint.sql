@@ -48,9 +48,8 @@ DELETE m1
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Now prevent duplicates from appearing again
+-- (We can do this now since imports are done with a lock).
 ALTER TABLE methods
-    MODIFY signature VARCHAR(3000) NOT NULL;
-
-DROP INDEX ix_method_signature ON methods;
-
-CREATE UNIQUE INDEX ix_method_identity ON methods(customerId, signature);
+    MODIFY signature VARCHAR(3000) NOT NULL,
+    DROP INDEX ix_method_signature,
+    ADD UNIQUE INDEX ix_method_identity(customerId, signature);
