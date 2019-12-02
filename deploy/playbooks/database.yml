@@ -129,18 +129,15 @@
   - set_fact:
       s3_database_backup_bucket: "io.codekvast.{{ customer|lower }}.{{ env|lower }}.backup"
 
-  - name: Install s3cmd, gzip and mariabackup
+  - name: Install s3cmd and gzip
     package: name={{ item }} state=present
     with_items:
         - s3cmd
         - gzip
-        - "mariadb-client-{{ mariadb_version }}"
 
   - name: Install backup scripts
     template: src=database/{{ item }}.j2 dest=/root/{{ item }} mode=755
     with_items:
-    - mariabackup-backup
-    - mariabackup-restore
     - mysqldump-backup
     - mysqldump-restore
     - s3cfg
@@ -152,8 +149,15 @@
   - name: Link backup scripts to /etc/cron.daily
     file: src=/root/{{ item }} dest=/etc/cron.daily/{{ item }} state=link
     with_items:
-    - mariabackup-backup
     - mysqldump-backup
+
+  - name: Remove obsolete backup scripts
+    file: path={{ item }} state=absent
+    with_items:
+    - /root/mariabackup-backup
+    - /root/mariabackup-restore
+    - /etc/cron.daily/mariabackup-backup
+    - /etc/cron.daily/mariabackup-restore
 
   - name: Create MySQL user for Datadog
     shell: mysql -e "{{ item }};"

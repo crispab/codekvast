@@ -1,19 +1,17 @@
 ---
 #-----------------------------------------------------------------------------------------------------------
 # Playbook that makes a backup of the production database to S3 and then restores it to the staging database
-# It expects to be invoked with the ansible-playbook command line variables
-#   -e appName=aaa where aaa is one of mysqldump or mariabackup
 #-----------------------------------------------------------------------------------------------------------
-- name:   "Make extra production database backup by means of {{ appName }}"
+- name:   "Make extra production database backup by means of mysqldump"
   hosts:  tag_Name_Codekvast_default_prod_database
   user:   ubuntu
   become: yes
 
   tasks:
-  - name:  "Executing /root/{{ appName }}-backup extra in {{ tags.CNAME }}"
-    shell: /root/{{ appName }}-backup extra
+  - name:  "Executing /root/mysqldump-backup extra in {{ tags.CNAME }}"
+    shell: /root/mysqldump-backup extra
 
-- name:   "Restore extra production database produced by {{ appName }}"
+- name:   "Restore extra production database produced by mysqldump"
   hosts:  tag_Name_Codekvast_default_staging_database
   user:   ubuntu
   become: yes
@@ -21,10 +19,10 @@
   vars:
       mysql_backup_dir: '/backups/mariadb'
       s3_bucket:        "s3://io.codekvast.default.prod.backup"
-      backup_file:      "{{ appName }}-extra.{{ {'mariabackup': 'tar.gz', 'mysqldump': 'sql.gz'}[appName] }}"
+      backup_file:      "mysqldump-extra.sql.gz"
 
   tasks:
   - name:  "Fetching {{ s3_bucket }}/{{ backup_file }} to {{ tags.CNAME }}:{{ mysql_backup_dir }}"
     shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ backup_file }} {{ mysql_backup_dir }}"
-  - name:  "Executing /root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ backup_file }} --yes in {{ tags.CNAME }}"
-    shell: "/root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ backup_file }} --yes"
+  - name:  "Executing /root/mysqldump-restore {{ mysql_backup_dir }}/{{ backup_file }} --yes in {{ tags.CNAME }}"
+    shell: "/root/mysqldump-restore {{ mysql_backup_dir }}/{{ backup_file }} --yes"

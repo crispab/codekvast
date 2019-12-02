@@ -6,7 +6,6 @@
 #   -e srcEnv=eee where eee is either prod or staging
 #   -e targetEnv=eee where eee is either prod or staging
 #   -e weekday=www where www is one of monday, tuesday, wednesday, thursday, friday, saturday, sunday or extra
-#   -e appName=aaa where aaa is one of xtrabackup or mariabackup
 #-----------------------------------------------------------------------------------------------------------
 - name: "Restore {{ srcEnv }} database backup from last {{ weekday }} to {{ targetEnv }}"
   hosts: "tag_Name_Codekvast_default_{{ targetEnv }}_database"
@@ -16,7 +15,7 @@
   vars:
     mysql_backup_dir: '/backups/mariadb'
     s3_bucket: "s3://io.codekvast.default.{{ srcEnv }}.backup"
-    tarball: "{{ appName }}-{{ weekday }}.tar.gz"
+    tarball: "mysqldump-{{ weekday }}.tar.gz"
 
   tasks:
 
@@ -24,4 +23,4 @@
     shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ tarball }} {{ mysql_backup_dir }}"
 
   - name: "Restoring {{ mysql_backup_dir }}/{{ tarball }} in {{ tags.CNAME }}"
-    shell: "/root/{{ appName }}-restore {{ mysql_backup_dir }}/{{ tarball }} --yes"
+    shell: "/root/mysqldump-restore {{ mysql_backup_dir }}/{{ tarball }} --yes"
