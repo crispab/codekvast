@@ -59,7 +59,9 @@ jvm_opts:
     dashboard:   ''
     login:       '-Xms10m -Xmx100m'
 
-datadog_agent_version: '1:6.14.1-1'
+datadog_agent_version: '1:6.15.1-1'
+datadog_agent_allow_downgrade: yes
+
 datadog_config:
     hostname:         "{{ tags.CNAME }}"
     tags:

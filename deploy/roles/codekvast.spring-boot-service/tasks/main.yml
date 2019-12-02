@@ -36,7 +36,9 @@
     owner: codekvast
     group: codekvast
     mode: 0700
-  notify: "restart codekvast service"
+  notify:
+   - "restart codekvast service"
+   - "send codekvast service installed event"
 
 - name: "Install /opt/codekvast/{{ service_name }}/application.yml"
   template:
@@ -44,7 +46,9 @@
     dest: "/opt/codekvast/{{ service_name }}/application.yml"
     owner: codekvast
     group: codekvast
-  notify: "restart codekvast service"
+  notify:
+  - "restart codekvast service"
+  - "send codekvast service configured event"
 
 - name: "Install /etc/systemd/system/codekvast-{{ service_name }}.service"
   template:
@@ -53,8 +57,8 @@
     owner: root
     group: root
   notify:
-  - systemctl daemon-reload
-  - "restart codekvast service"
+  - "systemctl daemon-reload"
+  - "send codekvast service configured event"
 
 - name: "Install /opt/codekvast/codekvast-javaagent-{{ codekvastVersion }}.jar"
   copy:
@@ -63,7 +67,9 @@
     owner: codekvast
     group: codekvast
     mode: 0700
-  notify: "restart codekvast service"
+  notify:
+  - "restart codekvast service"
+  - "send codekvast service configured event"
 
 - name: "Install /opt/codekvast/{{ service_name }}/codekvast-agent.properties"
   template:
@@ -71,7 +77,9 @@
     dest: /opt/codekvast/{{ service_name }}/codekvast-agent.properties
     owner: codekvast
     group: codekvast
-  notify: "restart codekvast service"
+  notify:
+  - "restart codekvast service"
+  - "send codekvast service configured event"
 
 - name: "Enable codekvast-{{ service_name }}"
   service:

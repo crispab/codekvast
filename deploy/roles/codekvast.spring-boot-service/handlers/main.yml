@@ -1,7 +1,25 @@
 ---
-- name: systemctl daemon-reload
+- name: "systemctl daemon-reload"
   shell: systemctl daemon-reload
 
 - name: "restart codekvast service"
   # Not possible to have more than one task in a handler, so they are in a separate file.
   include_tasks: handler-restart-codekvast-service.yml
+
+- name: "send codekvast service installed event"
+  datadog_event:
+      title: "{{ service_display_name }} in {{ tags.CNAME }} has been installed"
+      text: "Version {{ codekvastVersion }}"
+      api_key: "{{ datadog_api_key }}"
+      app_key: "{{ datadog_app_key }}"
+      aggregation_key: "Deployment"
+      tags: "#env:{{ env }}"
+
+- name: "send codekvast service configured event"
+  datadog_event:
+      title: "{{ service_display_name }} in {{ tags.CNAME }} has been configured"
+      text: "Version {{ codekvastVersion }}"
+      api_key: "{{ datadog_api_key }}"
+      app_key: "{{ datadog_app_key }}"
+      aggregation_key: "Deployment"
+      tags: "#env:{{ env }}"
