@@ -33,6 +33,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.TreeSet;
 
 import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.INVOCATIONS;
@@ -53,7 +55,8 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
     @Override
     @Transactional
     public boolean importPublication(InvocationDataPublication2 publication) {
-        logger.info("Importing {}", publication);
+        Instant startedAt = Instant.now();
+        logger.debug("Importing {}", publication);
 
         CommonPublicationData2 data = publication.getCommonData();
         ImportContext importContext = commonImporter.importCommonData(data);
@@ -70,8 +73,9 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
                                                      .size(publication.getInvocations().size())
                                                      .build());
 
-        metricsService.countImportedPublication(INVOCATIONS);
-        metricsService.gaugePublicationSize(INVOCATIONS, publication.getInvocations().size());
+        Duration duration = Duration.between(startedAt, Instant.now());
+        logger.info("Imported {} in {}", publication, duration);
+        metricsService.countImportedPublication(INVOCATIONS, publication.getInvocations().size(), duration);
         return true;
     }
 }

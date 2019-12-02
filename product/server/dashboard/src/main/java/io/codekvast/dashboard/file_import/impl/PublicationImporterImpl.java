@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.common.customer.LicenseViolationException;
+import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.*;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -60,6 +62,7 @@ public class PublicationImporterImpl implements PublicationImporter {
     private final InvocationDataImporter invocationDataImporter;
     private final Validator validator;
     private final IntakeMetricsService metricsService;
+    private final LockManager lockManager;
 
     @Override
     public boolean importPublicationFile(File file) {
@@ -103,8 +106,21 @@ public class PublicationImporterImpl implements PublicationImporter {
         return handled;
     }
 
-    @SuppressWarnings({"ChainOfInstanceofChecks", "InstanceofConcreteClass", "CastToConcreteClass"})
     private boolean handlePublication(Object object) {
+        Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.IMPORT);
+        if (lock.isPresent()) {
+            try {
+                return doHandlePublication(object);
+            } finally {
+                lockManager.releaseLock(lock.get());
+            }
+        }
+        logger.warn("Failed to acquire lock, will try again");
+        return false;
+    }
+
+    @SuppressWarnings("ChainOfInstanceofChecks")
+    private boolean doHandlePublication(Object object) {
         if (object instanceof CodeBasePublication2) {
             return codeBaseImporter.importPublication(toCodeBasePublication3((CodeBasePublication2) object));
         }

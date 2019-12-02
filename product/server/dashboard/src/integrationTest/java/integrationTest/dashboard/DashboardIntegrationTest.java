@@ -296,7 +296,8 @@ public class DashboardIntegrationTest {
                                                                                        .plan("test")
                                                                                        .build());
 
-        Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE source = ? AND externalId = ?", Long.class, "source", "externalId");
+        Long count = jdbcTemplate
+            .queryForObject("SELECT COUNT(1) FROM customers WHERE source = ? AND externalId = ?", Long.class, "source", "externalId");
 
         assertThat(count, is(1L));
 
@@ -304,7 +305,8 @@ public class DashboardIntegrationTest {
 
         customerService.deleteCustomerByExternalId("source", "externalId");
 
-        count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE source= ? AND externalId = ?", Long.class, "source", "externalId");
+        count = jdbcTemplate
+            .queryForObject("SELECT COUNT(1) FROM customers WHERE source= ? AND externalId = ?", Long.class, "source", "externalId");
         assertThat(count, is(0L));
     }
 
@@ -840,7 +842,7 @@ public class DashboardIntegrationTest {
     }
 
     @Test
-    public void should_handle_lock_contention() throws InterruptedException {
+    public void should_handle_lock_wait_timeout() throws InterruptedException {
         CountDownLatch[] latches = {new CountDownLatch(1), new CountDownLatch(1), new CountDownLatch(1)};
 
         new Thread(() -> lockContentionTestHelper.doSteps(latches)).start();
@@ -857,7 +859,7 @@ public class DashboardIntegrationTest {
     @Test
     public void should_handle_lock_wait() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
-        new Thread(() -> lockContentionTestHelper.lockSleepUnlock(latch, 500L)).start();
+        new Thread(() -> lockContentionTestHelper.lockSleepUnlock(latch, LockManager.Lock.WEEDER.getLockWaitSeconds() * 1000 / 2)).start();
 
         latch.await();
         assertThat(lockManager.acquireLock(LockManager.Lock.WEEDER).isPresent(), is(true));

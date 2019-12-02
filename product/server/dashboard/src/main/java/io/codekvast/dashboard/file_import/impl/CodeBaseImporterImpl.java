@@ -32,6 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.CODEBASE;
 
 /**
@@ -50,7 +53,8 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
     @Override
     @Transactional
     public boolean importPublication(CodeBasePublication3 publication) {
-        logger.info("Importing {}", publication);
+        Instant startedAt = Instant.now();
+        logger.debug("Importing {}", publication);
 
         CommonPublicationData2 data = publication.getCommonData();
         CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
@@ -66,8 +70,9 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
                                                .size(publication.getEntries().size())
                                                .build());
 
-        metricsService.countImportedPublication(CODEBASE);
-        metricsService.gaugePublicationSize(CODEBASE, publication.getEntries().size());
+        Duration duration = Duration.between(startedAt, Instant.now());
+        logger.info("Imported {} in {}", publication, duration);
+        metricsService.countImportedPublication(CODEBASE, publication.getEntries().size(), duration);
         return true;
     }
 }

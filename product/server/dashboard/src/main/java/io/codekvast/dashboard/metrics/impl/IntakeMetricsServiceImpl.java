@@ -27,6 +27,8 @@ import io.micrometer.core.instrument.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+
 import static java.util.Arrays.asList;
 
 /**
@@ -50,13 +52,10 @@ public class IntakeMetricsServiceImpl implements IntakeMetricsService {
     }
 
     @Override
-    public void countImportedPublication(PublicationKind kind) {
+    public void countImportedPublication(PublicationKind kind, int size, Duration duration) {
         meterRegistry.counter("codekvast.intake.accepted", KIND_TAG, asTag(kind)).increment();
-    }
-
-    @Override
-    public void gaugePublicationSize(PublicationKind kind, int size) {
         meterRegistry.gauge("codekvast.intake.publicationSize", asList(Tag.of(KIND_TAG, asTag(kind))), size);
+        meterRegistry.gauge("codekvast.intake.durationMillis", asList(Tag.of(KIND_TAG, asTag(kind))), duration.toMillis());
     }
 
     private String asTag(PublicationKind kind) {

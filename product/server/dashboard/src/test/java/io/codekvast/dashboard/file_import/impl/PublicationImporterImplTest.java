@@ -1,5 +1,6 @@
 package io.codekvast.dashboard.file_import.impl;
 
+import io.codekvast.common.lock.LockManager;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
@@ -18,6 +19,7 @@ import javax.validation.Validator;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,12 +44,16 @@ public class PublicationImporterImplTest {
     @Mock
     private IntakeMetricsService metricsService;
 
+    @Mock
+    private LockManager lockManager;
+
     private PublicationImporter publicationImporter;
 
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        this.publicationImporter = new PublicationImporterImpl(codeBaseImporter, invocationDataImporter, validator, metricsService);
+        when(lockManager.acquireLock(LockManager.Lock.IMPORT)).thenReturn(Optional.of(LockManager.Lock.IMPORT));
+        this.publicationImporter = new PublicationImporterImpl(codeBaseImporter, invocationDataImporter, validator, metricsService, lockManager);
     }
 
     @Test
@@ -64,6 +70,8 @@ public class PublicationImporterImplTest {
 
         verify(codeBaseImporter).importPublication(any(CodeBasePublication3.class));
         verify(validator).validate(any());
+        verify(lockManager).acquireLock(LockManager.Lock.IMPORT);
+        verify(lockManager).releaseLock(LockManager.Lock.IMPORT);
         verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
     }
 
@@ -110,6 +118,8 @@ public class PublicationImporterImplTest {
         // then
         assertThat(handled, is(true));
         verify(invocationDataImporter).importPublication(any(InvocationDataPublication2.class));
+        verify(lockManager).acquireLock(LockManager.Lock.IMPORT);
+        verify(lockManager).releaseLock(LockManager.Lock.IMPORT);
         verify(validator).validate(any());
         verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
     }

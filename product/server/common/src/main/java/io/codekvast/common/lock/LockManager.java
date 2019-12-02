@@ -34,8 +34,9 @@ public interface LockManager {
     @RequiredArgsConstructor
     @Getter
     enum Lock {
-        WEEDER(0),
-        AGENT_STATE(10);
+        WEEDER(1),
+        AGENT_STATE(10),
+        IMPORT(60);
 
         private final int lockWaitSeconds;
     }

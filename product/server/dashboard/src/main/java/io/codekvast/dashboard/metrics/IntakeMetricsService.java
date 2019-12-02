@@ -21,6 +21,8 @@
  */
 package io.codekvast.dashboard.metrics;
 
+import java.time.Duration;
+
 /**
  * Wrapper for intake metrics.
  *
@@ -46,14 +48,9 @@ public interface IntakeMetricsService {
      * Count the fact that a publication was imported.
      *
      * @param kind The kind of publication.
-     */
-    void countImportedPublication(PublicationKind kind);
-
-    /**
-     * Gauges the size of an imported publication.
-     *
-     * @param kind The kind of publication.
      * @param size The size of the publication.
+     * @param duration The time it took to import it.
      */
-    void gaugePublicationSize(PublicationKind kind, int size);
+    void countImportedPublication(PublicationKind kind, int size, Duration duration);
+
 }

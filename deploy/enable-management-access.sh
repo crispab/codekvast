@@ -33,10 +33,10 @@ case $answer in
     y|Y) ;;
 esac
 
-echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"icmp\"\", \"FromPort\": -1, \"ToPort\": -1, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"Management from $description\"}]}]"
-aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"icmp\", \"FromPort\": -1, \"ToPort\": -1, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"Management from $description\"}]}]"
+echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"icmp\"\", \"FromPort\": -1, \"ToPort\": -1, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
+aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"icmp\", \"FromPort\": -1, \"ToPort\": -1, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
 
 for port in ${portsToOpen}; do
-    echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"Management from $description\"}]}]"
-    aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"Management from $description\"}]}]"
+    echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
+    aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
 done
