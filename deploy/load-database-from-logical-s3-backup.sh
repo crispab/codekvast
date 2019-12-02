@@ -41,11 +41,11 @@ esac
 declare s3_bucket="s3://io.codekvast.default.${srcEnv}.backup"
 declare dumpfile=mysqldump-${weekday}.sql.gz
 
-declare tmp_dir=$(mktemp -d /tmp/fetch-database.XXXXXXX)
+declare tmp_dir=$(mktemp -d /tmp/codekvast-fetch-database.XXXXXXX)
 trap "rm -fr ${tmp_dir}" EXIT
 
-echo "Fetching ${s3_bucket}/${dumpfile} ..."
+echo "Fetching ${s3_bucket}/${dumpfile} into ${tmp_dir}/ ..."
 s3cmd get ${s3_bucket}/${dumpfile} ${tmp_dir}/${dumpfile}
 
-echo "Loading ${srcEnv} ${dumpfile} into jdbc:mariadb://${targetHost}:3306/codekvast using the mysql client ..."
+echo "Loading ${srcEnv} ${tmp_dir}/${dumpfile} into jdbc:mariadb://${targetHost}:3306/codekvast using the mysql client ..."
 zcat ${tmp_dir}/${dumpfile} | mysql --protocol=tcp --user=codekvast --password=codekvast --host=${targetHost} --database=codekvast

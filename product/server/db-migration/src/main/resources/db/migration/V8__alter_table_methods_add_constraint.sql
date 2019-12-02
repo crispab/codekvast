@@ -20,15 +20,18 @@
 -- THE SOFTWARE.
 --
 
+INSERT IGNORE INTO internal_locks(name) VALUE('IMPORT');
 SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Remove duplicate methods (keep the oldest)
+-- Change column type from TEXT to VARCHAR
 ALTER TABLE methods
-    MODIFY signature VARCHAR(3000) NOT NULL,
-    ADD INDEX ix_method_signature(signature(3000));
+    DROP INDEX IF EXISTS ix_method_signature,
+    MODIFY signature VARCHAR(2000) NOT NULL,
+    ADD INDEX ix_method_signature(signature(1000));
 
+-- Remove duplicate methods (keep the oldest)
 DELETE m1 FROM methods m1 INNER JOIN methods m2
     WHERE m1.signature = m2.signature AND m1.id > m2.id;
 
@@ -42,8 +45,6 @@ DELETE i1 FROM invocations i1 LEFT JOIN methods m1 ON i1.methodId = m1.id
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Now prevent duplicates from appearing again
--- (We can do this now since imports are done with a lock).
 ALTER TABLE methods
     DROP INDEX ix_method_signature,
-    ADD UNIQUE INDEX ix_method_identity(customerId, signature);
+    ADD UNIQUE INDEX ix_method_identity(customerId, signature(1000));
