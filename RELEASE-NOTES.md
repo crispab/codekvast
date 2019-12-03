@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 1.3.3
+
+1. Dashboard: handler for deadlock exceptions.
+
 ## 1.3.2
 
 1. codekvast-javaagent does not log on SEVERE level anymore.

@@ -51,6 +51,7 @@ public class LockManagerImpl implements LockManager {
     private final ConcurrentHashMap<Lock, Instant> locksAcquiredAt = new ConcurrentHashMap<>();
 
     @PostConstruct
+    @Transactional
     public void populateLocksTable() {
         for (Lock lock : Lock.values()) {
             int inserted = jdbcTemplate.update("INSERT IGNORE INTO internal_locks(name) VALUES(?)", lock.name());
