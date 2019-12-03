@@ -148,7 +148,7 @@ public class CodekvastAgent {
             logger.info(String.format("%s is ready to detect used code in %s %s within %s.", NAME, config.getAppName(),
                                       config.getResolvedAppVersion(), getPrettyPackages(config)));
         } catch (Exception e) {
-            logger.log(Level.SEVERE,
+            logger.log(Level.WARNING,
                        String.format("%1$s could not add generated META-INF/aop.xml to the system class loader. %1$s will not start", NAME),
                        e);
         }

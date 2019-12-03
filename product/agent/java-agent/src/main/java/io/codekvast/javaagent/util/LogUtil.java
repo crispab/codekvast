@@ -40,10 +40,10 @@ public class LogUtil {
         Throwable rootCause = getRootCause(e);
         if (logger.isLoggable(Level.FINER) && !(rootCause instanceof ConnectException) && !(rootCause instanceof UnknownHostException)) {
             // log with full stack trace
-            logger.log(Level.SEVERE, msg, e);
+            logger.log(Level.INFO, msg, e);
         } else {
             // log a one-liner with the root cause
-            logger.log(Level.SEVERE, msg + ": " + rootCause.toString());
+            logger.log(Level.INFO, msg + ": " + rootCause.toString());
         }
     }
 

@@ -1,8 +1,9 @@
 # Codekvast Release Notes
 
-## 1.4
+## 1.3.2
 
-1. Trimmed some logging in codekvast-javaagent
+1. codekvast-javaagent does not log on SEVERE level anymore.
+1. Bug fix: Unique index on methods.signature is now case-sensitive
 
 ## 1.3.1
 
