@@ -64,6 +64,8 @@ public class LockManagerImpl implements LockManager {
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public Optional<Lock> acquireLock(Lock lock) {
+        // TODO: Make locking more fine granular by using SELECT GET_LOCK() and SELECT RELEASE_LOCK
+        //   and include the customerId in the lock key.
         try {
             Instant acquireStartedAt = Instant.now();
             String s =

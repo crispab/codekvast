@@ -8,6 +8,7 @@ After=syslog.target
 User=codekvast
 WorkingDirectory=/opt/codekvast/{{ service_name }}
 ExecStart=/bin/sh -c "java \
+                      -XX:+ExitOnOutOfMemoryError \
                       -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address={{ ports[service_name].jvm_debugger }} \
                       {{ jvm_opts[service_name] }} \
                       -Dcom.sun.management.jmxremote.port={{ ports[service_name].jmx }} \

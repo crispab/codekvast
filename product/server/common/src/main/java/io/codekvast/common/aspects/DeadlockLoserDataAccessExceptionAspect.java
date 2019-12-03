@@ -33,7 +33,7 @@ import java.util.Random;
 /**
  * A handler for @Transactional methods that encounters a {@link DeadlockLoserDataAccessException}.
  *
- * It will retry the transaction a number of times.
+ * It will retry the transaction a number of times with a short random delay.
  *
  * @author olle.hallin@crisp.se
  */
@@ -46,19 +46,19 @@ public class DeadlockLoserDataAccessExceptionAspect {
 
     @Around("execution(* io.codekvast..*(..)) && @annotation(org.springframework.transaction.annotation.Transactional)")
     public Object transactionalMethod(ProceedingJoinPoint pjp) throws Throwable {
-        String execution = pjp.toShortString();
-        logger.trace("Before {}", execution);
+        String joinPoint = pjp.toShortString();
+        logger.trace("Before {}", joinPoint);
         int maxAttempt = 3;
         for (int attempt = 1; attempt < maxAttempt; attempt++) {
             try {
                 return pjp.proceed();
             } catch (DeadlockLoserDataAccessException e) {
                 int delayMillis = getRandomInt(10, 50);
-                logger.info("Deadlock #{} at {}, will retry in {} ms ...", attempt, execution, delayMillis);
+                logger.info("Deadlock #{} at {}, will retry in {} ms ...", attempt, joinPoint, delayMillis);
                 Thread.sleep(delayMillis);
             }
         }
-        logger.info("A last attempt at {}", execution);
+        logger.info("Executing a last attempt at {}", joinPoint);
         return pjp.proceed();
     }
 
