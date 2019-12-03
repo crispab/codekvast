@@ -27,7 +27,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.Optional;
 
 /**
+ * A lock manager.
+ *
  * @author olle.hallin@crisp.se
+ * @see LockTemplate
  */
 public interface LockManager {
 
@@ -44,7 +47,7 @@ public interface LockManager {
     /**
      * Acquire a lock. <em>Must</em> be invoked inside {@code @Transactional}
      *
-     * @param lock        The lock to acquire.
+     * @param lock The lock to acquire.
      * @return A filled optional if the lock was acquired, else an empty optional.
      */
     Optional<Lock> acquireLock(Lock lock);

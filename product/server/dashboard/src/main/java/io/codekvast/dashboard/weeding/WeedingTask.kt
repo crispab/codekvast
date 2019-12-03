@@ -21,13 +21,12 @@
  */
 package io.codekvast.dashboard.weeding
 
-import io.codekvast.common.lock.LockManager
 import io.codekvast.common.lock.LockManager.Lock
+import io.codekvast.common.lock.LockTemplate
 import io.codekvast.common.messaging.CorrelationIdHolder
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 import javax.inject.Inject
 
 /**
@@ -37,7 +36,8 @@ import javax.inject.Inject
  */
 @Component
 class WeedingTask
-@Inject constructor(private val lockManager: LockManager, private val weedingService: WeedingService) {
+@Inject constructor(private val lockTemplate: LockTemplate,
+                    private val weedingService: WeedingService) {
 
     /**
      * A scheduled task that invokes the data weeding service.
@@ -49,36 +49,11 @@ class WeedingTask
         Thread.currentThread().name = "Codekvast Data Weeder"
         CorrelationIdHolder.generateNew()
         try {
-            if (findWeedingCandidates()) {
-                performWeeding()
-            }
+            lockTemplate.doWithLock(Lock.AGENT_STATE) { weedingService.findWeedingCandidates() }
+            lockTemplate.doWithLock(Lock.WEEDER) { weedingService.performDataWeeding() }
         } finally {
             CorrelationIdHolder.clear()
             Thread.currentThread().name = oldThreadName
-        }
-    }
-
-    private fun findWeedingCandidates(): Boolean {
-        val lock: Optional<Lock> = lockManager.acquireLock(Lock.AGENT_STATE)
-        if (lock.isPresent) {
-            try {
-                weedingService.findWeedingCandidates()
-                return true
-            } finally {
-                lockManager.releaseLock(lock.get())
-            }
-        }
-        return false
-    }
-
-    private fun performWeeding() {
-        val lock: Optional<Lock> = lockManager.acquireLock(Lock.WEEDER)
-        if (lock.isPresent) {
-            try {
-                weedingService.performDataWeeding()
-            } finally {
-                lockManager.releaseLock(lock.get())
-            }
         }
     }
 

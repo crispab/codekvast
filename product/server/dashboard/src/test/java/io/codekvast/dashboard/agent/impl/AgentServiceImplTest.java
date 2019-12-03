@@ -2,6 +2,7 @@ package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.common.customer.*;
 import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.agent.AgentService;
@@ -61,7 +62,7 @@ public class AgentServiceImplTest {
         settings.setQueuePathPollIntervalSeconds(60);
 
         when(lockManager.acquireLock(LockManager.Lock.AGENT_STATE)).thenReturn(Optional.of(LockManager.Lock.AGENT_STATE));
-        service = new AgentServiceImpl(settings, customerService, eventService, agentDAO, lockManager);
+        service = new AgentServiceImpl(settings, customerService, eventService, agentDAO, new LockTemplate(lockManager));
 
         setupCustomerData(null, null);
     }

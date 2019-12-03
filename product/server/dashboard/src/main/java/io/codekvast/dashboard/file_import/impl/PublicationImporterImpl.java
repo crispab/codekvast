@@ -23,6 +23,7 @@ package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
@@ -33,6 +34,7 @@ import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -41,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.*;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,7 +64,7 @@ public class PublicationImporterImpl implements PublicationImporter {
     private final InvocationDataImporter invocationDataImporter;
     private final Validator validator;
     private final IntakeMetricsService metricsService;
-    private final LockManager lockManager;
+    private final LockTemplate lockTemplate;
 
     @Override
     @Transactional
@@ -108,17 +109,14 @@ public class PublicationImporterImpl implements PublicationImporter {
         return handled;
     }
 
+    @SneakyThrows
     private boolean handlePublication(Object object) {
-        Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.IMPORT);
-        if (lock.isPresent()) {
-            try {
-                return doHandlePublication(object);
-            } finally {
-                lockManager.releaseLock(lock.get());
-            }
-        }
-        logger.warn("Failed to acquire {} lock, will try again", LockManager.Lock.IMPORT);
-        return false;
+        return lockTemplate.doWithLock(LockManager.Lock.IMPORT,
+                                       () -> doHandlePublication(object),
+                                       () -> {
+                                           logger.warn("Failed to acquire {} lock, will try again", LockManager.Lock.IMPORT);
+                                           return false;
+                                       });
     }
 
     @SuppressWarnings("ChainOfInstanceofChecks")

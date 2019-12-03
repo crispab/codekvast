@@ -1,6 +1,7 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
@@ -53,7 +54,7 @@ public class PublicationImporterImplTest {
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
         when(lockManager.acquireLock(LockManager.Lock.IMPORT)).thenReturn(Optional.of(LockManager.Lock.IMPORT));
-        this.publicationImporter = new PublicationImporterImpl(codeBaseImporter, invocationDataImporter, validator, metricsService, lockManager);
+        this.publicationImporter = new PublicationImporterImpl(codeBaseImporter, invocationDataImporter, validator, metricsService, new LockTemplate(lockManager));
     }
 
     @Test

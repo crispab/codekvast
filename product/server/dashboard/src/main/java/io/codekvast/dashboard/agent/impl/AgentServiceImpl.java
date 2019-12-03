@@ -26,6 +26,7 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.agent.AgentService;
@@ -36,6 +37,7 @@ import io.codekvast.javaagent.model.v2.GetConfigRequest2;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -46,7 +48,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.util.Optional;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -66,7 +67,7 @@ public class AgentServiceImpl implements AgentService {
     private final CustomerService customerService;
     private final EventService eventService;
     private final AgentDAO agentDAO;
-    private final LockManager lockManager;
+    private final LockTemplate lockTemplate;
 
     @Override
     @Transactional
@@ -101,17 +102,14 @@ public class AgentServiceImpl implements AgentService {
             .build();
     }
 
+    @SneakyThrows
     private boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment) {
-        Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.AGENT_STATE);
-        if (lock.isPresent()) {
-            try {
-                return doUpdateAgentState(customerData, jvmUuid, appName, environment);
-            } finally {
-                lockManager.releaseLock(lock.get());
-            }
-        }
-        logger.error("Failed to acquire lock, treating agent as disabled.");
-        return false;
+        return lockTemplate.doWithLock(LockManager.Lock.AGENT_STATE,
+                                       () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
+                                       () -> {
+                                           logger.error("Failed to acquire lock, treating agent as disabled.");
+                                           return false;
+                                       });
     }
 
     private boolean doUpdateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment) {
