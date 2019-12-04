@@ -79,18 +79,6 @@ class AgentController @Inject constructor(private val agentService: AgentService
         return response
     }
 
-    @PostMapping(value = [V1_UPLOAD_CODEBASE])
-    fun uploadCodeBase1(
-        @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
-        @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
-        @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
-        @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
-
-        saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file)
-
-        return "OK"
-    }
-
     @PostMapping(value = [V2_UPLOAD_CODEBASE])
     fun uploadCodeBase2(
         @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
@@ -111,18 +99,6 @@ class AgentController @Inject constructor(private val agentService: AgentService
         @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
 
         saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file)
-
-        return "OK"
-    }
-
-    @PostMapping(value = [V1_UPLOAD_INVOCATION_DATA])
-    fun uploadInvocationData1(
-        @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
-        @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
-        @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
-        @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile): String {
-
-        saveUploadedPublication(INVOCATIONS, licenseKey, fingerprint, publicationSize, file)
 
         return "OK"
     }

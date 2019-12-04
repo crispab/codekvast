@@ -32,10 +32,8 @@ public interface Endpoints {
     interface Agent {
         String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
         String V2_POLL_CONFIG = "/javaagent/v2/pollConfig";
-        String V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
         String V2_UPLOAD_CODEBASE = "/javaagent/v2/uploadCodeBase";
         String V3_UPLOAD_CODEBASE = "/javaagent/v3/uploadCodeBase";
-        String V1_UPLOAD_INVOCATION_DATA = "/javaagent/v1/uploadInvocationData";
         String V2_UPLOAD_INVOCATION_DATA = "/javaagent/v2/uploadInvocationData";
 
         String PARAM_FINGERPRINT = "fingerprint";

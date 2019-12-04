@@ -16,12 +16,12 @@
     server_type: database
 
     mariadb_version: '10.4'
-    mysql_root_password_update: true
+    mysql_root_password_update: false
     mysql_user_password_update: true
     mysql_backup_dir: '/backups/mariadb'
     mysql_slow_query_log_enabled: true
     mysql_slow_query_log_file: '/var/log/mysql/mysql-slow.log'
-    mysql_slow_query_time: 2
+    mysql_slow_query_time: 5
     mysql_packages:
     - mariadb-client
     - mariadb-server
