@@ -94,5 +94,8 @@ spring:
                 queue-capacity: 100
             thread-name-prefix: 'Codekvast task-'
         scheduling.pool.size: 5
+    cache:
+        caffeine:
+            spec: 'expireAfterAccess=10m, weakKeys, weakValues, recordStats'
 
 springfox.documentation.swagger.v2.path: /api-docs

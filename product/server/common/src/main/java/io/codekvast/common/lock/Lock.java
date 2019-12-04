@@ -49,7 +49,7 @@ public class Lock {
     private final Instant releasedAt;
 
     public String key() {
-        return customerId == null ? name : name + "-" + customerId;
+        return "codekvast-" + customerId == null ? name : name + "-" + customerId;
     }
 
     public Duration getWaitDuration() {

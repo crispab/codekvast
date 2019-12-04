@@ -89,3 +89,6 @@ spring:
         converters.preferred-json-mapper: gson
         log-request-details:              true
     output.ansi.enabled: detect
+    cache:
+        caffeine:
+            spec: 'expireAfterAccess=10m, weakKeys, weakValues, recordStats'

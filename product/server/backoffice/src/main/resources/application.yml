@@ -93,3 +93,6 @@ spring:
                     starttls:
                         enabled:  true
                         required: true
+    cache:
+        caffeine:
+            spec: 'expireAfterAccess=10m, weakKeys, weakValues, recordStats'
