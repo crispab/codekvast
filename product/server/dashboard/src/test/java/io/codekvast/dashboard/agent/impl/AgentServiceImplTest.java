@@ -1,6 +1,7 @@
 package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.common.customer.*;
+import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
@@ -61,7 +62,7 @@ public class AgentServiceImplTest {
         settings.setQueuePath(temporaryFolder.getRoot());
         settings.setQueuePathPollIntervalSeconds(60);
 
-        when(lockManager.acquireLock(LockManager.Lock.AGENT_STATE)).thenReturn(Optional.of(LockManager.Lock.AGENT_STATE));
+        when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forCustomer(1L)));
         service = new AgentServiceImpl(settings, customerService, eventService, agentDAO, new LockTemplate(lockManager));
 
         setupCustomerData(null, null);
@@ -72,13 +73,13 @@ public class AgentServiceImplTest {
         // given
         when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
         when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
-        when(lockManager.acquireLock(LockManager.Lock.AGENT_STATE)).thenReturn(Optional.of(LockManager.Lock.AGENT_STATE));
+        when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forCustomer(1L)));
 
         // when
         val response = service.getConfig(request);
 
-        verify(lockManager).acquireLock(LockManager.Lock.AGENT_STATE);
-        verify(lockManager).releaseLock(LockManager.Lock.AGENT_STATE);
+        verify(lockManager).acquireLock(any());
+        verify(lockManager).releaseLock(any());
 
         assertThat(response.getCodeBasePublisherConfig(), is("enabled=true"));
     }
@@ -88,12 +89,12 @@ public class AgentServiceImplTest {
         // given
         when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
         when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
-        when(lockManager.acquireLock(LockManager.Lock.AGENT_STATE)).thenReturn(Optional.empty());
+        when(lockManager.acquireLock(any())).thenReturn(Optional.empty());
 
         // when
         val response = service.getConfig(request);
 
-        verify(lockManager, never()).releaseLock(LockManager.Lock.AGENT_STATE);
+        verify(lockManager, never()).releaseLock(any());
 
         assertThat(response.getCodeBasePublisherConfig(), is("enabled=false"));
     }

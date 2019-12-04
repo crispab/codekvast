@@ -21,6 +21,8 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
+import io.codekvast.common.lock.Lock;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.CodeBaseReceivedEvent;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -49,16 +52,20 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
     private final ImportDAO importDAO;
     private final IntakeMetricsService metricsService;
     private final EventService eventService;
+    private final LockTemplate lockTemplate;
+    private final Clock clock;
 
     @Override
     @Transactional
     public boolean importPublication(CodeBasePublication3 publication) {
-        Instant startedAt = Instant.now();
         logger.debug("Importing {}", publication);
-
+        Instant startedAt = clock.instant();
         CommonPublicationData2 data = publication.getCommonData();
-        CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
-        importDAO.importMethods(data, importContext, publication.getEntries());
+
+        lockTemplate.doWithLock(Lock.forCustomer(data.getCustomerId()), () -> {
+            CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
+            importDAO.importMethods(data, importContext, publication.getEntries());
+        });
 
         eventService.send(CodeBaseReceivedEvent.builder()
                                                .customerId(data.getCustomerId())
@@ -70,7 +77,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
                                                .size(publication.getEntries().size())
                                                .build());
 
-        Duration duration = Duration.between(startedAt, Instant.now());
+        Duration duration = Duration.between(startedAt, clock.instant());
         logger.info("Imported {} in {}", publication, duration);
         metricsService.countImportedPublication(CODEBASE, publication.getEntries().size(), duration);
         return true;

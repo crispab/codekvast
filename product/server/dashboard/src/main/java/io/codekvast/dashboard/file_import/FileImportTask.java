@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.file_import;
 
+import io.codekvast.common.thread.NamedThreadTemplate;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.IntakeMetricsService;
 import lombok.RequiredArgsConstructor;
@@ -55,16 +56,14 @@ public class FileImportTask {
         initialDelayString = "${codekvast.fileImportInitialDelaySeconds}000",
         fixedDelayString = "${codekvast.fileImportIntervalSeconds}000")
     public void importPublicationFiles() {
-        String oldThreadName = Thread.currentThread().getName();
-        Thread.currentThread().setName("Codekvast File Import");
-        try {
-            File queuePath = settings.getQueuePath();
-            logger.trace("Looking for files to import in {}", queuePath);
-            metricsService.gaugePublicationQueueLength(countFiles(queuePath));
-            processFiles(queuePath);
-        } finally {
-            Thread.currentThread().setName(oldThreadName);
-        }
+        new NamedThreadTemplate().doInNamedThread("File Importer", this::run);
+    }
+
+    private void run() {
+        File queuePath = settings.getQueuePath();
+        logger.trace("Looking for files to import in {}", queuePath);
+        metricsService.gaugePublicationQueueLength(countFiles(queuePath));
+        processFiles(queuePath);
     }
 
     private void processFiles(File path) {

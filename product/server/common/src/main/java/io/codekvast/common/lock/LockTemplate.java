@@ -45,8 +45,8 @@ public class LockTemplate {
      * @param <V>          The type to return
      * @return The result of either lockAction or failedAction, depending on if the lock was acquired.
      */
-    public <V> V doWithLock(LockManager.Lock lock, Callable<V> lockAction, Supplier<V> failedAction) throws Exception {
-        Optional<LockManager.Lock> optionalLock = lockManager.acquireLock(lock);
+    public <V> V doWithLock(Lock lock, Callable<V> lockAction, Supplier<V> failedAction) throws Exception {
+        Optional<Lock> optionalLock = lockManager.acquireLock(lock);
         if (optionalLock.isPresent()) {
             try {
                 return lockAction.call();
@@ -63,8 +63,8 @@ public class LockTemplate {
      * @param lock     The lock to acquire
      * @param runnable The action to perform within the lock.
      */
-    public void doWithLock(LockManager.Lock lock, Runnable runnable) {
-        Optional<LockManager.Lock> optionalLock = lockManager.acquireLock(lock);
+    public void doWithLock(Lock lock, Runnable runnable) {
+        Optional<Lock> optionalLock = lockManager.acquireLock(lock);
         if (optionalLock.isPresent()) {
             try {
                 runnable.run();

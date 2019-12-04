@@ -5,6 +5,7 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.CustomerService.LoginRequest;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlanDefaults;
+import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
@@ -858,20 +859,15 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("agent_state"), is(0));
     }
 
-    @Test
-    public void internal_locks_table_should_be_populated() {
-        assertThat(countRowsInTable("internal_locks"), is(LockManager.Lock.values().length));
-    }
-
     @Test(expected = IllegalTransactionStateException.class)
     @Transactional(propagation = Propagation.NEVER)
     public void lockManager_should_require_transaction() {
-        lockManager.acquireLock(LockManager.Lock.WEEDER);
+        lockManager.acquireLock(Lock.forSystem());
     }
 
     @Test
     public void should_acquire_uncontended_lock() {
-        Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.WEEDER);
+        Optional<Lock> lock = lockManager.acquireLock(Lock.forSystem());
         assertThat(lock.isPresent(), is(true));
 
         lock.ifPresent(lockManager::releaseLock);
@@ -884,21 +880,21 @@ public class DashboardIntegrationTest {
         new Thread(() -> lockContentionTestHelper.doSteps(latches)).start();
 
         latches[0].await();
-        assertThat(lockManager.acquireLock(LockManager.Lock.WEEDER).isPresent(), is(false));
+        assertThat(lockManager.acquireLock(Lock.forSystem()).isPresent(), is(false));
 
         latches[1].countDown();
 
         latches[2].await();
-        assertThat(lockManager.acquireLock(LockManager.Lock.WEEDER).isPresent(), is(true));
+        assertThat(lockManager.acquireLock(Lock.forSystem()).isPresent(), is(true));
     }
 
     @Test
     public void should_handle_lock_wait() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
-        new Thread(() -> lockContentionTestHelper.lockSleepUnlock(latch, LockManager.Lock.WEEDER.getLockWaitSeconds() * 1000 / 2)).start();
+        new Thread(() -> lockContentionTestHelper.lockSleepUnlock(latch, Lock.forSystem().getMaxLockWaitSeconds() * 1000 / 2)).start();
 
         latch.await();
-        assertThat(lockManager.acquireLock(LockManager.Lock.WEEDER).isPresent(), is(true));
+        assertThat(lockManager.acquireLock(Lock.forSystem()).isPresent(), is(true));
     }
 
     @RequiredArgsConstructor
@@ -908,7 +904,7 @@ public class DashboardIntegrationTest {
         @Transactional
         @SneakyThrows
         public void doSteps(CountDownLatch[] latches) {
-            Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.WEEDER);
+            Optional<Lock> lock = lockManager.acquireLock(Lock.forSystem());
             latches[0].countDown();
             latches[1].await();
             lock.ifPresent(lockManager::releaseLock);
@@ -918,7 +914,7 @@ public class DashboardIntegrationTest {
         @Transactional
         @SneakyThrows
         public void lockSleepUnlock(CountDownLatch latch, long sleepMillis) {
-            Optional<LockManager.Lock> lock = lockManager.acquireLock(LockManager.Lock.WEEDER);
+            Optional<Lock> lock = lockManager.acquireLock(Lock.forSystem());
             latch.countDown();
             Thread.sleep(sleepMillis);
             lock.ifPresent(lockManager::releaseLock);

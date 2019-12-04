@@ -22,8 +22,6 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.common.customer.LicenseViolationException;
-import io.codekvast.common.lock.LockManager;
-import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
@@ -64,7 +62,6 @@ public class PublicationImporterImpl implements PublicationImporter {
     private final InvocationDataImporter invocationDataImporter;
     private final Validator validator;
     private final IntakeMetricsService metricsService;
-    private final LockTemplate lockTemplate;
 
     @Override
     @Transactional
@@ -111,16 +108,6 @@ public class PublicationImporterImpl implements PublicationImporter {
 
     @SneakyThrows
     private boolean handlePublication(Object object) {
-        return lockTemplate.doWithLock(LockManager.Lock.IMPORT,
-                                       () -> doHandlePublication(object),
-                                       () -> {
-                                           logger.warn("Failed to acquire {} lock, will try again", LockManager.Lock.IMPORT);
-                                           return false;
-                                       });
-    }
-
-    @SuppressWarnings("ChainOfInstanceofChecks")
-    private boolean doHandlePublication(Object object) {
         if (object instanceof CodeBasePublication2) {
             return codeBaseImporter.importPublication(toCodeBasePublication3((CodeBasePublication2) object));
         }

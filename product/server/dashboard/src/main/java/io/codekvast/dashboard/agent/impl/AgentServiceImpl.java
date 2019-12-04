@@ -25,7 +25,7 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlan;
-import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
@@ -104,7 +104,7 @@ public class AgentServiceImpl implements AgentService {
 
     @SneakyThrows
     private boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment) {
-        return lockTemplate.doWithLock(LockManager.Lock.AGENT_STATE,
+        return lockTemplate.doWithLock(Lock.forCustomer(customerData.getCustomerId()),
                                        () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
                                        () -> {
                                            logger.error("Failed to acquire lock, treating agent as disabled.");

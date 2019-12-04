@@ -21,9 +21,6 @@
  */
 package io.codekvast.common.lock;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.util.Optional;
 
 /**
@@ -33,16 +30,6 @@ import java.util.Optional;
  * @see LockTemplate
  */
 public interface LockManager {
-
-    @RequiredArgsConstructor
-    @Getter
-    enum Lock {
-        WEEDER(1),
-        AGENT_STATE(10),
-        IMPORT(120);
-
-        private final int lockWaitSeconds;
-    }
 
     /**
      * Acquire a lock. <em>Must</em> be invoked inside {@code @Transactional}

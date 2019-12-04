@@ -21,13 +21,11 @@
  */
 package io.codekvast.common.metrics.impl;
 
-import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.lock.Lock;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.time.Duration;
 
 /**
  * @author olle.hallin@crisp.se
@@ -68,19 +66,15 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
     }
 
     @Override
-    public void recordLockDuration(LockManager.Lock lock, Duration duration) {
-        meterRegistry.counter("codekvast.lock.acquired", LOCK_TAG, lock.name()).increment();
-        meterRegistry.timer("codekvast.lock.duration.millis", LOCK_TAG, lock.name()).record(duration);
+    public void recordLockUsage(Lock lock) {
+        meterRegistry.counter("codekvast.lock.acquired", LOCK_TAG, lock.getName()).increment();
+        meterRegistry.timer("codekvast.lock.wait.millis", LOCK_TAG, lock.getName()).record(lock.getWaitDuration());
+        meterRegistry.timer("codekvast.lock.duration.millis", LOCK_TAG, lock.getName()).record(lock.getLockDuration());
     }
 
     @Override
-    public void recordLockWait(LockManager.Lock lock, Duration duration) {
-        meterRegistry.timer("codekvast.lock.wait.millis", LOCK_TAG, lock.name()).record(duration);
-    }
-
-    @Override
-    public void countLockFailure(LockManager.Lock lock) {
-        meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.name()).increment();
+    public void countLockFailure(Lock lock) {
+        meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.getName()).increment();
     }
 
 }

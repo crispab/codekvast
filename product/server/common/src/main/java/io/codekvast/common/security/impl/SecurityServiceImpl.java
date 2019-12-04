@@ -26,6 +26,7 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.common.security.WebappCredentials;
+import io.codekvast.common.thread.NamedThreadTemplate;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -147,16 +148,14 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Scheduled(initialDelay = 60_000L, fixedRate = 600_000L)
     @Transactional
-    public void cleanupExpiredTokenCodes() {
-        String oldThreadName = Thread.currentThread().getName();
-        Thread.currentThread().setName("Codekvast token cleaner");
-        try {
-            int expired = jdbcTemplate.update("DELETE FROM tokens WHERE expiresAtSeconds <= ? ", Instant.now().getEpochSecond());
-            if (expired > 0) {
-                logger.info("Deleted {} expired token codes", expired);
-            }
-        } finally {
-            Thread.currentThread().setName(oldThreadName);
+    public void removeExpiredTokenCodes() {
+        new NamedThreadTemplate().doInNamedThread("Token Cleaner", this::doRemoveExpiredTokens);
+    }
+
+    void doRemoveExpiredTokens() {
+        int expired = jdbcTemplate.update("DELETE FROM tokens WHERE expiresAtSeconds <= ? ", Instant.now().getEpochSecond());
+        if (expired > 0) {
+            logger.info("Deleted {} expired token codes", expired);
         }
     }
 

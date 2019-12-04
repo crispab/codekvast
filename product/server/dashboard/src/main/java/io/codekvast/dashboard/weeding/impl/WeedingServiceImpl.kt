@@ -21,7 +21,10 @@
  */
 package io.codekvast.dashboard.weeding.impl
 
+import io.codekvast.common.customer.CustomerData
 import io.codekvast.common.customer.CustomerService
+import io.codekvast.common.lock.Lock
+import io.codekvast.common.lock.LockTemplate
 import io.codekvast.dashboard.util.LoggingUtils
 import io.codekvast.dashboard.weeding.WeedingService
 import org.slf4j.LoggerFactory
@@ -41,7 +44,8 @@ import javax.inject.Inject
 @Service
 class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTemplate,
                                              private val customerService: CustomerService,
-                                             private val clock: Clock) : WeedingService {
+                                             private val clock: Clock,
+                                             private val lockTemplate: LockTemplate) : WeedingService {
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
@@ -101,34 +105,42 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         val startedAt = clock.instant()
         var sum = 0
         for (cd in customerService.customerData) {
-            val retentionPeriodDays = cd.pricePlan.retentionPeriodDays
-            if (retentionPeriodDays > 0) {
-                val now = clock.instant()
-                val retentionPeriodStart = now.minus(retentionPeriodDays.toLong(), ChronoUnit.DAYS)
-                val deadIfNotPolledAfter = now.minus(5, ChronoUnit.MINUTES)
-                logger.debug("Finding dead agents and JVMs for customer {} which are older than {} days", cd.customerId, retentionPeriodDays)
-
-                var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE " +
-                    "WHERE customerId = ? AND createdAt < ? AND lastPolledAt < ? AND garbage = FALSE " +
-                    "ORDER BY jvmUuid ",
-                    cd.customerId, Timestamp.from(retentionPeriodStart), Timestamp.from(deadIfNotPolledAfter))
-                if (count == 0) {
-                    logger.debug("Found no dead agents for customer {}", cd.customerId)
-                } else {
-                    logger.info("Marked {} agents as garbage for customer {}", count, cd.customerId)
-                }
-                sum += count
-
-                count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? AND garbage = FALSE ",
-                    cd.customerId, Timestamp.from(retentionPeriodStart))
-                if (count == 0) {
-                    logger.debug("Found no dead JVMs for customer {}", cd.customerId)
-                } else {
-                    logger.info("Marked {} JVMs as garbage for customer {}", count, cd.customerId)
-                }
-                sum += count
+            if (cd.customerId > 0) {
+                sum += lockTemplate.doWithLock(Lock.forCustomer(cd.customerId), { findWeedingCandidatesForCustomer(cd) }, { 0 })
             }
         }
         logger.info("{} weeding candidates identified in {}", sum, LoggingUtils.humanReadableDuration(Duration.between(startedAt, clock.instant())))
+    }
+
+    private fun findWeedingCandidatesForCustomer(cd: CustomerData): Int {
+        var sum = 0;
+        val retentionPeriodDays = cd.pricePlan.retentionPeriodDays
+        if (retentionPeriodDays > 0) {
+            val now = clock.instant()
+            val retentionPeriodStart = now.minus(retentionPeriodDays.toLong(), ChronoUnit.DAYS)
+            val deadIfNotPolledAfter = now.minus(5, ChronoUnit.MINUTES)
+            logger.debug("Finding dead agents and JVMs for customer {} which are older than {} days", cd.customerId, retentionPeriodDays)
+
+            var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE " +
+                "WHERE customerId = ? AND createdAt < ? AND lastPolledAt < ? AND garbage = FALSE " +
+                "ORDER BY jvmUuid ",
+                cd.customerId, Timestamp.from(retentionPeriodStart), Timestamp.from(deadIfNotPolledAfter))
+            if (count == 0) {
+                logger.debug("Found no dead agents for customer {}", cd.customerId)
+            } else {
+                logger.info("Marked {} agents as garbage for customer {}", count, cd.customerId)
+            }
+            sum += count
+
+            count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? AND garbage = FALSE ",
+                cd.customerId, Timestamp.from(retentionPeriodStart))
+            if (count == 0) {
+                logger.debug("Found no dead JVMs for customer {}", cd.customerId)
+            } else {
+                logger.info("Marked {} JVMs as garbage for customer {}", count, cd.customerId)
+            }
+            sum += count
+        }
+        return sum
     }
 }

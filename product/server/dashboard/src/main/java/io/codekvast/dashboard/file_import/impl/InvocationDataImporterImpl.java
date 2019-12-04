@@ -21,6 +21,8 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
+import io.codekvast.common.lock.Lock;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.InvocationDataReceivedEvent;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.TreeSet;
@@ -51,17 +54,21 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
     private final ImportDAO importDAO;
     private final IntakeMetricsService metricsService;
     private final EventService eventService;
+    private final LockTemplate lockTemplate;
+    private final Clock clock;
 
     @Override
     @Transactional
     public boolean importPublication(InvocationDataPublication2 publication) {
-        Instant startedAt = Instant.now();
         logger.debug("Importing {}", publication);
-
+        Instant startedAt = clock.instant();
         CommonPublicationData2 data = publication.getCommonData();
-        ImportContext importContext = commonImporter.importCommonData(data);
-        importDAO.importInvocations(importContext, publication.getRecordingIntervalStartedAtMillis(),
-                                    new TreeSet<>(publication.getInvocations()));
+
+        lockTemplate.doWithLock(Lock.forCustomer(data.getCustomerId()), () -> {
+            ImportContext importContext = commonImporter.importCommonData(data);
+            importDAO.importInvocations(importContext, publication.getRecordingIntervalStartedAtMillis(),
+                                        new TreeSet<>(publication.getInvocations()));
+        });
 
         eventService.send(InvocationDataReceivedEvent.builder()
                                                      .customerId(data.getCustomerId())
@@ -73,7 +80,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
                                                      .size(publication.getInvocations().size())
                                                      .build());
 
-        Duration duration = Duration.between(startedAt, Instant.now());
+        Duration duration = Duration.between(startedAt, clock.instant());
         logger.info("Imported {} in {}", publication, duration);
         metricsService.countImportedPublication(INVOCATIONS, publication.getInvocations().size(), duration);
         return true;

@@ -19,38 +19,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.weeding
+package io.codekvast.common.thread;
 
-import io.codekvast.common.lock.Lock
-import io.codekvast.common.lock.LockTemplate
-import io.codekvast.common.thread.NamedThreadTemplate
-import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
-import javax.inject.Inject
+import io.codekvast.common.messaging.CorrelationIdHolder;
+import lombok.NonNull;
+import org.springframework.stereotype.Component;
 
 /**
- * Periodically performs data weeding, i.e., remove redundant data that does not affect what a customer sees.
+ * A template for managing thread name and optionally correlationId.
  *
  * @author olle.hallin@crisp.se
  */
-@Component
-class WeedingTask
-@Inject constructor(private val lockTemplate: LockTemplate,
-                    private val weedingService: WeedingService) {
+public class NamedThreadTemplate {
 
     /**
-     * A scheduled task that invokes the data weeding service.
+     * Executes a task with a certain name on the thread and a new CorrelationId.
+     *
+     * @param threadName The thread name to set
+     * @param task       The task to execute
      */
-    @Scheduled(initialDelayString = "\${codekvast.dataWeedingInitialDelaySeconds}000", fixedDelayString = "\${codekvast.dataWeedingIntervalSeconds}000")
-    @Transactional
-    fun performDataWeeding() {
-        NamedThreadTemplate().doInNamedThread("Weeder") {
-            lockTemplate.doWithLock(Lock.forFunction("weeder")) {
-                weedingService.findWeedingCandidates()
-                weedingService.performDataWeeding()
-            }
+    public void doInNamedThread(@NonNull String threadName, Runnable task) {
+        String oldThreadName = Thread.currentThread().getName();
+        Thread.currentThread().setName("Codekvast " + threadName);
+        CorrelationIdHolder.generateNew();
+        try {
+            task.run();
+        } finally {
+            Thread.currentThread().setName(oldThreadName);
+            CorrelationIdHolder.clear();
         }
-    }
 
+    }
 }

@@ -3,6 +3,7 @@
 ## 1.3.3
 
 1. Dashboard: handler for deadlock exceptions.
+1. Lock management: now uses the database functions GET_LOCK() and RELEASE_LOCK() instead of SELECT ... FOR UPDATE
 
 ## 1.3.2
 
