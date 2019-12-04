@@ -147,10 +147,11 @@ public class ImportDAOImpl implements ImportDAO {
         Map<String, Long> existingMethods = getExistingMethods(customerId);
         Set<String> incompleteMethods = getIncompleteMethods(customerId);
         Set<Long> invocationsNotFoundInCodeBase = getInvocationsNotFoundInCodeBase(customerId);
+        Set<Long> existingMethodLocations = getExistingMethodLocations(customerId);
         Set<Long> existingInvocations = getExistingInvocations(customerId, appId, jvmId);
 
         importNewMethods(customerId, publishedAtMillis, entries, existingMethods);
-        insertMethodLocations(customerId, entries, existingMethods);
+        insertMethodLocations(customerId, entries, existingMethods, existingMethodLocations);
         updateIncompleteMethods(customerId, publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
         ensureInitialInvocations(data, customerId, appId, environmentId, jvmId, entries, existingMethods, existingInvocations);
 
@@ -212,7 +213,13 @@ public class ImportDAOImpl implements ImportDAO {
 
     private Set<String> getIncompleteMethods(long customerId) {
         return new HashSet<>(
-            jdbcTemplate.queryForList("SELECT signature FROM methods WHERE methods.customerId = ? AND methodName IS NULL ", String.class,
+            jdbcTemplate.queryForList("SELECT signature FROM methods WHERE customerId = ? AND methodName IS NULL ", String.class,
+                                      customerId));
+    }
+
+    private Set<Long> getExistingMethodLocations(long customerId) {
+        return new HashSet<>(
+            jdbcTemplate.queryForList("SELECT methodId FROM method_locations WHERE customerId = ? ", Long.class,
                                       customerId));
     }
 
@@ -249,15 +256,16 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     private void insertMethodLocations(long customerId, Collection<CodeBaseEntry3> entries,
-                                       Map<String, Long> existingMethods) {
+                                       Map<String, Long> existingMethods, Set<Long> existingMethodLocations) {
         long startedAtMillis = System.currentTimeMillis();
         int count = 0;
         for (CodeBaseEntry3 entry : entries) {
             String location = entry.getMethodSignature().getLocation();
-            if (location != null) {
-                long methodId = existingMethods.get(entry.getSignature());
+            long methodId = existingMethods.get(entry.getSignature());
+            if (location != null && !existingMethodLocations.contains(methodId)) {
                 logger.debug("Inserting {} ({})", entry.getSignature(), location);
                 count += jdbcTemplate.update(new InsertMethodLocationStatement(customerId, methodId, location));
+                existingMethodLocations.add(methodId);
             }
         }
         logger.debug("Inserted {} method locations in {} ms", count, System.currentTimeMillis() - startedAtMillis);
@@ -464,7 +472,7 @@ public class ImportDAOImpl implements ImportDAO {
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
                 con.prepareStatement(
-                    "INSERT IGNORE INTO method_locations(customerId, methodId, location) VALUES(?, ?, ?) ");
+                    "INSERT INTO method_locations(customerId, methodId, location) VALUES(?, ?, ?) ");
             int column = 0;
             ps.setLong(++column, customerId);
             ps.setLong(++column, methodId);

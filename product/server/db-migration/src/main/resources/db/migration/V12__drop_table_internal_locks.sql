@@ -22,4 +22,4 @@
 
 DROP TABLE internal_locks;
 
-DROP TABLE internal_event_queue;
+DROP TABLE IF EXISTS internal_event_queue;
