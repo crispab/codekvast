@@ -51,7 +51,9 @@ public class DeadlockLoserDataAccessExceptionAspect {
         int maxAttempt = 3;
         for (int attempt = 1; attempt < maxAttempt; attempt++) {
             try {
-                return pjp.proceed();
+                Object result = pjp.proceed();
+                logger.trace("After {}", joinPoint);
+                return result;
             } catch (DeadlockLoserDataAccessException e) {
                 int delayMillis = getRandomInt(10, 50);
                 logger.info("Deadlock #{} at {}, will retry in {} ms ...", attempt, joinPoint, delayMillis);

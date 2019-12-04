@@ -23,6 +23,7 @@ package io.codekvast.common.bootstrap;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import java.time.Clock;
 
@@ -30,6 +31,7 @@ import java.time.Clock;
  * @author olle.hallin@crisp.se
  */
 @Configuration
+@EnableAspectJAutoProxy
 public class CommonConfig {
 
     @Bean

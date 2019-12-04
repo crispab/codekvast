@@ -27,6 +27,11 @@
         <option name="name" value="codekvast.dataWeedingInitialDelaySeconds" />
         <option name="value" value="10" />
       </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.level.io.codekvast.common.aspects.DeadlockLoserDataAccessExceptionAspect" />
+        <option name="value" value="trace" />
+      </param>
     </additionalParameters>
     <method v="2">
       <option name="Gradle.BeforeRunTask" enabled="false" tasks="startDockerContainers" externalProjectPath="$PROJECT_DIR$/product/server/dashboard" vmOptions="" scriptParameters="" />
