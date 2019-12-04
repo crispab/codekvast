@@ -79,4 +79,8 @@ public interface SecurityService extends CustomerIdProvider {
      */
     String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds, String salt);
 
+    /**
+     * Should be invoked from a scheduled thread to remove expired token codes.
+     */
+    void removeExpiredTokenCodes();
 }

@@ -148,11 +148,12 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Scheduled(initialDelay = 60_000L, fixedRate = 600_000L)
     @Transactional
+    @Override
     public void removeExpiredTokenCodes() {
         new NamedThreadTemplate().doInNamedThread("Token Cleaner", this::doRemoveExpiredTokens);
     }
 
-    void doRemoveExpiredTokens() {
+    private void doRemoveExpiredTokens() {
         int expired = jdbcTemplate.update("DELETE FROM tokens WHERE expiresAtSeconds <= ? ", Instant.now().getEpochSecond());
         if (expired > 0) {
             logger.info("Deleted {} expired token codes", expired);
