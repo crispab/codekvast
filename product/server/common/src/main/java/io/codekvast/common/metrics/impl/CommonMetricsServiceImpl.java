@@ -72,7 +72,6 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
 
     @Override
     public void recordLockUsage(Lock lock) {
-        meterRegistry.counter("codekvast.lock.acquired", LOCK_TAG, lock.getName()).increment();
         meterRegistry.timer("codekvast.lock.wait.millis", LOCK_TAG, lock.getName()).record(lock.getWaitDuration());
         meterRegistry.timer("codekvast.lock.duration.millis", LOCK_TAG, lock.getName()).record(lock.getLockDuration());
     }
@@ -80,13 +79,5 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
     @Override
     public void countLockFailure(Lock lock) {
         meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.getName()).increment();
-    }
-
-    @PostConstruct
-    public void sendSampleTimerMetrics() {
-        // TODO: remove sample timer
-        String name = "codekvast.sample.second.duration";
-        logger.info("Recording 1 second for '{}'", name);
-        meterRegistry.timer(name).record(Duration.ofSeconds(1));
     }
 }
