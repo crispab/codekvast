@@ -25,7 +25,10 @@ import io.codekvast.common.lock.Lock;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
 
 /**
  * @author olle.hallin@crisp.se
@@ -77,4 +80,9 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
         meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.getName()).increment();
     }
 
+    @Scheduled(initialDelay = 60_000L, fixedRate = 60_000L)
+    public void sendSampleTimerMetrics() {
+        // TODO: remove sample timer
+        meterRegistry.timer("codekvast.sample.second.duration").record(Duration.ofSeconds(1));
+    }
 }
