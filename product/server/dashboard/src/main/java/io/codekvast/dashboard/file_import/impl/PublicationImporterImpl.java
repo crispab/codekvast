@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
+import io.codekvast.common.aspects.Idempotent;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
@@ -64,7 +65,7 @@ public class PublicationImporterImpl implements PublicationImporter {
     private final IntakeMetricsService metricsService;
 
     @Override
-    @Transactional
+    @Idempotent
     public boolean importPublicationFile(File file) {
         logger.info("Processing {}", file);
         boolean handled;
