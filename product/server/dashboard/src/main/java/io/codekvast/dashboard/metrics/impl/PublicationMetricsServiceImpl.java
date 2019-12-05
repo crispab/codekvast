@@ -19,38 +19,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.metrics;
+package io.codekvast.dashboard.metrics.impl;
+
+import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
 /**
- * Wrapper for intake metrics.
- *
  * @author olle.hallin@crisp.se
  */
-public interface IntakeMetricsService {
+@Service
+@RequiredArgsConstructor
+public class PublicationMetricsServiceImpl implements PublicationMetricsService {
 
-    enum PublicationKind {CODEBASE, INVOCATIONS}
+    private final MeterRegistry meterRegistry;
 
-    /**
-     * Updates the gauge for the number of queued publications.
-     *
-     * @param queueLength The queue length.
-     */
-    void gaugePublicationQueueLength(int queueLength);
+    @Override
+    public void gaugePublicationQueueLength(int queueLength) {
+        meterRegistry.gauge("codekvast.intake.queueLength", queueLength);
+    }
 
-    /**
-     * Count the fact that a publication was rejected.
-     */
-    void countRejectedPublication();
+    @Override
+    public void countRejectedPublication() {
+        meterRegistry.counter("codekvast.intake.rejected").increment();
+    }
 
-    /**
-     * Count the fact that a publication was imported.
-     *
-     * @param kind The kind of publication.
-     * @param size The size of the publication.
-     * @param duration The time it took to import it.
-     */
-    void countImportedPublication(PublicationKind kind, int size, Duration duration);
+    @Override
+    public void recordImportedPublication(PublicationKind kind, int size, Duration duration) {
+        Tags tags = Tags.of("kind", kind.name().toLowerCase());
+        meterRegistry.counter("codekvast.publication.accepted", tags).increment();
+        meterRegistry.gauge("codekvast.publication.size", tags, size);
+        meterRegistry.timer("codekvast.publication.imported_in.millis", tags).record(duration);
+    }
 
 }

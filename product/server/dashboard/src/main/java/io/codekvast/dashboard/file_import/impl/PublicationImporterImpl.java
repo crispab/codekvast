@@ -27,7 +27,7 @@ import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
-import io.codekvast.dashboard.metrics.IntakeMetricsService;
+import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
@@ -37,7 +37,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -62,7 +61,7 @@ public class PublicationImporterImpl implements PublicationImporter {
     private final CodeBaseImporter codeBaseImporter;
     private final InvocationDataImporter invocationDataImporter;
     private final Validator validator;
-    private final IntakeMetricsService metricsService;
+    private final PublicationMetricsService metricsService;
 
     @Override
     @Idempotent

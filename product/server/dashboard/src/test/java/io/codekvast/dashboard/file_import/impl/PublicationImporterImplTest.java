@@ -4,7 +4,7 @@ import io.codekvast.common.lock.LockManager;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
-import io.codekvast.dashboard.metrics.IntakeMetricsService;
+import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import org.assertj.core.util.Files;
@@ -41,7 +41,7 @@ public class PublicationImporterImplTest {
     private Validator validator;
 
     @Mock
-    private IntakeMetricsService metricsService;
+    private PublicationMetricsService metricsService;
 
     @Mock
     private LockManager lockManager;

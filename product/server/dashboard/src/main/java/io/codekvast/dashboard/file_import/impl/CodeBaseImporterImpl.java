@@ -26,7 +26,7 @@ import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.CodeBaseReceivedEvent;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
-import io.codekvast.dashboard.metrics.IntakeMetricsService;
+import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 
-import static io.codekvast.dashboard.metrics.IntakeMetricsService.PublicationKind.CODEBASE;
+import static io.codekvast.dashboard.metrics.PublicationMetricsService.PublicationKind.CODEBASE;
 
 /**
  * @author olle.hallin@crisp.se
@@ -50,7 +50,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     private final CommonImporter commonImporter;
     private final ImportDAO importDAO;
-    private final IntakeMetricsService metricsService;
+    private final PublicationMetricsService metricsService;
     private final EventService eventService;
     private final LockTemplate lockTemplate;
     private final Clock clock;
@@ -79,7 +79,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
 
         Duration duration = Duration.between(startedAt, clock.instant());
         logger.info("Imported {} in {}", publication, duration);
-        metricsService.countImportedPublication(CODEBASE, publication.getEntries().size(), duration);
+        metricsService.recordImportedPublication(CODEBASE, publication.getEntries().size(), duration);
         return true;
     }
 }
