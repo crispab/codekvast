@@ -44,7 +44,7 @@ public class DeadlockLoserDataAccessExceptionAspect {
 
     private final Random random = new Random();
 
-    @Around("execution(* io.codekvast..*(..)) && @annotation(org.springframework.transaction.annotation.Transactional)")
+    @Around("execution(* io.codekvast..*(..)) && @annotation(io.codekvast.common.aspects.Idempotent)")
     public Object transactionalMethod(ProceedingJoinPoint pjp) throws Throwable {
         String joinPoint = pjp.toShortString();
         logger.trace("Before {}", joinPoint);

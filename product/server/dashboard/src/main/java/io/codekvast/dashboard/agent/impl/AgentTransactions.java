@@ -19,27 +19,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.bootstrap;
+package io.codekvast.dashboard.agent.impl;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.time.Clock;
+import io.codekvast.common.customer.CustomerData;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@Configuration
-@EnableAspectJAutoProxy
-@EnableAsync
-@EnableScheduling
-public class CommonConfig {
-
-    @Bean
-    public Clock clock() {
-        return Clock.systemUTC();
-    }
+public interface AgentTransactions {
+    boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment);
 }

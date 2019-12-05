@@ -1,15 +1,8 @@
 package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.common.customer.*;
-import io.codekvast.common.lock.Lock;
-import io.codekvast.common.lock.LockManager;
-import io.codekvast.common.lock.LockTemplate;
-import io.codekvast.common.messaging.EventService;
-import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.javaagent.model.v2.GetConfigRequest2;
-import lombok.val;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,12 +12,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.time.Instant;
-import java.util.Optional;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static java.time.temporal.ChronoUnit.DAYS;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.CoreMatchers.*;
@@ -39,19 +27,7 @@ public class AgentServiceImplTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Mock
-    private AgentDAO agentDAO;
-
-    @Mock
     private CustomerService customerService;
-
-    @Mock
-    private EventService eventService;
-
-    @Mock
-    private LockManager lockManager;
-
-    private final CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
-    private final GetConfigRequest2 request = GetConfigRequest2.sample();
 
     private AgentService service;
 
@@ -59,145 +35,12 @@ public class AgentServiceImplTest {
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
 
+        CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
         settings.setQueuePath(temporaryFolder.getRoot());
-        settings.setQueuePathPollIntervalSeconds(60);
 
-        when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forCustomer(1L)));
-        service = new AgentServiceImpl(settings, customerService, eventService, agentDAO, new LockTemplate(lockManager));
+        when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(CustomerData.sample());
 
-        setupCustomerData(null, null);
-    }
-
-    @Test
-    public void should_acquire_and_release_lock() {
-        // given
-        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
-        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
-        when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forCustomer(1L)));
-
-        // when
-        val response = service.getConfig(request);
-
-        verify(lockManager).acquireLock(any());
-        verify(lockManager).releaseLock(any());
-
-        assertThat(response.getCodeBasePublisherConfig(), is("enabled=true"));
-    }
-
-    @Test
-    public void should_give_up_when_failed_to_acquire_lock() {
-        // given
-        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
-        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
-        when(lockManager.acquireLock(any())).thenReturn(Optional.empty());
-
-        // when
-        val response = service.getConfig(request);
-
-        verify(lockManager, never()).releaseLock(any());
-
-        assertThat(response.getCodeBasePublisherConfig(), is("enabled=false"));
-    }
-
-    @Test
-    public void should_return_enabled_publishers_when_below_agent_limit_no_trial_period() {
-        // given
-        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
-        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
-
-        // when
-        val response = service.getConfig(request);
-
-        // then
-        assertThat(response.getCodeBasePublisherName(), is("http"));
-        assertThat(response.getCodeBasePublisherConfig(), is("enabled=true"));
-
-        assertThat(response.getInvocationDataPublisherName(), is("http"));
-        assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
-
-        verify(agentDAO).updateAgentEnabledState(1L, request.getJvmUuid(), true);
-        verify(eventService).send(any(AgentPolledEvent.class));
-    }
-
-    @Test
-    public void should_return_enabled_publishers_when_below_agent_limit_within_trial_period() {
-        // given
-        Instant now = Instant.now();
-        setupCustomerData(now.minus(10, DAYS), now.plus(10, DAYS));
-        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
-        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
-
-        // when
-        val response = service.getConfig(request);
-
-        // then
-        assertThat(response.getCodeBasePublisherName(), is("http"));
-        assertThat(response.getCodeBasePublisherConfig(), is("enabled=true"));
-
-        assertThat(response.getInvocationDataPublisherName(), is("http"));
-        assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
-
-        verify(eventService).send(any(AgentPolledEvent.class));
-    }
-
-    @Test
-    public void should_return_disabled_publishers_when_below_agent_limit_after_trial_period_has_expired() {
-        // given
-        Instant now = Instant.now();
-        setupCustomerData(now.minus(10, DAYS), now.minus(1, DAYS));
-        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
-        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
-
-        // when
-        val response = service.getConfig(request);
-
-        // then
-        assertThat(response.getCodeBasePublisherName(), is("http"));
-        assertThat(response.getCodeBasePublisherConfig(), is("enabled=false"));
-
-        assertThat(response.getInvocationDataPublisherName(), is("http"));
-        assertThat(response.getInvocationDataPublisherConfig(), is("enabled=false"));
-
-        verify(eventService).send(any(AgentPolledEvent.class));
-    }
-
-    @Test
-    public void should_return_disabled_publishers_when_above_agent_limit_no_trial_period() {
-        // given
-        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(10);
-        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(TRUE);
-
-        // when
-        val response = service.getConfig(request);
-
-        // then
-        assertThat(response.getCodeBasePublisherName(), is("http"));
-        assertThat(response.getCodeBasePublisherConfig(), is("enabled=false"));
-
-        assertThat(response.getInvocationDataPublisherName(), is("http"));
-        assertThat(response.getInvocationDataPublisherConfig(), is("enabled=false"));
-
-        verify(eventService).send(any(AgentPolledEvent.class));
-    }
-
-    @Test
-    public void should_return_disabled_publishers_when_below_agent_limit_disabled_environment() {
-        // given
-        when(agentDAO.getNumOtherAliveAgents(eq(1L), eq(request.getJvmUuid()), any())).thenReturn(1);
-        when(agentDAO.isEnvironmentEnabled(eq(1L), eq(request.getJvmUuid()))).thenReturn(FALSE);
-        when(agentDAO.getEnvironmentName(eq(request.getJvmUuid()))).thenReturn(Optional.of("environment"));
-
-        // when
-        val response = service.getConfig(request);
-
-        // then
-        assertThat(response.getCodeBasePublisherName(), is("http"));
-        assertThat(response.getCodeBasePublisherConfig(), is("enabled=false"));
-
-        assertThat(response.getInvocationDataPublisherName(), is("http"));
-        assertThat(response.getInvocationDataPublisherConfig(), is("enabled=false"));
-
-        verify(eventService).send(any(AgentPolledEvent.class));
+        service = new AgentServiceImpl(settings, customerService, mock(AgentDAO.class), mock(AgentTransactions.class));
     }
 
     @Test(expected = LicenseViolationException.class)
@@ -226,8 +69,6 @@ public class AgentServiceImplTest {
         assertThat(resultingFile.getName(), endsWith(".ser"));
         assertThat(resultingFile.exists(), is(true));
         assertThat(resultingFile.length(), is((long) contents.length()));
-
-        verifyNoInteractions(eventService);
     }
 
     @Test
@@ -245,27 +86,10 @@ public class AgentServiceImplTest {
         assertThat(resultingFile.getName(), endsWith(".ser"));
         assertThat(resultingFile.exists(), is(true));
         assertThat(resultingFile.length(), is((long) contents.length()));
-
-        verifyNoInteractions(eventService);
     }
 
     @Test(expected = NullPointerException.class)
     public void should_reject_null_licenseKey() throws Exception {
         service.savePublication(AgentService.PublicationType.CODEBASE, null, 0, null);
     }
-
-    private void setupCustomerData(Instant collectionStartedAt, Instant trialPeriodEndsAt) {
-        CustomerData customerData = CustomerData.builder()
-                                                .customerId(1L)
-                                                .customerName("name")
-                                                .source("source")
-                                                .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
-                                                .collectionStartedAt(collectionStartedAt)
-                                                .trialPeriodEndsAt(trialPeriodEndsAt)
-                                                .build();
-
-        when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
-        when(customerService.registerAgentPoll(any(CustomerData.class), any(Instant.class))).thenReturn(customerData);
-    }
-
 }

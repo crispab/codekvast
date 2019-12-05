@@ -19,27 +19,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.bootstrap;
+package io.codekvast.common.aspects;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.time.Clock;
+import java.lang.annotation.*;
 
 /**
+ * Target annotation for {@link DeadlockLoserDataAccessExceptionAspect}.
+ *
+ * Put it on a method <em>outside</em> a {@code @Transactional} method to make the transaction restarted
+ * should a DeadlockLoserDataAccessException be thrown.
+ *
  * @author olle.hallin@crisp.se
+ * @see DeadlockLoserDataAccessExceptionAspect
  */
-@Configuration
-@EnableAspectJAutoProxy
-@EnableAsync
-@EnableScheduling
-public class CommonConfig {
-
-    @Bean
-    public Clock clock() {
-        return Clock.systemUTC();
-    }
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface Idempotent {
 }

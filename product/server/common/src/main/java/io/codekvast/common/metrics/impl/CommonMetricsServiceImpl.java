@@ -25,9 +25,10 @@ import io.codekvast.common.lock.Lock;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.time.Duration;
 
 /**
@@ -35,6 +36,7 @@ import java.time.Duration;
  */
 @Component("commonMetricsService")
 @RequiredArgsConstructor
+@Slf4j
 public class CommonMetricsServiceImpl implements CommonMetricsService {
 
     private static final String EVENT_TAG = "event";
@@ -80,9 +82,11 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
         meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.getName()).increment();
     }
 
-    @Scheduled(initialDelay = 60_000L, fixedRate = 60_000L)
+    @PostConstruct
     public void sendSampleTimerMetrics() {
         // TODO: remove sample timer
-        meterRegistry.timer("codekvast.sample.second.duration").record(Duration.ofSeconds(1));
+        String name = "codekvast.sample.second.duration";
+        logger.info("Recording 1 second for '{}'", name);
+        meterRegistry.timer(name).record(Duration.ofSeconds(1));
     }
 }

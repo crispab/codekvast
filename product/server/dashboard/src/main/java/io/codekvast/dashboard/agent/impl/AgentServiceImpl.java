@@ -21,14 +21,11 @@
  */
 package io.codekvast.dashboard.agent.impl;
 
+import io.codekvast.common.aspects.Idempotent;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlan;
-import io.codekvast.common.lock.Lock;
-import io.codekvast.common.lock.LockTemplate;
-import io.codekvast.common.messaging.EventService;
-import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
@@ -37,7 +34,6 @@ import io.codekvast.javaagent.model.v2.GetConfigRequest2;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -47,7 +43,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.time.Instant;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -65,12 +60,11 @@ public class AgentServiceImpl implements AgentService {
 
     private final CodekvastDashboardSettings settings;
     private final CustomerService customerService;
-    private final EventService eventService;
     private final AgentDAO agentDAO;
-    private final LockTemplate lockTemplate;
+    private final AgentTransactions agentTransactions;
 
     @Override
-    @Transactional
+    @Idempotent
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         val environment = agentDAO.getEnvironmentName(request.getJvmUuid()).orElse(UNKNOWN_ENVIRONMENT);
         val request2 = GetConfigRequest2.fromFormat1(request, environment);
@@ -78,11 +72,11 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    @Transactional
+    @Idempotent
     public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
 
-        boolean isAgentEnabled = updateAgentState(customerData, request.getJvmUuid(), request.getAppName(), request.getEnvironment());
+        boolean isAgentEnabled = agentTransactions.updateAgentState(customerData, request.getJvmUuid(), request.getAppName(), request.getEnvironment());
 
         String publisherConfig = isAgentEnabled ? "enabled=true" : "enabled=false";
         PricePlan pp = customerData.getPricePlan();
@@ -102,44 +96,6 @@ public class AgentServiceImpl implements AgentService {
             .build();
     }
 
-    @SneakyThrows
-    private boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment) {
-        return lockTemplate.doWithLock(Lock.forCustomer(customerData.getCustomerId()),
-                                       () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
-                                       () -> {
-                                           logger.error("Failed to acquire lock, treating agent as disabled.");
-                                           return false;
-                                       });
-    }
-
-    private boolean doUpdateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment) {
-        long customerId = customerData.getCustomerId();
-        Instant now = Instant.now();
-
-        agentDAO.disableDeadAgents(customerId, jvmUuid, now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2));
-
-        agentDAO.setAgentTimestamps(customerId, jvmUuid, now, now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
-
-        CustomerData cd = customerService.registerAgentPoll(customerData, now);
-        int numOtherEnabledLiveAgents = agentDAO.getNumOtherAliveAgents(customerId, jvmUuid, now.minusSeconds(10));
-
-        val event = AgentPolledEvent.builder()
-                                    .afterTrialPeriod(cd.isTrialPeriodExpired(now))
-                                    .appName(appName)
-                                    .customerId(customerId)
-                                    .disabledEnvironment(!agentDAO.isEnvironmentEnabled(customerId, jvmUuid))
-                                    .environment(environment)
-                                    .jvmUuid(jvmUuid)
-                                    .polledAt(now)
-                                    .tooManyLiveAgents(numOtherEnabledLiveAgents >= customerData.getPricePlan().getMaxNumberOfAgents())
-                                    .trialPeriodEndsAt(cd.getTrialPeriodEndsAt())
-                                    .build();
-
-        logger.debug("Agent {} is {}", jvmUuid, event.isAgentEnabled() ? "enabled" : "disabled");
-        eventService.send(event);
-        agentDAO.updateAgentEnabledState(customerId, jvmUuid, event.isAgentEnabled());
-        return event.isAgentEnabled();
-    }
 
     @Override
     @Transactional(readOnly = true)
