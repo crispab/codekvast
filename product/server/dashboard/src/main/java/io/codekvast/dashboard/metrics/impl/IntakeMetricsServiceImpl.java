@@ -23,13 +23,11 @@ package io.codekvast.dashboard.metrics.impl;
 
 import io.codekvast.dashboard.metrics.IntakeMetricsService;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-
-import static java.util.Arrays.asList;
 
 /**
  * @author olle.hallin@crisp.se
@@ -37,7 +35,6 @@ import static java.util.Arrays.asList;
 @Service
 @RequiredArgsConstructor
 public class IntakeMetricsServiceImpl implements IntakeMetricsService {
-    private static final String KIND_TAG = "kind";
 
     private final MeterRegistry meterRegistry;
 
@@ -53,9 +50,10 @@ public class IntakeMetricsServiceImpl implements IntakeMetricsService {
 
     @Override
     public void countImportedPublication(PublicationKind kind, int size, Duration duration) {
-        meterRegistry.counter("codekvast.intake.accepted", KIND_TAG, asTag(kind)).increment();
-        meterRegistry.gauge("codekvast.intake.publicationSize", asList(Tag.of(KIND_TAG, asTag(kind))), size);
-        meterRegistry.timer("codekvast.intake.duration.millis", asList(Tag.of(KIND_TAG, asTag(kind)))).record(duration);
+        Tags tags = Tags.of("kind", asTag(kind));
+        meterRegistry.counter("codekvast.publication.accepted", tags).increment();
+        meterRegistry.gauge("codekvast.publication.size", tags, size);
+        meterRegistry.timer("codekvast.publication.imported_in.millis", tags).record(duration);
     }
 
     private String asTag(PublicationKind kind) {

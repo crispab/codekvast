@@ -24,7 +24,9 @@ package io.codekvast.common.lock;
 import java.util.Optional;
 
 /**
- * A lock manager.
+ * A low-level lock manager.
+ *
+ * This class is not intended to be used directly. It should be used from {@link LockTemplate}.
  *
  * @author olle.hallin@crisp.se
  * @see LockTemplate
@@ -32,7 +34,7 @@ import java.util.Optional;
 public interface LockManager {
 
     /**
-     * Acquire a lock. <em>Must</em> be invoked inside {@code @Transactional}
+     * Acquire a lock. An acquired lock <b>MUST</b> eventually be released by {@link #releaseLock(Lock)}.
      *
      * @param lock The lock to acquire.
      * @return A filled optional if the lock was acquired, else an empty optional.
