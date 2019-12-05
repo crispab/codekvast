@@ -44,6 +44,7 @@ import static java.lang.Boolean.TRUE;
 public class AgentDAOImpl implements AgentDAO {
 
     private static final String ENVIRONMENTS_CACHE = "environments";
+    private static final String CODEBASE_FINGERPRINTS_CACHE = "codeBaseFingerprints";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -63,8 +64,9 @@ public class AgentDAOImpl implements AgentDAO {
         Timestamp nextExpectedPollTimestamp = Timestamp.from(nextExpectedPollAt);
 
         int updated =
-            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = ? WHERE customerId = ? AND jvmUuid = ? ",
-                                Timestamp.from(thisPollAt), nextExpectedPollTimestamp, FALSE, customerId, thisJvmUuid);
+            jdbcTemplate.update(
+                "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = ? WHERE customerId = ? AND jvmUuid = ? ",
+                Timestamp.from(thisPollAt), nextExpectedPollTimestamp, FALSE, customerId, thisJvmUuid);
         if (updated == 0) {
             jdbcTemplate
                 .update(
@@ -101,8 +103,8 @@ public class AgentDAOImpl implements AgentDAO {
     @Cacheable(ENVIRONMENTS_CACHE)
     public Optional<String> getEnvironmentName(String jvmUuid) {
         List<String> names = jdbcTemplate.queryForList("SELECT name FROM environments e, jvms j " +
-                                                          "WHERE e.id = j.environmentId AND j.uuid = ? ",
-                                                      String.class, jvmUuid);
+                                                           "WHERE e.id = j.environmentId AND j.uuid = ? ",
+                                                       String.class, jvmUuid);
         // If this is the first poll, return empty.
         return names.isEmpty() ? Optional.empty() : Optional.of(names.get(0));
     }
@@ -110,6 +112,15 @@ public class AgentDAOImpl implements AgentDAO {
     @Override
     public void updateAgentEnabledState(long customerId, String thisJvmUuid, boolean enabled) {
         jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ?", enabled, customerId, thisJvmUuid);
+    }
+
+    @Override
+    @Cacheable(CODEBASE_FINGERPRINTS_CACHE)
+    public boolean isCodebaseAlreadyImported(Long customerId, String codebaseFingerprint) {
+        Integer count =
+            jdbcTemplate.queryForObject("SELECT COUNT(1) FROM jvms WHERE customerId = ? AND codeBaseFingerprint = ?", Integer.class,
+                                        customerId, codebaseFingerprint);
+        return count > 0;
     }
 
 }

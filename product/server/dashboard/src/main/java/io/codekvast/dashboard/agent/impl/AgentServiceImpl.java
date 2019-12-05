@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import static io.codekvast.dashboard.util.LoggingUtils.humanReadableByteCount;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
@@ -76,7 +77,8 @@ public class AgentServiceImpl implements AgentService {
     public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
 
-        boolean isAgentEnabled = agentTransactions.updateAgentState(customerData, request.getJvmUuid(), request.getAppName(), request.getEnvironment());
+        boolean isAgentEnabled =
+            agentTransactions.updateAgentState(customerData, request.getJvmUuid(), request.getAppName(), request.getEnvironment());
 
         String publisherConfig = isAgentEnabled ? "enabled=true" : "enabled=false";
         PricePlan pp = customerData.getPricePlan();
@@ -99,24 +101,33 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional(readOnly = true)
-    public File savePublication(@NonNull PublicationType publicationType, @NonNull String licenseKey, int publicationSize,
-                                InputStream inputStream) throws LicenseViolationException, IOException {
+    public File savePublication(@NonNull PublicationType publicationType, @NonNull String licenseKey, String codebaseFingerprint,
+                                int publicationSize, InputStream inputStream) throws LicenseViolationException, IOException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(licenseKey);
         if (publicationType == PublicationType.CODEBASE) {
+            if (agentDAO.isCodebaseAlreadyImported(customerData.getCustomerId(), codebaseFingerprint)) {
+                logger.info("Ignoring duplicate {} with fingerprint {} for customer {}.", publicationType, codebaseFingerprint,
+                            customerData.getCustomerId());
+                inputStream.close();
+                return null;
+            }
             customerService.assertPublicationSize(customerData, publicationSize);
         }
 
-        return doSaveInputStream(publicationType, customerData.getCustomerId(), inputStream);
+        return doSaveInputStream(publicationType, customerData.getCustomerId(), codebaseFingerprint, inputStream);
     }
 
-    private File doSaveInputStream(PublicationType publicationType, Long customerId, InputStream inputStream) throws IOException {
+    private File doSaveInputStream(PublicationType publicationType, Long customerId, String codebaseFingerprint, InputStream inputStream)
+        throws IOException {
         try (inputStream) {
             createDirectory(settings.getQueuePath());
 
             File result = File.createTempFile(publicationType + "-" + customerId + "-", ".ser", settings.getQueuePath());
             Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
-            logger.info("Saved uploaded {} publication to {}", publicationType, result);
+            logger
+                .info("Saved uploaded {} publication for customer {} to {} ({}), fingerprint = {}", publicationType, customerId, result,
+                      humanReadableByteCount(result.length()), codebaseFingerprint);
             return result;
         }
     }

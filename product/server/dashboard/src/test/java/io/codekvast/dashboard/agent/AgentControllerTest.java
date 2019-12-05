@@ -164,6 +164,6 @@ public class AgentControllerTest {
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 
-        verify(agentService).savePublication(eq(publicationType), eq(licenseKey), eq(publicationSize), any(InputStream.class));
+        verify(agentService).savePublication(eq(publicationType), eq(licenseKey), eq(fingerprint), eq(publicationSize), any(InputStream.class));
     }
 }

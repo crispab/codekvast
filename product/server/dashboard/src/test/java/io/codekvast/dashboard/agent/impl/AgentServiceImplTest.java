@@ -29,6 +29,11 @@ public class AgentServiceImplTest {
     @Mock
     private CustomerService customerService;
 
+    @Mock
+    private AgentDAO agentDAO;
+
+    private final CustomerData customerData = CustomerData.sample();
+
     private AgentService service;
 
     @Before
@@ -38,9 +43,9 @@ public class AgentServiceImplTest {
         CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
         settings.setQueuePath(temporaryFolder.getRoot());
 
-        when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(CustomerData.sample());
+        when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
 
-        service = new AgentServiceImpl(settings, customerService, mock(AgentDAO.class), mock(AgentTransactions.class));
+        service = new AgentServiceImpl(settings, customerService, agentDAO, mock(AgentTransactions.class));
     }
 
     @Test(expected = LicenseViolationException.class)
@@ -51,7 +56,7 @@ public class AgentServiceImplTest {
                                                       .assertPublicationSize(any(CustomerData.class), eq(publicationSize));
 
         // when
-        service.savePublication(AgentService.PublicationType.CODEBASE, "key", publicationSize, null);
+        service.savePublication(AgentService.PublicationType.CODEBASE, "key", "fingerprint", publicationSize, null);
     }
 
     @Test
@@ -60,8 +65,8 @@ public class AgentServiceImplTest {
         String contents = "Dummy Code Base Publication";
 
         // when
-        File resultingFile = service.savePublication(AgentService.PublicationType.CODEBASE, "key", 1000,
-                                                     new ByteArrayInputStream(contents.getBytes()));
+        File resultingFile = service.savePublication(AgentService.PublicationType.CODEBASE, "key", "fingerprint",
+                                                     1000, new ByteArrayInputStream(contents.getBytes()));
 
         // then
         assertThat(resultingFile, notNullValue());
@@ -72,13 +77,28 @@ public class AgentServiceImplTest {
     }
 
     @Test
+    public void should_not_save_already_uploaded_codebase() throws Exception {
+        // given
+        String contents = "Dummy Code Base Publication";
+        when(agentDAO.isCodebaseAlreadyImported(customerData.getCustomerId(), "fingerprint")).thenReturn(true);
+
+        // when
+        File resultingFile = service.savePublication(AgentService.PublicationType.CODEBASE, "key", "fingerprint",
+                                                     1000, new ByteArrayInputStream(contents.getBytes()));
+
+        // then
+        assertThat(resultingFile, nullValue());
+        verify(customerService, never()).assertPublicationSize(any(), anyInt());
+    }
+
+    @Test
     public void should_save_uploaded_invocations_no_license() throws Exception {
         // given
         String contents = "Dummy Code Base Publication";
 
         // when
-        File resultingFile = service.savePublication(AgentService.PublicationType.INVOCATIONS, "key", 1000,
-                                                     new ByteArrayInputStream(contents.getBytes()));
+        File resultingFile = service.savePublication(AgentService.PublicationType.INVOCATIONS, "key", "fingerprint",
+                                                     1000, new ByteArrayInputStream(contents.getBytes()));
 
         // then
         assertThat(resultingFile, notNullValue());
@@ -90,6 +110,6 @@ public class AgentServiceImplTest {
 
     @Test(expected = NullPointerException.class)
     public void should_reject_null_licenseKey() throws Exception {
-        service.savePublication(AgentService.PublicationType.CODEBASE, null, 0, null);
+        service.savePublication(AgentService.PublicationType.CODEBASE, null, "fingerprint", 0, null);
     }
 }

@@ -69,10 +69,11 @@ public interface AgentService {
     /**
      * Save an uploaded publication into the import area where it will be processed by another thread.
      *
-     * @param publicationType The type of publication.
-     * @param licenseKey      The javaagent's licenseKey.
-     * @param publicationSize The size of the publication. Used for price plan enforcement.
-     * @param inputStream     The data input stream.  @return The resulting file or null of the code base was already uploaded.
+     * @param publicationType     The type of publication.
+     * @param licenseKey          The javaagent's licenseKey.
+     * @param codebaseFingerprint The publication's origin codebase's fingerprint
+     * @param publicationSize     The size of the publication. Used for price plan enforcement.
+     * @param inputStream         The data input stream.  @return The resulting file or null of the code base was already uploaded.
      * @return the resulting file in the queue directory.
      * @throws LicenseViolationException If invalid license or license violations.
      * @throws IOException               If failure to create the file.
@@ -80,6 +81,7 @@ public interface AgentService {
      * @see CodeBasePublication3
      * @see InvocationDataPublication2
      */
-    File savePublication(PublicationType publicationType, String licenseKey, int publicationSize, InputStream inputStream)
+    File savePublication(PublicationType publicationType, String licenseKey, String codebaseFingerprint, int publicationSize,
+                         InputStream inputStream)
         throws LicenseViolationException, IOException;
 }
