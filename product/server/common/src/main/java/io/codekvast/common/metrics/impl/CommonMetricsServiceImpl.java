@@ -25,18 +25,13 @@ import io.codekvast.common.lock.Lock;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.time.Duration;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Component("commonMetricsService")
 @RequiredArgsConstructor
-@Slf4j
 public class CommonMetricsServiceImpl implements CommonMetricsService {
 
     private static final String EVENT_TAG = "event";
