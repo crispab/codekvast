@@ -11,9 +11,10 @@ import io.codekvast.common.messaging.EventService;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.agent.impl.AgentDAO;
 import io.codekvast.dashboard.agent.impl.AgentDAOImpl;
-import io.codekvast.dashboard.agent.impl.AgentTransactionsImpl;
 import io.codekvast.dashboard.agent.impl.AgentServiceImpl;
+import io.codekvast.dashboard.agent.impl.AgentTransactionsImpl;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -36,7 +37,8 @@ import static org.mockito.Mockito.when;
  * @author olle.hallin@crisp.se
  */
 @SpringBootTest(
-    classes = {CommonConfig.class, AgentServiceImpl.class, AgentTransactionsImpl.class, AgentDAOImpl.class, LockTemplate.class, DeadlockLoserDataAccessExceptionAspect.class},
+    classes = {CommonConfig.class, AgentServiceImpl.class, AgentTransactionsImpl.class, AgentDAOImpl.class, LockTemplate.class,
+               DeadlockLoserDataAccessExceptionAspect.class},
     webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class AgentServiceIntegrationTest {
     @ClassRule
@@ -59,6 +61,9 @@ public class AgentServiceIntegrationTest {
 
     @MockBean
     private CodekvastDashboardSettings settings;
+
+    @MockBean
+    private PublicationMetricsService publicationMetricsService;
 
     @Inject
     private AgentService agentService;

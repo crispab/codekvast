@@ -1,9 +1,12 @@
 package io.codekvast.dashboard.agent.impl;
 
-import io.codekvast.common.customer.*;
+import io.codekvast.common.customer.CustomerData;
+import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,6 +36,9 @@ public class AgentServiceImplTest {
     @Mock
     private AgentDAO agentDAO;
 
+    @Mock
+    private PublicationMetricsService publicationMetricsService;
+
     private final CustomerData customerData = CustomerData.sample();
 
     private AgentService service;
@@ -46,7 +52,8 @@ public class AgentServiceImplTest {
 
         when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
 
-        service = new AgentServiceImpl(settings, customerService, agentDAO, mock(AgentTransactions.class));
+        service =
+            new AgentServiceImpl(settings, customerService, agentDAO, mock(AgentTransactions.class), publicationMetricsService);
     }
 
     @Test(expected = LicenseViolationException.class)
@@ -90,6 +97,7 @@ public class AgentServiceImplTest {
         // then
         assertThat(resultingFile, nullValue());
         verify(customerService, never()).assertPublicationSize(any(), anyInt());
+        verify(publicationMetricsService).countIgnoredPublication();
     }
 
     @Test

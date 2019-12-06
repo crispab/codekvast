@@ -40,12 +40,17 @@ public class PublicationMetricsServiceImpl implements PublicationMetricsService 
 
     @Override
     public void gaugePublicationQueueLength(int queueLength) {
-        meterRegistry.gauge("codekvast.intake.queueLength", queueLength);
+        meterRegistry.gauge("codekvast.publication.queueLength", queueLength);
     }
 
     @Override
     public void countRejectedPublication() {
-        meterRegistry.counter("codekvast.intake.rejected").increment();
+        meterRegistry.counter("codekvast.publication.rejected").increment();
+    }
+
+    @Override
+    public void countIgnoredPublication() {
+        meterRegistry.counter("codekvast.publication.ignored").increment();
     }
 
     @Override

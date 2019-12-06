@@ -29,6 +29,7 @@ import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
@@ -69,6 +70,7 @@ public class AgentServiceImpl implements AgentService {
     private final CustomerService customerService;
     private final AgentDAO agentDAO;
     private final AgentTransactions agentTransactions;
+    private final PublicationMetricsService publicationMetricsService;
 
     @Override
     @Idempotent
@@ -114,6 +116,7 @@ public class AgentServiceImpl implements AgentService {
             if (agentDAO.isCodebaseAlreadyImported(customerData.getCustomerId(), codebaseFingerprint)) {
                 logger.info("Ignoring duplicate {} with fingerprint {} for customer {}.", publicationType, codebaseFingerprint,
                             customerData.getCustomerId());
+                publicationMetricsService.countIgnoredPublication();
                 inputStream.close();
                 return null;
             }

@@ -45,6 +45,11 @@ public interface PublicationMetricsService {
     void countRejectedPublication();
 
     /**
+     * Count the fact that a publication was ignored.
+     */
+    void countIgnoredPublication();
+
+    /**
      * Record the fact that a publication was imported.
      *
      * @param kind     The kind of publication.
