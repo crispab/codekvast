@@ -23,7 +23,6 @@ package io.codekvast.common.thread;
 
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import lombok.NonNull;
-import org.springframework.stereotype.Component;
 
 /**
  * A template for managing thread name and optionally correlationId.
@@ -41,7 +40,7 @@ public class NamedThreadTemplate {
     public void doInNamedThread(@NonNull String threadName, Runnable task) {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName("Codekvast " + threadName);
-        CorrelationIdHolder.generateNew();
+        CorrelationIdHolder.generateAndSetNew();
         try {
             task.run();
         } finally {

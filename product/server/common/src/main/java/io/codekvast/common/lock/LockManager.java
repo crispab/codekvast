@@ -34,7 +34,7 @@ import java.util.Optional;
 public interface LockManager {
 
     /**
-     * Acquire a lock. An acquired lock <b>MUST</b> eventually be released by {@link #releaseLock(Lock)}.
+     * Acquire a lock.
      *
      * @param lock The lock to acquire.
      * @return A filled optional if the lock was acquired, else an empty optional.

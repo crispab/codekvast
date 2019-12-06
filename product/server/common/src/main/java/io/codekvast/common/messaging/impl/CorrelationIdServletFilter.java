@@ -22,7 +22,6 @@
 package io.codekvast.common.messaging.impl;
 
 import io.codekvast.common.messaging.CorrelationIdHolder;
-import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -46,7 +45,7 @@ public class CorrelationIdServletFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        CorrelationIdHolder.generateNew();
+        CorrelationIdHolder.generateAndSetNew();
         try {
             chain.doFilter(request, response);
         } finally {

@@ -1,6 +1,7 @@
 package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.common.customer.*;
+import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import org.junit.Before;
@@ -111,5 +112,23 @@ public class AgentServiceImplTest {
     @Test(expected = NullPointerException.class)
     public void should_reject_null_licenseKey() throws Exception {
         service.savePublication(AgentService.PublicationType.CODEBASE, null, "fingerprint", 0, null);
+    }
+
+    @Test
+    public void should_build_file_name_with_correlationId() {
+        // given
+        String correlationId = CorrelationIdHolder.generateNew();
+
+        // when
+        File file = service.generatePublicationFile(AgentService.PublicationType.CODEBASE, 17L, correlationId);
+
+        // then
+        assertThat(file.getName(), containsString(correlationId));
+
+        // when
+        String correlationId2 = service.getCorrelationIdFromPublicationFile(file);
+
+        // then
+        assertThat(correlationId2, is(correlationId));
     }
 }

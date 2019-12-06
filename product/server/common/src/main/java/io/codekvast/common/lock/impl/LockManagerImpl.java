@@ -47,7 +47,6 @@ public class LockManagerImpl implements LockManager {
     private final Clock clock;
 
     @Override
-    @Transactional(propagation = Propagation.MANDATORY)
     public Optional<Lock> acquireLock(final Lock lock) {
         Integer locked = jdbcTemplate.queryForObject("SELECT GET_LOCK(?, ?)", Integer.class, lock.key(), lock.getMaxLockWaitSeconds());
         if (locked.equals(1)) {
@@ -61,7 +60,6 @@ public class LockManagerImpl implements LockManager {
     }
 
     @Override
-    @Transactional(propagation = Propagation.MANDATORY)
     public void releaseLock(Lock lock) {
         Integer unlocked = jdbcTemplate.queryForObject("SELECT RELEASE_LOCK(?)", Integer.class, lock.key());
         if (unlocked.equals(1)) {

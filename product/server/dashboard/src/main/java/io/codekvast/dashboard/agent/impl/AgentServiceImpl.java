@@ -26,6 +26,7 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlan;
+import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
@@ -43,6 +44,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static io.codekvast.dashboard.util.LoggingUtils.humanReadableByteCount;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -58,6 +63,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class AgentServiceImpl implements AgentService {
 
     public static final String UNKNOWN_ENVIRONMENT = "<UNKNOWN>";
+    public static final Pattern CORRELATION_ID_PATTERN = buildCorrelationIdPattern();
 
     private final CodekvastDashboardSettings settings;
     private final CustomerService customerService;
@@ -117,12 +123,34 @@ public class AgentServiceImpl implements AgentService {
         return doSaveInputStream(publicationType, customerData.getCustomerId(), codebaseFingerprint, inputStream);
     }
 
+    @Override
+    public File generatePublicationFile(PublicationType publicationType, Long customerId, String correlationId) {
+        return new File(settings.getQueuePath(), String.format("%s-%d-%s.ser", publicationType, customerId, correlationId));
+    }
+
+    private static Pattern buildCorrelationIdPattern() {
+        String publicationTypes =
+            Arrays.stream(PublicationType.values()).map(PublicationType::toString).collect(Collectors.joining("|", "(", ")"));
+        return Pattern.compile(publicationTypes + "-([0-9]+)-([a-fA-F0-9_-]+)\\.ser$");
+    }
+
+    @Override
+    public String getCorrelationIdFromPublicationFile(File publicationFile) {
+        String fileName = publicationFile.getName();
+        Matcher matcher = CORRELATION_ID_PATTERN.matcher(fileName);
+        if (matcher.matches()) {
+            return matcher.group(3);
+        }
+        logger.warn("Could not parse correlationId from publication file name {}, generating a new...", fileName);
+        return CorrelationIdHolder.generateNew();
+    }
+
     private File doSaveInputStream(PublicationType publicationType, Long customerId, String codebaseFingerprint, InputStream inputStream)
         throws IOException {
         try (inputStream) {
             createDirectory(settings.getQueuePath());
 
-            File result = File.createTempFile(publicationType + "-" + customerId + "-", ".ser", settings.getQueuePath());
+            File result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get());
             Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
             logger

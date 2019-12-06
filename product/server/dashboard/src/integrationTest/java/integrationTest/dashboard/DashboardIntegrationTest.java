@@ -859,12 +859,6 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("agent_state"), is(0));
     }
 
-    @Test(expected = IllegalTransactionStateException.class)
-    @Transactional(propagation = Propagation.NEVER)
-    public void lockManager_should_require_transaction() {
-        lockManager.acquireLock(Lock.forSystem());
-    }
-
     @Test
     public void should_acquire_uncontended_lock() {
         Optional<Lock> lock = lockManager.acquireLock(Lock.forSystem());

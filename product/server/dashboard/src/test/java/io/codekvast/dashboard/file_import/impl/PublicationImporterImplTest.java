@@ -1,6 +1,7 @@
 package io.codekvast.dashboard.file_import.impl;
 
-import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.messaging.CorrelationIdHolder;
+import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
@@ -44,14 +45,15 @@ public class PublicationImporterImplTest {
     private PublicationMetricsService metricsService;
 
     @Mock
-    private LockManager lockManager;
+    private AgentService agentService;
 
     private PublicationImporter publicationImporter;
 
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        this.publicationImporter = new PublicationImporterImpl(codeBaseImporter, invocationDataImporter, validator, metricsService);
+        when(agentService.getCorrelationIdFromPublicationFile(any())).thenReturn(CorrelationIdHolder.generateNew());
+        this.publicationImporter = new PublicationImporterImpl(codeBaseImporter, invocationDataImporter, validator, metricsService, agentService);
     }
 
     @Test

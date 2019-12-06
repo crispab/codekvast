@@ -24,6 +24,7 @@ package io.codekvast.dashboard.file_import.impl;
 import io.codekvast.common.aspects.Idempotent;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.messaging.CorrelationIdHolder;
+import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
@@ -62,13 +63,14 @@ public class PublicationImporterImpl implements PublicationImporter {
     private final InvocationDataImporter invocationDataImporter;
     private final Validator validator;
     private final PublicationMetricsService metricsService;
+    private final AgentService agentService;
 
     @Override
     @Idempotent
     public boolean importPublicationFile(File file) {
         logger.info("Processing {}", file);
         boolean handled;
-        CorrelationIdHolder.generateNew();
+        CorrelationIdHolder.set(agentService.getCorrelationIdFromPublicationFile(file));
         try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 
             long startedAt = System.currentTimeMillis();

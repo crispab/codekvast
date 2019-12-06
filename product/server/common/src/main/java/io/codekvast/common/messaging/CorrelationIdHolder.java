@@ -50,7 +50,9 @@ public class CorrelationIdHolder {
     }
 
     /**
-     * Sets a new correlationId, obtained e.g., via a HTTP request parameter or an event received from another service.
+     * Sets a new correlationId in a ThreadLocal.
+     *
+     * The value can be obtained e.g., via an HTTP request parameter, or an event received from another service.
      * It also invokes {@code MDC.put("correlationId", id)}.
      *
      * @param id The new id to set. May not be null.
@@ -61,15 +63,25 @@ public class CorrelationIdHolder {
     }
 
     /**
-     * Generates and stores a new random correlationId
-     * It also invokes {@code MDC.put("correlationId", id)}.
+     * Generates and stores a new random correlationId.
+     *
+     * It invokes {@link #generateNew()} and {@link #set(String)}
+     *
+     * @return The new unique random correlationId. Does never return null.
+     */
+    public static String generateAndSetNew() {
+        String id = generateNew();
+        set(id);
+        return id;
+    }
+
+    /**
+     * Generates a new random correlationId, but does <b>NOT</b> invoke {@link #set(String)}.
      *
      * @return The new unique random correlationId. Does never return null.
      */
     public static String generateNew() {
-        String id = UUID.randomUUID().toString();
-        set(id);
-        return id;
+        return UUID.randomUUID().toString();
     }
 
     /**
