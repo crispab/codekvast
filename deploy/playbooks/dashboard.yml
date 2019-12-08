@@ -17,8 +17,7 @@
     service_name: dashboard
     service_port: "{{ ports.dashboard.service }}"
     management_port: "{{ ports.dashboard.management }}"
-
-    queuePath: "/var/codekvast/dashboard/queue"
+    fileImportQueuePath: "/var/codekvast/dashboard/queue"
 
   roles:
   - {role: Datadog.datadog, tags: [metrics,monitoring,datadog] }
@@ -31,4 +30,4 @@
   - name: Create directories
     file: path={{ item }} state=directory owner=codekvast group=codekvast
     with_items:
-    - "{{ queuePath }}"
+    - "{{ fileImportQueuePath }}"

@@ -61,7 +61,7 @@ public class AgentTransactionsImplTest {
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
 
-        settings.setQueuePath(temporaryFolder.getRoot());
+        settings.setFileImportQueuePath(temporaryFolder.getRoot());
         settings.setFileImportIntervalSeconds(60);
 
         when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forCustomer(customerId)));

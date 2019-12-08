@@ -74,10 +74,10 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
     /**
      * The path to the agent publication queue
      */
-    private File queuePath;
+    private File fileImportQueuePath;
 
     /**
-     * How often to scan queuePath for new files.
+     * How often to scan fileImportQueuePath for new files.
      */
     private int fileImportIntervalSeconds;
 

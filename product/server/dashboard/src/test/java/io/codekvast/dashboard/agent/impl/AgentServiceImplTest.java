@@ -48,7 +48,7 @@ public class AgentServiceImplTest {
         MockitoAnnotations.initMocks(this);
 
         CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
-        settings.setQueuePath(temporaryFolder.getRoot());
+        settings.setFileImportQueuePath(temporaryFolder.getRoot());
 
         when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
 

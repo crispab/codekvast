@@ -6,15 +6,15 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 codekvast:
-    dashboardBaseUrl:               http://localhost:8081
-    jwtExpirationHours:             168
-    jwtSecret:                      secret
-    deleteImportedFiles:            true
-    dnsCname:                       localhost
-    environment:                    dev
-    fileImportIntervalSeconds:      60
-    loginBaseUrl:                   http://localhost:8080
-    queuePath:                      /tmp/codekvast
+    dashboardBaseUrl:                         http://localhost:8081
+    deleteImportedFiles:                      true
+    dnsCname:                                 localhost
+    environment:                              dev
+    fileImportIntervalSeconds:                60
+    fileImportQueuePath:                      /tmp/codekvast
+    jwtExpirationHours:                       168
+    jwtSecret:                                secret
+    loginBaseUrl:                             http://localhost:8080
     slackWebHookToken:
 
 logging:

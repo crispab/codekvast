@@ -128,7 +128,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public File generatePublicationFile(PublicationType publicationType, Long customerId, String correlationId) {
-        return new File(settings.getQueuePath(), String.format("%s-%d-%s.ser", publicationType, customerId, correlationId));
+        return new File(settings.getFileImportQueuePath(), String.format("%s-%d-%s.ser", publicationType, customerId, correlationId));
     }
 
     private static Pattern buildCorrelationIdPattern() {
@@ -151,7 +151,7 @@ public class AgentServiceImpl implements AgentService {
     private File doSaveInputStream(PublicationType publicationType, Long customerId, String codebaseFingerprint, InputStream inputStream)
         throws IOException {
         try (inputStream) {
-            createDirectory(settings.getQueuePath());
+            createDirectory(settings.getFileImportQueuePath());
 
             File result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get());
             Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
@@ -163,14 +163,14 @@ public class AgentServiceImpl implements AgentService {
         }
     }
 
-    private void createDirectory(File queuePath) throws IOException {
-        if (!queuePath.isDirectory()) {
-            logger.debug("Creating {}", settings.getQueuePath());
-            settings.getQueuePath().mkdirs();
-            if (!settings.getQueuePath().isDirectory()) {
-                throw new IOException("Could not create import directory " + settings.getQueuePath());
+    private void createDirectory(File directory) throws IOException {
+        if (!directory.isDirectory()) {
+            logger.debug("Creating {}", directory);
+            directory.mkdirs();
+            if (!directory.isDirectory()) {
+                throw new IOException("Could not create directory " + directory);
             }
-            logger.info("Created {}", queuePath);
+            logger.info("Created {}", directory);
         }
     }
 

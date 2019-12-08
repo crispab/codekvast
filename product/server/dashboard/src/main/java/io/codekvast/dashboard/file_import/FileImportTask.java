@@ -48,7 +48,7 @@ public class FileImportTask {
 
     @PostConstruct
     public void postConstruct() {
-        logger.info("Looking for files in {} every {} seconds", settings.getQueuePath(),
+        logger.info("Looking for files in {} every {} seconds", settings.getFileImportQueuePath(),
                     settings.getFileImportIntervalSeconds());
     }
 
@@ -60,7 +60,7 @@ public class FileImportTask {
     }
 
     private void run() {
-        File queuePath = settings.getQueuePath();
+        File queuePath = settings.getFileImportQueuePath();
         int queueLength = countFiles(queuePath);
         metricsService.gaugePublicationQueueLength(queueLength);
         if (queueLength > 0) {
