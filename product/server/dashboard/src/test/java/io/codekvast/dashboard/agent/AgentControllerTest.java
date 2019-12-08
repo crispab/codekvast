@@ -2,6 +2,7 @@ package io.codekvast.dashboard.agent;
 
 import com.google.gson.Gson;
 import io.codekvast.common.customer.LicenseViolationException;
+import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
@@ -131,20 +132,20 @@ public class AgentControllerTest {
 
     @Test
     public void should_accept_upload_codebase_publication2_when_valid_license() throws Exception {
-        assertUploadPublication(AgentService.PublicationType.CODEBASE, V2_UPLOAD_CODEBASE);
+        assertUploadPublication(PublicationType.CODEBASE, V2_UPLOAD_CODEBASE);
     }
 
     @Test
     public void should_accept_upload_codebase_publication3_when_valid_license() throws Exception {
-        assertUploadPublication(AgentService.PublicationType.CODEBASE, V3_UPLOAD_CODEBASE);
+        assertUploadPublication(PublicationType.CODEBASE, V3_UPLOAD_CODEBASE);
     }
 
     @Test
     public void should_accept_upload_invocation_data_publication2_when_valid_license() throws Exception {
-        assertUploadPublication(AgentService.PublicationType.INVOCATIONS, V2_UPLOAD_INVOCATION_DATA);
+        assertUploadPublication(PublicationType.INVOCATIONS, V2_UPLOAD_INVOCATION_DATA);
     }
 
-    private void assertUploadPublication(AgentService.PublicationType publicationType, String endpoint) throws Exception {
+    private void assertUploadPublication(PublicationType publicationType, String endpoint) throws Exception {
         String licenseKey = "licenseKey";
         String fingerprint = "fingerprint";
         int publicationSize = 10000;

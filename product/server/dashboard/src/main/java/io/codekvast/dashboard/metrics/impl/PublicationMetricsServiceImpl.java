@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.metrics.impl;
 
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.model.PublicationType;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import lombok.RequiredArgsConstructor;
@@ -44,21 +45,27 @@ public class PublicationMetricsServiceImpl implements PublicationMetricsService 
     }
 
     @Override
-    public void countRejectedPublication() {
-        meterRegistry.counter("codekvast.publication.rejected").increment();
+    public void countRejectedPublication(PublicationType type) {
+        Tags tags = getTags(type);
+        meterRegistry.counter("codekvast.publication.rejected", tags).increment();
     }
 
     @Override
-    public void countIgnoredPublication() {
-        meterRegistry.counter("codekvast.publication.ignored").increment();
+    public void countIgnoredPublication(PublicationType type) {
+        Tags tags = getTags(type);
+        meterRegistry.counter("codekvast.publication.ignored", tags).increment();
     }
 
     @Override
-    public void recordImportedPublication(PublicationKind kind, int size, Duration duration) {
-        Tags tags = Tags.of("kind", kind.name().toLowerCase());
+    public void recordImportedPublication(PublicationType type, int size, Duration duration) {
+        Tags tags = getTags(type);
         meterRegistry.counter("codekvast.publication.accepted", tags).increment();
         meterRegistry.gauge("codekvast.publication.size", tags, size);
         meterRegistry.timer("codekvast.publication.imported_in.millis", tags).record(duration);
+    }
+
+    private Tags getTags(PublicationType type) {
+        return Tags.of("type", type.toString());
     }
 
 }

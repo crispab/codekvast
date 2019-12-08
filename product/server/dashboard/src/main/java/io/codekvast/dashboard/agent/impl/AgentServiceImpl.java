@@ -30,6 +30,7 @@ import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
@@ -116,7 +117,7 @@ public class AgentServiceImpl implements AgentService {
             if (agentDAO.isCodebaseAlreadyImported(customerData.getCustomerId(), codebaseFingerprint)) {
                 logger.info("Ignoring duplicate {} with fingerprint {} for customer {}.", publicationType, codebaseFingerprint,
                             customerData.getCustomerId());
-                publicationMetricsService.countIgnoredPublication();
+                publicationMetricsService.countIgnoredPublication(publicationType);
                 inputStream.close();
                 return null;
             }
@@ -135,6 +136,17 @@ public class AgentServiceImpl implements AgentService {
         String publicationTypes =
             Arrays.stream(PublicationType.values()).map(PublicationType::toString).collect(Collectors.joining("|", "(", ")"));
         return Pattern.compile(publicationTypes + "-([0-9]+)-([a-fA-F0-9_-]+)\\.ser$");
+    }
+
+    @Override
+    public PublicationType getPublicationTypeFromPublicationFile(File publicationFile) {
+        String fileName = publicationFile.getName();
+        Matcher matcher = CORRELATION_ID_PATTERN.matcher(fileName);
+        if (matcher.matches()) {
+            return PublicationType.valueOf(matcher.group(1).toUpperCase());
+        }
+        logger.warn("Could not parse publicationType from publication file name {}", fileName);
+        return null;
     }
 
     @Override

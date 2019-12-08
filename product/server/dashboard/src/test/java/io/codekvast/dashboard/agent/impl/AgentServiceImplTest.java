@@ -7,6 +7,7 @@ import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.model.PublicationType;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class AgentServiceImplTest {
                                                       .assertPublicationSize(any(CustomerData.class), eq(publicationSize));
 
         // when
-        service.savePublication(AgentService.PublicationType.CODEBASE, "key", "fingerprint", publicationSize, null);
+        service.savePublication(PublicationType.CODEBASE, "key", "fingerprint", publicationSize, null);
     }
 
     @Test
@@ -73,11 +74,12 @@ public class AgentServiceImplTest {
         String contents = "Dummy Code Base Publication";
 
         // when
-        File resultingFile = service.savePublication(AgentService.PublicationType.CODEBASE, "key", "fingerprint",
+        File resultingFile = service.savePublication(PublicationType.CODEBASE, "key", "fingerprint",
                                                      1000, new ByteArrayInputStream(contents.getBytes()));
 
         // then
         assertThat(resultingFile, notNullValue());
+        assertThat(service.getPublicationTypeFromPublicationFile(resultingFile), is(PublicationType.CODEBASE));
         assertThat(resultingFile.getName(), startsWith("codebase-"));
         assertThat(resultingFile.getName(), endsWith(".ser"));
         assertThat(resultingFile.exists(), is(true));
@@ -91,13 +93,13 @@ public class AgentServiceImplTest {
         when(agentDAO.isCodebaseAlreadyImported(customerData.getCustomerId(), "fingerprint")).thenReturn(true);
 
         // when
-        File resultingFile = service.savePublication(AgentService.PublicationType.CODEBASE, "key", "fingerprint",
+        File resultingFile = service.savePublication(PublicationType.CODEBASE, "key", "fingerprint",
                                                      1000, new ByteArrayInputStream(contents.getBytes()));
 
         // then
         assertThat(resultingFile, nullValue());
         verify(customerService, never()).assertPublicationSize(any(), anyInt());
-        verify(publicationMetricsService).countIgnoredPublication();
+        verify(publicationMetricsService).countIgnoredPublication(PublicationType.CODEBASE);
     }
 
     @Test
@@ -106,7 +108,7 @@ public class AgentServiceImplTest {
         String contents = "Dummy Code Base Publication";
 
         // when
-        File resultingFile = service.savePublication(AgentService.PublicationType.INVOCATIONS, "key", "fingerprint",
+        File resultingFile = service.savePublication(PublicationType.INVOCATIONS, "key", "fingerprint",
                                                      1000, new ByteArrayInputStream(contents.getBytes()));
 
         // then
@@ -119,7 +121,7 @@ public class AgentServiceImplTest {
 
     @Test(expected = NullPointerException.class)
     public void should_reject_null_licenseKey() throws Exception {
-        service.savePublication(AgentService.PublicationType.CODEBASE, null, "fingerprint", 0, null);
+        service.savePublication(PublicationType.CODEBASE, null, "fingerprint", 0, null);
     }
 
     @Test
@@ -128,7 +130,7 @@ public class AgentServiceImplTest {
         String correlationId = CorrelationIdHolder.generateNew();
 
         // when
-        File file = service.generatePublicationFile(AgentService.PublicationType.CODEBASE, 17L, correlationId);
+        File file = service.generatePublicationFile(PublicationType.CODEBASE, 17L, correlationId);
 
         // then
         assertThat(file.getName(), containsString(correlationId));

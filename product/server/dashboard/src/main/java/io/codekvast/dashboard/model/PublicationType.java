@@ -19,42 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.metrics;
-
-import io.codekvast.dashboard.model.PublicationType;
-
-import java.time.Duration;
+package io.codekvast.dashboard.model;
 
 /**
- * Wrapper for publication metrics.
+ * The types of publications that can be uploaded from an agent.
  *
  * @author olle.hallin@crisp.se
  */
-public interface PublicationMetricsService {
+public enum PublicationType {
+    CODEBASE, INVOCATIONS;
 
-    /**
-     * Updates the gauge for the number of queued publications.
-     *
-     * @param queueLength The queue length.
-     */
-    void gaugePublicationQueueLength(int queueLength);
-
-    /**
-     * Count the fact that a publication was rejected.
-     */
-    void countRejectedPublication(PublicationType type);
-
-    /**
-     * Count the fact that a publication was ignored.
-     */
-    void countIgnoredPublication(PublicationType type);
-
-    /**
-     * Record the fact that a publication was imported.
-     *
-     * @param kind     The kind of publication.
-     * @param size     The size of the publication.
-     * @param duration The time it took to import it.
-     */
-    void recordImportedPublication(PublicationType type, int size, Duration duration);
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
 }

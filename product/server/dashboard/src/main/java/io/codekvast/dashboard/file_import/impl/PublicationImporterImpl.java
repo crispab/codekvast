@@ -29,6 +29,7 @@ import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
@@ -71,6 +72,7 @@ public class PublicationImporterImpl implements PublicationImporter {
         logger.info("Processing {}", file);
         boolean handled;
         CorrelationIdHolder.set(agentService.getCorrelationIdFromPublicationFile(file));
+        PublicationType publicationType = agentService.getPublicationTypeFromPublicationFile(file);
         try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 
             long startedAt = System.currentTimeMillis();
@@ -103,7 +105,7 @@ public class PublicationImporterImpl implements PublicationImporter {
             CorrelationIdHolder.clear();
         }
         if (!handled) {
-            metricsService.countRejectedPublication();
+            metricsService.countRejectedPublication(publicationType);
         }
         return handled;
     }

@@ -28,6 +28,7 @@ import io.codekvast.common.messaging.model.InvocationDataReceivedEvent;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +40,6 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.TreeSet;
-
-import static io.codekvast.dashboard.metrics.PublicationMetricsService.PublicationKind.INVOCATIONS;
 
 /**
  * @author olle.hallin@crisp.se
@@ -82,7 +81,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
 
         Duration duration = Duration.between(startedAt, clock.instant());
         logger.info("Imported {} in {}", publication, duration);
-        metricsService.recordImportedPublication(INVOCATIONS, publication.getInvocations().size(), duration);
+        metricsService.recordImportedPublication(PublicationType.INVOCATIONS, publication.getInvocations().size(), duration);
         return true;
     }
 }
