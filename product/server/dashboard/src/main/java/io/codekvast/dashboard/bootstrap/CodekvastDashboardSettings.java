@@ -79,7 +79,7 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
     /**
      * How often to scan queuePath for new files.
      */
-    private int queuePathPollIntervalSeconds = 60;
+    private int fileImportIntervalSeconds;
 
     /**
      * Should imported files be deleted after successful import?

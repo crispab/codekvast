@@ -6,7 +6,6 @@ codekvast:
     jwtSecret: "{{ codekvast_jwtSecret }}"
     dnsCname: "{{ tags.CNAME2 }}"
     environment: "{{ tags.Env }}"
-    fileImportIntervalSeconds: "{{ fileImportIntervalSeconds }}"
     loginBaseUrl: "https://{{ tags.LBCNAME1 }}"
     queuePath: "{{ queuePath }}"
     slackWebHookToken: "{{ codekvast_slackWebhookToken }}"

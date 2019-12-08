@@ -19,7 +19,6 @@
     management_port: "{{ ports.dashboard.management }}"
 
     queuePath: "/var/codekvast/dashboard/queue"
-    fileImportIntervalSeconds: 30
 
   roles:
   - {role: Datadog.datadog, tags: [metrics,monitoring,datadog] }

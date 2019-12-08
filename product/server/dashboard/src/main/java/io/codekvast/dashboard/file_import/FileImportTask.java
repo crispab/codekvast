@@ -49,21 +49,24 @@ public class FileImportTask {
     @PostConstruct
     public void postConstruct() {
         logger.info("Looking for files in {} every {} seconds", settings.getQueuePath(),
-                    settings.getQueuePathPollIntervalSeconds());
+                    settings.getFileImportIntervalSeconds());
     }
 
     @Scheduled(
-        initialDelayString = "${codekvast.fileImportInitialDelaySeconds}000",
-        fixedDelayString = "${codekvast.fileImportIntervalSeconds}000")
+        initialDelayString = "${codekvast.fileImportInitialDelaySeconds:5}000",
+        fixedRateString = "${codekvast.fileImportIntervalSeconds}000")
     public void importPublicationFiles() {
         new NamedThreadTemplate().doInNamedThread("File Importer", this::run);
     }
 
     private void run() {
         File queuePath = settings.getQueuePath();
-        logger.trace("Looking for files to import in {}", queuePath);
-        metricsService.gaugePublicationQueueLength(countFiles(queuePath));
-        processFiles(queuePath);
+        int queueLength = countFiles(queuePath);
+        metricsService.gaugePublicationQueueLength(queueLength);
+        if (queueLength > 0) {
+            logger.info("Importing {} new publication files", queueLength);
+            processFiles(queuePath);
+        }
     }
 
     private void processFiles(File path) {

@@ -7,14 +7,11 @@
 
 codekvast:
     dashboardBaseUrl:               http://localhost:8081
-    jwtExpirationHours:    168
-    jwtSecret:             secret
-    dataWeedingInitialDelaySeconds: 600
-    dataWeedingIntervalSeconds:     3600
+    jwtExpirationHours:             168
+    jwtSecret:                      secret
     deleteImportedFiles:            true
     dnsCname:                       localhost
     environment:                    dev
-    fileImportInitialDelaySeconds:  5
     fileImportIntervalSeconds:      60
     loginBaseUrl:                   http://localhost:8080
     queuePath:                      /tmp/codekvast
@@ -40,7 +37,7 @@ management:
         port: 9081
     metrics:
         web.server.request.autotime.enabled: true
-        export.datadog.enabled:        false
+        export.datadog.enabled:              false
         tags:
             service: "codekvast-dashboard"
             env:     dev
@@ -50,7 +47,7 @@ server:
     compression:
         enabled:    true
         mime-types: application/json,application/javascript,text/html,text/xml,text/plain,text/css
-    port:                8081
+    port:                     8081
     undertow:
         accesslog:
             dir:     build/log
@@ -71,7 +68,7 @@ spring:
         addresses: "amqp://admin:secret@localhost:5672"
         template:
             retry:
-                enabled: true
+                enabled:          true
                 initial-interval: 2s
         listener:
             simple:

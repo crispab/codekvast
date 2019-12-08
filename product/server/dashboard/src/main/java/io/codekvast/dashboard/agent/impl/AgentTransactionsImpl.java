@@ -69,7 +69,7 @@ public class AgentTransactionsImpl implements AgentTransactions {
         long customerId = customerData.getCustomerId();
         Instant now = Instant.now();
 
-        agentDAO.disableDeadAgents(customerId, jvmUuid, now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2));
+        agentDAO.disableDeadAgents(customerId, jvmUuid, now.minusSeconds(settings.getFileImportIntervalSeconds() * 2));
 
         agentDAO.setAgentTimestamps(customerId, jvmUuid, now, now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
 

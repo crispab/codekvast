@@ -60,7 +60,7 @@ public class DeadlockLoserDataAccessExceptionAspect {
                 Thread.sleep(delayMillis);
             }
         }
-        logger.info("Executing a last attempt at {}", joinPoint);
+        logger.info("Executing a last attempt to retry deadlock at {}", joinPoint);
         return pjp.proceed();
     }
 
