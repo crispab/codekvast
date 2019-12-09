@@ -17,6 +17,7 @@ ExecStart=/bin/sh -c "java \
                       -Dcodekvast.configuration=/opt/codekvast/{{ service_name }}/codekvast-agent.properties \
                       -jar /opt/codekvast/{{ service_name }}/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar \
                       > /dev/null"
+ExecStopPost=/opt/codekvast/bin/jvm-crash-notifier.sh codekvast-{{ service_name }} {{ codekvastVersion }}
 KillMode=control-group
 SuccessExitStatus=143
 TimeoutSec=30

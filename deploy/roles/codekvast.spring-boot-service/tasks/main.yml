@@ -26,6 +26,7 @@
 - name: Create directories
   file: path={{ item }} state=directory owner=codekvast group=codekvast
   with_items:
+  - "/opt/codekvast/bin"
   - "/opt/codekvast/{{ service_name }}"
   - "/var/log/codekvast/{{ service_name }}"
 
@@ -49,6 +50,14 @@
   notify:
   - "restart codekvast service"
   - "send codekvast service configured event"
+
+- name: "Install /opt/codekvast/bin/jvm-crash-notifier.sh"
+  template:
+    src: "jvm-crash-notifier.sh"
+    dest: "/opt/codekvast/bin/jvm-crash-notifier.sh"
+    owner: codekvast
+    group: codekvast
+    mode: 0755
 
 - name: "Install /etc/systemd/system/codekvast-{{ service_name }}.service"
   template:
