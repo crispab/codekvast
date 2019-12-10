@@ -20,7 +20,7 @@
 -- THE SOFTWARE.
 --
 
-SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
+-- SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
 
 SET FOREIGN_KEY_CHECKS = 0;
 

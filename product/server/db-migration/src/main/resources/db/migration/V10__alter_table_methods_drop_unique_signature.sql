@@ -20,10 +20,7 @@
 -- THE SOFTWARE.
 --
 
-SELECT name
-    FROM internal_locks
-    WHERE name = 'IMPORT' FOR
-UPDATE;
+-- SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
 
 -- -------------------------------------------------------------------------------------------------------
 -- It does not work with a unique index on methods.signature, since MariaDB has a restriction on

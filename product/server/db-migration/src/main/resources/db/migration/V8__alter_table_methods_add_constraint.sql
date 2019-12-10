@@ -20,8 +20,8 @@
 -- THE SOFTWARE.
 --
 
-INSERT IGNORE INTO internal_locks(name) VALUE('IMPORT');
-SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
+-- INSERT IGNORE INTO internal_locks(name) VALUE('IMPORT');
+-- SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
