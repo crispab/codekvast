@@ -26,11 +26,14 @@ import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.metrics.CommonMetricsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
+import lombok.val;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Clock;
 import java.util.Optional;
 
@@ -42,17 +45,16 @@ import java.util.Optional;
 @Slf4j
 public class LockManagerImpl implements LockManager {
 
-    private final JdbcTemplate jdbcTemplate;
     private final CommonMetricsService metricsService;
     private final Clock clock;
+    private final DataSource dataSource;
 
     @Override
-    public Optional<Lock> acquireLock(final Lock lock) {
-        Integer locked = jdbcTemplate.queryForObject("SELECT GET_LOCK(?, ?)", Integer.class, lock.key(), lock.getMaxLockWaitSeconds());
-        if (locked.equals(1)) {
-            Lock result = lock.withAcquiredAt(clock.instant());
-            logger.debug("Acquired lock {}", result);
-            return Optional.of(result);
+    public Optional<Lock> acquireLock(Lock lock) {
+        Lock acquiredLock = doAcquireLock(lock);
+        if (acquiredLock != null) {
+            logger.trace("Acquired lock {}", acquiredLock);
+            return Optional.of(acquiredLock);
         }
         logger.info("Failed to acquire lock {}", lock);
         metricsService.countLockFailure(lock);
@@ -61,12 +63,65 @@ public class LockManagerImpl implements LockManager {
 
     @Override
     public void releaseLock(Lock lock) {
-        Integer unlocked = jdbcTemplate.queryForObject("SELECT RELEASE_LOCK(?)", Integer.class, lock.key());
-        if (unlocked.equals(1)) {
-            logger.debug("Released lock {}", lock);
-            metricsService.recordLockUsage(lock.withReleasedAt(clock.instant()));
+        val result = doReleaseLock(lock);
+        if (result) {
+            logger.trace("Released lock {}", lock);
         } else {
-            logger.warn("Attempt to release lock {} which was not previously acquired", lock);
+            logger.warn("Attempt to release lock {} which was not previously acquired on this connection", lock);
         }
     }
+
+    private Lock doAcquireLock(Lock lock) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+            boolean locked;
+            try (PreparedStatement ps = connection.prepareStatement("SELECT GET_LOCK(?, ?)")) {
+                ps.setString(1, lock.key());
+                ps.setInt(2, lock.getMaxLockWaitSeconds());
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    locked = rs.getInt(1) == 1;
+                }
+            }
+            if (locked) {
+                return lock.withConnection(connection).withAcquiredAt(clock.instant());
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to acquire lock " + lock, e);
+        }
+        doClose(connection);
+        return null;
+    }
+
+    private boolean doReleaseLock(Lock lock) {
+        Connection connection = lock.getConnection();
+        try {
+            if (connection != null) {
+                try (PreparedStatement ps = lock.getConnection().prepareStatement("SELECT RELEASE_LOCK(?)")) {
+                    ps.setString(1, lock.key());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        return rs.getInt(1) == 1;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to release lock " + lock, e);
+        } finally {
+            doClose(connection);
+        }
+        return false;
+    }
+
+    private void doClose(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                logger.warn("Could not close connection", e);
+            }
+        }
+    }
+
 }

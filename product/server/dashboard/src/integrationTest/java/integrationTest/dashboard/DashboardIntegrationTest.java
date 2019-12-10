@@ -49,8 +49,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import org.springframework.transaction.IllegalTransactionStateException;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -60,9 +58,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
@@ -183,6 +179,14 @@ public class DashboardIntegrationTest {
     @Inject
     private LockContentionTestHelper lockContentionTestHelper;
 
+    private Set<Optional<Lock>> heldLocks = new HashSet<>();
+
+    private Optional<Lock> acquireLock(Lock lock) {
+        Optional<Lock> result = lockManager.acquireLock(lock);
+        heldLocks.add(result);
+        return result;
+    }
+
     @Before
     public void beforeTest() {
         assumeTrue(mariadb.isRunning());
@@ -191,6 +195,9 @@ public class DashboardIntegrationTest {
     @After
     public void afterTest() {
         setSecurityContextCustomerId(null);
+        for (Optional<Lock> heldLock : heldLocks) {
+            heldLock.ifPresent(lockManager::releaseLock);
+        }
     }
 
     @Test
@@ -647,7 +654,7 @@ public class DashboardIntegrationTest {
                              .build());
 
         // then
-        assertConfigPollResponse(response, "enabled=true");
+        assertConfigPollResponse(response);
 
         // Assert all dead agents are marked as disabled as well
         assertAgentEnabled("uuid1", TRUE);
@@ -860,8 +867,8 @@ public class DashboardIntegrationTest {
     }
 
     @Test
-    public void should_acquire_uncontended_lock() {
-        Optional<Lock> lock = lockManager.acquireLock(Lock.forSystem());
+    public void should_acquire_free_lock() {
+        Optional<Lock> lock = acquireLock(Lock.forSystem());
         assertThat(lock.isPresent(), is(true));
 
         lock.ifPresent(lockManager::releaseLock);
@@ -869,26 +876,28 @@ public class DashboardIntegrationTest {
 
     @Test
     public void should_handle_lock_wait_timeout() throws InterruptedException {
+        Lock lock = Lock.forSystem();
         CountDownLatch[] latches = {new CountDownLatch(1), new CountDownLatch(1), new CountDownLatch(1)};
 
-        new Thread(() -> lockContentionTestHelper.doSteps(latches)).start();
+        new Thread(() -> lockContentionTestHelper.doSteps(lock, latches)).start();
 
         latches[0].await();
-        assertThat(lockManager.acquireLock(Lock.forSystem()).isPresent(), is(false));
+        assertThat(acquireLock(lock).isPresent(), is(false));
 
         latches[1].countDown();
 
         latches[2].await();
-        assertThat(lockManager.acquireLock(Lock.forSystem()).isPresent(), is(true));
+        assertThat(acquireLock(lock).isPresent(), is(true));
     }
 
     @Test
-    public void should_handle_lock_wait() throws InterruptedException {
+    public void should_wait_for_lock() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
-        new Thread(() -> lockContentionTestHelper.lockSleepUnlock(latch, Lock.forSystem().getMaxLockWaitSeconds() * 1000 / 2)).start();
+        Lock lock = Lock.forCustomer(1L);
+        new Thread(() -> lockContentionTestHelper.lockSleepUnlock(lock, latch)).start();
 
         latch.await();
-        assertThat(lockManager.acquireLock(Lock.forSystem()).isPresent(), is(true));
+        assertThat(acquireLock(lock).isPresent(), is(true));
     }
 
     @RequiredArgsConstructor
@@ -897,21 +906,21 @@ public class DashboardIntegrationTest {
 
         @Transactional
         @SneakyThrows
-        public void doSteps(CountDownLatch[] latches) {
-            Optional<Lock> lock = lockManager.acquireLock(Lock.forSystem());
+        public void doSteps(Lock lock, CountDownLatch[] latches) {
+            Optional<Lock> acquiredLock = lockManager.acquireLock(lock);
             latches[0].countDown();
             latches[1].await();
-            lock.ifPresent(lockManager::releaseLock);
+            acquiredLock.ifPresent(lockManager::releaseLock);
             latches[2].countDown();
         }
 
         @Transactional
         @SneakyThrows
-        public void lockSleepUnlock(CountDownLatch latch, long sleepMillis) {
-            Optional<Lock> lock = lockManager.acquireLock(Lock.forSystem());
+        public void lockSleepUnlock(Lock lock, CountDownLatch latch) {
+            Optional<Lock> acquiredLock = lockManager.acquireLock(lock);
             latch.countDown();
-            Thread.sleep(sleepMillis);
-            lock.ifPresent(lockManager::releaseLock);
+            Thread.sleep(500);
+            acquiredLock.ifPresent(lockManager::releaseLock);
         }
     }
 
@@ -920,16 +929,16 @@ public class DashboardIntegrationTest {
         assertThat(enabled, is(expectedEnabled));
     }
 
-    private void assertConfigPollResponse(GetConfigResponse1 response, String publisherConfig) {
+    private void assertConfigPollResponse(GetConfigResponse1 response) {
         PricePlanDefaults pp = PricePlanDefaults.DEMO;
         assertThat(response, is(GetConfigResponse1.sample().toBuilder()
                                                   .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
-                                                  .codeBasePublisherConfig(publisherConfig)
+                                                  .codeBasePublisherConfig("enabled=true")
                                                   .codeBasePublisherName("http")
                                                   .codeBasePublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
                                                   .configPollIntervalSeconds(pp.getPollIntervalSeconds())
                                                   .configPollRetryIntervalSeconds(pp.getRetryIntervalSeconds())
-                                                  .invocationDataPublisherConfig(publisherConfig)
+                                                  .invocationDataPublisherConfig("enabled=true")
                                                   .invocationDataPublisherIntervalSeconds(pp.getPublishIntervalSeconds())
                                                   .invocationDataPublisherName("http")
                                                   .invocationDataPublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())

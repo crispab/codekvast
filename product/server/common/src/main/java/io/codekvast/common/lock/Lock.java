@@ -23,6 +23,7 @@ package io.codekvast.common.lock;
 
 import lombok.*;
 
+import java.sql.Connection;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -31,6 +32,7 @@ import java.time.Instant;
  */
 @Value
 @Builder
+@EqualsAndHashCode(exclude = "connection")
 public class Lock {
     @NonNull
     private final String name;
@@ -48,8 +50,14 @@ public class Lock {
     @With
     private final Instant releasedAt;
 
+    @With
+    private final Connection connection;
+
     public String key() {
-        return "codekvast-" + customerId == null ? name : name + "-" + customerId;
+        if (customerId == null || customerId < 0) {
+            return String.format("codekvast-%s", name);
+        }
+        return String.format("codekvast-%s-%d", name, customerId);
     }
 
     public Duration getWaitDuration() {
@@ -62,7 +70,7 @@ public class Lock {
 
     @Override
     public String toString() {
-        return String.format("%s(key=%s)", Lock.class.getSimpleName(), key());
+        return String.format("%s(key=%s)", getClass().getSimpleName(), key());
     }
 
     public static Lock forFunction(@NonNull String name) {
