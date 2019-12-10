@@ -23,6 +23,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.sql.DataSource;
+
 import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
 import static io.codekvast.javaagent.model.Endpoints.Agent.V2_POLL_CONFIG;
 import static org.mockito.Mockito.when;
@@ -50,6 +52,9 @@ public class AgentControllerIntegrationTest {
 
     @MockBean
     private JdbcTemplate jdbcTemplate;
+
+    @MockBean
+    private DataSource dataSource;
 
     @MockBean
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
