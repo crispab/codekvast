@@ -5,7 +5,7 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-declare weekday=${1:-$(env LANG=en_US date -d "yesterday 13:00" --utc +%A | tr [A-Z] [a-z])}
+declare weekday=${1:-$(env LANG=en_US date -d "today 13:00" --utc +%A | tr [A-Z] [a-z])}
 declare srcEnv=${2:-prod}
 declare targetEnv=${3:-prod}
 
@@ -14,7 +14,7 @@ usage() {
 
 Usage: $0 [weekday] [source-environment] [target-environment]
 
-    Where weekday is one of monday, tuesday, wednesday, thursday, friday, saturday, sunday or extra. Defaults to yesterday's weekday.
+    Where weekday is one of monday, tuesday, wednesday, thursday, friday, saturday, sunday or extra. Defaults to today's weekday.
 
     extra is an extra backup created by the scripts $(dirname $0)/make-extra-database-backup.sh or
     $(dirname $0)/copy-database-from-prod-to-staging.sh.

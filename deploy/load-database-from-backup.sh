@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Fetches a database backup produced by mysqldump (default yesterday's) from S3 and loads it into a database by means of 'mysql < dumpfile.sql'
+# Fetches a database backup produced by mysqldump (default today's) from S3 and loads it into a database by means of 'mysql < dumpfile.sql'
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
 
-declare weekday=${1:-$(env LANG=en_US date -d "yesterday 13:00" --utc +%A | tr [A-Z] [a-z])}
+declare weekday=${1:-$(env LANG=en_US date -d "today 13:00" --utc +%A | tr [A-Z] [a-z])}
 declare srcEnv=${2:-prod}
 declare targetHost=${3:-localhost} #codekvast-default-staging.cahjor9xtqud.eu-central-1.rds.amazonaws.com
 
