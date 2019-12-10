@@ -1,4 +1,4 @@
-package io.codekvast.dashboard.dashboard.impl;
+package io.codekvast.dashboard.file_import.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +22,9 @@ import static org.mockito.Mockito.*;
 public class SyntheticSignatureServiceTest {
 
     @Mock
-    private SyntheticSignatureDAO dao; 
+    private SyntheticSignatureDAO dao;
 
-    private SyntheticSignatureService syntheticSignatureService; 
+    private SyntheticSignatureService syntheticSignatureService;
 
     @BeforeEach
     public void beforeTest() {

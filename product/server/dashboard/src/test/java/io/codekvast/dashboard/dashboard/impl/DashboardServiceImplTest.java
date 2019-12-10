@@ -7,6 +7,7 @@ import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.common.security.CustomerIdProvider;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
+import io.codekvast.dashboard.file_import.impl.SyntheticSignatureService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

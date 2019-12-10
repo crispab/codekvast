@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.dashboard.impl;
+package io.codekvast.dashboard.file_import.impl;
 
 import lombok.*;
 import org.springframework.cache.annotation.CacheEvict;

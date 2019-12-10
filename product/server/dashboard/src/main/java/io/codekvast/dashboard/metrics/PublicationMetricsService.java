@@ -52,9 +52,10 @@ public interface PublicationMetricsService {
     /**
      * Record the fact that a publication was imported.
      *
-     * @param kind     The kind of publication.
-     * @param size     The size of the publication.
-     * @param duration The time it took to import it.
+     * @param kind                       The kind of publication.
+     * @param size                       The size of the publication.
+     * @param ignoredSyntheticSignatures The number of synthetic signatures that were ignored.
+     * @param duration                   The time it took to import it.
      */
-    void recordImportedPublication(PublicationType type, int size, Duration duration);
+    void recordImportedPublication(PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration);
 }

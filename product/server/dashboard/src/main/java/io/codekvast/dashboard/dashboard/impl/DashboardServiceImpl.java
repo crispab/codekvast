@@ -31,6 +31,7 @@ import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.ApplicationDescriptor2;
 import io.codekvast.dashboard.dashboard.model.status.EnvironmentStatusDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
+import io.codekvast.dashboard.file_import.impl.SyntheticSignatureService;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

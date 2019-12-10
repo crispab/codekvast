@@ -66,6 +66,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -440,7 +441,7 @@ public class DashboardIntegrationTest {
         // given
         CodeBasePublication3 publication = CodeBasePublication3.builder()
                                                                .commonData(CommonPublicationData2.sampleCommonPublicationData())
-                                                               .entries(Arrays.asList(CodeBaseEntry3.sampleCodeBaseEntry()))
+                                                               .entries(asList(CodeBaseEntry3.sampleCodeBaseEntry()))
                                                                .build();
         File file = writeToTempFile(publication);
 
@@ -475,7 +476,11 @@ public class DashboardIntegrationTest {
         //@formatter:off
         CodeBasePublication3 publication = CodeBasePublication3.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(Arrays.asList(CodeBaseEntry3.sampleCodeBaseEntry()))
+            .entries(asList(
+                CodeBaseEntry3.sampleCodeBaseEntry(),
+                CodeBaseEntry3.sampleCodeBaseEntry().toBuilder()
+                              .signature("customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
+                              .build()))
             .build();
         //@formatter:on
 
@@ -504,7 +509,7 @@ public class DashboardIntegrationTest {
         //@formatter:off
         CodeBasePublication3 publication = CodeBasePublication3.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(Arrays.asList(CodeBaseEntry3.sampleCodeBaseEntry()))
+            .entries(asList(CodeBaseEntry3.sampleCodeBaseEntry()))
             .build();
         //@formatter:on
 
@@ -532,7 +537,7 @@ public class DashboardIntegrationTest {
         //@formatter:off
         CodeBasePublication3 codeBasePublication = CodeBasePublication3.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(Arrays.asList(CodeBaseEntry3.sampleCodeBaseEntry()))
+            .entries(asList(CodeBaseEntry3.sampleCodeBaseEntry()))
             .build();
 
         long intervalStartedAtMillis = System.currentTimeMillis();
@@ -571,10 +576,12 @@ public class DashboardIntegrationTest {
 
         //@formatter:off
         InvocationDataPublication2 publication = InvocationDataPublication2.builder()
-            .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .recordingIntervalStartedAtMillis(intervalStartedAtMillis)
-            .invocations(Collections.singleton("signature"))
-            .build();
+                                                                           .commonData(CommonPublicationData2.sampleCommonPublicationData())
+                                                                           .recordingIntervalStartedAtMillis(intervalStartedAtMillis)
+                                                                           .invocations(new HashSet<>(asList(
+                                                                               "signature",
+                                                                               "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")))
+                                                                           .build();
         //@formatter:on
 
         // when

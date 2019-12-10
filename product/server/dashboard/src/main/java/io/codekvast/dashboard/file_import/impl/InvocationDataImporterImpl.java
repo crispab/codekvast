@@ -39,7 +39,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * @author olle.hallin@crisp.se
@@ -51,6 +53,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
 
     private final CommonImporter commonImporter;
     private final ImportDAO importDAO;
+    private final SyntheticSignatureService syntheticSignatureService;
     private final PublicationMetricsService metricsService;
     private final EventService eventService;
     private final LockTemplate lockTemplate;
@@ -63,10 +66,15 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
         Instant startedAt = clock.instant();
         CommonPublicationData2 data = publication.getCommonData();
 
+        Set<String> invocations = publication.getInvocations()
+                                             .stream()
+                                             .filter(i -> !syntheticSignatureService.isSyntheticMethod(i))
+                                             .collect(Collectors.toSet());
+        int ignoredSyntheticSignatures = publication.getInvocations().size() - invocations.size();
+
         lockTemplate.doWithLock(Lock.forCustomer(data.getCustomerId()), () -> {
             ImportContext importContext = commonImporter.importCommonData(data);
-            importDAO.importInvocations(importContext, publication.getRecordingIntervalStartedAtMillis(),
-                                        new TreeSet<>(publication.getInvocations()));
+            importDAO.importInvocations(importContext, publication.getRecordingIntervalStartedAtMillis(), invocations);
         });
 
         eventService.send(InvocationDataReceivedEvent.builder()
@@ -76,12 +84,12 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
                                                      .agentVersion(data.getAgentVersion())
                                                      .environment(data.getEnvironment())
                                                      .hostname(data.getHostname())
-                                                     .size(publication.getInvocations().size())
+                                                     .size(invocations.size())
                                                      .build());
 
         Duration duration = Duration.between(startedAt, clock.instant());
-        logger.info("Imported {} in {}", publication, duration);
-        metricsService.recordImportedPublication(PublicationType.INVOCATIONS, publication.getInvocations().size(), duration);
+        logger.info("Imported {} in {} (ignoring {} synthetic signatures)", publication, duration, ignoredSyntheticSignatures);
+        metricsService.recordImportedPublication(PublicationType.INVOCATIONS, invocations.size(), ignoredSyntheticSignatures, duration);
         return true;
     }
 }

@@ -29,7 +29,9 @@ import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
+import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -38,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * @author olle.hallin@crisp.se
@@ -49,6 +53,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     private final CommonImporter commonImporter;
     private final ImportDAO importDAO;
+    private final SyntheticSignatureService syntheticSignatureService;
     private final PublicationMetricsService metricsService;
     private final EventService eventService;
     private final LockTemplate lockTemplate;
@@ -61,9 +66,15 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
         Instant startedAt = clock.instant();
         CommonPublicationData2 data = publication.getCommonData();
 
+        Collection<CodeBaseEntry3> entries = publication.getEntries()
+                                                                 .stream()
+                                                                 .filter(e -> !syntheticSignatureService.isSyntheticMethod(e.getSignature()))
+                                                                 .collect(Collectors.toList());
+        int ignoredSyntheticSignatures = publication.getEntries().size() - entries.size();
+
         lockTemplate.doWithLock(Lock.forCustomer(data.getCustomerId()), () -> {
             CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
-            importDAO.importMethods(data, importContext, publication.getEntries());
+            importDAO.importMethods(data, importContext, entries);
         });
 
         eventService.send(CodeBaseReceivedEvent.builder()
@@ -73,12 +84,12 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
                                                .agentVersion(data.getAgentVersion())
                                                .environment(data.getEnvironment())
                                                .hostname(data.getHostname())
-                                               .size(publication.getEntries().size())
+                                               .size(entries.size())
                                                .build());
 
         Duration duration = Duration.between(startedAt, clock.instant());
-        logger.info("Imported {} in {}", publication, duration);
-        metricsService.recordImportedPublication(PublicationType.CODEBASE, publication.getEntries().size(), duration);
+        logger.info("Imported {} in {} (ignoring {} synthetic signatures)", publication, duration, ignoredSyntheticSignatures);
+        metricsService.recordImportedPublication(PublicationType.CODEBASE, entries.size(), ignoredSyntheticSignatures, duration);
         return true;
     }
 }

@@ -57,10 +57,11 @@ public class PublicationMetricsServiceImpl implements PublicationMetricsService 
     }
 
     @Override
-    public void recordImportedPublication(PublicationType type, int size, Duration duration) {
+    public void recordImportedPublication(PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration) {
         Tags tags = getTags(type);
         meterRegistry.counter("codekvast.publication.accepted", tags).increment();
         meterRegistry.gauge("codekvast.publication.size", tags, size);
+        meterRegistry.gauge("codekvast.publication.synthetic", tags, ignoredSyntheticSignatures);
         meterRegistry.timer("codekvast.publication.imported_in.millis", tags).record(duration);
     }
 
