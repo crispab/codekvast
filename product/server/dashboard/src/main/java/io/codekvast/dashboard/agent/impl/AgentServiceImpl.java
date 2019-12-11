@@ -51,7 +51,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static io.codekvast.dashboard.util.LoggingUtils.humanReadableByteCount;
+import static io.codekvast.common.util.LoggingUtils.humanReadableByteCount;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**

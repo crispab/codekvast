@@ -19,11 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.util;
+package io.codekvast.common.util;
 
 import lombok.experimental.UtilityClass;
+import lombok.val;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static java.lang.String.format;
 
@@ -50,9 +53,18 @@ public class LoggingUtils {
     }
 
     public static String humanReadableDuration(Duration duration) {
-        return duration.toString()
+        boolean roundToSeconds = duration.getSeconds() > 1;
+        val truncateTo = roundToSeconds ? ChronoUnit.SECONDS : ChronoUnit.MILLIS;
+        val plusMillis = roundToSeconds ? 500L : 0L;
+        return duration.plusMillis(plusMillis)
+                       .truncatedTo(truncateTo)
+                       .toString()
                        .substring(2)
                        .replaceAll("(\\d[HMS])(?!$)", "$1 ")
                        .toLowerCase();
+    }
+
+    public static String humanReadableDuration(Instant first, Instant last) {
+        return humanReadableDuration(Duration.between(first, last));
     }
 }

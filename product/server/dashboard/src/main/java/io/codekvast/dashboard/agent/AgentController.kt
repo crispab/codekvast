@@ -22,10 +22,10 @@
 package io.codekvast.dashboard.agent
 
 import io.codekvast.common.customer.LicenseViolationException
+import io.codekvast.common.util.LoggingUtils.humanReadableByteCount
 import io.codekvast.dashboard.model.PublicationType
 import io.codekvast.dashboard.model.PublicationType.CODEBASE
 import io.codekvast.dashboard.model.PublicationType.INVOCATIONS
-import io.codekvast.dashboard.util.LoggingUtils.humanReadableByteCount
 import io.codekvast.javaagent.model.Endpoints.Agent.*
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1

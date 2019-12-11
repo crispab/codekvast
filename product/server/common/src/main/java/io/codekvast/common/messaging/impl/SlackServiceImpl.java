@@ -37,8 +37,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.Instant;
+
+import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
 
 /**
  * @author olle.hallin@crisp.se
@@ -70,7 +71,7 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
         metricsService.countApplicationShutdown();
         doSend(
             String.format("%s %s in %s is stopping. Uptime = %s", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname(),
-                          Duration.between(startedAt, Instant.now())),
+                          humanReadableDuration(startedAt, Instant.now())),
             Channel.ALARMS);
     }
 

@@ -25,14 +25,13 @@ import io.codekvast.common.customer.CustomerData
 import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.lock.Lock
 import io.codekvast.common.lock.LockTemplate
-import io.codekvast.dashboard.util.LoggingUtils
+import io.codekvast.common.util.LoggingUtils.humanReadableDuration
 import io.codekvast.dashboard.weeding.WeedingService
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.Clock
-import java.time.Duration
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
@@ -55,13 +54,15 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
         val invocationsBefore = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Int::class.java)!!
         val deletedJvms = jdbcTemplate.update("DELETE FROM jvms WHERE garbage = TRUE ")
+        val deletedGarbageMethods = jdbcTemplate.update("DELETE FROM methods WHERE garbage = TRUE ")
+
         var deletedMethodLocations = 0
         var deletedMethods = 0
         var deletedApplications = 0
         var deletedEnvironments = 0
         var deletedInvocations = 0
 
-        if (deletedJvms > 0) {
+        if (deletedJvms > 0 || deletedGarbageMethods > 0) {
             val invocationsAfter = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM invocations", Int::class.java)!!
             deletedInvocations = invocationsBefore - invocationsAfter
 
@@ -91,11 +92,11 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         val deletedRabbitMessageIds = jdbcTemplate.update("DELETE FROM rabbitmq_message_ids WHERE receivedAt < ?",
             Timestamp.from(clock.instant().minus(1, ChronoUnit.HOURS)))
 
-        val deletedRows = deletedAgents + deletedJvms + deletedMethodLocations + deletedMethods + deletedApplications + deletedEnvironments + deletedInvocations + deletedRabbitMessageIds
+        val deletedRows = deletedAgents + deletedJvms + deletedGarbageMethods + deletedMethodLocations + deletedMethods + deletedApplications + deletedEnvironments + deletedInvocations + deletedRabbitMessageIds
         if (deletedRows > 0) {
-            logger.info(String.format("Deleted %,d database rows (%,d agents, %,d JVMs, %,d method locations, %,d methods, %,d applications, %,d environments, %,d invocations and %,d RabbitMQ messageIds) in %s.",
-                deletedRows, deletedAgents, deletedJvms, deletedMethodLocations, deletedMethods, deletedApplications, deletedEnvironments, deletedInvocations,
-                deletedRabbitMessageIds, LoggingUtils.humanReadableDuration(Duration.between(startedAt, clock.instant()))))
+            logger.info(String.format("Deleted %,d database rows (%,d agents, %,d JVMs, %,d method locations, %,d garbage methods, %,d methods, %,d applications, %,d environments, %,d invocations and %,d RabbitMQ messageIds) in %s.",
+                deletedRows, deletedAgents, deletedJvms, deletedMethodLocations, deletedGarbageMethods, deletedMethods, deletedApplications, deletedEnvironments, deletedInvocations,
+                deletedRabbitMessageIds, humanReadableDuration(startedAt, clock.instant())))
         } else {
             logger.debug("Found nothing to delete")
         }
@@ -109,7 +110,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 sum += lockTemplate.doWithLock(Lock.forCustomer(cd.customerId), { findWeedingCandidatesForCustomer(cd) }, { 0 })
             }
         }
-        logger.info("{} weeding candidates identified in {}", sum, LoggingUtils.humanReadableDuration(Duration.between(startedAt, clock.instant())))
+        logger.info("{} weeding candidates identified in {}", sum, humanReadableDuration(startedAt, clock.instant()))
     }
 
     private fun findWeedingCandidatesForCustomer(cd: CustomerData): Int {
@@ -138,6 +139,18 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 logger.debug("Found no dead JVMs for customer {}", cd.customerId)
             } else {
                 logger.info("Marked {} JVMs as garbage for customer {}", count, cd.customerId)
+            }
+
+            count = jdbcTemplate.update("UPDATE methods m, synthetic_signature_patterns p " +
+                "SET m.garbage = TRUE " +
+                "WHERE m.customerId = ? " +
+                "AND m.signature REGEXP p.pattern " +
+                "AND p.errorMessage IS NULL ",
+                cd.customerId)
+            if (count == 0) {
+                logger.debug("Found no synthetic methods for customer {}", cd.customerId)
+            } else {
+                logger.info("Marked {} methods as garbage for customer {}", count, cd.customerId)
             }
             sum += count
         }

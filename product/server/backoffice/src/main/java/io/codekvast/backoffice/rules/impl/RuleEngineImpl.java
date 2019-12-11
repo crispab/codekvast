@@ -32,7 +32,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.kie.api.KieServices;
-import org.kie.api.builder.*;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieRepository;
 import org.kie.api.event.rule.ObjectDeletedEvent;
 import org.kie.api.event.rule.ObjectInsertedEvent;
 import org.kie.api.event.rule.ObjectUpdatedEvent;
@@ -52,9 +54,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+
+import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
 
 /**
  * @author olle.hallin@crisp.se
@@ -85,12 +88,12 @@ public class RuleEngineImpl implements RuleEngine {
             kieFileSystem.write(resource);
         }
         KieRepository kieRepository = kieServices.getRepository();
-        kieRepository.addKieModule(() -> kieRepository.getDefaultReleaseId());
+        kieRepository.addKieModule(kieRepository::getDefaultReleaseId);
 
         KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
         kieBuilder.buildAll();
         kieContainer = kieServices.newKieContainer(kieRepository.getDefaultReleaseId());
-        logger.debug("Configured Drools in {}", Duration.between(startedAt, clock.instant()));
+        logger.debug("Configured Drools in {}", humanReadableDuration(startedAt, clock.instant()));
         return this;
     }
 
@@ -134,7 +137,7 @@ public class RuleEngineImpl implements RuleEngine {
         // Fire the rules...
         session.fireAllRules();
         session.dispose();
-        logger.debug("Rules executed in {}", Duration.between(startedAt, clock.instant()));
+        logger.debug("Rules executed in {}", humanReadableDuration(startedAt, clock.instant()));
     }
 
     private List<TransientFact> getTransientFacts(Long customerId) {

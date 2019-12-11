@@ -40,8 +40,9 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
 
 /**
  * @author olle.hallin@crisp.se
@@ -88,7 +89,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
                                                      .build());
 
         Duration duration = Duration.between(startedAt, clock.instant());
-        logger.info("Imported {} in {} (ignoring {} synthetic signatures)", publication, duration, ignoredSyntheticSignatures);
+        logger.info("Imported {} in {} (ignoring {} synthetic signatures)", publication, humanReadableDuration(duration), ignoredSyntheticSignatures);
         metricsService.recordImportedPublication(PublicationType.INVOCATIONS, invocations.size(), ignoredSyntheticSignatures, duration);
         return true;
     }

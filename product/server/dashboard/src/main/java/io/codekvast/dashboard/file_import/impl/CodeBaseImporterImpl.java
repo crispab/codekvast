@@ -31,7 +31,6 @@ import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -42,6 +41,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
 
 /**
  * @author olle.hallin@crisp.se
@@ -88,7 +89,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
                                                .build());
 
         Duration duration = Duration.between(startedAt, clock.instant());
-        logger.info("Imported {} in {} (ignoring {} synthetic signatures)", publication, duration, ignoredSyntheticSignatures);
+        logger.info("Imported {} in {} (ignoring {} synthetic signatures)", publication, humanReadableDuration(duration), ignoredSyntheticSignatures);
         metricsService.recordImportedPublication(PublicationType.CODEBASE, entries.size(), ignoredSyntheticSignatures, duration);
         return true;
     }
