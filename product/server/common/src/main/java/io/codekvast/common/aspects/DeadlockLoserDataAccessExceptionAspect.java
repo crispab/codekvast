@@ -54,14 +54,28 @@ public class DeadlockLoserDataAccessExceptionAspect {
                 Object result = pjp.proceed();
                 logger.trace("After {}", joinPoint);
                 return result;
-            } catch (DeadlockLoserDataAccessException e) {
-                int delayMillis = getRandomInt(10, 50);
-                logger.info("Deadlock #{} at {}, will retry in {} ms ...", attempt, joinPoint, delayMillis);
-                Thread.sleep(delayMillis);
+            } catch (Throwable t) {
+                if (isDeadlockException(t)) {
+                    int delayMillis = getRandomInt(10, 50);
+                    logger.info("Deadlock #{} at {}, will retry in {} ms ...", attempt, joinPoint, delayMillis);
+                    Thread.sleep(delayMillis);
+                } else {
+                    throw t;
+                }
             }
         }
         logger.info("Executing a last attempt to retry deadlock at {}", joinPoint);
         return pjp.proceed();
+    }
+
+    boolean isDeadlockException(Throwable t) {
+        if (t == null) {
+            return false;
+        }
+        if (t.toString().toLowerCase().contains("deadlock")) {
+            return true;
+        }
+        return isDeadlockException(t.getCause());
     }
 
     private int getRandomInt(int min, int max) {

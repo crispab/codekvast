@@ -26,6 +26,7 @@ import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 import javax.inject.Inject;
+import java.sql.SQLTransactionRollbackException;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -72,7 +73,7 @@ public class AgentServiceIntegrationTest {
     public void should_retry_deadlock_loser_exception() {
         // given
         doThrow(new DeadlockLoserDataAccessException("Thrown by mock #1", null))
-            .doThrow(new DeadlockLoserDataAccessException("Thrown by mock #2", null))
+            .doThrow(new RuntimeException(new SQLTransactionRollbackException("Detected Deadlock #2")))
             .doNothing()
             .when(agentDAO).disableDeadAgents(anyLong(), anyString(), any());
         when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(CustomerData.sample());
