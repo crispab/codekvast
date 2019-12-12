@@ -112,7 +112,7 @@ public class ImportDAOImpl implements ImportDAO {
         long customerId = data.getCustomerId();
         Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
 
-        int updated = jdbcTemplate.update("UPDATE jvms SET codeBaseFingerprint = ?, publishedAt = ?, garbage = ? WHERE uuid = ?",
+        int updated = jdbcTemplate.update("UPDATE jvms SET codeBaseFingerprint = ?, publishedAt = ?, garbage = ? WHERE uuid = ? ORDER BY id",
                                           data.getCodeBaseFingerprint(), publishedAt, FALSE, data.getJvmUuid());
         if (updated != 0) {
             logger.trace("Updated JVM {}", data.getJvmUuid());
