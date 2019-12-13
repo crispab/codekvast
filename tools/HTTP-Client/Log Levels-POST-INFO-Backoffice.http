@@ -1,0 +1,17 @@
+### Backoffice 0
+POST http://{{server0}}.codekvast.io:9082/management/loggers/io.codekvast.backoffice
+Content-Type: application/json
+
+{
+    "configuredLevel": "INFO"
+}
+
+### Backoffice 1
+POST http://{{server1}}.codekvast.io:9082/management/loggers/io.codekvast.backoffice
+Content-Type: application/json
+
+{
+    "configuredLevel": "INFO"
+}
+
+###
