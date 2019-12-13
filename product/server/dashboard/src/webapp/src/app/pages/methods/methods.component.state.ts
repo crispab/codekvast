@@ -5,6 +5,8 @@ import {MethodData} from '../../model/methods/method-data';
 import {Method} from '../../model/methods/method';
 import {GetMethodsRequest} from '../../model/methods/get-methods-request';
 import {DashboardApiService} from '../../services/dashboard-api.service';
+import {StateService} from '../../services/state.service';
+import {SearchState} from '../../model/search-state';
 
 export class CheckboxState {
     constructor(public name: string, public selected: boolean) {
@@ -29,60 +31,31 @@ export class MethodsComponentState {
     selectedMethod: Method;
     searching = false;
 
-    applications: CheckboxState[] = [];
-    environments: CheckboxState[] = [];
+    searchState: SearchState;
+    applications: string[] = [];
+    environments: string[] = [];
     retentionPeriodDays = -1;
     firstTime = true;
 
-    constructor(private api: DashboardApiService) {
+    constructor(private api: DashboardApiService, private stateService: StateService) {
+        this.searchState = this.stateService.getState(SearchState.KEY, () => new SearchState());
     }
 
     initialize() {
-
-        let getState = function (name: string, oldState: CheckboxState[]) {
-            let old: boolean[] = oldState.filter(cs => cs.name === name).map(cs => cs.selected);
-            return old.length > 0 ? old[0] : false;
-        };
-
-        let copyNames = function (checkboxState: CheckboxState[], newNames: string[]) {
-            let oldState = Object.assign([], checkboxState);
-            checkboxState.length = 0;
-            newNames.forEach(name => checkboxState.push(new CheckboxState(name, getState(name, oldState))));
-        };
-
         this.api.getMethodsFormData().subscribe(data => {
             console.log('[ck dashboard] methodsFormData=%o', data);
-            copyNames.call(null, this.applications, data.applications);
-            copyNames.call(null, this.environments, data.environments);
+            this.applications = data.applications;
+            this.environments = data.environments;
             this.retentionPeriodDays = data.retentionPeriodDays;
 
             if (this.firstTime) {
-                if (!this.anyApplicationSelected()) {
-                    // pre-select all applications
-                    this.applications.forEach(a => a.selected = true);
-                };
-
-                if (!this.anyEnvironmentSelected()) {
-                    // Try to pre-select any environment named '*prod*'
-                    this.environments.forEach(e => {
-                        if (e.name.toLowerCase().indexOf('prod') >= 0) {
-                            e.selected = true;
-                        }
-                    });
+                if (this.environments.map(a => a.toLowerCase()).filter(a => a.indexOf('prod') >= 0)) {
+                    this.searchState.environments = 'prod';
                 }
-
                 this.req.minCollectedDays = this.retentionPeriodDays > 0 ? this.retentionPeriodDays : 30;
                 this.firstTime = false;
             }
         });
-    }
-
-    anyApplicationSelected() {
-        return this.applications.some(s => s.selected === true);
-    }
-
-    anyEnvironmentSelected() {
-        return this.environments.some(s => s.selected === true);
     }
 
     headerIconClassesSignature() {
@@ -145,12 +118,20 @@ export class MethodsComponentState {
         return d;
     }
 
+    getFilteredApplications() {
+        return this.applications.filter(a => a.toLowerCase().indexOf(this.searchState.applications.toLowerCase()) >= 0);
+    }
+
+    getFilteredEnvironments() {
+        return this.environments.filter(a => a.toLowerCase().indexOf(this.searchState.environments.toLowerCase()) >= 0);
+    }
+
     search() {
         this.searching = true;
         this.req.suppressUntrackedMethods = !this.includeUntrackedMethods;
         this.req.onlyInvokedBeforeMillis = this.getCutoffTimeMillis();
-        this.req.applications = this.applications.filter(s => s.selected).map(s => s.name);
-        this.req.environments = this.environments.filter(s => s.selected).map(s => s.name);
+        this.req.applications = this.getFilteredApplications();
+        this.req.environments = this.getFilteredEnvironments();
 
         this.api
             .getMethods(this.req)

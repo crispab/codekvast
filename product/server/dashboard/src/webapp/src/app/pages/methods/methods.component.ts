@@ -25,7 +25,7 @@ export class MethodsComponent implements OnInit {
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(ClientSettings.KEY, () => new ClientSettings());
-        this.state = this.stateService.getState(MethodsComponentState.KEY, () => new MethodsComponentState(this.api));
+        this.state = this.stateService.getState(MethodsComponentState.KEY, () => new MethodsComponentState(this.api, this.stateService));
         this.state.initialize();
     }
 
