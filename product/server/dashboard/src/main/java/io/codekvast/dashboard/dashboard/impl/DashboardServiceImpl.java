@@ -31,7 +31,6 @@ import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.ApplicationDescriptor2;
 import io.codekvast.dashboard.dashboard.model.status.EnvironmentStatusDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
-import io.codekvast.dashboard.file_import.impl.SyntheticSignatureService;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +69,6 @@ public class DashboardServiceImpl implements DashboardService {
     private final CustomerIdProvider customerIdProvider;
     private final CustomerService customerService;
     private final Clock clock;
-    private final SyntheticSignatureService syntheticSignatureService;
 
     @Override
     @Transactional(readOnly = true)
@@ -137,11 +135,6 @@ public class DashboardServiceImpl implements DashboardService {
 
             String signature = rs.getString("signature");
 
-            if (request.isSuppressSyntheticMethods() && syntheticSignatureService.isSyntheticMethod(signature)) {
-                logger.trace("Suppressing synthetic method {}", signature);
-                return;
-            }
-
             SignatureStatus2 status = SignatureStatus2.valueOf(rs.getString("status"));
             if (request.isSuppressUntrackedMethods() && !status.isTracked()) {
                 logger.trace("Suppressing untracked method {} with status {}", signature, status);
@@ -198,7 +191,6 @@ public class DashboardServiceImpl implements DashboardService {
         GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
                                                      .maxResults(1)
                                                      .suppressUntrackedMethods(false)
-                                                     .suppressSyntheticMethods(false)
                                                      .minCollectedDays(0)
                                                      .build();
 
@@ -206,8 +198,7 @@ public class DashboardServiceImpl implements DashboardService {
         params.addValue("customerId", customerIdProvider.getCustomerId());
         params.addValue("methodId", methodId);
 
-        MethodDescriptorRowCallbackHandler rowCallbackHandler =
-            new MethodDescriptorRowCallbackHandler("m.id = :methodId", false, pricePlan);
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = :methodId", pricePlan);
 
         namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
 
@@ -379,25 +370,16 @@ public class DashboardServiceImpl implements DashboardService {
         return result;
     }
 
+    @RequiredArgsConstructor
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
         private final String whereClause;
-        private final boolean suppressSyntheticMethods;
         private final PricePlan pricePlan;
 
         private final List<MethodDescriptor1> result = new ArrayList<>();
-
-        private QueryState queryState;
+        private QueryState queryState = new QueryState(-1L);
 
         @Getter
         private int rowCount;
-
-        private MethodDescriptorRowCallbackHandler(String whereClause, boolean suppressSyntheticMethods,
-                                                   PricePlan pricePlan) {
-            this.whereClause = whereClause;
-            this.suppressSyntheticMethods = suppressSyntheticMethods;
-            this.pricePlan = pricePlan;
-            queryState = new QueryState(-1L);
-        }
 
         String getSelectStatement() {
 
@@ -428,12 +410,6 @@ public class DashboardServiceImpl implements DashboardService {
             String signature = rs.getString("signature");
             boolean bridge = rs.getBoolean("bridge");
             boolean synthetic = rs.getBoolean("synthetic");
-
-            // Throw away unwanted synthetic signatures as early as possible
-            if (suppressSyntheticMethods && (bridge || synthetic || syntheticSignatureService.isSyntheticMethod(signature))) {
-                logger.trace("Throwing away synthetic method: {}", signature);
-                return;
-            }
 
             long id = rs.getLong("methodId");
             if (!queryState.isSameMethod(id)) {

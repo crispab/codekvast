@@ -98,32 +98,6 @@
                         </ng-template>
 
                         <div class="form-check ml-3">
-                            <label for="includeSyntheticMethods" class="form-check-label"
-                                   [ngbPopover]="syntheticPopover"
-                                   popoverTitle="Synthetic methods"
-                                   triggers="mouseenter:mouseleave"
-                                   placement="right"
-                                   container="body">
-                                <input class="form-check-input"
-                                       id="includeSyntheticMethods"
-                                       name="includeSyntheticMethods"
-                                       type="checkbox"
-                                       [(ngModel)]="state.includeSyntheticMethods">
-                                Synthetic methods
-                            </label>
-                        </div>
-
-                        <ng-template #syntheticPopover>
-                            <p>Also include methods that are not written by a human.
-                                Examples:</p>
-                            <ul>
-                                <li>Methods generated at compile time by e.g., a Scala or Kotlin compiler.</li>
-                                <li>Methods generated at compile time by an annotation processor.</li>
-                                <li>Methods generated in runtime by e.g., Guice or Spring AOP.</li>
-                            </ul>
-                        </ng-template>
-
-                        <div class="form-check ml-3">
                             <label for="includeUntrackedMethods" class="form-check-label"
                                    [ngbPopover]="untrackedPopover"
                                    popoverTitle="Untracked methods"

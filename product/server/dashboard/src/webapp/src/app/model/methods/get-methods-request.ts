@@ -7,6 +7,5 @@ export class GetMethodsRequest {
     onlyInvokedAfterMillis = 0;
     onlyInvokedBeforeMillis = Number.MAX_VALUE;
     signature = '';
-    suppressSyntheticMethods = true;
     suppressUntrackedMethods = true;
 }

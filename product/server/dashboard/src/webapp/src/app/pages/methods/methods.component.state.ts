@@ -20,7 +20,6 @@ export class MethodsComponentState {
 
     req = new GetMethodsRequest();
     includeIfNotInvokedInDays = 30;
-    includeSyntheticMethods = false;
     includeUntrackedMethods = false;
     includeOnlyNeverInvokedMethods = false;
     data: MethodData;
@@ -148,7 +147,6 @@ export class MethodsComponentState {
 
     search() {
         this.searching = true;
-        this.req.suppressSyntheticMethods = !this.includeSyntheticMethods;
         this.req.suppressUntrackedMethods = !this.includeUntrackedMethods;
         this.req.onlyInvokedBeforeMillis = this.getCutoffTimeMillis();
         this.req.applications = this.applications.filter(s => s.selected).map(s => s.name);
