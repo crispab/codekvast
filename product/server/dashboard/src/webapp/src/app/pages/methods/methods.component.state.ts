@@ -49,7 +49,7 @@ export class MethodsComponentState {
             this.retentionPeriodDays = data.retentionPeriodDays;
 
             if (this.firstTime) {
-                if (this.environments.map(a => a.toLowerCase()).filter(a => a.indexOf('prod') >= 0)) {
+                if (!this.searchState.environments && this.environments.map(a => a.toLowerCase()).filter(a => a.indexOf('prod') >= 0)) {
                     this.searchState.environments = 'prod';
                 }
                 this.req.minCollectedDays = this.retentionPeriodDays > 0 ? this.retentionPeriodDays : 30;

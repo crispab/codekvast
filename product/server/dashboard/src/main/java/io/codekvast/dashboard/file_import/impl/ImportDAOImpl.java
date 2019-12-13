@@ -186,8 +186,8 @@ public class ImportDAOImpl implements ImportDAO {
             Long methodId = existingMethods.get(signature);
             if (methodId == null) {
                 logger.trace("Inserting incomplete method {}:{}", methodId, signature);
-                existingMethods.put(signature, doInsertRow(new InsertIncompleteMethodStatement(customerId, signature, invokedAtMillis)));
-                methodId = existingMethods.get(signature);
+                methodId = doInsertRow(new InsertIncompleteMethodStatement(customerId, signature, invokedAtMillis));
+                existingMethods.put(signature, methodId);
             }
             if (existingInvocations.contains(methodId)) {
                 logger.trace("Updating invocation {}", signature);
@@ -248,7 +248,7 @@ public class ImportDAOImpl implements ImportDAO {
             if (!existingMethods.containsKey(signature)) {
                 existingMethods
                     .put(signature, doInsertRow(new InsertCompleteMethodStatement(customerId, publishedAtMillis, entry.getMethodSignature(),
-                                                                                  entry.getVisibility(), entry.getSignature())));
+                                                                                  entry.getVisibility(), signature)));
                 count += 1;
             }
         }
@@ -304,7 +304,7 @@ public class ImportDAOImpl implements ImportDAO {
                 importCount += 1;
             }
         }
-        logger.debug("Imported {} invocations in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
+        logger.debug("Imported {} initial invocations in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
     }
 
     private SignatureStatus2 calculateInitialStatus(CommonPublicationData2 data, CodeBaseEntry3 entry) {
@@ -495,8 +495,7 @@ public class ImportDAOImpl implements ImportDAO {
                 con.prepareStatement(
                     "UPDATE invocations SET invokedAtMillis = GREATEST(invokedAtMillis, ?), " +
                         "status = ?, invocationCount = invocationCount + 1 " +
-                        "WHERE customerId = ? AND applicationId = ? AND jvmId = ? AND methodId = ?",
-                    Statement.RETURN_GENERATED_KEYS);
+                        "WHERE customerId = ? AND applicationId = ? AND jvmId = ? AND methodId = ?");
             int column = 0;
             ps.setLong(++column, invokedAtMillis);
             ps.setString(++column, SignatureStatus2.INVOKED.name());
