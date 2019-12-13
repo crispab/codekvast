@@ -115,17 +115,16 @@ public class DashboardServiceImpl implements DashboardService {
 
         String sql = "SELECT\n" +
             "    m.id, m.signature, MAX(i.status) AS status, " +
-            "    ((TO_SECONDS(:now) - TO_SECONDS(MIN(j.startedAt))) DIV 86400) AS collectedDays,\n" +
+            "    ((TO_SECONDS(:now) - TO_SECONDS(ii.invokedAtMillis)) DIV 86400) AS collectedDays,\n" +
             "    MAX(i.invokedAtMillis) AS lastInvokedAtMillis," +
-            " MAX(j.publishedAt) AS lastPublishedAt\n" +
-            "FROM invocations i, methods m, jvms j\n" +
-            "WHERE " + whereClause + " AND i.methodId = m.id AND i.jvmId = j.id AND j.garbage = FALSE\n" +
-            "GROUP BY m.signature\n" +
+            " MAX(i.timestamp) AS lastPublishedAt\n" +
+            "FROM invocations i, initial_invocations ii, methods m\n" +
+            "WHERE " + whereClause + " AND i.methodId = m.id AND i.methodId = ii.methodId\n" +
+            "GROUP BY i.methodId\n" +
             "HAVING collectedDays >= :minCollectedDays " +
-            "   AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n" +
-            "ORDER BY lastInvokedAtMillis, m.signature ";
+            "   AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n";
 
-        List<MethodDescriptor2> methods = new ArrayList<>();
+        List<MethodDescriptor2> methods = new ArrayList<>(request.getMaxResults());
 
         namedParameterJdbcTemplate.query(sql, params, rs -> {
             if (methods.size() >= request.getMaxResults()) {
@@ -158,6 +157,7 @@ public class DashboardServiceImpl implements DashboardService {
                                  .build());
         });
 
+        methods.sort(Comparator.comparing(MethodDescriptor2::getLastInvokedAtMillis));
 
         long queryTimeMillis = clock.millis() - startedAt;
         logger.debug("Processed {} in {} ms.", request, queryTimeMillis);

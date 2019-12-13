@@ -188,6 +188,7 @@ public class ImportDAOImpl implements ImportDAO {
                 logger.trace("Inserting incomplete method {}:{}", methodId, signature);
                 methodId = doInsertRow(new InsertIncompleteMethodStatement(customerId, signature, invokedAtMillis));
                 existingMethods.put(signature, methodId);
+                // TODO Insert into initial_invocations
             }
             if (existingInvocations.contains(methodId)) {
                 logger.trace("Updating invocation {}", signature);
@@ -295,6 +296,7 @@ public class ImportDAOImpl implements ImportDAO {
         int importCount = 0;
 
         for (CodeBaseEntry3 entry : entries) {
+            // TODO Insert into initial_invocations
             long methodId = existingMethods.get(entry.getSignature());
             if (!existingInvocations.contains(methodId)) {
                 SignatureStatus2 initialStatus = calculateInitialStatus(data, entry);
