@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
-import io.codekvast.common.aspects.Idempotent;
+import io.codekvast.common.aspects.Restartable;
 import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
@@ -62,8 +62,8 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
     private final Clock clock;
 
     @Override
+    @Restartable
     @Transactional
-    @Idempotent
     public boolean importPublication(InvocationDataPublication2 publication) {
         logger.debug("Importing {}", publication);
         Instant startedAt = clock.instant();

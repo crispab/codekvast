@@ -54,7 +54,7 @@ public class AgentServiceImplTest {
         when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
 
         service =
-            new AgentServiceImpl(settings, customerService, agentDAO, mock(AgentTransactions.class), publicationMetricsService);
+            new AgentServiceImpl(settings, customerService, agentDAO, mock(AgentStateManager.class), publicationMetricsService);
     }
 
     @Test(expected = LicenseViolationException.class)

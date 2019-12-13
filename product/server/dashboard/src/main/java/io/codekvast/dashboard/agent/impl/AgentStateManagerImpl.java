@@ -38,14 +38,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 
 /**
- * Transactional helper methods for AgentServiceImpl.
- *
  * @author olle.hallin@crisp.se
  */
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class AgentTransactionsImpl implements AgentTransactions {
+public class AgentStateManagerImpl implements AgentStateManager {
 
     private final CodekvastDashboardSettings settings;
     private final CustomerService customerService;

@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.agent.impl;
 
-import io.codekvast.common.aspects.Idempotent;
+import io.codekvast.common.aspects.Restartable;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
@@ -70,11 +70,12 @@ public class AgentServiceImpl implements AgentService {
     private final CodekvastDashboardSettings settings;
     private final CustomerService customerService;
     private final AgentDAO agentDAO;
-    private final AgentTransactions agentTransactions;
+    private final AgentStateManager agentStateManager;
     private final PublicationMetricsService publicationMetricsService;
 
     @Override
-    @Idempotent
+    @Restartable
+    @Transactional
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         val environment = agentDAO.getEnvironmentName(request.getJvmUuid()).orElse(UNKNOWN_ENVIRONMENT);
         val request2 = GetConfigRequest2.fromFormat1(request, environment);
@@ -82,12 +83,13 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    @Idempotent
+    @Restartable
+    @Transactional
     public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
 
         boolean isAgentEnabled =
-            agentTransactions.updateAgentState(customerData, request.getJvmUuid(), request.getAppName(), request.getEnvironment());
+            agentStateManager.updateAgentState(customerData, request.getJvmUuid(), request.getAppName(), request.getEnvironment());
 
         String publisherConfig = isAgentEnabled ? "enabled=true" : "enabled=false";
         PricePlan pp = customerData.getPricePlan();

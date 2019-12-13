@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-public class AgentTransactionsImplTest {
+public class AgentStateManagerImplTest {
 
     private final Long customerId = 1L;
     private final String jvmUuid = "jvmUuid";
@@ -55,7 +55,7 @@ public class AgentTransactionsImplTest {
 
     private CustomerData customerData;
 
-    private AgentTransactions agentTransactions;
+    private AgentStateManager agentStateManager;
 
     @Before
     public void beforeTest() {
@@ -66,7 +66,7 @@ public class AgentTransactionsImplTest {
 
         when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forCustomer(customerId)));
 
-        agentTransactions = new AgentTransactionsImpl(settings, customerService, eventService, agentDAO, new LockTemplate(lockManager));
+        agentStateManager = new AgentStateManagerImpl(settings, customerService, eventService, agentDAO, new LockTemplate(lockManager));
 
         setupCustomerData(null, null);
     }
@@ -79,7 +79,7 @@ public class AgentTransactionsImplTest {
         when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forCustomer(customerData.getCustomerId())));
 
         // when
-        val response = agentTransactions.updateAgentState(customerData, jvmUuid, appName, environment);
+        val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);
 
         verify(lockManager).acquireLock(any());
         verify(lockManager).releaseLock(any());
@@ -95,7 +95,7 @@ public class AgentTransactionsImplTest {
         when(lockManager.acquireLock(any())).thenReturn(Optional.empty());
 
         // when
-        val response = agentTransactions.updateAgentState(customerData, jvmUuid, appName, environment);
+        val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);
 
         verify(lockManager, never()).releaseLock(any());
 
@@ -109,7 +109,7 @@ public class AgentTransactionsImplTest {
         when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
 
         // when
-        val response = agentTransactions.updateAgentState(customerData, jvmUuid, appName, environment);
+        val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);
 
         // then
         assertThat(response, is(true));
@@ -127,7 +127,7 @@ public class AgentTransactionsImplTest {
         when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
 
         // when
-        val response = agentTransactions.updateAgentState(customerData, jvmUuid, appName, environment);
+        val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);
 
         // then
         assertThat(response, is(true));
@@ -143,7 +143,7 @@ public class AgentTransactionsImplTest {
         when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
 
         // when
-        val response = agentTransactions.updateAgentState(customerData, jvmUuid, appName, environment);
+        val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);
 
         // then
         assertThat(response, is(false));
@@ -157,7 +157,7 @@ public class AgentTransactionsImplTest {
         when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
 
         // when
-        val response = agentTransactions.updateAgentState(customerData, jvmUuid, appName, environment);
+        val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);
 
         // then
         assertThat(response, is(false));
@@ -172,7 +172,7 @@ public class AgentTransactionsImplTest {
         when(agentDAO.getEnvironmentName(eq(jvmUuid))).thenReturn(Optional.of("environment"));
 
         // when
-        val response = agentTransactions.updateAgentState(customerData, jvmUuid, appName, environment);
+        val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);
 
         // then
         assertThat(response, is(false));

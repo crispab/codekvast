@@ -25,27 +25,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.dao.DeadlockLoserDataAccessException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
 /**
- * A handler for @Transactional methods that encounters a {@link DeadlockLoserDataAccessException}.
+ * A handler for @Restartable methods that encounters an exception that indicates that the transaction has encountered a deadlock or
+ * lock wait timeout.
  *
- * It will retry the transaction a number of times with a short random delay.
+ * It will retry the method a number of times with a short random delay.
  *
  * @author olle.hallin@crisp.se
  */
 @Component
 @Aspect
+@Order(Ordered.HIGHEST_PRECEDENCE) // Make it wrap @Transactional
 @Slf4j
-public class DeadlockLoserDataAccessExceptionAspect {
+public class RestartableTransactionAspect {
 
     private final Random random = new Random();
 
-    @Around("execution(* io.codekvast..*(..)) && @annotation(io.codekvast.common.aspects.Idempotent)")
-    public Object transactionalMethod(ProceedingJoinPoint pjp) throws Throwable {
+    @Around("execution(* io.codekvast..*(..)) && @annotation(io.codekvast.common.aspects.Restartable)")
+    public Object restartableMethod(ProceedingJoinPoint pjp) throws Throwable {
         String joinPoint = pjp.toShortString();
         logger.trace("Before {}", joinPoint);
         int maxAttempt = 3;
@@ -72,7 +75,8 @@ public class DeadlockLoserDataAccessExceptionAspect {
         if (t == null) {
             return false;
         }
-        if (t.toString().toLowerCase().contains("deadlock")) {
+        String s = t.toString().toLowerCase();
+        if (s.contains("deadlock") || s.contains("lock wait timeout")) {
             return true;
         }
         return isDeadlockException(t.getCause());

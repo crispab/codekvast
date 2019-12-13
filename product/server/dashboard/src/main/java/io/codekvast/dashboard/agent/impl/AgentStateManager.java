@@ -24,8 +24,10 @@ package io.codekvast.dashboard.agent.impl;
 import io.codekvast.common.customer.CustomerData;
 
 /**
+ * Manages agent state, making sure not too many agents are enabled at the same time.
+ *
  * @author olle.hallin@crisp.se
  */
-public interface AgentTransactions {
+public interface AgentStateManager {
     boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment);
 }

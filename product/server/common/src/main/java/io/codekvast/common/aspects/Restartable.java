@@ -24,17 +24,17 @@ package io.codekvast.common.aspects;
 import java.lang.annotation.*;
 
 /**
- * Target annotation for {@link DeadlockLoserDataAccessExceptionAspect}.
+ * Target annotation for {@link RestartableTransactionAspect}.
  *
- * Put it on a method <em>outside</em> a {@code @Transactional} method to make the transaction restarted
- * should a DeadlockLoserDataAccessException be thrown.
+ * Put it on a {@code @Transactional} method to make the transaction restarted
+ * should an exception that indicates a deadlock or lock wait timeout be thrown.
  *
  * @author olle.hallin@crisp.se
- * @see DeadlockLoserDataAccessExceptionAspect
+ * @see RestartableTransactionAspect
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface Idempotent {
+public @interface Restartable {
 }
