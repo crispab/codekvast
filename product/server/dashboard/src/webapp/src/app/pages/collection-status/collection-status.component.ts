@@ -24,7 +24,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.settings = this.stateService.getState(ClientSettings.KEY, () => new ClientSettings());
         this.state = this.stateService.getState(CollectionStatusComponentState.KEY,
-            () => new CollectionStatusComponentState(this.agePipe, this.api));
+            () => new CollectionStatusComponentState(this.agePipe, this.api, this.stateService));
         this.state.init();
         this.stateService.getAuthData().subscribe((ad: AuthData) => {
             this.agentsLabel = ad && ad.source === 'heroku' ? 'Dynos' : 'Agents';

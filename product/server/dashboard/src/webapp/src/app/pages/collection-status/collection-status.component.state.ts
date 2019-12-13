@@ -2,6 +2,8 @@ import {AgePipe} from '../../pipes/age.pipe';
 import {DashboardApiService} from '../../services/dashboard-api.service';
 import {StatusData} from '../../model/status/status-data';
 import {Subscription, timer} from 'rxjs';
+import {StateService} from '../../services/state.service';
+import {SearchState} from '../../model/search-state';
 
 export class CollectionStatusComponentState {
     static KEY = 'collection-status';
@@ -12,16 +14,15 @@ export class CollectionStatusComponentState {
     showTerminatedAgents = false;
     refreshIntervalSeconds = 60;
 
-    applicationFilter = '';
-    environmentFilter = '';
-    hostnameFilter = '';
+    searchState: SearchState;
 
     private timerSubscription: Subscription;
 
-    constructor(private agePipe: AgePipe, private api: DashboardApiService) {
+    constructor(private agePipe: AgePipe, private api: DashboardApiService, private stateService: StateService) {
     }
 
     init() {
+        this.searchState = this.stateService.getState(SearchState.KEY, () => new SearchState());
         if (this.autoRefresh) {
             this.startAutoRefresh();
         } else {
@@ -88,8 +89,8 @@ export class CollectionStatusComponentState {
         if (this.data.applications) {
             // @formatter:off
             return this.data.applications.filter(a =>
-                `${a.appName}`.toLowerCase().indexOf(this.applicationFilter.toLowerCase()) >= 0
-                && a.environment.toLowerCase().indexOf(this.environmentFilter.toLowerCase()) >= 0);
+                a.appName.toLowerCase().indexOf(this.searchState.applications.toLowerCase()) >= 0
+                && a.environment.toLowerCase().indexOf(this.searchState.environments.toLowerCase()) >= 0);
             // @formatter:on
         }
         return null;
@@ -99,9 +100,9 @@ export class CollectionStatusComponentState {
         if (this.data.agents) {
             // @formatter:off
             return this.data.agents.filter(a =>
-                `${a.appName} ${a.appVersion}`.toLowerCase().indexOf(this.applicationFilter.toLowerCase()) >= 0
-                && a.environment.toLowerCase().indexOf(this.environmentFilter.toLowerCase()) >= 0
-                && a.hostname.toLowerCase().indexOf(this.hostnameFilter.toLowerCase()) >= 0);
+                `${a.appName} ${a.appVersion}`.toLowerCase().indexOf(this.searchState.applications.toLowerCase()) >= 0
+                && a.environment.toLowerCase().indexOf(this.searchState.environments.toLowerCase()) >= 0
+                && a.hostname.toLowerCase().indexOf(this.searchState.hostnames.toLowerCase()) >= 0);
             // @formatter:on
         }
         return null;

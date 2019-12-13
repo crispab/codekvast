@@ -121,12 +121,12 @@
                         <tr>
                             <th class="align-top">
                                 Application<br>
-                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.applicationFilter"
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.searchState.applications"
                                        placeholder="Filter by app">
                             </th>
                             <th class="align-top">
                                 Environment<br>
-                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.environmentFilter"
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.searchState.environments"
                                        placeholder="Filter by env">
                             </th>
                             <th class="align-top">Collected since</th>
@@ -162,17 +162,17 @@
                         <tr>
                             <th class="align-top">
                                 Application<br>
-                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.applicationFilter"
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.searchState.applications"
                                        placeholder="Filter by app">
                             </th>
                             <th class="align-top">
                                 Environment<br>
-                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.environmentFilter"
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.searchState.environments"
                                        placeholder="Filter by env">
                             </th>
                             <th class="align-top">
                                 Host<br>
-                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.hostnameFilter"
+                                <input class="form-control form-control-sm" size="8" type="text" [(ngModel)]="state.searchState.hostnames"
                                        placeholder="Filter by host">
                             </th>
                             <th class="align-top">Started at</th>
