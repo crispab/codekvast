@@ -6,8 +6,8 @@ import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,11 +17,13 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -37,9 +39,6 @@ public class AgentServiceImplTest {
     @Mock
     private AgentDAO agentDAO;
 
-    @Mock
-    private PublicationMetricsService publicationMetricsService;
-
     private final CustomerData customerData = CustomerData.sample();
 
     private AgentService service;
@@ -53,23 +52,44 @@ public class AgentServiceImplTest {
 
         when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
 
-        service =
-            new AgentServiceImpl(settings, customerService, agentDAO, mock(AgentStateManager.class), publicationMetricsService);
-    }
-
-    @Test(expected = LicenseViolationException.class)
-    public void should_have_checked_licenseKey() throws Exception {
-        // given
-        int publicationSize = 4711;
-        doThrow(new LicenseViolationException("stub")).when(customerService)
-                                                      .assertPublicationSize(any(CustomerData.class), eq(publicationSize));
-
-        // when
-        service.savePublication(PublicationType.CODEBASE, "key", "fingerprint", publicationSize, null);
+        service = new AgentServiceImpl(settings, customerService, agentDAO, mock(AgentStateManager.class));
     }
 
     @Test
-    public void should_save_uploaded_codebase_no_license() throws Exception {
+    public void should_close_inputStream_after_throwing() throws Exception {
+        // given
+        int publicationSize = 4711;
+        doThrow(new LicenseViolationException("stub"))
+            .when(customerService).assertPublicationSize(any(CustomerData.class), eq(publicationSize));
+        val inputStream = mock(InputStream.class);
+
+        try {
+            // when
+            service.savePublication(PublicationType.CODEBASE, "key", "fingerprint", publicationSize, inputStream);
+
+            // then
+            fail("Expected a LicenseViolationException");
+        } catch (LicenseViolationException expected) {
+            // Expected outcome
+        } finally {
+            verify(inputStream).close();
+        }
+    }
+
+    @Test
+    public void should_close_inputStream_after_not_throwing() throws Exception {
+        // given
+        val inputStream = mock(InputStream.class);
+
+        // when
+        service.savePublication(PublicationType.CODEBASE, "key", "fingerprint", 4711, inputStream);
+
+        // then
+        verify(inputStream).close();
+    }
+
+    @Test
+    public void should_save_uploaded_codebase() throws Exception {
         // given
         String contents = "Dummy Code Base Publication";
 
@@ -87,25 +107,9 @@ public class AgentServiceImplTest {
     }
 
     @Test
-    public void should_not_save_already_uploaded_codebase() throws Exception {
+    public void should_save_uploaded_invocations() throws Exception {
         // given
-        String contents = "Dummy Code Base Publication";
-        when(agentDAO.isCodebaseAlreadyImported(customerData.getCustomerId(), "fingerprint")).thenReturn(true);
-
-        // when
-        File resultingFile = service.savePublication(PublicationType.CODEBASE, "key", "fingerprint",
-                                                     1000, new ByteArrayInputStream(contents.getBytes()));
-
-        // then
-        assertThat(resultingFile, nullValue());
-        verify(customerService, never()).assertPublicationSize(any(), anyInt());
-        verify(publicationMetricsService).countIgnoredPublication(PublicationType.CODEBASE);
-    }
-
-    @Test
-    public void should_save_uploaded_invocations_no_license() throws Exception {
-        // given
-        String contents = "Dummy Code Base Publication";
+        String contents = "Dummy Invocations Publication";
 
         // when
         File resultingFile = service.savePublication(PublicationType.INVOCATIONS, "key", "fingerprint",

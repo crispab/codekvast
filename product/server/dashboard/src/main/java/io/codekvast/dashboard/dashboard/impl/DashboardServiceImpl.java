@@ -151,8 +151,6 @@ public class DashboardServiceImpl implements DashboardService {
                                  .build());
         });
 
-        methods.sort(Comparator.comparing(MethodDescriptor2::getLastInvokedAtMillis));
-
         long queryTimeMillis = clock.millis() - startedAt;
         logger.debug("Processed {} in {} ms.", request, queryTimeMillis);
 

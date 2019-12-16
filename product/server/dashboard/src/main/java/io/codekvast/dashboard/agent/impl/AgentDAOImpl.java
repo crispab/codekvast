@@ -115,13 +115,4 @@ public class AgentDAOImpl implements AgentDAO {
         jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ?", enabled, customerId, thisJvmUuid);
     }
 
-    @Override
-    @Cacheable(CODEBASE_FINGERPRINTS_CACHE)
-    public boolean isCodebaseAlreadyImported(Long customerId, String codebaseFingerprint) {
-        Integer count =
-            jdbcTemplate.queryForObject("SELECT COUNT(1) FROM jvms WHERE customerId = ? AND codeBaseFingerprint = ?", Integer.class,
-                                        customerId, codebaseFingerprint);
-        return count > 0;
-    }
-
 }

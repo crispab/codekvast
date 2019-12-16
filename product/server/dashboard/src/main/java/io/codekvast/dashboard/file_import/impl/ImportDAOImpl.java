@@ -269,16 +269,15 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     private void ensureInitialInvocations(CommonPublicationData2 data, long customerId, long appId, long environmentId,
-                                          Collection<CodeBaseEntry3> entries,
-                                          Map<String, Long> existingMethods) {
+                                          Collection<CodeBaseEntry3> entries, Map<String, Long> existingMethods) {
         long startedAtMillis = System.currentTimeMillis();
         int importCount = 0;
 
         for (CodeBaseEntry3 entry : entries) {
             long methodId = existingMethods.get(entry.getSignature());
-                SignatureStatus2 initialStatus = calculateInitialStatus(data, entry);
-                int updated = jdbcTemplate.update(new UpsertInvocationStatement(customerId, appId, environmentId, methodId, initialStatus, 0L));
-                importCount += updated == 1 ? 1 : 0;
+            SignatureStatus2 initialStatus = calculateInitialStatus(data, entry);
+            int updated = jdbcTemplate.update(new UpsertInvocationStatement(customerId, appId, environmentId, methodId, initialStatus, 0L));
+            importCount += updated == 1 ? 1 : 0;
         }
         logger.debug("Imported {} initial invocations in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
     }
@@ -425,7 +424,7 @@ public class ImportDAOImpl implements ImportDAO {
                 con.prepareStatement(
                     "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis) " +
                         "VALUES(?, ?, ?, ?, ?, ?) " +
-                        "ON DUPLICATE KEY UPDATE status = ?, invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis))");
+                        "ON DUPLICATE KEY UPDATE invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis))");
             int column = 0;
             ps.setLong(++column, customerId);
             ps.setLong(++column, appId);
@@ -433,7 +432,6 @@ public class ImportDAOImpl implements ImportDAO {
             ps.setLong(++column, methodId);
             ps.setString(++column, status.name());
             ps.setLong(++column, invokedAtMillis);
-            ps.setString(++column, INVOKED.name());
             return ps;
         }
     }

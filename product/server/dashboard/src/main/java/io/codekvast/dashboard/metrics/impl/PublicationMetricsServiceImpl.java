@@ -51,12 +51,6 @@ public class PublicationMetricsServiceImpl implements PublicationMetricsService 
     }
 
     @Override
-    public void countIgnoredPublication(PublicationType type) {
-        Tags tags = getTags(type);
-        meterRegistry.counter("codekvast.publication.ignored", tags).increment();
-    }
-
-    @Override
     public void recordImportedPublication(PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration) {
         Tags tags = getTags(type);
         meterRegistry.counter("codekvast.publication.accepted", tags).increment();

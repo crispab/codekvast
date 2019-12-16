@@ -21,7 +21,6 @@
  */
 package io.codekvast.dashboard.agent.impl;
 
-import io.codekvast.common.aspects.Restartable;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
@@ -29,7 +28,6 @@ import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
@@ -71,7 +69,6 @@ public class AgentServiceImpl implements AgentService {
     private final CustomerService customerService;
     private final AgentDAO agentDAO;
     private final AgentStateManager agentStateManager;
-    private final PublicationMetricsService publicationMetricsService;
 
     @Override
     @Transactional
@@ -112,19 +109,14 @@ public class AgentServiceImpl implements AgentService {
     @Transactional(readOnly = true)
     public File savePublication(@NonNull PublicationType publicationType, @NonNull String licenseKey, String codebaseFingerprint,
                                 int publicationSize, InputStream inputStream) throws LicenseViolationException, IOException {
-        CustomerData customerData = customerService.getCustomerDataByLicenseKey(licenseKey);
-        if (publicationType == PublicationType.CODEBASE) {
-            if (agentDAO.isCodebaseAlreadyImported(customerData.getCustomerId(), codebaseFingerprint)) {
-                logger.info("Ignoring duplicate {} with fingerprint {} for customer {}.", publicationType, codebaseFingerprint,
-                            customerData.getCustomerId());
-                publicationMetricsService.countIgnoredPublication(publicationType);
-                inputStream.close();
-                return null;
+        try (inputStream) {
+            CustomerData customerData = customerService.getCustomerDataByLicenseKey(licenseKey);
+            if (publicationType == PublicationType.CODEBASE) {
+                customerService.assertPublicationSize(customerData, publicationSize);
             }
-            customerService.assertPublicationSize(customerData, publicationSize);
-        }
 
-        return doSaveInputStream(publicationType, customerData.getCustomerId(), codebaseFingerprint, inputStream);
+            return doSaveInputStream(publicationType, customerData.getCustomerId(), codebaseFingerprint, inputStream);
+        }
     }
 
     @Override
@@ -162,17 +154,15 @@ public class AgentServiceImpl implements AgentService {
 
     private File doSaveInputStream(PublicationType publicationType, Long customerId, String codebaseFingerprint, InputStream inputStream)
         throws IOException {
-        try (inputStream) {
-            createDirectory(settings.getFileImportQueuePath());
+        createDirectory(settings.getFileImportQueuePath());
 
-            File result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get());
-            Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
+        File result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get());
+        Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
-            logger
-                .info("Saved uploaded {} publication for customer {} to {} ({}), fingerprint = {}", publicationType, customerId, result,
-                      humanReadableByteCount(result.length()), codebaseFingerprint);
-            return result;
-        }
+        logger
+            .info("Saved uploaded {} publication for customer {} to {} ({}), fingerprint = {}", publicationType, customerId, result,
+                  humanReadableByteCount(result.length()), codebaseFingerprint);
+        return result;
     }
 
     private void createDirectory(File directory) throws IOException {

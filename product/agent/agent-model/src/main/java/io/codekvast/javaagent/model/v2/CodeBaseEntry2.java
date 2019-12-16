@@ -33,7 +33,7 @@ import java.io.Serializable;
  * @author olle.hallin@crisp.se
  */
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class CodeBaseEntry2 implements Serializable {
     private static final long serialVersionUID = 1L;
 

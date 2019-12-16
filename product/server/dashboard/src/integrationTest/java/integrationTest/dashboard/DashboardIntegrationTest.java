@@ -57,15 +57,19 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
 
+import static io.codekvast.javaagent.model.v2.SignatureStatus2.INVOKED;
+import static io.codekvast.javaagent.model.v2.SignatureStatus2.NOT_INVOKED;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -220,8 +224,10 @@ public class DashboardIntegrationTest {
         int methodId = 0;
         for (SignatureStatus2 status : SignatureStatus2.values()) {
             methodId += 1;
-            jdbcTemplate.update("INSERT INTO invocations(customerId, applicationId, environmentId, methodId, invokedAtMillis, status) VALUES(1, 1, 1, ?, 0, ?)",
-                                methodId, status.toString());
+            jdbcTemplate.update(
+                "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, invokedAtMillis, status) VALUES(1, 1, 1, ?, " +
+                    "0, ?)",
+                methodId, status.toString());
         }
 
         // then
@@ -434,22 +440,6 @@ public class DashboardIntegrationTest {
         assertThat(customerData.isTrialPeriodExpired(now), is(false));
     }
 
-    @Test
-    public void should_import_publication_file() {
-        // given
-        CodeBasePublication3 publication = CodeBasePublication3.builder()
-                                                               .commonData(CommonPublicationData2.sampleCommonPublicationData())
-                                                               .entries(asList(CodeBaseEntry3.sampleCodeBaseEntry()))
-                                                               .build();
-        File file = writeToTempFile(publication);
-
-        // when
-        publicationImporter.importPublicationFile(file);
-
-        // then
-
-    }
-
     @SneakyThrows
     private File writeToTempFile(Object publication) {
         File file = File.createTempFile(getClass().getSimpleName(), ".ser");
@@ -472,27 +462,28 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("invocations"), is(0));
 
         //@formatter:off
-        CodeBasePublication3 publication = CodeBasePublication3.builder()
+        CodeBaseEntry2 entry1 = CodeBaseEntry2.sampleCodeBaseEntry();CodeBasePublication2 publication = CodeBasePublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
             .entries(asList(
-                CodeBaseEntry3.sampleCodeBaseEntry(),
-                CodeBaseEntry3.sampleCodeBaseEntry().toBuilder()
-                              .signature("customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
-                              .build()))
-            .build();
+                entry1,
+                entry1.toBuilder()
+                      .signature("customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
+                      .build()))
+                                                                                                                            .build();
         //@formatter:on
+        File file = writeToTempFile(publication);
 
         // when
-        codeBaseImporter.importPublication(publication);
+        publicationImporter.importPublicationFile(file);
 
         // then
         assertThat(countRowsInTable("applications WHERE name = ?", publication.getCommonData().getAppName()), is(1));
         assertThat(countRowsInTable("environments WHERE name = ?", publication.getCommonData().getEnvironment()), is(1));
         assertThat(countRowsInTable("jvms WHERE uuid = ?", publication.getCommonData().getJvmUuid()), is(1));
-        assertThat(countRowsInTable("methods WHERE signature = ?", publication.getEntries().iterator().next().getSignature()),
-                   is(1));
+        assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
+        assertThat(countRowsInTable("method_locations"), is(0)); // location is not supported in CodeBaseEntry2
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
-        assertThat(countRowsInTable("method_locations"), is(1));
+        assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(1));
     }
 
     @Test
@@ -507,7 +498,10 @@ public class DashboardIntegrationTest {
         //@formatter:off
         CodeBasePublication3 publication = CodeBasePublication3.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(asList(CodeBaseEntry3.sampleCodeBaseEntry()))
+            .entries(asList(CodeBaseEntry3.sampleCodeBaseEntry(),
+                           CodeBaseEntry3.sampleCodeBaseEntry().toBuilder()
+                                         .signature("customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
+                                         .build()))
             .build();
         //@formatter:on
 
@@ -521,10 +515,11 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("methods WHERE signature = ?", publication.getEntries().iterator().next().getSignature()),
                    is(1));
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
+        assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(1));
     }
 
     @Test
-    public void should_import_codeBasePublication2_after_invocationDataPublication() {
+    public void should_import_codeBasePublication_after_invocationDataPublication() {
         // given
         assertThat(countRowsInTable("applications"), is(0));
         assertThat(countRowsInTable("environments"), is(0));
@@ -533,32 +528,59 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("invocations"), is(0));
 
         //@formatter:off
+        CodeBaseEntry3 codeBaseEntry = CodeBaseEntry3.sampleCodeBaseEntry();
         CodeBasePublication3 codeBasePublication = CodeBasePublication3.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(asList(CodeBaseEntry3.sampleCodeBaseEntry()))
+            .entries(asList(codeBaseEntry))
             .build();
-
+        val signature = codeBaseEntry.getSignature();
         long intervalStartedAtMillis = System.currentTimeMillis();
 
         InvocationDataPublication2 invocationDataPublication = InvocationDataPublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
             .recordingIntervalStartedAtMillis(intervalStartedAtMillis)
-            .invocations(codeBasePublication.getEntries().stream().map(CodeBaseEntry3::getSignature).collect(Collectors.toSet()))
+            .invocations(singleton(signature))
             .build();
         //@formatter:on
 
         // when
         invocationDataImporter.importPublication(invocationDataPublication);
+
+        // then
+        assertThat(countRowsInTable("applications WHERE name = ?", codeBasePublication.getCommonData().getAppName()), is(1));
+        assertThat(countRowsInTable("environments WHERE name = ?", codeBasePublication.getCommonData().getEnvironment()), is(1));
+        assertThat(countRowsInTable("jvms WHERE uuid = ?", codeBasePublication.getCommonData().getJvmUuid()), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = ?", signature), is(1));
+        assertThat(countRowsInTable("method_locations"), is(0));
+        assertThat(countRowsInTable("invocations"), is(1));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", intervalStartedAtMillis), is(1));
+        assertThat(countRowsInTable("invocations WHERE status = ?", INVOKED.name()), is(1));
+
+        // given
+        long intervalStartedAtMillis2 = intervalStartedAtMillis + 3600;
+
+        // when
+        invocationDataImporter.importPublication(invocationDataPublication.toBuilder()
+                                                                          .recordingIntervalStartedAtMillis(intervalStartedAtMillis2)
+                                                                          .build());
+
+        // then
+        assertThat(countRowsInTable("invocations"), is(1));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", intervalStartedAtMillis2), is(1));
+        assertThat(countRowsInTable("invocations WHERE status = ?", INVOKED.name()), is(1));
+
+        // when
         codeBaseImporter.importPublication(codeBasePublication);
 
         // then
         assertThat(countRowsInTable("applications WHERE name = ?", codeBasePublication.getCommonData().getAppName()), is(1));
         assertThat(countRowsInTable("environments WHERE name = ?", codeBasePublication.getCommonData().getEnvironment()), is(1));
         assertThat(countRowsInTable("jvms WHERE uuid = ?", codeBasePublication.getCommonData().getJvmUuid()), is(1));
-        assertThat(
-            countRowsInTable("methods WHERE signature = ?", codeBasePublication.getEntries().iterator().next().getSignature()),
-            is(1));
-        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", intervalStartedAtMillis), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = ?", signature), is(1));
+        assertThat(countRowsInTable("method_locations WHERE location = ?", codeBaseEntry.getMethodSignature().getLocation()), is(1));
+        assertThat(countRowsInTable("invocations"), is(1));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", intervalStartedAtMillis2), is(1));
+        assertThat(countRowsInTable("invocations WHERE status = ?", INVOKED.name()), is(1));
     }
 
     @Test
@@ -589,8 +611,11 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("applications WHERE name = ?", publication.getCommonData().getAppName()), is(1));
         assertThat(countRowsInTable("environments WHERE name = ?", publication.getCommonData().getEnvironment()), is(1));
         assertThat(countRowsInTable("jvms WHERE uuid = ?", publication.getCommonData().getJvmUuid()), is(1));
+        assertThat(countRowsInTable("methods"), is(1));
         assertThat(countRowsInTable("methods WHERE signature = ?", "signature"), is(1));
+        assertThat(countRowsInTable("invocations"), is(1));
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", intervalStartedAtMillis), is(1));
+        assertThat(countRowsInTable("invocations WHERE status = ?", INVOKED.name()), is(1));
     }
 
     @Test

@@ -131,7 +131,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             logger.debug("Finding dead agents and JVMs for customer {} which are older than {} days", cd.customerId, retentionPeriodDays)
 
             var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE " +
-                "WHERE customerId = ? AND createdAt < ? AND lastPolledAt < ? AND garbage = FALSE ",
+                "WHERE customerId = ? AND createdAt < ? AND lastPolledAt < ? ",
                 cd.customerId, Timestamp.from(retentionPeriodStart), Timestamp.from(deadIfNotPolledAfter))
             if (count == 0) {
                 logger.debug("Found no dead agents for customer {}", cd.customerId)
@@ -140,7 +140,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             }
             sum += count
 
-            count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? AND garbage = FALSE ",
+            count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? ",
                 cd.customerId, Timestamp.from(retentionPeriodStart))
             if (count == 0) {
                 logger.debug("Found no dead JVMs for customer {} in {}", cd.customerId, humanReadableDuration(startedAt, clock.instant()))

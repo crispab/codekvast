@@ -87,12 +87,4 @@ public interface AgentDAO {
      */
     void updateAgentEnabledState(long customerId, String thisJvmUuid, boolean enabled);
 
-    /**
-     * Checks if a certain codebase already has been imported.
-     *
-     * @param customerId          The customer ID
-     * @param codebaseFingerprint The codebase fingerprint
-     * @return true if-and-only-if the codebase has been imported by this customer.
-     */
-    boolean isCodebaseAlreadyImported(Long customerId, String codebaseFingerprint);
 }
