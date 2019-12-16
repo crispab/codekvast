@@ -53,7 +53,8 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  * @author olle.hallin@crisp.se
@@ -78,11 +79,10 @@ public class DashboardServiceImpl implements DashboardService {
         PricePlan pricePlan = customerService.getCustomerDataByCustomerId(customerId).getPricePlan();
 
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("minCollectedDays", request.getMinCollectedDays());
+        params.addValue("latestCollectedSince", clock.instant().minus(request.getMinCollectedDays(), DAYS));
         params.addValue("now", new Timestamp(clock.millis()));
         params.addValue("onlyInvokedAfterMillis", request.getOnlyInvokedAfterMillis());
         params.addValue("onlyInvokedBeforeMillis", request.getOnlyInvokedBeforeMillis());
-
         params.addValue("customerId", customerId);
         String whereClause = "i.customerId = :customerId";
 
@@ -113,16 +113,16 @@ public class DashboardServiceImpl implements DashboardService {
             }
         }
 
-        String sql = "SELECT\n" +
-            "    m.id, m.signature, MAX(i.status) AS status, " +
-            "    ((TO_SECONDS(:now) - TO_SECONDS(ii.invokedAtMillis)) DIV 86400) AS collectedDays,\n" +
-            "    MAX(i.invokedAtMillis) AS lastInvokedAtMillis," +
-            " MAX(i.timestamp) AS lastPublishedAt\n" +
-            "FROM invocations i, initial_invocations ii, methods m\n" +
-            "WHERE " + whereClause + " AND i.methodId = m.id AND i.methodId = ii.methodId\n" +
-            "GROUP BY i.methodId\n" +
-            "HAVING collectedDays >= :minCollectedDays " +
-            "   AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n";
+        String sql = "SELECT m.id, m.signature, " +
+            "MAX(i.createdAt) AS latestCollectedSince, " +
+            "MAX(i.status) AS status, " +
+            "MAX(i.invokedAtMillis) AS lastInvokedAtMillis, " +
+            "MAX(i.timestamp) AS lastPublishedAt " +
+            "FROM invocations i INNER JOIN methods m ON i.methodId = m.id " +
+            "WHERE " + whereClause + " " +
+            "GROUP BY m.id " +
+            "HAVING latestCollectedSince <= :latestCollectedSince " +
+            "AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n";
 
         List<MethodDescriptor2> methods = new ArrayList<>(request.getMaxResults());
 
@@ -140,18 +140,12 @@ public class DashboardServiceImpl implements DashboardService {
                 return;
             }
 
-            int collectedDays = pricePlan.adjustCollectedDays(rs.getInt("collectedDays"));
-            if (request.getMinCollectedDays() > collectedDays) {
-                logger.trace("Suppressing method {} that only has been tracked {} days", signature, collectedDays);
-                return;
-            }
-
             methods.add(
                 MethodDescriptor2.builder()
                                  .id(rs.getLong("id"))
                                  .signature(signature)
                                  .trackedPercent(status.isTracked() ? 100 : 0)
-                                 .collectedDays(collectedDays)
+                                 .collectedDays(getCollectedDays(rs.getTimestamp("latestCollectedSince")))
                                  .lastInvokedAtMillis(pricePlan.adjustTimestampMillis(rs.getLong("lastInvokedAtMillis"), clock))
                                  .collectedToMillis(rs.getTimestamp("lastPublishedAt").getTime())
                                  .build());
@@ -171,6 +165,12 @@ public class DashboardServiceImpl implements DashboardService {
                                   .build();
     }
 
+    private int getCollectedDays(Timestamp latestCollectedSince) {
+        long durationMillis = clock.millis() - latestCollectedSince.getTime();
+        long oneDayInMillis = 24 * 60 * 60 * 1000;
+        return (int) (durationMillis / oneDayInMillis);
+    }
+
     private List<Long> translateNamesToIds(final String tableName, Collection<String> names) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("customerId", customerIdProvider.getCustomerId());
@@ -188,21 +188,27 @@ public class DashboardServiceImpl implements DashboardService {
         Long customerId = customerIdProvider.getCustomerId();
         PricePlan pricePlan = customerService.getCustomerDataByCustomerId(customerId).getPricePlan();
 
-        GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
-                                                     .maxResults(1)
-                                                     .suppressUntrackedMethods(false)
-                                                     .minCollectedDays(0)
-                                                     .build();
-
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("customerId", customerIdProvider.getCustomerId());
+        params.addValue("customerId", customerId);
         params.addValue("methodId", methodId);
 
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = :methodId", pricePlan);
+        MethodDescriptorRowCallbackHandler rch = new MethodDescriptorRowCallbackHandler(pricePlan);
+        namedParameterJdbcTemplate.query("SELECT i.methodId, a.name AS appName, j.applicationVersion AS appVersion,\n" +
+                                             "  e.name AS envName, i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.hostname, j" +
+                                             ".tags,\n" +
+                                             "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m" +
+                                             ".modifiers," +
+                                             "  m.packageName, ml.location\n" +
+                                             "  FROM invocations i\n" +
+                                             "  INNER JOIN applications a ON a.id = i.applicationId \n" +
+                                             "  INNER JOIN environments e ON e.id = i.environmentId \n" +
+                                             "  INNER JOIN methods m ON m.id = i.methodId \n" +
+                                             "  INNER JOIN jvms j ON j.applicationId = i.applicationId AND j.environmentId = i.environmentId\n" +
+                                             "  LEFT JOIN method_locations ml ON m.id = ml.methodId \n" +
+                                             "  WHERE i.customerId = :customerId AND i.methodId = :methodId AND j.garbage = FALSE\n",
+                                         params, rch);
 
-        namedParameterJdbcTemplate.query(rowCallbackHandler.getSelectStatement(), params, rowCallbackHandler);
-
-        return rowCallbackHandler.getResult(request).stream().findFirst();
+        return rch.getResult();
     }
 
     @Override
@@ -281,11 +287,11 @@ public class DashboardServiceImpl implements DashboardService {
         List<ApplicationDescriptor2> result = new ArrayList<>();
 
         jdbcTemplate.query(
-            "SELECT a.name AS appName, e.name AS envName, MIN(j.startedAt) AS collectedSince, MAX(j.publishedAt) AS collectedTo\n" +
-                "FROM jvms j\n" +
-                "       INNER JOIN applications a ON j.applicationId = a.id\n" +
-                "       INNER JOIN environments e ON j.environmentId = e.id\n" +
-                "WHERE j.customerId = ? AND j.garbage = FALSE\n" +
+            "SELECT a.name AS appName, e.name AS envName, MIN(i.createdAt) AS collectedSince, MAX(i.timestamp) AS collectedTo\n" +
+                "FROM invocations i\n" +
+                "       INNER JOIN applications a ON i.applicationId = a.id\n" +
+                "       INNER JOIN environments e ON i.environmentId = e.id\n" +
+                "WHERE a.customerId = ?\n" +
                 "GROUP BY appName, envName\n" +
                 "ORDER BY appName, envName\n",
 
@@ -372,7 +378,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     @RequiredArgsConstructor
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
-        private final String whereClause;
         private final PricePlan pricePlan;
 
         private final List<MethodDescriptor1> result = new ArrayList<>();
@@ -380,28 +385,6 @@ public class DashboardServiceImpl implements DashboardService {
 
         @Getter
         private int rowCount;
-
-        String getSelectStatement() {
-
-            // This is a simpler to understand approach than trying to do everything in the database.
-            // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows
-            // for each method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor1 per
-            // method ID.
-            // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
-
-            return String.format("SELECT i.methodId, a.name AS appName, j.applicationVersion AS appVersion,\n" +
-                                     "  e.name AS envName, i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.hostname, j.tags,\n" +
-                                     "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m.modifiers," +
-                                     "  m.packageName, ml.location\n" +
-                                     "  FROM invocations i\n" +
-                                     "  INNER JOIN applications a ON a.id = i.applicationId \n" +
-                                     "  INNER JOIN environments e ON e.id = i.environmentId \n" +
-                                     "  INNER JOIN methods m ON m.id = i.methodId \n" +
-                                     "  INNER JOIN jvms j ON j.id = i.jvmId \n" +
-                                     "  LEFT JOIN method_locations ml ON m.id = ml.methodId \n" +
-                                     "  WHERE i.customerId = :customerId AND j.garbage = FALSE AND %s \n" +
-                                     "  ORDER BY i.methodId ASC", whereClause);
-        }
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
@@ -420,9 +403,9 @@ public class DashboardServiceImpl implements DashboardService {
             }
 
             queryState.countRow();
-            long startedAt = pricePlan.adjustTimestampMillis(rs.getTimestamp("startedAt").getTime(), clock);
-            long publishedAt = pricePlan.adjustTimestampMillis(rs.getTimestamp("publishedAt").getTime(), clock);
-            long invokedAtMillis = pricePlan.adjustTimestampMillis(rs.getLong("invokedAtMillis"), clock);
+            long startedAt = pricePlan.adjustTimestampMillis(rs.getTimestamp("j.startedAt").getTime(), clock);
+            long publishedAt = pricePlan.adjustTimestampMillis(rs.getTimestamp("j.publishedAt").getTime(), clock);
+            long invokedAtMillis = pricePlan.adjustTimestampMillis(rs.getLong("i.invokedAtMillis"), clock);
 
             MethodDescriptor1.MethodDescriptor1Builder builder = queryState.getBuilder();
             String appName = rs.getString("appName");
@@ -435,28 +418,28 @@ public class DashboardServiceImpl implements DashboardService {
                                            .startedAtMillis(startedAt)
                                            .publishedAtMillis(publishedAt)
                                            .invokedAtMillis(invokedAtMillis)
-                                           .status(SignatureStatus2.valueOf(rs.getString("status")))
+                                           .status(SignatureStatus2.valueOf(rs.getString("i.status")))
                                            .build());
 
             queryState.saveEnvironment(EnvironmentDescriptor.builder()
                                                             .name(rs.getString("envName"))
-                                                            .hostname(rs.getString("hostname"))
-                                                            .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
+                                                            .hostname(rs.getString("j.hostname"))
+                                                            .tags(splitOnCommaOrSemicolon(rs.getString("j.tags")))
                                                             .collectedSinceMillis(startedAt)
                                                             .collectedToMillis(publishedAt)
                                                             .invokedAtMillis(invokedAtMillis)
                                                             .build().computeFields());
 
-            builder.declaringType(rs.getString("declaringType"))
-                   .modifiers(rs.getString("modifiers"))
-                   .packageName(rs.getString("packageName"))
+            builder.declaringType(rs.getString("m.declaringType"))
+                   .modifiers(rs.getString("m.modifiers"))
+                   .packageName(rs.getString("m.packageName"))
                    .signature(signature)
-                   .visibility(rs.getString("visibility"))
+                   .visibility(rs.getString("m.visibility"))
                    .bridge(bridge)
                    .synthetic(synthetic);
 
             // Left join stuff
-            String location = rs.getString("location");
+            String location = rs.getString("ml.location");
             if (location != null) {
                 builder.location(location);
             }
@@ -466,48 +449,10 @@ public class DashboardServiceImpl implements DashboardService {
             return new HashSet<>(Arrays.asList(tags.split("\\s*[,;]\\s")));
         }
 
-        private List<MethodDescriptor1> getResult(GetMethodsRequest request) {
+        private Optional<MethodDescriptor1> getResult() {
             // Include the last method
             queryState.addTo(result);
-
-            // Get rid of unwanted result
-            for (Iterator<MethodDescriptor1> iterator = result.iterator(); iterator.hasNext(); ) {
-                MethodDescriptor1 md = iterator.next();
-
-                boolean keep = true;
-
-                if (request.isSuppressUntrackedMethods() && md.getStatuses().stream().anyMatch(s -> !s.isTracked())) {
-                    logger.trace("Throwing away untracked method: {}", md);
-                    keep = false;
-                }
-
-                if (keep && md.getCollectedDays() < request.getMinCollectedDays()) {
-                    logger.trace("Throwing away method collected too few days: {}", md);
-                    keep = false;
-                }
-
-                if (keep && request.getOnlyInvokedAfterMillis() > md.getLastInvokedAtMillis()) {
-                    logger.trace("Throwing away too old method: {}", md);
-                    keep = false;
-                }
-                if (keep && request.getOnlyInvokedBeforeMillis() < md.getLastInvokedAtMillis()) {
-                    logger.trace("Throwing away too new method: {}", md);
-                    keep = false;
-                }
-                if (!keep) {
-                    iterator.remove();
-                } else {
-                    logger.trace("Keeping {}", md);
-                }
-            }
-
-            logger.debug("Result size before limiting size: {}", result.size());
-
-            // Sort with respect to lastInvokedAt ASC (so that we keep the oldest invocations)
-            result.sort(Comparator.comparing(MethodDescriptor1::getLastInvokedAtMillis));
-
-            // Limit the result
-            return result.stream().limit(request.getMaxResults()).collect(Collectors.toList());
+            return result.stream().findFirst();
         }
 
     }

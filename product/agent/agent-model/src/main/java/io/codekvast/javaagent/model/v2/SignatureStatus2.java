@@ -29,7 +29,7 @@ import java.io.Serializable;
 /**
  * The status of a method signature.
  *
- * NOTE: Is also defined as an ENUM in the central dashboard's invocations table!
+ * NOTE: Is also defined as an ENUM in the database's invocations table!
  *
  * @author olle.hallin@crisp.se
  */

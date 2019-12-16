@@ -39,6 +39,7 @@ import java.time.Instant;
 import java.util.*;
 
 import static io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
+import static io.codekvast.javaagent.model.v2.SignatureStatus2.INVOKED;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.sql.Types.BOOLEAN;
@@ -148,12 +149,11 @@ public class ImportDAOImpl implements ImportDAO {
         Set<String> incompleteMethods = getIncompleteMethods(customerId);
         Set<Long> invocationsNotFoundInCodeBase = getInvocationsNotFoundInCodeBase(customerId);
         Set<Long> existingMethodLocations = getExistingMethodLocations(customerId);
-        Set<Long> existingInvocations = getExistingInvocations(customerId, appId, jvmId);
 
         importNewMethods(customerId, publishedAtMillis, entries, existingMethods);
         insertMethodLocations(customerId, entries, existingMethods, existingMethodLocations);
         updateIncompleteMethods(customerId, publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
-        ensureInitialInvocations(data, customerId, appId, environmentId, jvmId, entries, existingMethods, existingInvocations);
+        ensureInitialInvocations(data, customerId, appId, environmentId, entries, existingMethods);
 
         customerService.assertDatabaseSize(customerId);
     }
@@ -162,14 +162,10 @@ public class ImportDAOImpl implements ImportDAO {
     public void importInvocations(ImportContext importContext, long recordingIntervalStartedAtMillis, Set<String> invocations) {
         long customerId = importContext.getCustomerId();
         long appId = importContext.getAppId();
-        long jvmId = importContext.getJvmId();
         long environmentId = importContext.getEnvironmentId();
 
         Map<String, Long> existingMethods = getExistingMethods(customerId);
-        Set<Long> existingInvocations = getExistingInvocations(customerId, appId, jvmId);
-
-        doImportInvocations(customerId, appId, environmentId, jvmId, recordingIntervalStartedAtMillis, invocations, existingMethods,
-                            existingInvocations);
+        doImportInvocations(customerId, appId, environmentId, recordingIntervalStartedAtMillis, invocations, existingMethods);
 
         customerService.assertDatabaseSize(customerId);
     }
@@ -177,28 +173,18 @@ public class ImportDAOImpl implements ImportDAO {
     private void doImportInvocations(long customerId,
                                      long appId,
                                      long environmentId,
-                                     long jvmId,
                                      long invokedAtMillis,
                                      Set<String> invokedSignatures,
-                                     Map<String, Long> existingMethods,
-                                     Set<Long> existingInvocations) {
+                                     Map<String, Long> existingMethods) {
         for (String signature : invokedSignatures) {
             Long methodId = existingMethods.get(signature);
             if (methodId == null) {
                 logger.trace("Inserting incomplete method {}:{}", methodId, signature);
                 methodId = doInsertRow(new InsertIncompleteMethodStatement(customerId, signature, invokedAtMillis));
                 existingMethods.put(signature, methodId);
-                // TODO Insert into initial_invocations
             }
-            if (existingInvocations.contains(methodId)) {
-                logger.trace("Updating invocation {}", signature);
-                jdbcTemplate.update(new UpdateInvocationStatement(customerId, appId, jvmId, methodId, invokedAtMillis));
-            } else {
-                logger.trace("Inserting invocation {}", signature);
-                jdbcTemplate
-                    .update(new InsertInvocationStatement(customerId, appId, environmentId, jvmId, methodId, SignatureStatus2.INVOKED,
-                                                          invokedAtMillis, 1L));
-            }
+            logger.trace("Upserting invocation {}", signature);
+            jdbcTemplate.update(new UpsertInvocationStatement(customerId, appId, environmentId, methodId, INVOKED, invokedAtMillis));
         }
     }
 
@@ -232,13 +218,6 @@ public class ImportDAOImpl implements ImportDAO {
         );
     }
 
-
-    private Set<Long> getExistingInvocations(long customerId, long appId, long jvmId) {
-        return new HashSet<>(
-            jdbcTemplate
-                .queryForList("SELECT methodId FROM invocations WHERE customerId = ? AND applicationId = ? AND jvmId = ?", Long.class,
-                              customerId, appId, jvmId));
-    }
 
     private void importNewMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry3> entries,
                                   Map<String, Long> existingMethods) {
@@ -290,21 +269,16 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     private void ensureInitialInvocations(CommonPublicationData2 data, long customerId, long appId, long environmentId,
-                                          long jvmId, Collection<CodeBaseEntry3> entries,
-                                          Map<String, Long> existingMethods, Set<Long> existingInvocations) {
+                                          Collection<CodeBaseEntry3> entries,
+                                          Map<String, Long> existingMethods) {
         long startedAtMillis = System.currentTimeMillis();
         int importCount = 0;
 
         for (CodeBaseEntry3 entry : entries) {
-            // TODO Insert into initial_invocations
             long methodId = existingMethods.get(entry.getSignature());
-            if (!existingInvocations.contains(methodId)) {
                 SignatureStatus2 initialStatus = calculateInitialStatus(data, entry);
-                jdbcTemplate.update(new InsertInvocationStatement(customerId, appId, environmentId, jvmId, methodId, initialStatus,
-                                                                  0L, 0L));
-                existingInvocations.add(methodId);
-                importCount += 1;
-            }
+                int updated = jdbcTemplate.update(new UpsertInvocationStatement(customerId, appId, environmentId, methodId, initialStatus, 0L));
+                importCount += updated == 1 ? 1 : 0;
         }
         logger.debug("Imported {} initial invocations in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
     }
@@ -434,32 +408,29 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @RequiredArgsConstructor
-    private static class InsertInvocationStatement implements PreparedStatementCreator {
+    private static class UpsertInvocationStatement implements PreparedStatementCreator {
         private final long customerId;
         private final long appId;
         private final long environmentId;
-        private final long jvmId;
         private final long methodId;
         private final SignatureStatus2 status;
         private final long invokedAtMillis;
-        private final long invocationCount;
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
                 con.prepareStatement(
-                    "INSERT INTO invocations(customerId, applicationId, environmentId, jvmId, methodId, status, invokedAtMillis, " +
-                        "invocationCount) " +
-                        "VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
+                    "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis) " +
+                        "VALUES(?, ?, ?, ?, ?, ?) " +
+                        "ON DUPLICATE KEY UPDATE status = ?, invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis))");
             int column = 0;
             ps.setLong(++column, customerId);
             ps.setLong(++column, appId);
             ps.setLong(++column, environmentId);
-            ps.setLong(++column, jvmId);
             ps.setLong(++column, methodId);
             ps.setString(++column, status.name());
             ps.setLong(++column, invokedAtMillis);
-            ps.setLong(++column, invocationCount);
+            ps.setString(++column, INVOKED.name());
             return ps;
         }
     }
@@ -479,32 +450,6 @@ public class ImportDAOImpl implements ImportDAO {
             ps.setLong(++column, customerId);
             ps.setLong(++column, methodId);
             ps.setString(++column, location);
-            return ps;
-        }
-    }
-
-    @RequiredArgsConstructor
-    private static class UpdateInvocationStatement implements PreparedStatementCreator {
-        private final long customerId;
-        private final long appId;
-        private final long jvmId;
-        private final long methodId;
-        private final long invokedAtMillis;
-
-        @Override
-        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            PreparedStatement ps =
-                con.prepareStatement(
-                    "UPDATE invocations SET invokedAtMillis = GREATEST(invokedAtMillis, ?), " +
-                        "status = ?, invocationCount = invocationCount + 1 " +
-                        "WHERE customerId = ? AND applicationId = ? AND jvmId = ? AND methodId = ?");
-            int column = 0;
-            ps.setLong(++column, invokedAtMillis);
-            ps.setString(++column, SignatureStatus2.INVOKED.name());
-            ps.setLong(++column, customerId);
-            ps.setLong(++column, appId);
-            ps.setLong(++column, jvmId);
-            ps.setLong(++column, methodId);
             return ps;
         }
     }
