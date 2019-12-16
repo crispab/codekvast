@@ -34,7 +34,7 @@ CREATE TABLE initial_invocations (
     UNIQUE INDEX ix_initial_invocations_identity(customerId, applicationId, environmentId, methodId)
 );
 
-INSERT INTO initial_invocations(customerId, applicationId, environmentId, methodId, invokedAtMillis)
-SELECT i.customerId, i.applicationId, i.environmentId, i.methodId, MIN(j.startedAt)
-    FROM invocations i INNER JOIN jvms j ON i.jvmId = j.id
-    GROUP BY i.methodId, i.applicationId, i.environmentId, i.customerId;
+-- INSERT INTO initial_invocations(customerId, applicationId, environmentId, methodId, invokedAtMillis)
+-- SELECT i.customerId, i.applicationId, i.environmentId, i.methodId, MIN(j.startedAt)
+--    FROM invocations i INNER JOIN jvms j ON i.jvmId = j.id
+--    GROUP BY i.methodId, i.applicationId, i.environmentId, i.customerId;
