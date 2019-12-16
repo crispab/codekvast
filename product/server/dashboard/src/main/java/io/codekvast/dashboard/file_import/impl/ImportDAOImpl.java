@@ -55,7 +55,7 @@ public class ImportDAOImpl implements ImportDAO {
 
     private static final String VISIBILITY_PRIVATE = "private";
     private static final String VISIBILITY_PACKAGE_PRIVATE = "package-private";
-    private static final String PROTECTED = "protected";
+    private static final String VISIBILITY_PROTECTED = "protected";
     private static final String VISIBILITY_PUBLIC = "public";
     private static final String DEFAULT_ENVIRONMENT_NAME = "<default>";
     private final JdbcTemplate jdbcTemplate;
@@ -306,6 +306,9 @@ public class ImportDAOImpl implements ImportDAO {
         if (name.equals("equals") && singleParameter) {
             return SignatureStatus2.EXCLUDED_SINCE_TRIVIAL;
         }
+        if (name.equals("canEqual") && singleParameter) {
+            return SignatureStatus2.EXCLUDED_SINCE_TRIVIAL;
+        }
         if (name.equals("compareTo") && singleParameter) {
             return SignatureStatus2.EXCLUDED_SINCE_TRIVIAL;
         }
@@ -322,10 +325,10 @@ public class ImportDAOImpl implements ImportDAO {
         case VISIBILITY_PRIVATE:
             return null;
         case VISIBILITY_PACKAGE_PRIVATE:
-            return v.equals(VISIBILITY_PUBLIC) || v.equals(PROTECTED) || v.equals(VISIBILITY_PACKAGE_PRIVATE) ? null :
+            return v.equals(VISIBILITY_PUBLIC) || v.equals(VISIBILITY_PROTECTED) || v.equals(VISIBILITY_PACKAGE_PRIVATE) ? null :
                 SignatureStatus2.EXCLUDED_BY_VISIBILITY;
-        case PROTECTED:
-            return v.equals(VISIBILITY_PUBLIC) || v.equals(PROTECTED) ? null : SignatureStatus2.EXCLUDED_BY_VISIBILITY;
+        case VISIBILITY_PROTECTED:
+            return v.equals(VISIBILITY_PUBLIC) || v.equals(VISIBILITY_PROTECTED) ? null : SignatureStatus2.EXCLUDED_BY_VISIBILITY;
         case VISIBILITY_PUBLIC:
             return v.equals(VISIBILITY_PUBLIC) ? null : SignatureStatus2.EXCLUDED_BY_VISIBILITY;
         }
