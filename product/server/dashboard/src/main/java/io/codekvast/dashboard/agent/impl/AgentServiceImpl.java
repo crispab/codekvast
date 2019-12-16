@@ -74,7 +74,6 @@ public class AgentServiceImpl implements AgentService {
     private final PublicationMetricsService publicationMetricsService;
 
     @Override
-    @Restartable
     @Transactional
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         val environment = agentDAO.getEnvironmentName(request.getJvmUuid()).orElse(UNKNOWN_ENVIRONMENT);
@@ -83,7 +82,6 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    @Restartable
     @Transactional
     public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());

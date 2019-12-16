@@ -17,6 +17,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.sql.DataSource;
+import java.sql.SQLTransactionRollbackException;
 
 import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
 import static io.codekvast.javaagent.model.Endpoints.Agent.V2_POLL_CONFIG;
@@ -121,4 +123,25 @@ public class AgentControllerIntegrationTest {
            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
            .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
     }
+
+    @Test
+    public void should_retry_deadlock_loser_exception() throws Exception {
+        // given
+        GetConfigRequest2 request = GetConfigRequest2.sample();
+        GetConfigResponse2 response = GetConfigResponse2.sample();
+        when(agentService.getConfig(request))
+            .thenThrow(new DeadlockLoserDataAccessException("Thrown by mock #1", null))
+            .thenThrow(new RuntimeException(new SQLTransactionRollbackException("Detected Deadlock #2")))
+            .thenReturn(response);
+
+        // when
+        mvc.perform(post(V2_POLL_CONFIG)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+           .andExpect(status().isOk())
+           .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+           .andExpect(jsonPath("$.codeBasePublisherName").value(response.getCodeBasePublisherName()));
+    }
+
 }

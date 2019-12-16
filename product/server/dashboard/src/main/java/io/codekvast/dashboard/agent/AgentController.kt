@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.agent
 
+import io.codekvast.common.aspects.Restartable
 import io.codekvast.common.customer.LicenseViolationException
 import io.codekvast.common.util.LoggingUtils.humanReadableByteCount
 import io.codekvast.dashboard.model.PublicationType
@@ -59,6 +60,7 @@ class AgentController @Inject constructor(private val agentService: AgentService
 
     @Suppress("DEPRECATION")
     @PostMapping(value = [V1_POLL_CONFIG], consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
+    @Restartable
     fun getConfig1(@Valid @RequestBody request: GetConfigRequest1): GetConfigResponse1 {
         logger.debug("Received {}", request)
 
@@ -70,6 +72,7 @@ class AgentController @Inject constructor(private val agentService: AgentService
 
     @Suppress("DEPRECATION")
     @PostMapping(value = [V2_POLL_CONFIG], consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
+    @Restartable
     fun getConfig2(@Valid @RequestBody request: GetConfigRequest2): GetConfigResponse2 {
         logger.debug("Received {}", request)
 
