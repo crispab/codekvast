@@ -519,7 +519,7 @@ public class DashboardIntegrationTest {
     }
 
     @Test
-    public void should_import_codeBasePublication_after_invocationDataPublication() {
+    public void should_import_invocationDataPublication_then_codeBasePublication() {
         // given
         assertThat(countRowsInTable("applications"), is(0));
         assertThat(countRowsInTable("environments"), is(0));
@@ -580,6 +580,68 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("method_locations WHERE location = ?", codeBaseEntry.getMethodSignature().getLocation()), is(1));
         assertThat(countRowsInTable("invocations"), is(1));
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", intervalStartedAtMillis2), is(1));
+        assertThat(countRowsInTable("invocations WHERE status = ?", INVOKED.name()), is(1));
+    }
+
+    @Test
+    public void should_import_codeBasePublication_then_invocationDataPublication_twice() {
+        // given
+        assertThat(countRowsInTable("applications"), is(0));
+        assertThat(countRowsInTable("environments"), is(0));
+        assertThat(countRowsInTable("jvms"), is(0));
+        assertThat(countRowsInTable("methods"), is(0));
+        assertThat(countRowsInTable("invocations"), is(0));
+
+        String signature1 = "signature1";
+        String signature2 = "signature2";
+        CodeBaseEntry3 codeBaseEntry1 = CodeBaseEntry3.sampleCodeBaseEntry().toBuilder().signature(signature1).build();
+        CodeBaseEntry3 codeBaseEntry2 = CodeBaseEntry3.sampleCodeBaseEntry().toBuilder().signature(signature2).build();
+        //@formatter:off
+        CodeBasePublication3 codeBasePublication = CodeBasePublication3.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .entries(asList(codeBaseEntry1, codeBaseEntry2))
+            .build();
+        //@formatter:on
+
+        // when Import a code base with two distinct signatures
+        codeBaseImporter.importPublication(codeBasePublication);
+
+        // then
+        assertThat(countRowsInTable("applications WHERE name = ?", codeBasePublication.getCommonData().getAppName()), is(1));
+        assertThat(countRowsInTable("environments WHERE name = ?", codeBasePublication.getCommonData().getEnvironment()), is(1));
+        assertThat(countRowsInTable("jvms WHERE uuid = ?", codeBasePublication.getCommonData().getJvmUuid()), is(1));
+        assertThat(countRowsInTable("methods"), is(2));
+        assertThat(countRowsInTable("methods WHERE signature = ?", signature1), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = ?", signature2), is(1));
+        assertThat(countRowsInTable("method_locations"), is(2));
+        assertThat(countRowsInTable("invocations"), is(2));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(2));
+        assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(2));
+
+        // given
+        long intervalStartedAtMillis1 = System.currentTimeMillis();
+        InvocationDataPublication2 invocationDataPublication1 = InvocationDataPublication2.builder()
+                                                                                          .commonData(CommonPublicationData2
+                                                                                                          .sampleCommonPublicationData())
+                                                                                          .recordingIntervalStartedAtMillis(
+                                                                                              intervalStartedAtMillis1)
+                                                                                          .invocations(singleton(signature1))
+                                                                                          .build();
+        long intervalStartedAtMillis2 = intervalStartedAtMillis1 + 3600;
+        InvocationDataPublication2 invocationDataPublication2 = invocationDataPublication1.toBuilder()
+                                                                                          .recordingIntervalStartedAtMillis(
+                                                                                              intervalStartedAtMillis2)
+                                                                                          .build();
+        // when Record the invocation of one of the signatures twice in reversed time order
+        invocationDataImporter.importPublication(invocationDataPublication2);
+        invocationDataImporter.importPublication(invocationDataPublication1);
+
+        // then
+        assertThat(countRowsInTable("invocations"), is(2));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", 0), is(1));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", intervalStartedAtMillis1), is(0));
+        assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", intervalStartedAtMillis2), is(1));
+        assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(1));
         assertThat(countRowsInTable("invocations WHERE status = ?", INVOKED.name()), is(1));
     }
 

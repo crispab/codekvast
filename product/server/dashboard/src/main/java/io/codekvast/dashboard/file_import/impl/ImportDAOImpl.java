@@ -424,7 +424,7 @@ public class ImportDAOImpl implements ImportDAO {
                 con.prepareStatement(
                     "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis) " +
                         "VALUES(?, ?, ?, ?, ?, ?) " +
-                        "ON DUPLICATE KEY UPDATE invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis))");
+                        "ON DUPLICATE KEY UPDATE invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis)) " + updateStatus(status));
             int column = 0;
             ps.setLong(++column, customerId);
             ps.setLong(++column, appId);
@@ -433,6 +433,14 @@ public class ImportDAOImpl implements ImportDAO {
             ps.setString(++column, status.name());
             ps.setLong(++column, invokedAtMillis);
             return ps;
+        }
+        String updateStatus(SignatureStatus2 status) {
+            if (status == INVOKED) {
+                // INVOKED shall overwrite any other (initial) status
+                return ", status = VALUE(status)";
+            }
+            // A codebase imported after an invocation should NOT overwrite the status
+            return "";
         }
     }
 
