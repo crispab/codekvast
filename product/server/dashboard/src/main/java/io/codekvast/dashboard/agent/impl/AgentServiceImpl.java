@@ -162,9 +162,7 @@ public class AgentServiceImpl implements AgentService {
         File result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get());
         Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
-        logger
-            .info("Saved uploaded {} publication for customer {} to {} ({}), fingerprint = {}", publicationType, customerId, result.getName(),
-                  humanReadableByteCount(result.length()), codebaseFingerprint);
+        logger.info("Saved {} ({}), fingerprint = {}", result.getName(), humanReadableByteCount(result.length()), codebaseFingerprint);
         return result;
     }
 
