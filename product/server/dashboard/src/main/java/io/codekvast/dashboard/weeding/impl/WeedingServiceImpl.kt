@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.weeding.impl
 
+import io.codekvast.common.aspects.Restartable
 import io.codekvast.common.customer.CustomerData
 import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.lock.Lock
@@ -30,6 +31,7 @@ import io.codekvast.dashboard.weeding.WeedingService
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.time.Clock
 import java.time.temporal.ChronoUnit
@@ -48,6 +50,8 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
+    @Transactional
+    @Restartable
     override fun performDataWeeding() {
         val startedAt = clock.instant()
         logger.debug("Performing data weeding")
@@ -109,6 +113,8 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
     private fun countRows(table: String) = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM $table", Int::class.java)!!
 
+    @Transactional
+    @Restartable
     override fun findWeedingCandidates() {
         val startedAt = clock.instant()
         var sum = 0

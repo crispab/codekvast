@@ -63,6 +63,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     @Override
     @Transactional
+    @Restartable
     public boolean importPublication(CodeBasePublication3 publication) {
         logger.debug("Importing {}", publication);
         Instant startedAt = clock.instant();

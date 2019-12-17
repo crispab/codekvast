@@ -26,7 +26,6 @@ import io.codekvast.common.lock.LockTemplate
 import io.codekvast.common.thread.NamedThreadTemplate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import javax.inject.Inject
 
 /**
@@ -44,7 +43,6 @@ class WeedingTask
      */
     @Scheduled(initialDelayString = "\${codekvast.dataWeedingInitialDelaySeconds:600}000",
         fixedDelayString = "\${codekvast.dataWeedingIntervalSeconds:3600}000")
-    @Transactional
     fun performDataWeeding() {
         NamedThreadTemplate().doInNamedThread("Weeder") {
             lockTemplate.doWithLock(Lock.forFunction("weeder")) {

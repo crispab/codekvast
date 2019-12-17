@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.agent.impl;
 
+import io.codekvast.common.aspects.Restartable;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.LicenseViolationException;
@@ -72,6 +73,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional
+    @Restartable
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         val environment = agentDAO.getEnvironmentName(request.getJvmUuid()).orElse(UNKNOWN_ENVIRONMENT);
         val request2 = GetConfigRequest2.fromFormat1(request, environment);
@@ -80,6 +82,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional
+    @Restartable
     public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
 
@@ -160,7 +163,7 @@ public class AgentServiceImpl implements AgentService {
         Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
         logger
-            .info("Saved uploaded {} publication for customer {} to {} ({}), fingerprint = {}", publicationType, customerId, result,
+            .info("Saved uploaded {} publication for customer {} to {} ({}), fingerprint = {}", publicationType, customerId, result.getName(),
                   humanReadableByteCount(result.length()), codebaseFingerprint);
         return result;
     }
