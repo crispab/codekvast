@@ -85,8 +85,6 @@ import static org.junit.Assume.assumeTrue;
 @Transactional
 public class DashboardIntegrationTest {
 
-    private final long now = System.currentTimeMillis();
-
     private static final int PORT = 3306;
     private static final String DATABASE = "codekvast";
     private static final String USERNAME = "codekvast";
@@ -527,21 +525,21 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("methods"), is(0));
         assertThat(countRowsInTable("invocations"), is(0));
 
-        //@formatter:off
+        CommonPublicationData2 commonData = CommonPublicationData2.sampleCommonPublicationData();
         CodeBaseEntry3 codeBaseEntry = CodeBaseEntry3.sampleCodeBaseEntry();
         CodeBasePublication3 codeBasePublication = CodeBasePublication3.builder()
-            .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(asList(codeBaseEntry))
-            .build();
+                                                                       .commonData(commonData)
+                                                                       .entries(asList(codeBaseEntry))
+                                                                       .build();
         val signature = codeBaseEntry.getSignature();
         long intervalStartedAtMillis = System.currentTimeMillis();
 
         InvocationDataPublication2 invocationDataPublication = InvocationDataPublication2.builder()
-            .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .recordingIntervalStartedAtMillis(intervalStartedAtMillis)
-            .invocations(singleton(signature))
-            .build();
-        //@formatter:on
+                                                                                         .commonData(commonData)
+                                                                                         .recordingIntervalStartedAtMillis(
+                                                                                             intervalStartedAtMillis)
+                                                                                         .invocations(singleton(signature))
+                                                                                         .build();
 
         // when
         invocationDataImporter.importPublication(invocationDataPublication);
@@ -596,12 +594,11 @@ public class DashboardIntegrationTest {
         String signature2 = "signature2";
         CodeBaseEntry3 codeBaseEntry1 = CodeBaseEntry3.sampleCodeBaseEntry().toBuilder().signature(signature1).build();
         CodeBaseEntry3 codeBaseEntry2 = CodeBaseEntry3.sampleCodeBaseEntry().toBuilder().signature(signature2).build();
-        //@formatter:off
+        CommonPublicationData2 commonData = CommonPublicationData2.sampleCommonPublicationData();
         CodeBasePublication3 codeBasePublication = CodeBasePublication3.builder()
-            .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(asList(codeBaseEntry1, codeBaseEntry2))
-            .build();
-        //@formatter:on
+                                                                       .commonData(commonData)
+                                                                       .entries(asList(codeBaseEntry1, codeBaseEntry2))
+                                                                       .build();
 
         // when Import a code base with two distinct signatures
         codeBaseImporter.importPublication(codeBasePublication);
@@ -621,8 +618,7 @@ public class DashboardIntegrationTest {
         // given
         long intervalStartedAtMillis1 = System.currentTimeMillis();
         InvocationDataPublication2 invocationDataPublication1 = InvocationDataPublication2.builder()
-                                                                                          .commonData(CommonPublicationData2
-                                                                                                          .sampleCommonPublicationData())
+                                                                                          .commonData(commonData)
                                                                                           .recordingIntervalStartedAtMillis(
                                                                                               intervalStartedAtMillis1)
                                                                                           .invocations(singleton(signature1))
@@ -643,6 +639,36 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = ?", intervalStartedAtMillis2), is(1));
         assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(1));
         assertThat(countRowsInTable("invocations WHERE status = ?", INVOKED.name()), is(1));
+
+
+        // given
+        setSecurityContextCustomerId(commonData.getCustomerId());
+
+        // when
+        GetMethodsFormData methodsFormData = dashboardService.getMethodsFormData();
+
+        // then
+        assertThat(methodsFormData, is(GetMethodsFormData.builder()
+                                                         .application(commonData.getAppName())
+                                                         .environment(commonData.getEnvironment())
+                                                         .retentionPeriodDays(30)
+                                                         .build()));
+
+        // when
+        GetMethodsResponse2 methodsResponse = dashboardService.getMethods2(GetMethodsRequest.defaults()
+                                                                                            .toBuilder()
+                                                                                            .signature(
+                                                                                                signature1.substring(0, 3).toUpperCase())
+                                                                                            .minCollectedDays(0)
+                                                                                            .build());
+
+        // then
+        assertThat(methodsResponse.getNumMethods(), is(2));
+        assertThat(methodsResponse.getMethods().size(), is(2));
+        assertThat(methodsResponse.getMethods().get(0).getSignature(), is(signature1));
+        assertThat(methodsResponse.getMethods().get(0).getLastInvokedAtMillis(), is(intervalStartedAtMillis2));
+        assertThat(methodsResponse.getMethods().get(1).getSignature(), is(signature2));
+        assertThat(methodsResponse.getMethods().get(1).getLastInvokedAtMillis(), is(0L));
     }
 
     @Test

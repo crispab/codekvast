@@ -89,28 +89,15 @@ public class DashboardServiceImpl implements DashboardService {
         String normalizedSignature = request.getNormalizedSignature();
         if (!normalizedSignature.equals("%")) {
             params.addValue("signature", normalizedSignature);
-            whereClause += " AND m.signature LIKE :signature";
+            whereClause += " AND m.signature LIKE :signature COLLATE utf8mb4_general_ci"; // Make it case-insensitive
         }
         if (request.getApplications() != null && !request.getApplications().isEmpty()) {
-            List<Long> applicationIds = translateNamesToIds("applications", request.getApplications());
-            if (applicationIds.size() == 1) {
-                params.addValue("applicationId", applicationIds.get(0));
-                whereClause += " AND i.applicationId = :applicationId";
-            } else {
-                params.addValue("applicationIds", applicationIds);
-                whereClause += " AND i.applicationId IN (:applicationIds)";
-            }
+            params.addValue("applicationIds", translateNamesToIds("applications", request.getApplications()));
+            whereClause += " AND i.applicationId IN (:applicationIds)";
         }
         if (request.getEnvironments() != null && !request.getEnvironments().isEmpty()) {
-            List<Long> environmentIds = translateNamesToIds("environments", request.getEnvironments());
-            if (environmentIds.size() == 1) {
-                params.addValue("environmentId", environmentIds.get(0));
-                whereClause += " AND i.environmentId = :environmentId";
-
-            } else {
-                params.addValue("environmentIds", environmentIds);
-                whereClause += " AND i.environmentId IN (:environmentIds)";
-            }
+            params.addValue("environmentIds", translateNamesToIds("environments", request.getEnvironments()));
+            whereClause += " AND i.environmentId IN (:environmentIds)";
         }
 
         String sql = "SELECT m.id, m.signature, " +
@@ -150,6 +137,8 @@ public class DashboardServiceImpl implements DashboardService {
                                  .collectedToMillis(rs.getTimestamp("lastPublishedAt").getTime())
                                  .build());
         });
+
+        methods.sort(Comparator.comparing(MethodDescriptor2::getSignature));
 
         long queryTimeMillis = clock.millis() - startedAt;
         logger.debug("Processed {} in {} ms.", request, queryTimeMillis);

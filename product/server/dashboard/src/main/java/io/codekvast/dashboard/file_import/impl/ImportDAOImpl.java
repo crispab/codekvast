@@ -97,7 +97,9 @@ public class ImportDAOImpl implements ImportDAO {
         if (updated != 0) {
             logger.trace("Updated environment {}:'{}'", customerId, name);
         } else {
-            jdbcTemplate.update("INSERT INTO environments(customerId, name, createdAt, enabled) VALUES (?, ?, ?, ?)", customerId, name, createdAt, TRUE);
+            jdbcTemplate
+                .update("INSERT INTO environments(customerId, name, createdAt, enabled) VALUES (?, ?, ?, ?)", customerId, name, createdAt,
+                        TRUE);
             logger.info("Imported new environment: customerId={}, name='{}', createdAt={}", customerId, name, createdAt);
         }
 
@@ -113,8 +115,9 @@ public class ImportDAOImpl implements ImportDAO {
         long customerId = data.getCustomerId();
         Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
 
-        int updated = jdbcTemplate.update("UPDATE jvms SET codeBaseFingerprint = ?, publishedAt = ?, garbage = ? WHERE uuid = ? ORDER BY id",
-                                          data.getCodeBaseFingerprint(), publishedAt, FALSE, data.getJvmUuid());
+        int updated =
+            jdbcTemplate.update("UPDATE jvms SET codeBaseFingerprint = ?, publishedAt = ?, garbage = ? WHERE uuid = ? ORDER BY id",
+                                data.getCodeBaseFingerprint(), publishedAt, FALSE, data.getJvmUuid());
         if (updated != 0) {
             logger.trace("Updated JVM {}", data.getJvmUuid());
         } else {
@@ -127,7 +130,8 @@ public class ImportDAOImpl implements ImportDAO {
                 new Timestamp(data.getJvmStartedAtMillis()), publishedAt, data.getMethodVisibility(), data.getPackages().toString(),
                 data.getExcludePackages().toString(), data.getComputerId(), data.getHostname(), data.getAgentVersion(), data.getTags(),
                 FALSE);
-            logger.info("Imported new JVM: customerId={}, applicationId={}, environmentId={}, jvmUUid='{}', startedAt={}", customerId, applicationId,
+            logger.info("Imported new JVM: customerId={}, applicationId={}, environmentId={}, jvmUUid='{}', startedAt={}", customerId,
+                        applicationId,
                         environmentId, data.getJvmUuid(), Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }
 
@@ -420,11 +424,10 @@ public class ImportDAOImpl implements ImportDAO {
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            PreparedStatement ps =
-                con.prepareStatement(
-                    "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis) " +
-                        "VALUES(?, ?, ?, ?, ?, ?) " +
-                        "ON DUPLICATE KEY UPDATE invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis)) " + updateStatus(status));
+            String sql = String.format(
+                "INSERT %s INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis) " +
+                    "VALUES(?, ?, ?, ?, ?, ?) %s", ignoreUnlessInvoked(invokedAtMillis), onDuplicateKey(invokedAtMillis));
+            PreparedStatement ps = con.prepareStatement(sql);
             int column = 0;
             ps.setLong(++column, customerId);
             ps.setLong(++column, appId);
@@ -434,14 +437,17 @@ public class ImportDAOImpl implements ImportDAO {
             ps.setLong(++column, invokedAtMillis);
             return ps;
         }
-        String updateStatus(SignatureStatus2 status) {
-            if (status == INVOKED) {
-                // INVOKED shall overwrite any other (initial) status
-                return ", status = VALUE(status)";
-            }
-            // A codebase imported after an invocation should NOT overwrite the status
-            return "";
+
+        private String ignoreUnlessInvoked(long invokedAtMillis) {
+            return invokedAtMillis == 0L ? "IGNORE" : "";
         }
+
+        private String onDuplicateKey(long invokedAtMillis) {
+            return invokedAtMillis == 0 ? "" : "ON DUPLICATE KEY UPDATE " +
+                "invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis)), " +
+                "status = VALUE(status)";
+        }
+
     }
 
     @RequiredArgsConstructor
