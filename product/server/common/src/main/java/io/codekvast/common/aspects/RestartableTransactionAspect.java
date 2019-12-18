@@ -68,9 +68,9 @@ public class RestartableTransactionAspect {
                 logger.debug("After {}", joinPoint);
                 return result;
             } catch (Throwable t) {
-                if (isDeadlockException(t)) {
+                if (isRetryableException(t)) {
                     int delayMillis = getRandomInt(10, 50);
-                    logger.info("Deadlock #{} at {}, will retry in {} ms ...", attempt, joinPoint, delayMillis);
+                    logger.info("Deadlock #{} at {}, will retry in {} ms. Cause={}.", attempt, joinPoint, delayMillis, getCause(t));
                     Thread.sleep(delayMillis);
                 } else {
                     throw t;
@@ -81,7 +81,14 @@ public class RestartableTransactionAspect {
         return pjp.proceed();
     }
 
-    boolean isDeadlockException(Throwable t) {
+    private String getCause(Throwable t) {
+        if (t.getCause() == null) {
+            return t.toString();
+        }
+        return getCause(t.getCause());
+    }
+
+    boolean isRetryableException(Throwable t) {
         if (t == null) {
             return false;
         }
@@ -89,7 +96,7 @@ public class RestartableTransactionAspect {
         if (s.contains("deadlock") || s.contains("lock wait timeout")) {
             return true;
         }
-        return isDeadlockException(t.getCause());
+        return isRetryableException(t.getCause());
     }
 
     private int getRandomInt(int min, int max) {

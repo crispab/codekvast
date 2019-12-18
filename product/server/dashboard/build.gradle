@@ -13,6 +13,10 @@ mainClassName = 'io.codekvast.dashboard.CodekvastDashboardApplicationKt'
 apply from: "$projectDir/src/webapp/build.gradle"
 apply from: "$projectDir/src/integrationTest/build.gradle"
 
+configurations {
+    codekvastagent
+}
+
 dependencies {
     implementation project(':product:agent:agent-model')
     implementation project(':product:server:common')
@@ -20,6 +24,8 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
     
     runtimeOnly project(':product:server:db-migration')
+
+    codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
 }
 
 bootJar {
@@ -60,4 +66,58 @@ bootRun {
 
     jvmArgs = run.jvmArgs
     args = run.args
+}
+
+task generateCodekvastConfig {
+    group "Build"
+    description "Generates a codekvast.conf for test"
+
+    def configFile = file("$buildDir/codekvast.conf")
+
+    inputs.files file("build.gradle")
+    outputs.file configFile
+
+    doLast {
+        configFile.parentFile.mkdirs()
+        configFile.text = """# Run Codekvast against Sample App
+appName = $archivesBaseName
+appVersion = $codekvastDisplayVersion
+# aspectjOptions = -verbose -showWeaveInfo
+codeBase = build/libs/$archivesBaseName-$version-all.jar
+methodVisibility = all
+packages = io.codekvast
+excludePackages = io.codekvast.common.aspects
+bridgeAspectjMessagesToJUL = false
+environment = Gradle
+
+# serverUrl = https://api-staging.codekvast.io
+httpProxyHost =   
+httpProxyPort = 4711
+"""
+    }
+}
+
+processResources.dependsOn generateCodekvastConfig
+
+task launchDashboardWithCodekvastAgentAttached(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:agent:java-agent:shadowJar", startDockerContainers] ) {
+    def javaVersion = sdkmanJavaVersion_11
+
+    description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
+    group "Application"
+
+    executable "${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}/bin/java"
+    args "-enableassertions"
+    args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5011"
+    args "-javaagent:${configurations.codekvastagent.asPath}"
+    args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
+
+    args "-jar", "build/libs/${archivesBaseName}-${version}-all.jar"
+    args "--logging.level.root=INFO"
+    args "--logging.level.io.codekvast=INFO"
+    args "--logging.level.io.codekvast.common.aspects=DEBUG"
+    args "--logging.file.name=$buildDir/log/${applicationName}.log"
+    args "--codekvast.fileImportIntervalSeconds=10"
+    args "--codekvast.dataWeedingIntervalSeconds=10"
+    args "--codekvast.dataWeedingInitialDelaySeconds=10"
+    args "--codekvast.jwtExpirationHours=-5"
 }
