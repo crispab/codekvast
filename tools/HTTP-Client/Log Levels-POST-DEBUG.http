@@ -1,0 +1,49 @@
+### Login 0
+POST http://{{server0}}.codekvast.io:9080/management/loggers/io.codekvast
+Content-Type: application/json
+
+{
+    "configuredLevel": "DEBUG"
+}
+
+### Login 1
+POST http://{{server1}}.codekvast.io:9080/management/loggers/io.codekvast
+Content-Type: application/json
+
+{
+    "configuredLevel": "DEBUG"
+}
+
+### Dashboard 0
+POST http://{{server0}}.codekvast.io:9081/management/loggers/io.codekvast
+Content-Type: application/json
+
+{
+    "configuredLevel": "DEBUG"
+}
+
+### Dashboard 1
+POST http://{{server1}}.codekvast.io:9081/management/loggers/io.codekvast
+Content-Type: application/json
+
+{
+    "configuredLevel": "DEBUG"
+}
+
+### Backoffice 0
+POST http://{{server0}}.codekvast.io:9082/management/loggers/io.codekvast
+Content-Type: application/json
+
+{
+    "configuredLevel": "DEBUG"
+}
+
+### Backoffice 1
+POST http://{{server1}}.codekvast.io:9082/management/loggers/io.codekvast
+Content-Type: application/json
+
+{
+    "configuredLevel": "DEBUG"
+}
+
+###

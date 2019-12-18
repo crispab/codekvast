@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -47,15 +48,24 @@ public class RestartableTransactionAspect {
 
     private final Random random = new Random();
 
-    @Around("execution(* io.codekvast..*(..)) && @annotation(io.codekvast.common.aspects.Restartable)")
-    public Object restartableMethod(ProceedingJoinPoint pjp) throws Throwable {
+    @Pointcut("execution(* *(..))")
+    private void methodExecution() {}
+
+    @Pointcut("within(io.codekvast..*)")
+    private void withinCodekvast() {}
+
+    @Pointcut("@annotation(io.codekvast.common.aspects.Restartable)")
+    private void anyRestartable() {}
+
+    @Around("anyRestartable() && methodExecution() && withinCodekvast()")
+    public Object restartableOperation(ProceedingJoinPoint pjp) throws Throwable {
         String joinPoint = pjp.toShortString();
-        logger.trace("Before {}", joinPoint);
-        int maxAttempt = 3;
+        logger.debug("Before {}", joinPoint);
+        final int maxAttempt = 3;
         for (int attempt = 1; attempt < maxAttempt; attempt++) {
             try {
                 Object result = pjp.proceed();
-                logger.trace("After {}", joinPoint);
+                logger.debug("After {}", joinPoint);
                 return result;
             } catch (Throwable t) {
                 if (isDeadlockException(t)) {
@@ -67,7 +77,7 @@ public class RestartableTransactionAspect {
                 }
             }
         }
-        logger.info("Executing a last attempt to retry deadlock at {}", joinPoint);
+        logger.warn("Executing a last attempt #{} to retry deadlock at {}", maxAttempt, joinPoint);
         return pjp.proceed();
     }
 

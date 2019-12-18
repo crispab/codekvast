@@ -63,6 +63,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
 
     @Override
     @Transactional
+    @Restartable
     public boolean importPublication(InvocationDataPublication2 publication) {
         logger.debug("Importing {}", publication);
         Instant startedAt = clock.instant();

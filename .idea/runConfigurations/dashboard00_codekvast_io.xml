@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="dashboard00.codekvast.io" type="Remote" folderName="Remote debug prod">
-    <module name="dashboard_main" />
+    <module name="codekvast.product.server.dashboard.main" />
     <option name="USE_SOCKET_TRANSPORT" value="true" />
     <option name="SERVER_MODE" value="false" />
     <option name="SHMEM_ADDRESS" />

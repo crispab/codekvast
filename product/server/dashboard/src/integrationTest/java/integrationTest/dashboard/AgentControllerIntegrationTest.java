@@ -124,24 +124,4 @@ public class AgentControllerIntegrationTest {
            .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
     }
 
-    @Test
-    public void should_retry_deadlock_loser_exception() throws Exception {
-        // given
-        GetConfigRequest2 request = GetConfigRequest2.sample();
-        GetConfigResponse2 response = GetConfigResponse2.sample();
-        when(agentService.getConfig(request))
-            .thenThrow(new DeadlockLoserDataAccessException("Thrown by mock #1", null))
-            .thenThrow(new RuntimeException(new SQLTransactionRollbackException("Detected Deadlock #2")))
-            .thenReturn(response);
-
-        // when
-        mvc.perform(post(V2_POLL_CONFIG)
-                        .accept(APPLICATION_JSON)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-           .andExpect(status().isOk())
-           .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-           .andExpect(jsonPath("$.codeBasePublisherName").value(response.getCodeBasePublisherName()));
-    }
-
 }

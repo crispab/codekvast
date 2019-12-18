@@ -21,7 +21,6 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
-import io.codekvast.common.aspects.Restartable;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
@@ -67,9 +66,8 @@ public class PublicationImporterImpl implements PublicationImporter {
     private final AgentService agentService;
 
     @Override
-    @Restartable
     public boolean importPublicationFile(File file) {
-        logger.info("Processing {}", file);
+        logger.info("Processing {}", file.getName());
         boolean handled;
         CorrelationIdHolder.set(agentService.getCorrelationIdFromPublicationFile(file));
         PublicationType publicationType = agentService.getPublicationTypeFromPublicationFile(file);
