@@ -119,11 +119,11 @@ export class MethodsComponentState {
     }
 
     getFilteredApplications() {
-        return this.applications.filter(a => a.toLowerCase().indexOf(this.searchState.applications.toLowerCase()) >= 0);
+        return this.applications.filter(a => a.toLowerCase().indexOf(this.searchState.applications.trim().toLowerCase()) >= 0);
     }
 
     getFilteredEnvironments() {
-        return this.environments.filter(a => a.toLowerCase().indexOf(this.searchState.environments.toLowerCase()) >= 0);
+        return this.environments.filter(a => a.toLowerCase().indexOf(this.searchState.environments.trim().toLowerCase()) >= 0);
     }
 
     search() {

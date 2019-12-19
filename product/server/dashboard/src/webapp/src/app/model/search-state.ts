@@ -9,10 +9,10 @@ export class SearchState {
     includeOnlyNeverInvokedMethods = false;
 
     public isShowingEverything() {
-        return this.environments === ''
-            && this.applications === ''
-            && this.hostnames === ''
-            && this.includeIfNotInvokedInDays === 0
-            && !this.includeOnlyNeverInvokedMethods;
+        return this.isEmpty(this.environments) && this.isEmpty(this.applications) && this.isEmpty(this.hostnames);
+    }
+
+    private isEmpty(s: string) {
+        return !s || s.trim().length === 0
     }
 }
