@@ -72,28 +72,28 @@ public class FactDAO {
     public Long addFact(Long customerId, PersistentFact fact) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int inserted = jdbcTemplate.update(new AddFactStatementCreator(customerId, getType(fact), gson.toJson(fact)), keyHolder);
-        long id = keyHolder.getKey().longValue();
+        long factId = keyHolder.getKey().longValue();
         if (inserted <= 0) {
-            logger.error("Attempt to insert duplicate fact {}:{}", id, customerId);
+            logger.error("Attempt to insert duplicate fact {}:{}", customerId, factId);
         }
-        return id;
+        return factId;
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void updateFact(Long id, Long customerId, PersistentFact fact) {
+    public void updateFact(Long customerId, Long factId, PersistentFact fact) {
         int updated = jdbcTemplate.update("UPDATE facts SET type = ?, data = ? WHERE id = ? AND customerId = ?",
-                                          getType(fact), gson.toJson(fact), id, customerId);
+                                          getType(fact), gson.toJson(fact), factId, customerId);
         if (updated <= 0) {
-            logger.error("Failed to update fact {}:{}", id, customerId);
+            logger.error("Failed to update fact {}:{}", customerId, factId);
         }
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void removeFact(Long id, Long customerId) {
+    public void removeFact(Long customerId, Long factId) {
         int deleted = jdbcTemplate
-            .update("DELETE FROM facts WHERE id = ? AND customerId = ?", id, customerId);
+            .update("DELETE FROM facts WHERE id = ? AND customerId = ?", factId, customerId);
         if (deleted <= 0) {
-            logger.error("Failed to delete fact {}:{}", id, customerId);
+            logger.error("Failed to delete fact {}:{}", customerId, factId);
         }
     }
 
@@ -105,7 +105,7 @@ public class FactDAO {
     private static class AddFactStatementCreator implements PreparedStatementCreator {
         private final Long customerId;
         private final String type;
-        private final String json;
+        private final String data;
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
@@ -113,7 +113,7 @@ public class FactDAO {
                                                         Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, customerId);
             ps.setString(2, type);
-            ps.setString(3, json);
+            ps.setString(3, data);
             return ps;
         }
     }

@@ -1,6 +1,7 @@
 package io.codekvast.backoffice.rules.impl;
 
 import io.codekvast.backoffice.facts.CollectionStarted;
+import io.codekvast.backoffice.facts.PersistentFact;
 import io.codekvast.backoffice.rules.RuleEngine;
 import io.codekvast.backoffice.service.MailSender;
 import io.codekvast.common.customer.CustomerData;
@@ -19,10 +20,10 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
 
 import static io.codekvast.backoffice.service.MailSender.Template.WELCOME_COLLECTION_HAS_STARTED;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -60,7 +61,7 @@ public class RuleEngineImplTest {
         val event = AgentPolledEvent.sample();
         Long customerId = event.getCustomerId();
         Long factId = 4711L;
-        when(factDAO.getFacts(customerId)).thenReturn(Collections.emptyList());
+        when(factDAO.getFacts(customerId)).thenReturn(emptyList());
         when(factDAO.addFact(eq(customerId), any(CollectionStarted.class))).thenReturn(factId);
         when(customerService.getCustomerDataByCustomerId(customerId))
             .thenReturn(CustomerData.sample()
@@ -71,8 +72,18 @@ public class RuleEngineImplTest {
 
         // then
         verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, "some-email-address", customerId);
-        verify(factDAO).updateFact(eq(factId), eq(customerId),
-                                   eq(new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), "some-email-address", NOW)));
+        PersistentFact collectionStarted = new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), "some-email-address", NOW);
+        verify(factDAO).updateFact(eq(customerId), eq(factId), eq(collectionStarted));
+
+        // given
+        reset(mailSender);
+        when(factDAO.getFacts(customerId)).thenReturn(singletonList(new FactWrapper(factId, collectionStarted)));
+
+        // when
+        ruleEngine.handle(event);
+
+        // then
+        verifyNoMoreInteractions(mailSender);
     }
 
     @Test
@@ -81,7 +92,7 @@ public class RuleEngineImplTest {
         val event = AgentPolledEvent.sample();
         Long customerId = event.getCustomerId();
         Long factId = 4711L;
-        when(factDAO.getFacts(customerId)).thenReturn(Collections.emptyList());
+        when(factDAO.getFacts(customerId)).thenReturn(emptyList());
         when(factDAO.addFact(eq(customerId), any(CollectionStarted.class))).thenReturn(factId);
         when(customerService.getCustomerDataByCustomerId(customerId))
             .thenReturn(CustomerData.sample()
@@ -100,7 +111,7 @@ public class RuleEngineImplTest {
         val event = AgentPolledEvent.sample();
         Long customerId = event.getCustomerId();
         Long factId = 4711L;
-        when(factDAO.getFacts(customerId)).thenReturn(Collections.emptyList());
+        when(factDAO.getFacts(customerId)).thenReturn(emptyList());
         when(factDAO.addFact(eq(customerId), any(CollectionStarted.class))).thenReturn(factId);
         when(customerService.getCustomerDataByCustomerId(customerId))
             .thenReturn(CustomerData.sample()
@@ -119,7 +130,7 @@ public class RuleEngineImplTest {
         long customerId = 1L;
         Long factId = 4711L;
         CollectionStarted fact = new CollectionStarted(NOW.minus(3, ChronoUnit.DAYS), null, null, null);
-        when(factDAO.getFacts(customerId)).thenReturn(List.of(new FactWrapper(factId, fact)));
+        when(factDAO.getFacts(customerId)).thenReturn(singletonList(new FactWrapper(factId, fact)));
 
         when(customerService.getCustomerDataByCustomerId(customerId))
             .thenReturn(CustomerData.sample().toBuilder().contactEmail(null).build());
@@ -139,7 +150,7 @@ public class RuleEngineImplTest {
 
         // then
         verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, "contactEmail", customerId);
-        verify(factDAO).updateFact(eq(factId), eq(customerId),
+        verify(factDAO).updateFact(eq(customerId), eq(factId),
                                    eq(new CollectionStarted(fact.getCollectionStartedAt(), fact.getTrialPeriodEndsAt(), "contactEmail",
                                                             NOW)));
     }

@@ -160,29 +160,29 @@ public class RuleEngineImpl implements RuleEngine {
         public void objectInserted(ObjectInsertedEvent event) {
             Object object = event.getObject();
             if (object instanceof PersistentFact) {
-                Long id = factDAO.addFact(customerId, (PersistentFact) object);
-                logger.debug("Added fact {}:{}:{}", id, customerId, object);
-                factHandleMap.put(event.getFactHandle(), id);
+                Long factId = factDAO.addFact(customerId, (PersistentFact) object);
+                logger.debug("Added fact {}:{}:{}", customerId, factId, object);
+                factHandleMap.put(event.getFactHandle(), factId);
             }
         }
 
         @Override
         public void objectUpdated(ObjectUpdatedEvent event) {
-            PersistentFact object = (PersistentFact) event.getObject();
-            Long id = factHandleMap.get(event.getFactHandle());
-            if (object instanceof PersistentFact && id != null) {
-                factDAO.updateFact(id, customerId, object);
-                logger.debug("Updated fact {}:{}:{}", id, customerId, object);
+            Object object = event.getObject();
+            Long factId = factHandleMap.get(event.getFactHandle());
+            if (object instanceof PersistentFact && factId != null) {
+                factDAO.updateFact(customerId, factId, (PersistentFact) object);
+                logger.debug("Updated fact {}:{}:{}", customerId, factId, object);
             }
         }
 
         @Override
         public void objectDeleted(ObjectDeletedEvent event) {
             Object object = event.getOldObject();
-            Long id = factHandleMap.get(event.getFactHandle());
-            if (object instanceof PersistentFact && id != null) {
-                factDAO.removeFact(id, customerId);
-                logger.debug("Deleted fact {}:{}:{}", id, customerId, object);
+            Long factId = factHandleMap.get(event.getFactHandle());
+            if (object instanceof PersistentFact && factId != null) {
+                factDAO.removeFact(customerId, factId);
+                logger.debug("Deleted fact {}:{}:{}", customerId, factId, object);
             }
         }
     }
