@@ -47,7 +47,7 @@ public interface PublicationMetricsService {
     /**
      * Record the fact that a publication was imported.
      *
-     * @param kind                       The kind of publication.
+     * @param type                       The type of publication.
      * @param size                       The size of the publication.
      * @param ignoredSyntheticSignatures The number of synthetic signatures that were ignored.
      * @param duration                   The time it took to import it.
