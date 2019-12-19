@@ -21,7 +21,7 @@ dependencies {
     implementation project(':product:agent:agent-model')
     implementation project(':product:server:common')
     implementation "com.google.code.gson:gson:$gsonVersion"
-    implementation 'org.springframework.retry:spring-retry:1.2.4.RELEASE'
+    implementation 'org.springframework.retry:spring-retry:1.2.5.RELEASE'
     
     runtimeOnly project(':product:server:db-migration')
 
