@@ -73,7 +73,7 @@
                                        id="includeOnlyNeverInvokedMethods"
                                        name="includeOnlyNeverInvokedMethods"
                                        type="checkbox"
-                                       [(ngModel)]="state.includeOnlyNeverInvokedMethods">
+                                       [(ngModel)]="state.searchState.includeOnlyNeverInvokedMethods">
                                 Only never invoked methods
                             </label>
                         </div>
@@ -93,7 +93,7 @@
                                 <input class="form-check-input"
                                        id="includeUntrackedMethods"
                                        name="includeUntrackedMethods"
-                                       [(ngModel)]="state.includeUntrackedMethods"
+                                       [(ngModel)]="state.searchState.includeUntrackedMethods"
                                        type="checkbox">Untracked methods</label>
                         </div>
                         <ng-template #untrackedPopover>
@@ -118,7 +118,7 @@
                             <input class="form-control col-auto"
                                    id="collectedDays"
                                    name="collectedDays"
-                                   [(ngModel)]="state.req.minCollectedDays"
+                                   [(ngModel)]="state.searchState.includeIfCollectedForAtLeastDays"
                                    required
                                    min="0"
                                    max="{{ state.minCollectedDaysMax() }}"
@@ -129,7 +129,7 @@
 
                             <ng-template #collectedDaysPopover>
                                 <p>Only include methods in the search results that have been tracked by Codekvast for
-                                    <b>at least {{ state.req.minCollectedDays }} days</b>.
+                                    <b>at least {{ state.searchState.includeIfCollectedForAtLeastDays }} days</b>.
                                 </p>
                                 <p *ngIf="state.retentionPeriodDays > 0">Codekvast applies a data retention period
                                     of {{ state.retentionPeriodDays }} days, so setting this value to something higher is useless.</p>
@@ -137,7 +137,7 @@
                         </div>
 
                         <label for="includeIfNotInvokedInDays" class="ml-1 col-auto"
-                               [class.text-secondary]="state.includeOnlyNeverInvokedMethods">
+                               [class.text-secondary]="state.searchState.includeOnlyNeverInvokedMethods">
                             Cutoff Date:</label>
                         <div class="input-group"
                              [ngbPopover]="cutoffDatePopover"
@@ -148,14 +148,14 @@
                             <input class="form-control col-auto"
                                    id="includeIfNotInvokedInDays"
                                    name="includeIfNotInvokedInDays"
-                                   [(ngModel)]="state.includeIfNotInvokedInDays"
+                                   [(ngModel)]="state.searchState.includeIfNotInvokedInDays"
                                    required
                                    min="0"
                                    max="3650"
                                    type="number"
-                                   [disabled]="state.includeOnlyNeverInvokedMethods">
+                                   [disabled]="state.searchState.includeOnlyNeverInvokedMethods">
                             <div class="input-group-append">
-                                <span class="input-group-text font-italic" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">days ago</span>
+                                <span class="input-group-text font-italic" [class.text-secondary]="state.searchState.includeOnlyNeverInvokedMethods">days ago</span>
                             </div>
 
                         </div>

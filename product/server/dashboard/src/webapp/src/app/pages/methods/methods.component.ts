@@ -54,7 +54,8 @@ export class MethodsComponent implements OnInit {
     }
 
     isProbablyGone(method: Method) {
-        return Method.isProbablyGone(method, MethodsComponent.PROBABLY_GONE_DAYS);
+        return this.state.searchState.isShowingEverything()
+            && Method.isProbablyGone(method, MethodsComponent.PROBABLY_GONE_DAYS);
     }
 
     getProbablyGoneDays() {

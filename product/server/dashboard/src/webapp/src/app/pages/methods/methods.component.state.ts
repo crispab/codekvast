@@ -21,9 +21,6 @@ export class MethodsComponentState {
 
 
     req = new GetMethodsRequest();
-    includeIfNotInvokedInDays = 30;
-    includeUntrackedMethods = false;
-    includeOnlyNeverInvokedMethods = false;
     data: MethodData;
     errorMessage: string;
     sortColumn = MethodsComponentState.SIGNATURE_COLUMN;
@@ -49,10 +46,13 @@ export class MethodsComponentState {
             this.retentionPeriodDays = data.retentionPeriodDays;
 
             if (this.firstTime) {
-                if (!this.searchState.environments && this.environments.map(a => a.toLowerCase()).filter(a => a.indexOf('prod') >= 0)) {
-                    this.searchState.environments = 'prod';
+                if (this.retentionPeriodDays > 0) {
+                    this.searchState.includeIfCollectedForAtLeastDays = this.retentionPeriodDays;
+                    this.searchState.includeIfNotInvokedInDays = Math.min(this.retentionPeriodDays, 7);
+                } else {
+                    this.searchState.includeIfCollectedForAtLeastDays = 30;
+                    this.searchState.includeIfNotInvokedInDays = 30;
                 }
-                this.req.minCollectedDays = this.retentionPeriodDays > 0 ? this.retentionPeriodDays : 30;
                 this.firstTime = false;
             }
         });
@@ -114,7 +114,7 @@ export class MethodsComponentState {
 
     getInvokedBefore(): Date {
         let d = new Date();
-        d.setDate(d.getDate() - this.includeIfNotInvokedInDays);
+        d.setDate(d.getDate() - this.searchState.includeIfNotInvokedInDays);
         return d;
     }
 
@@ -128,7 +128,8 @@ export class MethodsComponentState {
 
     search() {
         this.searching = true;
-        this.req.suppressUntrackedMethods = !this.includeUntrackedMethods;
+        this.req.suppressUntrackedMethods = !this.searchState.includeUntrackedMethods;
+        this.req.minCollectedDays = this.searchState.includeIfCollectedForAtLeastDays;
         this.req.onlyInvokedBeforeMillis = this.getCutoffTimeMillis();
         this.req.applications = this.getFilteredApplications();
         this.req.environments = this.getFilteredEnvironments();
@@ -185,7 +186,7 @@ export class MethodsComponentState {
     }
 
     private getCutoffTimeMillis(): number {
-        return this.includeOnlyNeverInvokedMethods ? 0 : this.getInvokedBefore().getTime();
+        return this.searchState.includeOnlyNeverInvokedMethods ? 0 : this.getInvokedBefore().getTime();
     }
 
 }
