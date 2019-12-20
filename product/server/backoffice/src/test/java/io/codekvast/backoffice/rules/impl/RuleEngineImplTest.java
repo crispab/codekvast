@@ -72,18 +72,10 @@ public class RuleEngineImplTest {
 
         // then
         verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, "some-email-address", customerId);
-        PersistentFact collectionStarted = new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), "some-email-address", NOW);
+        PersistentFact collectionStarted =
+            new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), "some-email-address", NOW);
         verify(factDAO).updateFact(eq(customerId), eq(factId), eq(collectionStarted));
 
-        // given
-        reset(mailSender);
-        when(factDAO.getFacts(customerId)).thenReturn(singletonList(new FactWrapper(factId, collectionStarted)));
-
-        // when
-        ruleEngine.handle(event);
-
-        // then
-        verifyNoMoreInteractions(mailSender);
     }
 
     @Test
@@ -117,6 +109,26 @@ public class RuleEngineImplTest {
             .thenReturn(CustomerData.sample()
                                     .toBuilder().contactEmail("  ! some-email-address")
                                     .build());
+        // when
+        ruleEngine.handle(event);
+
+        // then
+        verifyNoInteractions(mailSender);
+    }
+
+    @Test
+    public void should_not_send_welcome_email_twice_to_same_contactEmail() {
+        // given
+        val event = AgentPolledEvent.sample();
+        Long customerId = event.getCustomerId();
+        Long factId = 4711L;
+        when(factDAO.getFacts(customerId)).thenReturn(singletonList(new FactWrapper(factId,
+                                                                                    new CollectionStarted(event.getPolledAt(),
+                                                                                                          event.getTrialPeriodEndsAt(),
+                                                                                                          "some-email-address", NOW))));
+        when(customerService.getCustomerDataByCustomerId(customerId))
+            .thenReturn(CustomerData.sample().toBuilder().contactEmail("some-email-address").build());
+
         // when
         ruleEngine.handle(event);
 
