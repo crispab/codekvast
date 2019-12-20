@@ -33,12 +33,17 @@ import lombok.RequiredArgsConstructor;
  *
  * @author olle.hallin@crisp.se
  * @see "https://addons.heroku.com/provider/addons/codekvast/plans"
+ * @see "https://docs.google.com/spreadsheets/d/1FJN9YBk0Yxp6Npb0mW3yMQmcYSIrv_Tux3SOnjRTjvE/edit?folder=0B8WxpL3zK856WktGTDM5YUpIMG8#gid=0"
  */
 @Getter
 @RequiredArgsConstructor
 public enum PricePlanDefaults {
     DEMO(25_000, 1, 5, 5, 5, -1, 30),
-    TEST(25_000, 3, 7200, 600, 60, 60, 14);
+    TEST(25_000, 3, 3_600, 600, 60, 60, 14),
+    BRONZE(50_000, 25, 3_600, 900, 60, -1, 14),
+    SILVER(100_000, 250, 7_200, 1_200, 60, -1, 30),
+    GOLD(250_000, 1_000, 7_200, 1_800, 60, -1, 60),
+    PLATINUM(500_000, 3_000, 7_200, 1_800, 60, -1, 90);
 
     private final int maxMethods;
     private final int maxNumberOfAgents;
@@ -48,7 +53,11 @@ public enum PricePlanDefaults {
     private final int trialPeriodDays;
     private final int retentionPeriodDays;
 
-    public static PricePlanDefaults fromDatabaseName(String planName) {
+    public String toDatabaseName() {
+        return name().toLowerCase();
+    }
+
+    public static PricePlanDefaults ofDatabaseName(String planName) {
         return PricePlanDefaults.valueOf(planName.toUpperCase());
     }
 }

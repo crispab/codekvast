@@ -44,6 +44,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.time.Instant;
 import java.util.*;
@@ -66,10 +67,20 @@ public class CustomerServiceImpl implements CustomerService {
     private final CommonMetricsService metricsService;
     private final EventService eventService;
 
+    @PostConstruct
+    @Transactional
+    public void ensurePricePlansExistInDatabase() {
+        for (PricePlanDefaults pricePlanDefaults : PricePlanDefaults.values()) {
+            int updated = jdbcTemplate.update("INSERT IGNORE INTO price_plans(name) VALUE(?)", pricePlanDefaults.toDatabaseName());
+            if (updated > 0) {
+                logger.info("Inserted {} into price_plans", pricePlanDefaults.name());
+            }
+        }
+    }
+
     @Override
     @Transactional(readOnly = true)
     @Cacheable(CUSTOMERS_CACHE)
-
     public CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("c.licenseKey = ?", licenseKey);
@@ -288,7 +299,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         count = jdbcTemplate.update("DELETE FROM price_plan_overrides WHERE customerId = ?", customerData.getCustomerId());
         if (count > 0) {
-            PricePlan newEffectivePricePlan = PricePlan.of(PricePlanDefaults.fromDatabaseName(newPlanName));
+            PricePlan newEffectivePricePlan = PricePlan.of(PricePlanDefaults.ofDatabaseName(newPlanName));
             eventService.send(PlanOverridesDeletedEvent.builder()
                                                        .customerId(customerData.getCustomerId())
                                                        .oldEffectivePlan(oldEffectivePricePlan)
@@ -399,7 +410,7 @@ public class CustomerServiceImpl implements CustomerService {
         Timestamp createdAt = (Timestamp) result.get("createdAt");
         Timestamp collectionStartedAt = (Timestamp) result.get("collectionStartedAt");
         Timestamp trialPeriodEndsAt = (Timestamp) result.get("trialPeriodEndsAt");
-        PricePlanDefaults ppd = PricePlanDefaults.fromDatabaseName(planName);
+        PricePlanDefaults ppd = PricePlanDefaults.ofDatabaseName(planName);
 
         return CustomerData.builder()
                            .customerId((Long) result.get("id"))
@@ -446,7 +457,7 @@ public class CustomerServiceImpl implements CustomerService {
                                      .customerId(customerData.getCustomerId())
                                      .plan(pp.getName())
                                      .attemptedMethods(numberOfMethods)
-                                     .defaultMaxMethods(PricePlanDefaults.fromDatabaseName(pp.getName()).getMaxMethods())
+                                     .defaultMaxMethods(PricePlanDefaults.ofDatabaseName(pp.getName()).getMaxMethods())
                                      .effectiveMaxMethods(pp.getMaxMethods())
                                      .build());
 
