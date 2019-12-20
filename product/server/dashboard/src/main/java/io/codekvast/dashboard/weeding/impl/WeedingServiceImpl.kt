@@ -128,17 +128,17 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
     private fun findWeedingCandidatesForCustomer(cd: CustomerData): Int {
         var sum = 0
-        val retentionPeriodDays = cd.pricePlan.retentionPeriodDays
-        if (retentionPeriodDays > 0) {
+        val deadMarginSeconds = 600L
+        if (cd.pricePlan.retentionPeriodDays > 0) {
             var startedAt = clock.instant();
             val now = clock.instant()
-            val retentionPeriodStart = now.minus(retentionPeriodDays.toLong(), ChronoUnit.DAYS)
-            val deadIfNotPolledAfter = now.minus(5, ChronoUnit.MINUTES)
-            logger.debug("Finding dead agents and JVMs for customer {} which are older than {} days", cd.customerId, retentionPeriodDays)
 
-            var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE " +
-                "WHERE customerId = ? AND createdAt < ? AND lastPolledAt < ? ",
-                cd.customerId, Timestamp.from(retentionPeriodStart), Timestamp.from(deadIfNotPolledAfter))
+            val deadIfNotPolledForSeconds = cd.pricePlan.pollIntervalSeconds + deadMarginSeconds
+            val deadIfNotPolledAfter = Timestamp.from(now.minus(deadIfNotPolledForSeconds, ChronoUnit.SECONDS))
+            logger.debug("Finding dead agents for customer {} which have not polled in the last {} minutes", cd.customerId, deadIfNotPolledForSeconds / 60)
+
+            var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND lastPolledAt < ? ",
+                cd.customerId, deadIfNotPolledAfter)
             if (count == 0) {
                 logger.debug("Found no dead agents for customer {}", cd.customerId)
             } else {
@@ -146,8 +146,12 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             }
             sum += count
 
+            val deadIfNotPublishedForSeconds = cd.pricePlan.publishIntervalSeconds + deadMarginSeconds
+            val deadIfNotPublishedAfter = Timestamp.from(now.minus(deadIfNotPublishedForSeconds, ChronoUnit.SECONDS))
+            logger.debug("Finding dead JVMs for customer {} which have not published anything in the last {} minutes", cd.customerId, deadIfNotPublishedForSeconds / 60)
+
             count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? ",
-                cd.customerId, Timestamp.from(retentionPeriodStart))
+                cd.customerId, deadIfNotPublishedAfter)
             if (count == 0) {
                 logger.debug("Found no dead JVMs for customer {} in {}", cd.customerId, humanReadableDuration(startedAt, clock.instant()))
             } else {
