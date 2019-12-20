@@ -29,6 +29,6 @@ public class BackofficeIntegrationTest {
     public void should_send_mail() throws MessagingException {
         String recipient = System.getenv("RUN_MAIL_TESTS_SEND_TO");
         assumeTrue(recipient != null);
-        mailSender.sendMail(MailSender.Template.WELCOME_COLLECTION_HAS_STARTED, recipient, 1L);
+        mailSender.sendMail(MailSender.Template.WELCOME_TO_CODEKVAST, recipient, 1L);
     }
 }

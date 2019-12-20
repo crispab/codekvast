@@ -22,7 +22,7 @@ when
   $cs: CollectionStarted(welcomeMailSentTo == null)
   $cd: ContactDetails(contactEmail not matches "^!.*")
 then
-  mailSender.sendMail(MailSender.Template.WELCOME_COLLECTION_HAS_STARTED, $cd.getContactEmail(), customerId);
+  mailSender.sendMail(MailSender.Template.WELCOME_TO_CODEKVAST, $cd.getContactEmail(), customerId);
   modify($cs) {
     setWelcomeMailSentTo($cd.getContactEmail()),
     setWelcomeMailSentAt(clock.instant())

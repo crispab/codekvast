@@ -21,7 +21,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
-import static io.codekvast.backoffice.service.MailSender.Template.WELCOME_COLLECTION_HAS_STARTED;
+import static io.codekvast.backoffice.service.MailSender.Template.WELCOME_TO_CODEKVAST;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,7 +71,7 @@ public class RuleEngineImplTest {
         ruleEngine.handle(event);
 
         // then
-        verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, "some-email-address", customerId);
+        verify(mailSender).sendMail(WELCOME_TO_CODEKVAST, "some-email-address", customerId);
         PersistentFact collectionStarted =
             new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), "some-email-address", NOW);
         verify(factDAO).updateFact(eq(customerId), eq(factId), eq(collectionStarted));
@@ -161,7 +161,7 @@ public class RuleEngineImplTest {
         ruleEngine.handle(new AnyEvent(customerId));
 
         // then
-        verify(mailSender).sendMail(WELCOME_COLLECTION_HAS_STARTED, "contactEmail", customerId);
+        verify(mailSender).sendMail(WELCOME_TO_CODEKVAST, "contactEmail", customerId);
         verify(factDAO).updateFact(eq(customerId), eq(factId),
                                    eq(new CollectionStarted(fact.getCollectionStartedAt(), fact.getTrialPeriodEndsAt(), "contactEmail",
                                                             NOW)));

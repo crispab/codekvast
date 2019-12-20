@@ -50,9 +50,9 @@ public class MailTemplateRenderer {
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (template) {
-        case WELCOME_COLLECTION_HAS_STARTED:
+        case WELCOME_TO_CODEKVAST:
             Long customerId = (Long) args[0];
-            collectWelcomeCollectionHasStartedData(data, customerId);
+            collectWelcomeToCodekvastData(customerId, data);
             break;
         default:
             throw new IllegalArgumentException("Don't know how to render " + template);
@@ -61,7 +61,7 @@ public class MailTemplateRenderer {
         return compiler.withFormatter(new CodekvastFormatter()).loadTemplate(getTemplateName(template)).execute(data);
     }
 
-    private void collectWelcomeCollectionHasStartedData(Map<String, Object> data, Long customerId) {
+    private void collectWelcomeToCodekvastData(Long customerId, Map<String, Object> data) {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
         data.put("customerName", customerData.getDisplayName());
         data.put("pricePlan", customerData.getPricePlan());

@@ -32,7 +32,7 @@ public interface MailSender {
     @RequiredArgsConstructor
     @Getter
     enum Template {
-        WELCOME_COLLECTION_HAS_STARTED("Welcome to Codekvast!");
+        WELCOME_TO_CODEKVAST("Welcome to Codekvast!");
 
         private final String subject;
     }

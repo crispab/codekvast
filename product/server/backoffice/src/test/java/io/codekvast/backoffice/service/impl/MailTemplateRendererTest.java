@@ -22,7 +22,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
-import static io.codekvast.backoffice.service.MailSender.Template.WELCOME_COLLECTION_HAS_STARTED;
+import static io.codekvast.backoffice.service.MailSender.Template.WELCOME_TO_CODEKVAST;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -73,7 +73,7 @@ public class MailTemplateRendererTest {
         when(customerService.getCustomerDataByCustomerId(anyLong())).thenReturn(customerData);
 
         // when
-        String message = mailTemplateRenderer.renderTemplate(WELCOME_COLLECTION_HAS_STARTED, 1L).trim();
+        String message = mailTemplateRenderer.renderTemplate(WELCOME_TO_CODEKVAST, 1L).trim();
 
         // then
         verify(customerService).getCustomerDataByCustomerId(1L);
