@@ -97,7 +97,7 @@ public class RestartableTransactionAspect {
             return false;
         }
         String s = t.toString().toLowerCase();
-        if (s.contains("deadlock") || s.contains("lock wait timeout")) {
+        if (s.contains("try restarting transaction") || s.contains("deadlock") || s.contains("lock wait timeout")) {
             return true;
         }
         return isRetryableException(t.getCause());
