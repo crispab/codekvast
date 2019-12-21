@@ -30,7 +30,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Random;
+
+import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
 
 /**
  * A handler for @Restartable methods that encounters an exception that indicates that the transaction has encountered a deadlock or
@@ -63,6 +66,7 @@ public class RestartableTransactionAspect {
         logger.debug("Before {}", joinPoint);
         final int maxAttempt = 3;
         for (int attempt = 1; attempt < maxAttempt; attempt++) {
+            Instant startedAt = Instant.now();
             try {
                 Object result = pjp.proceed();
                 logger.debug("After {}", joinPoint);
@@ -70,14 +74,14 @@ public class RestartableTransactionAspect {
             } catch (Throwable t) {
                 if (isRetryableException(t)) {
                     int delayMillis = getRandomInt(10, 50);
-                    logger.info("Deadlock #{} at {}, will retry in {} ms. Cause={}.", attempt, joinPoint, delayMillis, getCause(t));
+                    logger.info("Deadlock #{} after {} in {}, will retry in {} ms. Cause={}.", attempt, humanReadableDuration(startedAt, Instant.now()), joinPoint, delayMillis, getCause(t));
                     Thread.sleep(delayMillis);
                 } else {
                     throw t;
                 }
             }
         }
-        logger.warn("Executing a last attempt #{} to retry deadlock at {}", maxAttempt, joinPoint);
+        logger.warn("Executing a last retry attempt at {}", joinPoint);
         return pjp.proceed();
     }
 
