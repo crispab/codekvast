@@ -53,10 +53,8 @@ public class LockManagerImpl implements LockManager {
     public Optional<Lock> acquireLock(Lock lock) {
         Lock acquiredLock = doAcquireLock(lock);
         if (acquiredLock != null) {
-            logger.trace("Acquired lock {}", acquiredLock);
             return Optional.of(acquiredLock);
         }
-        logger.info("Failed to acquire lock {}", lock);
         metricsService.countLockFailure(lock);
         return Optional.empty();
     }
@@ -85,12 +83,18 @@ public class LockManagerImpl implements LockManager {
                 }
             }
             if (locked) {
-                return lock.withConnection(connection).withAcquiredAt(clock.instant());
+                logger.trace("Acquired lock {}", lock);
+                Lock result = lock.withConnection(connection).withAcquiredAt(clock.instant());
+                // Prevent the connection from being closed in the finally block, it must remain open until the lock is released.
+                connection = null;
+                return result;
             }
+            logger.warn("Timeout when acquiring lock {}", lock);
         } catch (SQLException e) {
-            logger.error("Failed to acquire lock " + lock, e);
+            logger.warn("Failed to acquire lock " + lock, e);
+        } finally {
+            doClose(connection);
         }
-        doClose(connection);
         return null;
     }
 
@@ -107,7 +111,7 @@ public class LockManagerImpl implements LockManager {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Failed to release lock " + lock, e);
+            logger.warn("Failed to release lock " + lock, e);
         } finally {
             doClose(connection);
         }
