@@ -27,6 +27,7 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.*;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
+import io.codekvast.javaagent.model.v3.MethodSignature3;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.testsupport.docker.RabbitmqContainerReadyChecker;
@@ -651,6 +652,7 @@ public class DashboardIntegrationTest {
         assertThat(methodsFormData, is(GetMethodsFormData.builder()
                                                          .application(commonData.getAppName())
                                                          .environment(commonData.getEnvironment())
+                                                         .location("location")
                                                          .retentionPeriodDays(30)
                                                          .build()));
 
@@ -918,6 +920,7 @@ public class DashboardIntegrationTest {
         // then
         assertThat(getMethodsFormData.getApplications(), contains("app1", "app2", "app3", "app4"));
         assertThat(getMethodsFormData.getEnvironments(), contains("env1", "env2", "env3", "env4"));
+        assertThat(getMethodsFormData.getLocations(), contains("loc1", "loc2", "loc3"));
     }
 
     @Test(expected = AuthenticationException.class)
