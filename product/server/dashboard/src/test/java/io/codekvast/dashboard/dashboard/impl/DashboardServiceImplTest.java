@@ -176,7 +176,7 @@ public class DashboardServiceImplTest {
         when(customerService.getCustomerDataByCustomerId(eq(customerId))).thenReturn(customerData);
         //noinspection unchecked
         when(jdbcTemplate.queryForList(anyString(), eq(String.class), eq(customerId)))
-            .thenReturn(asList("app2", "app1", "app3"), asList("env2", "env1", "env3"));
+            .thenReturn(asList("app2", "app1", "app3"), asList("env2", "env1", "env3"), asList("loc2", "loc1", "loc3"));
 
         // when
         GetMethodsFormData formData = dashboardService.getMethodsFormData();
@@ -189,6 +189,9 @@ public class DashboardServiceImplTest {
                                                   .environment("env1")
                                                   .environment("env2")
                                                   .environment("env3")
+                                                  .location("loc1")
+                                                  .location("loc2")
+                                                  .location("loc3")
                                                   .retentionPeriodDays(ppd.getRetentionPeriodDays())
                                                   .build()));
     }

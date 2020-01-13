@@ -43,6 +43,10 @@ public class GetMethodsFormData {
     @Singular
     private final SortedSet<String> environments;
 
+    @NonNull
+    @Singular
+    private final SortedSet<String> locations;
+
     private final Integer retentionPeriodDays;
 
     public static GetMethodsFormData sample() {
@@ -51,6 +55,8 @@ public class GetMethodsFormData {
                                  .application("app1")
                                  .environment("env2")
                                  .environment("env1")
+                                 .location("shared-lib.jar")
+                                 .location("BOOT-INF/classes/")
                                  .retentionPeriodDays(14)
                                  .build();
     }

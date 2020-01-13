@@ -1,6 +1,7 @@
 export class GetMethodsRequest {
     applications: string[];
     environments: string[];
+    locations: string[];
     maxResults = 100;
     minCollectedDays = 30;
     normalizeSignature = true;

@@ -16,7 +16,7 @@
       <param>
         <option name="enabled" value="true" />
         <option name="name" value="codekvast.dataWeedingIntervalSeconds" />
-        <option name="value" value="15" />
+        <option name="value" value="84000" />
       </param>
       <param>
         <option name="name" value="codekvast.deleteImportedFiles" />
@@ -25,7 +25,7 @@
       <param>
         <option name="enabled" value="true" />
         <option name="name" value="codekvast.dataWeedingInitialDelaySeconds" />
-        <option name="value" value="10" />
+        <option name="value" value="1000000000" />
       </param>
     </additionalParameters>
     <method v="2">

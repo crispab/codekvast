@@ -92,12 +92,16 @@ public class DashboardServiceImpl implements DashboardService {
             whereClause += " AND m.signature LIKE :signature COLLATE utf8mb4_general_ci"; // Make it case-insensitive
         }
         if (request.getApplications() != null && !request.getApplications().isEmpty()) {
-            params.addValue("applicationIds", translateNamesToIds("applications", request.getApplications()));
+            params.addValue("applicationIds", translateNamesToIds("applications", "name", request.getApplications()));
             whereClause += " AND i.applicationId IN (:applicationIds)";
         }
         if (request.getEnvironments() != null && !request.getEnvironments().isEmpty()) {
-            params.addValue("environmentIds", translateNamesToIds("environments", request.getEnvironments()));
+            params.addValue("environmentIds", translateNamesToIds("environments", "name", request.getEnvironments()));
             whereClause += " AND i.environmentId IN (:environmentIds)";
+        }
+        if (request.getLocations() != null && !request.getLocations().isEmpty()) {
+            params.addValue("locationIds", translateNamesToIds("method_locations", "location", request.getLocations()));
+            whereClause += " AND ml.id IN (:locationIds)";
         }
 
         String sql = "SELECT m.id, m.signature, " +
@@ -105,7 +109,9 @@ public class DashboardServiceImpl implements DashboardService {
             "MAX(i.status) AS status, " +
             "MAX(i.invokedAtMillis) AS lastInvokedAtMillis, " +
             "MAX(i.timestamp) AS lastPublishedAt " +
-            "FROM invocations i INNER JOIN methods m ON i.methodId = m.id " +
+            "FROM invocations i " +
+            "  INNER JOIN methods m ON i.methodId = m.id " +
+            "  INNER JOIN method_locations ml ON ml.methodId = m.id " +
             "WHERE " + whereClause + " " +
             "GROUP BY m.id " +
             "HAVING latestCollectedSince <= :latestCollectedSince " +
@@ -158,14 +164,16 @@ public class DashboardServiceImpl implements DashboardService {
         return (int) (durationMillis / oneDayInMillis);
     }
 
-    private List<Long> translateNamesToIds(final String tableName, Collection<String> names) {
+    private List<Long> translateNamesToIds(final String tableName, String columnName, Collection<String> names) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("customerId", customerIdProvider.getCustomerId());
         params.addValue("names", names);
 
         List<Long> ids = namedParameterJdbcTemplate
-            .queryForList("SELECT id FROM " + tableName + " WHERE customerId = :customerId AND name IN (:names)", params, Long.class);
-        logger.debug("Mapped {} {} to {} for the customer {}", tableName, names, ids, customerIdProvider.getCustomerId());
+            .queryForList(String.format("SELECT id FROM %s WHERE customerId = :customerId AND %s IN (:names)", tableName, columnName),
+                          params, Long.class);
+        logger
+            .debug("Mapped {}.{} in ({}) to {} for the customer {}", tableName, columnName, names, ids, customerIdProvider.getCustomerId());
         return ids;
     }
 
@@ -303,14 +311,18 @@ public class DashboardServiceImpl implements DashboardService {
         Long customerId = customerIdProvider.getCustomerId();
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
 
+        List<String> applications =
+            jdbcTemplate.queryForList("SELECT DISTINCT name FROM applications WHERE customerId = ? ", String.class, customerId);
+
+        List<String> environments = jdbcTemplate.queryForList("SELECT DISTINCT name FROM environments WHERE customerId = ? ", String.class,
+                                                              customerId);
+        List<String> locations = jdbcTemplate.queryForList("SELECT DISTINCT location FROM method_locations WHERE customerId = ? ",
+                                                           String.class, customerId);
         return GetMethodsFormData
             .builder()
-            .applications(
-                jdbcTemplate
-                    .queryForList("SELECT name FROM applications WHERE customerId = ? ", String.class, customerId))
-            .environments(
-                jdbcTemplate.queryForList("SELECT name FROM environments WHERE customerId = ? ", String.class,
-                                          customerId))
+            .applications(applications)
+            .environments(environments)
+            .locations(locations)
             .retentionPeriodDays(customerData.getPricePlan().getRetentionPeriodDays())
             .build();
     }

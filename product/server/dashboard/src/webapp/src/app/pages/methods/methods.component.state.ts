@@ -31,6 +31,7 @@ export class MethodsComponentState {
     searchState: SearchState;
     applications: string[] = [];
     environments: string[] = [];
+    locations: string[] = [];
     retentionPeriodDays = -1;
     firstTime = true;
 
@@ -43,6 +44,7 @@ export class MethodsComponentState {
             console.log('[ck dashboard] methodsFormData=%o', data);
             this.applications = data.applications;
             this.environments = data.environments;
+            this.locations = data.locations;
             this.retentionPeriodDays = data.retentionPeriodDays;
 
             if (this.firstTime) {
@@ -126,6 +128,10 @@ export class MethodsComponentState {
         return this.environments.filter(a => a.toLowerCase().indexOf(this.searchState.environments.trim().toLowerCase()) >= 0);
     }
 
+    getFilteredLocations() {
+        return this.locations.filter(a => a.toLowerCase().indexOf(this.searchState.locations.trim().toLowerCase()) >= 0);
+    }
+
     search() {
         this.searching = true;
         this.req.suppressUntrackedMethods = !this.searchState.includeUntrackedMethods;
@@ -133,6 +139,7 @@ export class MethodsComponentState {
         this.req.onlyInvokedBeforeMillis = this.getCutoffTimeMillis();
         this.req.applications = this.getFilteredApplications();
         this.req.environments = this.getFilteredEnvironments();
+        this.req.locations = this.getFilteredLocations();
 
         this.api
             .getMethods(this.req)

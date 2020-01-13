@@ -127,6 +127,7 @@ public class DashboardApiControllerTest {
                .andExpect(status().isOk())
                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                .andExpect(jsonPath("$.applications").isArray())
-               .andExpect(jsonPath("$.environments").isArray());
+               .andExpect(jsonPath("$.environments").isArray())
+               .andExpect(jsonPath("$.locations").isArray());
     }
 }

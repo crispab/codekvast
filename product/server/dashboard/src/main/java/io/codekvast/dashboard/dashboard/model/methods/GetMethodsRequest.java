@@ -85,6 +85,8 @@ public class GetMethodsRequest {
 
     private final List<String> environments;
 
+    private final List<String> locations;
+
     public String getNormalizedSignature() {
         String result;
         if (!normalizeSignature) {
