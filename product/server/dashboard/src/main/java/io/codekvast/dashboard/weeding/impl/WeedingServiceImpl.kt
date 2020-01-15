@@ -130,35 +130,35 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         var sum = 0
         val deadMarginSeconds = 600L
         if (cd.pricePlan.retentionPeriodDays > 0) {
-            var startedAt = clock.instant();
+            var startedAt = clock.instant()
             val now = clock.instant()
 
             val deadIfNotPolledForSeconds = cd.pricePlan.pollIntervalSeconds + deadMarginSeconds
             val deadIfNotPolledAfter = Timestamp.from(now.minus(deadIfNotPolledForSeconds, ChronoUnit.SECONDS))
-            logger.debug("Finding dead agents for customer {} which have not polled in the last {} minutes", cd.customerId, deadIfNotPolledForSeconds / 60)
+            logger.debug("Finding dead agents for the customer {} which have not polled in the last {} minutes", cd.customerId, deadIfNotPolledForSeconds / 60)
 
             var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND lastPolledAt < ? ",
                 cd.customerId, deadIfNotPolledAfter)
             if (count == 0) {
-                logger.debug("Found no dead agents for customer {}", cd.customerId)
+                logger.debug("Found no dead agents for the customer {}", cd.customerId)
             } else {
-                logger.info("Marked {} agents as garbage for customer {}", count, cd.customerId)
+                logger.info("Marked {} agents as garbage for the customer {}", count, cd.customerId)
             }
             sum += count
 
             val deadIfNotPublishedForSeconds = cd.pricePlan.publishIntervalSeconds + deadMarginSeconds
             val deadIfNotPublishedAfter = Timestamp.from(now.minus(deadIfNotPublishedForSeconds, ChronoUnit.SECONDS))
-            logger.debug("Finding dead JVMs for customer {} which have not published anything in the last {} minutes", cd.customerId, deadIfNotPublishedForSeconds / 60)
+            logger.debug("Finding dead JVMs for the customer {} which have not published anything in the last {} minutes", cd.customerId, deadIfNotPublishedForSeconds / 60)
 
             count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? ",
                 cd.customerId, deadIfNotPublishedAfter)
             if (count == 0) {
-                logger.debug("Found no dead JVMs for customer {} in {}", cd.customerId, humanReadableDuration(startedAt, clock.instant()))
+                logger.debug("Found no dead JVMs for the customer {} in {}", cd.customerId, humanReadableDuration(startedAt, clock.instant()))
             } else {
-                logger.info("Marked {} JVMs as garbage for customer {} in {}", count, cd.customerId, humanReadableDuration(startedAt, clock.instant()))
+                logger.info("Marked {} JVMs as garbage for the customer {} in {}", count, cd.customerId, humanReadableDuration(startedAt, clock.instant()))
             }
 
-            startedAt = clock.instant();
+            startedAt = clock.instant()
             count = jdbcTemplate.update("UPDATE methods m, synthetic_signature_patterns p " +
                 "SET m.garbage = TRUE " +
                 "WHERE m.customerId = ? " +
@@ -166,9 +166,9 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                 "AND p.errorMessage IS NULL ",
                 cd.customerId)
             if (count == 0) {
-                logger.debug("Found no synthetic methods for customer {} in {}", cd.customerId, humanReadableDuration(startedAt, clock.instant()))
+                logger.debug("Found no synthetic methods for the customer {} in {}", cd.customerId, humanReadableDuration(startedAt, clock.instant()))
             } else {
-                logger.info("Marked {} methods as garbage for customer {} in {}", count, cd.customerId, humanReadableDuration(startedAt, clock.instant()))
+                logger.info("Marked {} methods as garbage for the customer {} in {}", count, cd.customerId, humanReadableDuration(startedAt, clock.instant()))
             }
             sum += count
         }

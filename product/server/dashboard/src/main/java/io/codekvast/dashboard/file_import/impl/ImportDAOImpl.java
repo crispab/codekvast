@@ -145,7 +145,6 @@ public class ImportDAOImpl implements ImportDAO {
     public void importMethods(CommonPublicationData2 data, ImportContext importContext, Collection<CodeBaseEntry3> entries) {
         long customerId = importContext.getCustomerId();
         long appId = importContext.getAppId();
-        long jvmId = importContext.getJvmId();
         long publishedAtMillis = importContext.getPublishedAtMillis();
         long environmentId = importContext.getEnvironmentId();
 
@@ -352,6 +351,7 @@ public class ImportDAOImpl implements ImportDAO {
         private final String visibility;
         private final String signature;
 
+        @SuppressWarnings("DuplicatedCode")
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 
@@ -386,6 +386,7 @@ public class ImportDAOImpl implements ImportDAO {
         private final long publishedAtMillis;
         private final CodeBaseEntry3 entry;
 
+        @SuppressWarnings("DuplicatedCode")
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 
