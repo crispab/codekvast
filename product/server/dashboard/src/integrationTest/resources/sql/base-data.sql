@@ -40,17 +40,27 @@ INSERT INTO environments (id, customerId, name, enabled) VALUES
   (3, 1, 'env3', TRUE),
   (4, 1, 'env4', FALSE);
 
-INSERT INTO methods (id, customerId, visibility, signature) VALUES
-  (1, 1, 'public', 'm1'),
-  (2, 1, 'public', 'm2'),
-  (3, 1, 'public', 'm3'),
-  (4, 1, 'public', 'm4'),
-  (5, 1, 'public', 'm5'),
-  (6, 1, 'public', 'm6'),
-  (7, 1, 'public', 'm7'),
-  (8, 1, 'public', 'm8'),
-  (9, 1, 'public', 'm9'),
-  (10, 1, 'public', 'm10');
+INSERT INTO packages(id, customerId, name) VALUES
+  (1, 1, 'p1'),
+  (2, 1, 'p2');
+
+INSERT INTO types(id, customerId, name) VALUES
+  (1, 1, 't1'),
+  (2, 1, 't2'),
+  (3, 1, 't3'),
+  (4, 1, 't4');
+
+INSERT INTO methods (id, customerId, visibility, signature, declaringType, packageName) VALUES
+  (1, 1, 'public', 'm1', 't1', 'p1'),
+  (2, 1, 'public', 'm2', 't2', 'p2'),
+  (3, 1, 'public', 'm3', 't3', 'p1'),
+  (4, 1, 'public', 'm4', 't4', 'p2'),
+  (5, 1, 'public', 'm5', 't1', 'p1'),
+  (6, 1, 'public', 'm6', 't2', 'p2'),
+  (7, 1, 'public', 'm7', 't3', 'p1'),
+  (8, 1, 'public', 'm8', 't4', 'p2'),
+  (9, 1, 'public', 'm9', 't1', 'p1'),
+  (10, 1, 'public', 'm10', 't2', 'p2');
 
 INSERT INTO method_locations(id, customerId, methodId, location) VALUES
        (1, 1, 1, 'loc1'),

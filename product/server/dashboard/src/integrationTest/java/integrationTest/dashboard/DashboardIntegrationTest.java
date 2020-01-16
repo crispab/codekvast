@@ -456,12 +456,15 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("applications"), is(0));
         assertThat(countRowsInTable("environments"), is(0));
         assertThat(countRowsInTable("jvms"), is(0));
+        assertThat(countRowsInTable("packages"), is(0));
+        assertThat(countRowsInTable("types"), is(0));
         assertThat(countRowsInTable("methods"), is(0));
         assertThat(countRowsInTable("method_locations"), is(0));
         assertThat(countRowsInTable("invocations"), is(0));
 
         //@formatter:off
-        CodeBaseEntry2 entry1 = CodeBaseEntry2.sampleCodeBaseEntry();CodeBasePublication2 publication = CodeBasePublication2.builder()
+        CodeBaseEntry2 entry1 = CodeBaseEntry2.sampleCodeBaseEntry();
+        CodeBasePublication2 publication = CodeBasePublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
             .entries(asList(
                 entry1,
@@ -481,6 +484,9 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("jvms WHERE uuid = ?", publication.getCommonData().getJvmUuid()), is(1));
         assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
         assertThat(countRowsInTable("method_locations"), is(0)); // location is not supported in CodeBaseEntry2
+        assertThat(countRowsInTable("packages WHERE name = ?", entry1.getMethodSignature().getPackageName()), is(1));
+        assertThat(countRowsInTable("types WHERE name = ?", entry1.getMethodSignature().getDeclaringType()), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
         assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(1));
     }
@@ -491,17 +497,20 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("applications"), is(0));
         assertThat(countRowsInTable("environments"), is(0));
         assertThat(countRowsInTable("jvms"), is(0));
+        assertThat(countRowsInTable("packages"), is(0));
+        assertThat(countRowsInTable("types"), is(0));
         assertThat(countRowsInTable("methods"), is(0));
         assertThat(countRowsInTable("invocations"), is(0));
 
         //@formatter:off
+        CodeBaseEntry3 entry1 = CodeBaseEntry3.sampleCodeBaseEntry();
         CodeBasePublication3 publication = CodeBasePublication3.builder()
-            .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(asList(CodeBaseEntry3.sampleCodeBaseEntry(),
-                           CodeBaseEntry3.sampleCodeBaseEntry().toBuilder()
-                                         .signature("customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
-                                         .build()))
-            .build();
+                                                               .commonData(CommonPublicationData2.sampleCommonPublicationData())
+                                                               .entries(asList(entry1,
+                                                                               entry1.toBuilder()
+                                                                                     .signature("customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
+                                                                                     .build()))
+                                                               .build();
         //@formatter:on
 
         // when
@@ -511,8 +520,10 @@ public class DashboardIntegrationTest {
         assertThat(countRowsInTable("applications WHERE name = ?", publication.getCommonData().getAppName()), is(1));
         assertThat(countRowsInTable("environments WHERE name = ?", publication.getCommonData().getEnvironment()), is(1));
         assertThat(countRowsInTable("jvms WHERE uuid = ?", publication.getCommonData().getJvmUuid()), is(1));
-        assertThat(countRowsInTable("methods WHERE signature = ?", publication.getEntries().iterator().next().getSignature()),
-                   is(1));
+        assertThat(countRowsInTable("packages WHERE name = ?", entry1.getMethodSignature().getPackageName()), is(1));
+        assertThat(countRowsInTable("types WHERE name = ?", entry1.getMethodSignature().getDeclaringType()), is(1));
+        assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
+        assertThat(countRowsInTable("method_locations WHERE location = ?", entry1.getMethodSignature().getLocation()), is(1));
         assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
         assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(1));
     }

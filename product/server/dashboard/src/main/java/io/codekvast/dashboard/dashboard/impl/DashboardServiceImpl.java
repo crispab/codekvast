@@ -382,12 +382,8 @@ public class DashboardServiceImpl implements DashboardService {
         private final List<MethodDescriptor1> result = new ArrayList<>();
         private QueryState queryState = new QueryState(-1L);
 
-        @Getter
-        private int rowCount;
-
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            this.rowCount += 1;
 
             String signature = rs.getString("signature");
             boolean bridge = rs.getBoolean("bridge");

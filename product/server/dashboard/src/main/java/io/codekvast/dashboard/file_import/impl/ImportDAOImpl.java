@@ -148,17 +148,72 @@ public class ImportDAOImpl implements ImportDAO {
         long publishedAtMillis = importContext.getPublishedAtMillis();
         long environmentId = importContext.getEnvironmentId();
 
+        Set<String> existingPackages = getExistingPackages(customerId);
+        Set<String> existingTypes = getExistingTypes(customerId);
         Map<String, Long> existingMethods = getExistingMethods(customerId);
         Set<String> incompleteMethods = getIncompleteMethods(customerId);
         Set<Long> invocationsNotFoundInCodeBase = getInvocationsNotFoundInCodeBase(customerId);
         Set<Long> existingMethodLocations = getExistingMethodLocations(customerId);
 
+        importNewPackages(customerId, publishedAtMillis, entries, existingPackages);
+        importNewTypes(customerId, publishedAtMillis, entries, existingTypes);
         importNewMethods(customerId, publishedAtMillis, entries, existingMethods);
         insertMethodLocations(customerId, entries, existingMethods, existingMethodLocations);
         updateIncompleteMethods(customerId, publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
         ensureInitialInvocations(data, customerId, appId, environmentId, entries, existingMethods);
 
         customerService.assertDatabaseSize(customerId);
+    }
+
+    private void importNewPackages(long customerId, long publishedAtMillis, Collection<CodeBaseEntry3> entries,
+                                   Set<String> existingPackages) {
+        long startedAtMillis = System.currentTimeMillis();
+        Timestamp createdAt = new Timestamp(publishedAtMillis);
+        int count = 0;
+        for (CodeBaseEntry3 entry : entries) {
+            MethodSignature3 methodSignature = entry.getMethodSignature();
+            if (methodSignature == null) {
+                logger.warn("Cannot import package name from {}, no methodSignature", entry);
+            } else {
+                String packageName = methodSignature.getPackageName();
+                if (!existingPackages.contains(packageName)) {
+                    int updated = jdbcTemplate
+                        .update("INSERT INTO packages(customerId, name, createdAt) VALUES (?, ?, ?)", customerId, packageName, createdAt);
+                    if (updated == 1) {
+                        existingPackages.add(packageName);
+                    } else {
+                        logger.warn("Failed to insert {}:{} into packages", customerId, packageName);
+                    }
+                    count += 1;
+                }
+            }
+        }
+        logger.debug("Imported {} packages in {} ms", count, System.currentTimeMillis() - startedAtMillis);
+    }
+
+    private void importNewTypes(long customerId, long publishedAtMillis, Collection<CodeBaseEntry3> entries, Set<String> existingTypes) {
+        long startedAtMillis = System.currentTimeMillis();
+        Timestamp createdAt = new Timestamp(publishedAtMillis);
+        int count = 0;
+        for (CodeBaseEntry3 entry : entries) {
+            MethodSignature3 methodSignature = entry.getMethodSignature();
+            if (methodSignature == null) {
+                logger.warn("Cannot import declaring type from {}, no methodSignature", entry);
+            } else {
+                String declaringType = methodSignature.getDeclaringType();
+                if (!existingTypes.contains(declaringType)) {
+                    int updated = jdbcTemplate
+                        .update("INSERT INTO types(customerId, name, createdAt) VALUES (?, ?, ?)", customerId, declaringType, createdAt);
+                    if (updated == 1) {
+                        existingTypes.add(declaringType);
+                    } else {
+                        logger.warn("Failed to insert {}:{} into types", customerId, declaringType);
+                    }
+                    count += 1;
+                }
+            }
+        }
+        logger.debug("Imported {} packages in {} ms", count, System.currentTimeMillis() - startedAtMillis);
     }
 
     @Override
@@ -189,6 +244,14 @@ public class ImportDAOImpl implements ImportDAO {
             logger.trace("Upserting invocation {}", signature);
             jdbcTemplate.update(new UpsertInvocationStatement(customerId, appId, environmentId, methodId, INVOKED, invokedAtMillis));
         }
+    }
+
+    private Set<String> getExistingPackages(long customerId) {
+        return new HashSet<>(jdbcTemplate.queryForList("SELECT name FROM packages WHERE customerId = ?", String.class, customerId));
+    }
+
+    private Set<String> getExistingTypes(long customerId) {
+        return new HashSet<>(jdbcTemplate.queryForList("SELECT name FROM types WHERE customerId = ?", String.class, customerId));
     }
 
     private Map<String, Long> getExistingMethods(long customerId) {
