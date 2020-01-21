@@ -112,7 +112,8 @@ public class DashboardServiceImpl implements DashboardService {
             "  INNER JOIN method_locations ml ON ml.methodId = m.id " +
             "WHERE " + whereClause + " " +
             "GROUP BY i.methodId " +
-            "HAVING latestCollectedSince <= :latestCollectedSince ";
+            "HAVING latestCollectedSince <= :latestCollectedSince " +
+            "ORDER BY lastInvokedAtMillis ";
 
         List<MethodDescriptor2> methods = new ArrayList<>(request.getMaxResults());
 
