@@ -15,13 +15,13 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="codekvast@db00.codekvast.io" read-only="true" uuid="d31abc57-7e7d-41b1-8517-d46701e39f8b">
+    <data-source source="LOCAL" name="codekvast@prod" read-only="true" uuid="d31abc57-7e7d-41b1-8517-d46701e39f8b">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://db00.codekvast.io:3306/codekvast</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="codekvast@db-staging00.codekvast.io" uuid="14b18f70-8dc6-4aa7-a9f1-4e4eed2f67f2">
+    <data-source source="LOCAL" name="codekvast@staging" uuid="14b18f70-8dc6-4aa7-a9f1-4e4eed2f67f2">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>

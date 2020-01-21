@@ -81,8 +81,6 @@ public class DashboardServiceImpl implements DashboardService {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("latestCollectedSince", clock.instant().minus(request.getMinCollectedDays(), DAYS));
         params.addValue("now", new Timestamp(clock.millis()));
-        params.addValue("onlyInvokedAfterMillis", request.getOnlyInvokedAfterMillis());
-        params.addValue("onlyInvokedBeforeMillis", request.getOnlyInvokedBeforeMillis());
         params.addValue("customerId", customerId);
         String whereClause = "i.customerId = :customerId";
 
@@ -113,9 +111,8 @@ public class DashboardServiceImpl implements DashboardService {
             "  INNER JOIN methods m ON i.methodId = m.id " +
             "  INNER JOIN method_locations ml ON ml.methodId = m.id " +
             "WHERE " + whereClause + " " +
-            "GROUP BY m.id " +
-            "HAVING latestCollectedSince <= :latestCollectedSince " +
-            "AND lastInvokedAtMillis BETWEEN :onlyInvokedAfterMillis AND :onlyInvokedBeforeMillis\n";
+            "GROUP BY i.methodId " +
+            "HAVING latestCollectedSince <= :latestCollectedSince ";
 
         List<MethodDescriptor2> methods = new ArrayList<>(request.getMaxResults());
 
@@ -133,13 +130,23 @@ public class DashboardServiceImpl implements DashboardService {
                 return;
             }
 
+            Long lastInvokedAtMillis = pricePlan.adjustTimestampMillis(rs.getLong("lastInvokedAtMillis"), clock);
+            if (lastInvokedAtMillis > request.getOnlyInvokedBeforeMillis()) {
+                logger.trace("Suppressing method invoked after requested range");
+                return;
+            }
+            if (lastInvokedAtMillis < request.getOnlyInvokedAfterMillis()) {
+                logger.trace("Suppressing method invoked before requested range");
+                return;
+            }
+
             methods.add(
                 MethodDescriptor2.builder()
                                  .id(rs.getLong("id"))
                                  .signature(signature)
                                  .trackedPercent(status.isTracked() ? 100 : 0)
-                                 .collectedDays(getCollectedDays(rs.getTimestamp("latestCollectedSince")))
-                                 .lastInvokedAtMillis(pricePlan.adjustTimestampMillis(rs.getLong("lastInvokedAtMillis"), clock))
+                                 .collectedDays(pricePlan.adjustCollectedDays(getCollectedDays(rs.getTimestamp("latestCollectedSince"))))
+                                 .lastInvokedAtMillis(lastInvokedAtMillis)
                                  .collectedToMillis(rs.getTimestamp("lastPublishedAt").getTime())
                                  .build());
         });

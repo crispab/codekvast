@@ -123,7 +123,7 @@ public class PricePlan {
             return realTimestampMillis;
         }
         long retentionPeriodStart = clock.instant().minus(retentionPeriodDays, DAYS).toEpochMilli();
-        return realTimestampMillis < retentionPeriodStart ? retentionPeriodStart : realTimestampMillis;
+        return Math.max(realTimestampMillis, retentionPeriodStart);
     }
 
     public static PricePlan of(PricePlanDefaults ppd) {
