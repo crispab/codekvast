@@ -197,7 +197,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         MethodDescriptorRowCallbackHandler rch = new MethodDescriptorRowCallbackHandler(pricePlan);
         namedParameterJdbcTemplate.query("SELECT i.methodId, a.name AS appName, j.applicationVersion AS appVersion,\n" +
-                                             "  e.name AS envName, i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.hostname, j" +
+                                             "  e.name AS envName, i.invokedAtMillis, i.createdAt, i.status, j.publishedAt, j.hostname, j" +
                                              ".tags,\n" +
                                              "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m" +
                                              ".modifiers," +
@@ -406,7 +406,7 @@ public class DashboardServiceImpl implements DashboardService {
             }
 
             queryState.countRow();
-            long startedAt = pricePlan.adjustTimestampMillis(rs.getTimestamp("j.startedAt").getTime(), clock);
+            long createdAt = pricePlan.adjustTimestampMillis(rs.getTimestamp("i.createdAt").getTime(), clock);
             long publishedAt = pricePlan.adjustTimestampMillis(rs.getTimestamp("j.publishedAt").getTime(), clock);
             long invokedAtMillis = pricePlan.adjustTimestampMillis(rs.getLong("i.invokedAtMillis"), clock);
 
@@ -418,7 +418,7 @@ public class DashboardServiceImpl implements DashboardService {
                                            .builder()
                                            .name(appName)
                                            .version(appVersion)
-                                           .startedAtMillis(startedAt)
+                                           .startedAtMillis(createdAt)
                                            .publishedAtMillis(publishedAt)
                                            .invokedAtMillis(invokedAtMillis)
                                            .status(SignatureStatus2.valueOf(rs.getString("i.status")))
@@ -428,7 +428,7 @@ public class DashboardServiceImpl implements DashboardService {
                                                             .name(rs.getString("envName"))
                                                             .hostname(rs.getString("j.hostname"))
                                                             .tags(splitOnCommaOrSemicolon(rs.getString("j.tags")))
-                                                            .collectedSinceMillis(startedAt)
+                                                            .collectedSinceMillis(createdAt)
                                                             .collectedToMillis(publishedAt)
                                                             .invokedAtMillis(invokedAtMillis)
                                                             .build().computeFields());
