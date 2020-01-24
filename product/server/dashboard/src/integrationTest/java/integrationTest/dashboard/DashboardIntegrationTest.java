@@ -27,7 +27,6 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.*;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
-import io.codekvast.javaagent.model.v3.MethodSignature3;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.testsupport.docker.RabbitmqContainerReadyChecker;
@@ -197,6 +196,13 @@ public class DashboardIntegrationTest {
 
     @After
     public void afterTest() {
+        // Evict the customer cache
+        try {
+            customerService.changePlanForExternalId("test", "external-1", "demo");
+        } catch (Exception ignore) {
+            // do nothing
+        }
+
         setSecurityContextCustomerId(null);
         for (Optional<Lock> heldLock : heldLocks) {
             heldLock.ifPresent(lockManager::releaseLock);
@@ -399,7 +405,7 @@ public class DashboardIntegrationTest {
     public void should_start_trial_period_at_first_agent_poll() {
         // given
         Instant now = Instant.now();
-        jdbcTemplate.update("UPDATE customers SET plan = 'test', collectionStartedAt = NULL, trialPeriodEndsAt = NULL WHERE id = 1");
+        customerService.changePlanForExternalId("test", "external-1", "test");
         CustomerData customerData = customerService.getCustomerDataByCustomerId(1L);
 
         assertThat(customerData.getPricePlan().getTrialPeriodDays(), is(PricePlanDefaults.TEST.getTrialPeriodDays()));

@@ -2,6 +2,8 @@ DELETE FROM agent_state;
 DELETE FROM users;
 DELETE FROM invocations;
 DELETE FROM methods;
+DELETE FROM types;
+DELETE FROM packages;
 DELETE FROM jvms;
 DELETE FROM applications;
 DELETE FROM environments;
