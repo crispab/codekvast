@@ -91,4 +91,4 @@ spring:
     output.ansi.enabled: detect
     cache:
         caffeine:
-            spec: 'expireAfterAccess=10m, weakKeys, weakValues, recordStats'
+            spec: 'expireAfterAccess=10m'

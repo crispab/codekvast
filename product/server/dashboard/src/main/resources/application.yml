@@ -93,6 +93,6 @@ spring:
         scheduling.pool.size: 5
     cache:
         caffeine:
-            spec: 'expireAfterAccess=10m, weakKeys, weakValues, recordStats'
+            spec: 'expireAfterAccess=10m, recordStats'
 
 springfox.documentation.swagger.v2.path: /api-docs
