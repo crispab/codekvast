@@ -27,9 +27,6 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.*;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
-import io.codekvast.testsupport.docker.DockerContainer;
-import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
-import io.codekvast.testsupport.docker.RabbitmqContainerReadyChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -49,6 +46,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.containers.RabbitMQContainer;
 
 import javax.inject.Inject;
 import java.io.BufferedOutputStream;
@@ -85,56 +84,27 @@ import static org.junit.Assume.assumeTrue;
 @Transactional
 public class DashboardIntegrationTest {
 
-    private static final int PORT = 3306;
     private static final String DATABASE = "codekvast";
     private static final String USERNAME = "codekvast";
     private static final String PASSWORD = "codekvast";
 
     @ClassRule
-    public static DockerContainer mariadb = DockerContainer
-        .builder()
-        .imageName("mariadb:10.4")
-        .port("" + PORT)
-
-        .env("MYSQL_ROOT_PASSWORD=root")
-        .env("MYSQL_DATABASE=" + DATABASE)
-        .env("MYSQL_USER=" + USERNAME)
-        .env("MYSQL_PASSWORD=" + PASSWORD)
-        .env("MYSQL_INITDB_SKIP_TZINFO=true")
-
-        .readyChecker(
-            MariaDbContainerReadyChecker.builder()
-                                        .hostname("localhost")
-                                        .internalPort(PORT)
-                                        .database(DATABASE)
-                                        .username(USERNAME)
-                                        .password(PASSWORD)
-                                        .timeoutSeconds(300)
-                                        .assignJdbcUrlToSystemProperty("spring.datasource.url")
-                                        .build())
-        .build();
+    public static MariaDBContainer mariaDB = (MariaDBContainer) new MariaDBContainer("mariadb:10.4")
+        .withDatabaseName(DATABASE)
+        .withUsername(USERNAME)
+        .withPassword(PASSWORD)
+        .withEnv("MYSQL_INITDB_SKIP_TZINFO", "true");
 
     @ClassRule
-    public static DockerContainer rabbitmq = DockerContainer.builder()
-                                                            .imageName("rabbitmq:3.8-management-alpine")
-                                                            .port("5672")
+    public static RabbitMQContainer rabbitMQ = new RabbitMQContainer("rabbitmq:3.8-management-alpine")
+        .withVhost("/")
+        .withUser("admin", "secret");
 
-                                                            .env("RABBITMQ_DEFAULT_VHOST=/")
-                                                            .env("RABBITMQ_DEFAULT_USER=admin")
-                                                            .env("RABBITMQ_DEFAULT_PASS=secret")
-
-                                                            .readyChecker(
-                                                                RabbitmqContainerReadyChecker.builder()
-                                                                                             .host("localhost")
-                                                                                             .internalPort(5672)
-                                                                                             .vhost("/")
-                                                                                             .timeoutSeconds(30)
-                                                                                             .username("admin")
-                                                                                             .password("secret")
-                                                                                             .assignRabbitUrlToSystemProperty(
-                                                                                                 "spring.rabbitmq.addresses")
-                                                                                             .build())
-                                                            .build();
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("spring.datasource.url", mariaDB.getJdbcUrl());
+        System.setProperty("spring.rabbitmq.addresses", rabbitMQ.getAmqpUrl());
+    }
 
     @ClassRule
     public static final SpringClassRule springClassRule = new SpringClassRule();
@@ -191,7 +161,8 @@ public class DashboardIntegrationTest {
 
     @Before
     public void beforeTest() {
-        assumeTrue(mariadb.isRunning());
+        assumeTrue(mariaDB.isRunning());
+        assumeTrue(rabbitMQ.isRunning());
     }
 
     @After

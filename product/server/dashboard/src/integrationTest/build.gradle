@@ -5,8 +5,9 @@ testSets {
 }
 
 dependencies {
-    integrationTestCompile project(':product:testsupport')
     integrationTestCompile 'org.springframework.amqp:spring-rabbit'
+    integrationTestCompile 'org.testcontainers:mariadb:1.12.5'
+    integrationTestCompile 'org.testcontainers:rabbitmq:1.12.5'
 }
 
 integrationTest {
