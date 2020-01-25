@@ -1,22 +1,22 @@
 ext {
     aspectjVersion = '1.9.5'
-    flywayVersion = '6.1.2'
+    flywayVersion = '6.2.0'
     gsonVersion = '2.8.6'
     jacocoVersion = '0.8.5'
     mariadbVersion = '10.4'
     rabbitmqVersion = '3.8-management-alpine' // Same as in the Ansible playbook rabbitmq.yml
     seleniumVersion = '3.141.59'
-    springBootVersion = '2.2.2.RELEASE'
+    springBootVersion = '2.2.4.RELEASE'
     springfoxVersion = '2.9.2'
     wiremockVersion = '2.25.1'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
     logback = 'ch.qos.logback:logback-classic:1.2.3'
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.5.2'
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.5.3'
     slf4jApi = 'org.slf4j:slf4j-api:1.7.30'
     testFrameworks = [
-        'junit:junit:4.12',
+        'junit:junit:4.13',
         'org.hamcrest:hamcrest-core:2.2',
         'org.hamcrest:hamcrest-library:2.2',
         'org.mockito:mockito-core:3.2.4',
