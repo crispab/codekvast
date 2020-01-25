@@ -7,7 +7,6 @@ import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import io.codekvast.javaagent.util.FileUtils;
-import io.codekvast.testsupport.ProcessUtils;
 import lombok.RequiredArgsConstructor;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -15,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +24,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.*;
 import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeTrue;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
@@ -123,7 +122,7 @@ public class JavaAgentIntegrationTest {
         List<String> command = buildJavaCommand(null);
 
         // when
-        String stdout = ProcessUtils.executeCommand(command);
+        String stdout = executeCommand(command);
 
         // then
         assertThat(stdout, containsString("No configuration file found, Codekvast will not start"));
@@ -138,7 +137,7 @@ public class JavaAgentIntegrationTest {
         List<String> command = buildJavaCommand("foobar");
 
         // when
-        String stdout = ProcessUtils.executeCommand(command);
+        String stdout = executeCommand(command);
 
         // then
         assertThat(stdout, containsString("Trying foobar"));
@@ -155,7 +154,7 @@ public class JavaAgentIntegrationTest {
         List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
 
         // when
-        String stdout = ProcessUtils.executeCommand(command);
+        String stdout = executeCommand(command);
 
         // then
         assertThat(stdout, containsString("Codekvast is disabled"));
@@ -191,7 +190,7 @@ public class JavaAgentIntegrationTest {
         List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
 
         // when
-        String stdout = ProcessUtils.executeCommand(command);
+        String stdout = executeCommand(command);
         System.out.printf("stdout from the JVM is%n--------------------------------------------------%n%s%n--------------------------------------------------%n%n", stdout);
 
         // then
@@ -252,6 +251,29 @@ public class JavaAgentIntegrationTest {
         command.add("sample.app.SampleApp");
         System.out.printf("%nLaunching SampleApp with the command: %s%n%n", command);
         return command;
+    }
+
+    private String executeCommand(List<String> command) throws RuntimeException, IOException, InterruptedException {
+        Process process = new ProcessBuilder().command(command).redirectErrorStream(true).start();
+        int exitCode = process.waitFor();
+        String output = collectProcessOutput(process.getInputStream());
+        if (exitCode != 0) {
+            throw new RuntimeException(String.format("Could not execute '%s': %s%nExit code=%d", command, output, exitCode));
+        }
+
+        return output;
+    }
+
+    private String collectProcessOutput(InputStream inputStream) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        String line;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String newLine = "";
+        while ((line = reader.readLine()) != null) {
+            sb.append(newLine).append(line);
+            newLine = String.format("%n");
+        }
+        return sb.toString();
     }
 
 }

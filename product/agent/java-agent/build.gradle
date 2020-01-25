@@ -35,7 +35,6 @@ dependencies {
 
     testImplementation testFrameworks
 
-    integrationTestCompile project(":product:testsupport")
     integrationTestCompile "com.github.tomakehurst:wiremock:$wiremockVersion"
     integrationTestRuntime logback
 

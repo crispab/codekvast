@@ -51,6 +51,9 @@
       <module name="codekvast.product.server-login_test" target="11" />
       <module name="codekvast.product.server.rule-engine.main" target="11" />
       <module name="codekvast.product.server.rule-engine.test" target="11" />
+      <module name="codekvast.product.testsupport.integrationTest" target="1.8" />
+      <module name="codekvast.product.testsupport.main" target="1.8" />
+      <module name="codekvast.product.testsupport.test" target="1.8" />
       <module name="codekvast.sample-jenkins1_main" target="11" />
       <module name="codekvast.sample-jenkins1_test" target="11" />
       <module name="codekvast.sample-jenkins2_main" target="11" />
