@@ -91,7 +91,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             deletedEnvironments = jdbcTemplate.update("""
                 DELETE e FROM environments AS e
                 LEFT JOIN jvms AS j ON e.id = j.environmentId
-                WHERE j.environmentId IS NULL""")
+                WHERE e.enabled = TRUE AND j.environmentId IS NULL""")
             deletedRows += deletedEnvironments
         }
 

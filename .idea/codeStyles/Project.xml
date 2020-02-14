@@ -222,9 +222,6 @@
       <option name="EXPR_CASE_THEN_WRAP" value="true" />
       <option name="PRIMARY_KEY_NAME_TEMPLATE" value="{table}_{columns}_pk" />
     </MSSQLCodeStyleSettings>
-    <MarkdownNavigatorCodeStyleSettings>
-      <option name="RIGHT_MARGIN" value="72" />
-    </MarkdownNavigatorCodeStyleSettings>
     <MySQLCodeStyleSettings version="0">
       <option name="myVersion" value="0" />
       <option name="ALIAS_CASE" value="4" />
