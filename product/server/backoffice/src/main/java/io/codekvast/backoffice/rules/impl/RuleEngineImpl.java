@@ -31,6 +31,7 @@ import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.drools.core.base.MapGlobalResolver;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -131,12 +132,20 @@ public class RuleEngineImpl implements RuleEngine {
         // Add this event as a transient fact...
         session.insert(event);
 
-        // Attach an event listener that will persist all changes caused by the event...
+        // Attach an event listener that will persist all changes caused by fired rules...
         session.addEventListener(new PersistentFactEventListener(factHandleMap, customerId));
 
         // Fire the rules...
         session.fireAllRules();
+
+        // Work-around a memory leak
+        MapGlobalResolver globals = (MapGlobalResolver) session.getGlobals();
+        globals.clear();
+        // End work-around
+
+        // Cleanup...
         session.dispose();
+
         logger.debug("Rules executed in {}", humanReadableDuration(startedAt, clock.instant()));
     }
 
@@ -146,7 +155,7 @@ public class RuleEngineImpl implements RuleEngine {
         Optional.ofNullable(customerService.getCustomerDataByCustomerId(customerId).getContactEmail())
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .ifPresent( s-> result.add(ContactDetails.builder().contactEmail(s).build()));
+                .ifPresent(s -> result.add(ContactDetails.builder().contactEmail(s).build()));
 
         return result;
     }
