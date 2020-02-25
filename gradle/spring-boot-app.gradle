@@ -8,6 +8,14 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 apply plugin: 'org.unbroken-dome.test-sets'
 
+configurations {
+    developmentOnly
+
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
 dependencies {
     // Annotation processors
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -15,7 +23,8 @@ dependencies {
 
     implementation 'javax.inject:javax.inject:1'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
-    implementation 'org.springframework.boot:spring-boot-devtools'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
