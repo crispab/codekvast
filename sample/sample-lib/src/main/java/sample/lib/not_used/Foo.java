@@ -1,9 +1,7 @@
 package sample.lib.not_used;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 interface Foo {
-    @SuppressWarnings("unused")
-    int doSomeStuff();
+  @SuppressWarnings("unused")
+  int doSomeStuff();
 }

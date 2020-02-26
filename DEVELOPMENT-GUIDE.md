@@ -139,12 +139,13 @@ Preconditions:
 **Intellij Ultimate Edition 2019+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
-1. Angular 2 TypeScript Live Templates (optional)
-1. JavaScript Support (optional)
-1. Karma (optional)
-1. Git (optional)
-1. Github (optional)
-1. Docker (optional)
+2. Google Java Format (required)
+3. Angular 2 TypeScript Live Templates (optional)
+4. JavaScript Support (optional)
+5. Karma (optional)
+6. Git (optional)
+7. Github (optional)
+8. Docker (optional)
 
 Do like this to open Codekvast in Intellij the first time:
 
@@ -168,12 +169,15 @@ After the import, some settings must be changed:
 ### Java
 
 The general editor config for IDEA is stored in `.editorconfig`.
+For Java and IDEA, The `google-java-format` plugin is **required**!
+
 If you use some other IDE, please make sure to format the code in format as close to this as possible.
+The google-java-format is available for the major IDEs.
 
 Most important rules:
 
 1. **INDENT WITH SPACES**!
-1. Indentation: 4 spaces
+1. Indentation: 2 spaces
 1. Line length: 140
 1. Charset: UTF-8
 

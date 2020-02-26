@@ -33,27 +33,27 @@ import lombok.extern.java.Log;
  */
 @Log
 public class InvocationDataPublisherFactoryImpl implements InvocationDataPublisherFactory {
-    /**
-     * Creates an instance of the InvocationDataPublisher strategy.
-     *
-     * @param name   The name of the strategy to create.
-     * @param config Is passed to the created strategy.
-     * @return A configured implementation of InvocationDataPublisher
-     */
-
-    @Override
-    public InvocationDataPublisher create(String name, AgentConfig config) {
-        if (name.equals(NoOpInvocationDataPublisherImpl.NAME)) {
-            return new NoOpInvocationDataPublisherImpl(config);
-        }
-
-        if (name.equals(HttpInvocationDataPublisherImpl.NAME)) {
-            return new HttpInvocationDataPublisherImpl(config);
-        }
-
-        logger.warning(
-            String.format("Unrecognized invocation data publisher name: '%s', will use %s", name, NoOpInvocationDataPublisherImpl.NAME));
-        return new NoOpInvocationDataPublisherImpl(config);
+  /**
+   * Creates an instance of the InvocationDataPublisher strategy.
+   *
+   * @param name The name of the strategy to create.
+   * @param config Is passed to the created strategy.
+   * @return A configured implementation of InvocationDataPublisher
+   */
+  @Override
+  public InvocationDataPublisher create(String name, AgentConfig config) {
+    if (name.equals(NoOpInvocationDataPublisherImpl.NAME)) {
+      return new NoOpInvocationDataPublisherImpl(config);
     }
 
+    if (name.equals(HttpInvocationDataPublisherImpl.NAME)) {
+      return new HttpInvocationDataPublisherImpl(config);
+    }
+
+    logger.warning(
+        String.format(
+            "Unrecognized invocation data publisher name: '%s', will use %s",
+            name, NoOpInvocationDataPublisherImpl.NAME));
+    return new NoOpInvocationDataPublisherImpl(config);
+  }
 }

@@ -21,6 +21,9 @@
  */
 package io.codekvast.dashboard.agent.impl;
 
+import static io.codekvast.common.util.LoggingUtils.humanReadableByteCount;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import io.codekvast.common.aspects.Restartable;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
@@ -34,13 +37,6 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,9 +45,12 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static io.codekvast.common.util.LoggingUtils.humanReadableByteCount;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Handler for javaagent REST requests.
@@ -63,118 +62,138 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @Slf4j
 public class AgentServiceImpl implements AgentService {
 
-    public static final String UNKNOWN_ENVIRONMENT = "<UNKNOWN>";
-    public static final Pattern CORRELATION_ID_PATTERN = buildCorrelationIdPattern();
+  public static final String UNKNOWN_ENVIRONMENT = "<UNKNOWN>";
+  public static final Pattern CORRELATION_ID_PATTERN = buildCorrelationIdPattern();
 
-    private final CodekvastDashboardSettings settings;
-    private final CustomerService customerService;
-    private final AgentDAO agentDAO;
-    private final AgentStateManager agentStateManager;
+  private final CodekvastDashboardSettings settings;
+  private final CustomerService customerService;
+  private final AgentDAO agentDAO;
+  private final AgentStateManager agentStateManager;
 
-    @Override
-    @Transactional
-    @Restartable
-    public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
-        val environment = agentDAO.getEnvironmentName(request.getJvmUuid()).orElse(UNKNOWN_ENVIRONMENT);
-        val request2 = GetConfigRequest2.fromFormat1(request, environment);
-        return GetConfigResponse2.toFormat1(getConfig(request2));
+  @Override
+  @Transactional
+  @Restartable
+  public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
+    val environment = agentDAO.getEnvironmentName(request.getJvmUuid()).orElse(UNKNOWN_ENVIRONMENT);
+    val request2 = GetConfigRequest2.fromFormat1(request, environment);
+    return GetConfigResponse2.toFormat1(getConfig(request2));
+  }
+
+  @Override
+  @Transactional
+  @Restartable
+  public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
+    CustomerData customerData =
+        customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
+
+    boolean isAgentEnabled =
+        agentStateManager.updateAgentState(
+            customerData, request.getJvmUuid(), request.getAppName(), request.getEnvironment());
+
+    String publisherConfig = isAgentEnabled ? "enabled=true" : "enabled=false";
+    PricePlan pp = customerData.getPricePlan();
+    return GetConfigResponse2.builder()
+        .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
+        .codeBasePublisherConfig(publisherConfig)
+        .codeBasePublisherName("http")
+        .codeBasePublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+        .configPollIntervalSeconds(pp.getPollIntervalSeconds())
+        .configPollRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+        .customerId(customerData.getCustomerId())
+        .invocationDataPublisherConfig(publisherConfig)
+        .invocationDataPublisherIntervalSeconds(pp.getPublishIntervalSeconds())
+        .invocationDataPublisherName("http")
+        .invocationDataPublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+        .build();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public File savePublication(
+      @NonNull PublicationType publicationType,
+      @NonNull String licenseKey,
+      String codebaseFingerprint,
+      int publicationSize,
+      InputStream inputStream)
+      throws LicenseViolationException, IOException {
+    try (inputStream) {
+      CustomerData customerData = customerService.getCustomerDataByLicenseKey(licenseKey);
+      if (publicationType == PublicationType.CODEBASE) {
+        customerService.assertPublicationSize(customerData, publicationSize);
+      }
+
+      return doSaveInputStream(
+          publicationType, customerData.getCustomerId(), codebaseFingerprint, inputStream);
     }
+  }
 
-    @Override
-    @Transactional
-    @Restartable
-    public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
-        CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
+  @Override
+  public File generatePublicationFile(
+      PublicationType publicationType, Long customerId, String correlationId) {
+    return new File(
+        settings.getFileImportQueuePath(),
+        String.format("%s-%d-%s.ser", publicationType, customerId, correlationId));
+  }
 
-        boolean isAgentEnabled =
-            agentStateManager.updateAgentState(customerData, request.getJvmUuid(), request.getAppName(), request.getEnvironment());
+  private static Pattern buildCorrelationIdPattern() {
+    String publicationTypes =
+        Arrays.stream(PublicationType.values())
+            .map(PublicationType::toString)
+            .collect(Collectors.joining("|", "(", ")"));
+    return Pattern.compile(publicationTypes + "-([0-9]+)-([a-fA-F0-9_-]+)\\.ser$");
+  }
 
-        String publisherConfig = isAgentEnabled ? "enabled=true" : "enabled=false";
-        PricePlan pp = customerData.getPricePlan();
-        return GetConfigResponse2
-            .builder()
-            .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
-            .codeBasePublisherConfig(publisherConfig)
-            .codeBasePublisherName("http")
-            .codeBasePublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
-            .configPollIntervalSeconds(pp.getPollIntervalSeconds())
-            .configPollRetryIntervalSeconds(pp.getRetryIntervalSeconds())
-            .customerId(customerData.getCustomerId())
-            .invocationDataPublisherConfig(publisherConfig)
-            .invocationDataPublisherIntervalSeconds(pp.getPublishIntervalSeconds())
-            .invocationDataPublisherName("http")
-            .invocationDataPublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
-            .build();
+  @Override
+  public PublicationType getPublicationTypeFromPublicationFile(File publicationFile) {
+    String fileName = publicationFile.getName();
+    Matcher matcher = CORRELATION_ID_PATTERN.matcher(fileName);
+    if (matcher.matches()) {
+      return PublicationType.valueOf(matcher.group(1).toUpperCase());
     }
+    logger.warn("Could not parse publicationType from publication file name {}", fileName);
+    return null;
+  }
 
-
-    @Override
-    @Transactional(readOnly = true)
-    public File savePublication(@NonNull PublicationType publicationType, @NonNull String licenseKey, String codebaseFingerprint,
-                                int publicationSize, InputStream inputStream) throws LicenseViolationException, IOException {
-        try (inputStream) {
-            CustomerData customerData = customerService.getCustomerDataByLicenseKey(licenseKey);
-            if (publicationType == PublicationType.CODEBASE) {
-                customerService.assertPublicationSize(customerData, publicationSize);
-            }
-
-            return doSaveInputStream(publicationType, customerData.getCustomerId(), codebaseFingerprint, inputStream);
-        }
+  @Override
+  public String getCorrelationIdFromPublicationFile(File publicationFile) {
+    String fileName = publicationFile.getName();
+    Matcher matcher = CORRELATION_ID_PATTERN.matcher(fileName);
+    if (matcher.matches()) {
+      return matcher.group(3);
     }
+    logger.warn(
+        "Could not parse correlationId from publication file name {}, generating a new...",
+        fileName);
+    return CorrelationIdHolder.generateNew();
+  }
 
-    @Override
-    public File generatePublicationFile(PublicationType publicationType, Long customerId, String correlationId) {
-        return new File(settings.getFileImportQueuePath(), String.format("%s-%d-%s.ser", publicationType, customerId, correlationId));
+  private File doSaveInputStream(
+      PublicationType publicationType,
+      Long customerId,
+      String codebaseFingerprint,
+      InputStream inputStream)
+      throws IOException {
+    createDirectory(settings.getFileImportQueuePath());
+
+    File result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get());
+    Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
+
+    logger.info(
+        "Saved {} ({}), fingerprint = {}",
+        result.getName(),
+        humanReadableByteCount(result.length()),
+        codebaseFingerprint);
+    return result;
+  }
+
+  private void createDirectory(File directory) throws IOException {
+    if (!directory.isDirectory()) {
+      logger.debug("Creating {}", directory);
+      directory.mkdirs();
+      if (!directory.isDirectory()) {
+        throw new IOException("Could not create directory " + directory);
+      }
+      logger.info("Created {}", directory);
     }
-
-    private static Pattern buildCorrelationIdPattern() {
-        String publicationTypes =
-            Arrays.stream(PublicationType.values()).map(PublicationType::toString).collect(Collectors.joining("|", "(", ")"));
-        return Pattern.compile(publicationTypes + "-([0-9]+)-([a-fA-F0-9_-]+)\\.ser$");
-    }
-
-    @Override
-    public PublicationType getPublicationTypeFromPublicationFile(File publicationFile) {
-        String fileName = publicationFile.getName();
-        Matcher matcher = CORRELATION_ID_PATTERN.matcher(fileName);
-        if (matcher.matches()) {
-            return PublicationType.valueOf(matcher.group(1).toUpperCase());
-        }
-        logger.warn("Could not parse publicationType from publication file name {}", fileName);
-        return null;
-    }
-
-    @Override
-    public String getCorrelationIdFromPublicationFile(File publicationFile) {
-        String fileName = publicationFile.getName();
-        Matcher matcher = CORRELATION_ID_PATTERN.matcher(fileName);
-        if (matcher.matches()) {
-            return matcher.group(3);
-        }
-        logger.warn("Could not parse correlationId from publication file name {}, generating a new...", fileName);
-        return CorrelationIdHolder.generateNew();
-    }
-
-    private File doSaveInputStream(PublicationType publicationType, Long customerId, String codebaseFingerprint, InputStream inputStream)
-        throws IOException {
-        createDirectory(settings.getFileImportQueuePath());
-
-        File result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get());
-        Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
-
-        logger.info("Saved {} ({}), fingerprint = {}", result.getName(), humanReadableByteCount(result.length()), codebaseFingerprint);
-        return result;
-    }
-
-    private void createDirectory(File directory) throws IOException {
-        if (!directory.isDirectory()) {
-            logger.debug("Creating {}", directory);
-            directory.mkdirs();
-            if (!directory.isDirectory()) {
-                throw new IOException("Could not create directory " + directory);
-            }
-            logger.info("Created {}", directory);
-        }
-    }
-
+  }
 }

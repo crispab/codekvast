@@ -22,7 +22,6 @@
 package io.codekvast.javaagent.publishing;
 
 import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
-
 import java.util.Set;
 
 /**
@@ -32,25 +31,23 @@ import java.util.Set;
  */
 public interface InvocationDataPublisher extends Publisher {
 
-    /**
-     * Associate this published with a certain code base.
-     *
-     * @param fingerprint The fingerprint of the executing code base.
-     */
-    void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint);
+  /**
+   * Associate this published with a certain code base.
+   *
+   * @param fingerprint The fingerprint of the executing code base.
+   */
+  void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint);
 
-    /**
-     * @return The fingerprint associated with the publisher
-     */
-    CodeBaseFingerprint getCodeBaseFingerprint();
+  /** @return The fingerprint associated with the publisher */
+  CodeBaseFingerprint getCodeBaseFingerprint();
 
-    /**
-     * Publish the invocation data.
-     *
-     * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.
-     * @param invocations                      The set of invocations to publish.
-     * @throws CodekvastPublishingException when publishing fails.
-     */
-    void publishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
-        throws CodekvastPublishingException;
+  /**
+   * Publish the invocation data.
+   *
+   * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.
+   * @param invocations The set of invocations to publish.
+   * @throws CodekvastPublishingException when publishing fails.
+   */
+  void publishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
+      throws CodekvastPublishingException;
 }

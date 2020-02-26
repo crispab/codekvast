@@ -21,13 +21,10 @@
  */
 package io.codekvast.common.messaging.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.time.Instant;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
-import java.time.Instant;
 
 /**
  * An event that is sent the first time collection data is received.
@@ -37,15 +34,15 @@ import java.time.Instant;
 @Value
 @Builder
 public class CollectionStartedEvent implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull Instant collectionStartedAt;
-    Instant trialPeriodEndsAt;
+  @NonNull Long customerId;
+  @NonNull Instant collectionStartedAt;
+  Instant trialPeriodEndsAt;
 
-    public static CollectionStartedEvent sample() {
-        return CollectionStartedEvent.builder()
-                                     .customerId(1L)
-                                     .collectionStartedAt(Instant.now())
-                                     .trialPeriodEndsAt(null)
-                                     .build();
-    }
+  public static CollectionStartedEvent sample() {
+    return CollectionStartedEvent.builder()
+        .customerId(1L)
+        .collectionStartedAt(Instant.now())
+        .trialPeriodEndsAt(null)
+        .build();
+  }
 }

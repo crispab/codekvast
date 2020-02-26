@@ -21,44 +21,41 @@
  */
 package io.codekvast.javaagent.util;
 
-import lombok.experimental.UtilityClass;
+import static java.lang.String.format;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.experimental.UtilityClass;
 
-import static java.lang.String.format;
-
-/**
- * Utility class for consistent logging.
- */
+/** Utility class for consistent logging. */
 @UtilityClass
 public class LogUtil {
 
-    public static void logException(Logger logger, String msg, Exception e) {
-        Throwable rootCause = getRootCause(e);
-        if (logger.isLoggable(Level.FINER) && !(rootCause instanceof ConnectException) && !(rootCause instanceof UnknownHostException)) {
-            // log with full stack trace
-            logger.log(Level.INFO, msg, e);
-        } else {
-            // log a one-liner with the root cause
-            logger.log(Level.INFO, msg + ": " + rootCause.toString());
-        }
+  public static void logException(Logger logger, String msg, Exception e) {
+    Throwable rootCause = getRootCause(e);
+    if (logger.isLoggable(Level.FINER)
+        && !(rootCause instanceof ConnectException)
+        && !(rootCause instanceof UnknownHostException)) {
+      // log with full stack trace
+      logger.log(Level.INFO, msg, e);
+    } else {
+      // log a one-liner with the root cause
+      logger.log(Level.INFO, msg + ": " + rootCause.toString());
     }
+  }
 
-    public static String humanReadableByteCount(long bytes) {
-        if (bytes < 1000) {
-            return bytes + " B";
-        }
-        int exponent = (int) (Math.log(bytes) / Math.log(1000));
-        String unit = " kMGTPE".charAt(exponent) + "B";
-        return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
+  public static String humanReadableByteCount(long bytes) {
+    if (bytes < 1000) {
+      return bytes + " B";
     }
+    int exponent = (int) (Math.log(bytes) / Math.log(1000));
+    String unit = " kMGTPE".charAt(exponent) + "B";
+    return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
+  }
 
-
-    private static Throwable getRootCause(Throwable t) {
-        return t.getCause() == null ? t : getRootCause(t.getCause());
-    }
-
+  private static Throwable getRootCause(Throwable t) {
+    return t.getCause() == null ? t : getRootCause(t.getCause());
+  }
 }

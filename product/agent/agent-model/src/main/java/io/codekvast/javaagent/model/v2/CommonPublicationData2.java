@@ -21,19 +21,21 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import lombok.*;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.util.Arrays.asList;
 
-/**
- * @author olle.hallin@crisp.se
- */
+import java.io.Serializable;
+import java.util.List;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+
+/** @author olle.hallin@crisp.se */
 @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods", "OverlyComplexClass"})
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -41,95 +43,90 @@ import static java.util.Arrays.asList;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class CommonPublicationData2 implements Serializable {
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    @Min(value = 1, message = "customerId must be a positive number")
-    private long customerId;
+  @Min(value = 1, message = "customerId must be a positive number")
+  private long customerId;
 
-    @NonNull
-    @Size(min = 1)
-    private String appName;
+  @NonNull
+  @Size(min = 1)
+  private String appName;
 
-    @NonNull
-    @Size(min = 1)
-    private String appVersion;
+  @NonNull
+  @Size(min = 1)
+  private String appVersion;
 
-    @NonNull
-    @Size(min = 1)
-    private String codeBaseFingerprint;
+  @NonNull
+  @Size(min = 1)
+  private String codeBaseFingerprint;
 
-    @NonNull
-    @Size(min = 1)
-    private String agentVersion;
+  @NonNull
+  @Size(min = 1)
+  private String agentVersion;
 
-    @NonNull
-    @Size(min = 1)
-    private String computerId;
+  @NonNull
+  @Size(min = 1)
+  private String computerId;
 
-    @NonNull
-    private String environment;
+  @NonNull private String environment;
 
-    @NonNull
-    private List<String> excludePackages;
+  @NonNull private List<String> excludePackages;
 
-    @NonNull
-    @Size(min = 1)
-    private String hostname;
+  @NonNull
+  @Size(min = 1)
+  private String hostname;
 
-    @Min(1_490_000_000_000L)
-    private long jvmStartedAtMillis;
+  @Min(1_490_000_000_000L)
+  private long jvmStartedAtMillis;
 
-    @NonNull
-    @Size(min = 1)
-    private String jvmUuid;
+  @NonNull
+  @Size(min = 1)
+  private String jvmUuid;
 
-    @NonNull
-    @Size(min = 1)
-    private String methodVisibility;
+  @NonNull
+  @Size(min = 1)
+  private String methodVisibility;
 
-    @NonNull
-    private List<String> packages;
+  @NonNull private List<String> packages;
 
-    @Min(1_490_000_000_000L)
-    private long publishedAtMillis;
+  @Min(1_490_000_000_000L)
+  private long publishedAtMillis;
 
-    @Min(1)
-    private int sequenceNumber;
+  @Min(1)
+  private int sequenceNumber;
 
-    @NonNull
-    private String tags;
+  @NonNull private String tags;
 
-    @Override
-    public String toString() {
-        return String.format(
-            "%1$s(customerId=%2$d, appName='%3$s', appVersion='%4$s', hostname='%5$s', publishedAt=%6$tF:%6$tT%6$tz)",
-            this.getClass().getSimpleName(),
-            customerId,
-            appName,
-            appVersion,
-            hostname,
-            publishedAtMillis);
-    }
+  @Override
+  public String toString() {
+    return String.format(
+        "%1$s(customerId=%2$d, appName='%3$s', appVersion='%4$s', hostname='%5$s', publishedAt=%6$tF:%6$tT%6$tz)",
+        this.getClass().getSimpleName(),
+        customerId,
+        appName,
+        appVersion,
+        hostname,
+        publishedAtMillis);
+  }
 
-    public static CommonPublicationData2 sampleCommonPublicationData() {
-        return builder()
-            .agentVersion("agentVersion")
-            .appName("appName")
-            .appVersion("appVersion")
-            .codeBaseFingerprint("codeBaseFingerprint")
-            .computerId("computerId")
-            .customerId(1L)
-            .environment("environment")
-            .excludePackages(asList("excludePackages1", "excludePackages2"))
-            .hostname("hostname")
-            .jvmStartedAtMillis(1509461136162L)
-            .jvmUuid("jvmUuid")
-            .methodVisibility("methodVisibility")
-            .packages(asList("packages1", "packages2"))
-            .publishedAtMillis(1509461136162L)
-            .sequenceNumber(1)
-            .tags("tags")
-            .build();
-    }
-
+  public static CommonPublicationData2 sampleCommonPublicationData() {
+    return builder()
+        .agentVersion("agentVersion")
+        .appName("appName")
+        .appVersion("appVersion")
+        .codeBaseFingerprint("codeBaseFingerprint")
+        .computerId("computerId")
+        .customerId(1L)
+        .environment("environment")
+        .excludePackages(asList("excludePackages1", "excludePackages2"))
+        .hostname("hostname")
+        .jvmStartedAtMillis(1509461136162L)
+        .jvmUuid("jvmUuid")
+        .methodVisibility("methodVisibility")
+        .packages(asList("packages1", "packages2"))
+        .publishedAtMillis(1509461136162L)
+        .sequenceNumber(1)
+        .tags("tags")
+        .build();
+  }
 }

@@ -7,7 +7,6 @@
     <option name="HTML_KEEP_BLANK_LINES" value="1" />
     <option name="HTML_ALIGN_TEXT" value="true" />
     <option name="HTML_INLINE_ELEMENTS" value="a,abbr,acronym,b,basefont,bdo,big,br,cite,cite,code,dfn,em,font,i,img,kbd,label,q,s,samp,select,strike,strong,sub,sup,tt,u,var" />
-    <option name="FORMATTER_TAGS_ENABLED" value="true" />
     <option name="WRAP_COMMENTS" value="true" />
     <DB2CodeStyleSettings version="0">
       <option name="myVersion" value="0" />

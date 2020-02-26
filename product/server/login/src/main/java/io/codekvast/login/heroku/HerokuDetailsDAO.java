@@ -24,7 +24,6 @@ package io.codekvast.login.heroku;
 import io.codekvast.common.security.CipherException;
 import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
-
 import java.time.Instant;
 
 /**
@@ -34,32 +33,34 @@ import java.time.Instant;
  */
 public interface HerokuDetailsDAO {
 
-    /**
-     * Is there already a row in heroku_details for the customer?
-     *
-     * @param licenseKey The license key for the customer.
-     * @return true if there is a existing row in heroku_details.
-     */
-    boolean existsRow(String licenseKey);
+  /**
+   * Is there already a row in heroku_details for the customer?
+   *
+   * @param licenseKey The license key for the customer.
+   * @return true if there is a existing row in heroku_details.
+   */
+  boolean existsRow(String licenseKey);
 
-    /**
-     * Saves a token response in heroku_details.
-     * The tokens are encrypted before written to the database.
-     *
-     * @param tokenResponse The token response to save.
-     * @param callbackUrl   The callback URL received in the {@link HerokuProvisionRequest}.
-     * @param licenseKey    The licenseKey for the customer.
-     * @throws CipherException If the encrypting of the tokens failed.
-     */
-    void saveTokens(HerokuOAuthTokenResponse tokenResponse, String callbackUrl, String licenseKey) throws CipherException;
+  /**
+   * Saves a token response in heroku_details. The tokens are encrypted before written to the
+   * database.
+   *
+   * @param tokenResponse The token response to save.
+   * @param callbackUrl The callback URL received in the {@link HerokuProvisionRequest}.
+   * @param licenseKey The licenseKey for the customer.
+   * @throws CipherException If the encrypting of the tokens failed.
+   */
+  void saveTokens(HerokuOAuthTokenResponse tokenResponse, String callbackUrl, String licenseKey)
+      throws CipherException;
 
-    String getAccessToken(Long customerId) throws CipherException;
+  String getAccessToken(Long customerId) throws CipherException;
 
-    String getRefreshToken(Long customerId) throws CipherException;
+  String getRefreshToken(Long customerId) throws CipherException;
 
-    String getCallbackUrl(Long customerId);
+  String getCallbackUrl(Long customerId);
 
-    void updateAccessToken(Long customerId, String accessToken, Instant expiresAt) throws CipherException;
+  void updateAccessToken(Long customerId, String accessToken, Instant expiresAt)
+      throws CipherException;
 
-    Instant getAccessTokenExpiresAt(Long customerId);
+  Instant getAccessTokenExpiresAt(Long customerId);
 }

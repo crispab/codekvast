@@ -31,22 +31,21 @@ import lombok.NonNull;
  */
 public class NamedThreadTemplate {
 
-    /**
-     * Executes a task with a certain name on the thread and a new CorrelationId.
-     *
-     * @param threadName The thread name to set
-     * @param task       The task to execute
-     */
-    public void doInNamedThread(@NonNull String threadName, Runnable task) {
-        String oldThreadName = Thread.currentThread().getName();
-        Thread.currentThread().setName("Codekvast " + threadName);
-        CorrelationIdHolder.generateAndSetNew();
-        try {
-            task.run();
-        } finally {
-            Thread.currentThread().setName(oldThreadName);
-            CorrelationIdHolder.clear();
-        }
-
+  /**
+   * Executes a task with a certain name on the thread and a new CorrelationId.
+   *
+   * @param threadName The thread name to set
+   * @param task The task to execute
+   */
+  public void doInNamedThread(@NonNull String threadName, Runnable task) {
+    String oldThreadName = Thread.currentThread().getName();
+    Thread.currentThread().setName("Codekvast " + threadName);
+    CorrelationIdHolder.generateAndSetNew();
+    try {
+      task.run();
+    } finally {
+      Thread.currentThread().setName(oldThreadName);
+      CorrelationIdHolder.clear();
     }
+  }
 }

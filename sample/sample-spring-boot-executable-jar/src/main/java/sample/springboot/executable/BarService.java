@@ -6,16 +6,14 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Component
 @Profile("bar")
 @Slf4j
 public class BarService {
 
-    @PostConstruct
-    public void postConstruct() {
-      log.info("Hello from BarService");
-    }
+  @PostConstruct
+  public void postConstruct() {
+    log.info("Hello from BarService");
+  }
 }

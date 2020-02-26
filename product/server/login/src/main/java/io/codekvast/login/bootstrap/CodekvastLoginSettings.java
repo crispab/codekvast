@@ -21,20 +21,19 @@
  */
 package io.codekvast.login.bootstrap;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.security.CipherException;
 import io.codekvast.common.security.CipherUtils;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Wrapper for environment properties codekvast.*
@@ -46,125 +45,95 @@ import static com.google.common.base.Preconditions.checkState;
 @Validated
 @Data
 @Slf4j
-@ToString(exclude = {"cipherSecret", "jwtSecret", "herokuApiPassword", "herokuApiSsoSalt", "herokuOAuthClientSecret", "slackWebHookToken"})
+@ToString(
+    exclude = {
+      "cipherSecret",
+      "jwtSecret",
+      "herokuApiPassword",
+      "herokuApiSsoSalt",
+      "herokuOAuthClientSecret",
+      "slackWebHookToken"
+    })
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
 public class CodekvastLoginSettings implements CodekvastCommonSettings {
 
-    /**
-     * Which is the key used for encrypting Heroku OAuth tokens in the database?
-     */
-    private String cipherSecret;
+  /** Which is the key used for encrypting Heroku OAuth tokens in the database? */
+  private String cipherSecret;
 
-    /**
-     * The name of the application, injected from the build system.
-     */
-    private String applicationName;
+  /** The name of the application, injected from the build system. */
+  private String applicationName;
 
-    /**
-     * The version of the application, injected from the build system.
-     */
-    private String displayVersion;
+  /** The version of the application, injected from the build system. */
+  private String displayVersion;
 
-    /**
-     * The name of the person doing the last commit, injected from the build system.
-     */
-    private String committer;
+  /** The name of the person doing the last commit, injected from the build system. */
+  private String committer;
 
-    /**
-     * The date of the last commit, injected from the build system.
-     */
-    private String commitDate;
+  /** The date of the last commit, injected from the build system. */
+  private String commitDate;
 
-    /**
-     * The last commit message, injected from the build system.
-     */
-    private String commitMessage;
+  /** The last commit message, injected from the build system. */
+  private String commitMessage;
 
-    /**
-     * What is the base URL of the Codekvast dashboard?
-     */
-    private String dashboardBaseUrl;
+  /** What is the base URL of the Codekvast dashboard? */
+  private String dashboardBaseUrl;
 
-    /**
-     * Which is our CNAME in the DNS?
-     */
-    private String dnsCname;
+  /** Which is our CNAME in the DNS? */
+  private String dnsCname;
 
-    /**
-     * In which environment are we running? dev, staging or prod
-     */
-    private String environment;
+  /** In which environment are we running? dev, staging or prod */
+  private String environment;
 
-    /**
-     * Which token should we use when POSTing to Slack?
-     */
-    private String slackWebHookToken;
+  /** Which token should we use when POSTing to Slack? */
+  private String slackWebHookToken;
 
-    /**
-     * Which CODEKVAST_URL should be used by Heroku addons?
-     */
-    private String herokuCodekvastUrl;
+  /** Which CODEKVAST_URL should be used by Heroku addons? */
+  private String herokuCodekvastUrl;
 
-    /**
-     * Where is the Heroku OAuth base URL?
-     */
-    private String herokuOAuthBaseUrl;
+  /** Where is the Heroku OAuth base URL? */
+  private String herokuOAuthBaseUrl;
 
-    /**
-     * What is the base URL for the Heroku API?
-     */
-    private String herokuApiBaseUrl;
+  /** What is the base URL for the Heroku API? */
+  private String herokuApiBaseUrl;
 
-    /**
-     * Which password is Heroku using when invoking us?
-     */
-    private String herokuApiPassword;
+  /** Which password is Heroku using when invoking us? */
+  private String herokuApiPassword;
 
-    /**
-     * Which salt does Heroku use when creating SSO tokens?
-     */
-    private String herokuApiSsoSalt;
+  /** Which salt does Heroku use when creating SSO tokens? */
+  private String herokuApiSsoSalt;
 
-    /**
-     * What OAuth client ID should we use when invoking the Heroku API?
-     */
-    private String herokuOAuthClientId;
+  /** What OAuth client ID should we use when invoking the Heroku API? */
+  private String herokuOAuthClientId;
 
-    /**
-     * What OAuth client secret should we use when invoking the Heroku API?
-     */
-    private String herokuOAuthClientSecret;
+  /** What OAuth client secret should we use when invoking the Heroku API? */
+  private String herokuOAuthClientSecret;
 
-    /**
-     * Which secret should be used when creating a webapp JWT?
-     */
-    private String jwtSecret;
+  /** Which secret should be used when creating a webapp JWT? */
+  private String jwtSecret;
 
-    /**
-     * How many hours shall a JWT be valid?
-     */
-    private Long jwtExpirationHours;
+  /** How many hours shall a JWT be valid? */
+  private Long jwtExpirationHours;
 
-    @PostConstruct
-    public void validateCipherSecret() throws CipherException {
-        String plainText = "The quick brown fox jumps over the lazy dog";
-        String encrypted = CipherUtils.encrypt(plainText, cipherSecret);
-        String decrypted = CipherUtils.decrypt(encrypted, cipherSecret);
+  @PostConstruct
+  public void validateCipherSecret() throws CipherException {
+    String plainText = "The quick brown fox jumps over the lazy dog";
+    String encrypted = CipherUtils.encrypt(plainText, cipherSecret);
+    String decrypted = CipherUtils.decrypt(encrypted, cipherSecret);
 
-        checkState(decrypted.equals(plainText), "Invalid cipherSecret");
-    }
+    checkState(decrypted.equals(plainText), "Invalid cipherSecret");
+  }
 
-    @PostConstruct
-    public void logStartup() {
-        //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%s starts%n", this);
-        logger.info("{} starts", this);
-    }
+  @PostConstruct
+  public void logStartup() {
+    //noinspection UseOfSystemOutOrSystemErr
+    System.out.printf("%s starts%n", this);
+    logger.info("{} starts", this);
+  }
 
-    @PreDestroy
-    public void logShutdown() {
-        //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%s shuts down%n", this);
-        logger.info("{} shuts down", this);
-    }
+  @PreDestroy
+  public void logShutdown() {
+    //noinspection UseOfSystemOutOrSystemErr
+    System.out.printf("%s shuts down%n", this);
+    logger.info("{} shuts down", this);
+  }
 }

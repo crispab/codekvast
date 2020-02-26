@@ -21,11 +21,16 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import lombok.*;
-
-import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.util.Set;
+import javax.validation.constraints.Min;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Output of the InvocationDataPublisher implementations.
@@ -38,21 +43,19 @@ import java.util.Set;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class InvocationDataPublication2 implements Serializable {
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    @NonNull
-    private CommonPublicationData2 commonData;
+  @NonNull private CommonPublicationData2 commonData;
 
-    @NonNull
-    private Set<String> invocations;
+  @NonNull private Set<String> invocations;
 
-    @Min(1_490_000_000_000L)
-    private long recordingIntervalStartedAtMillis;
+  @Min(1_490_000_000_000L)
+  private long recordingIntervalStartedAtMillis;
 
-    @Override
-    public String toString() {
-        return String.format(
-            "InvocationDataPublication{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
-            commonData, invocations.size(), recordingIntervalStartedAtMillis);
-    }
+  @Override
+  public String toString() {
+    return String.format(
+        "InvocationDataPublication{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
+        commonData, invocations.size(), recordingIntervalStartedAtMillis);
+  }
 }

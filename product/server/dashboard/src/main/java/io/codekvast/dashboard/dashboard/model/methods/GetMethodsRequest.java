@@ -22,14 +22,13 @@
 package io.codekvast.dashboard.dashboard.model.methods;
 
 import io.codekvast.dashboard.dashboard.DashboardService;
+import java.util.List;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import java.util.List;
 
 /**
  * A validated parameters object for {@link DashboardService#getMethods2(GetMethodsRequest)}
@@ -40,78 +39,62 @@ import java.util.List;
 @Builder(toBuilder = true)
 @Slf4j
 public class GetMethodsRequest {
-    /**
-     * The signature to search for.
-     */
-    @NonNull
-    private final String signature;
+  /** The signature to search for. */
+  @NonNull private final String signature;
 
-    /**
-     * How many results to return.
-     */
-    @Min(value = 1, message = "maxResult must be >= 1")
-    @Max(value = 10_000, message = "maxResults must be <= 10000")
-    private final int maxResults;
+  /** How many results to return. */
+  @Min(value = 1, message = "maxResult must be >= 1")
+  @Max(value = 10_000, message = "maxResults must be <= 10000")
+  private final int maxResults;
 
-    /**
-     * Append "%" to signature and replace "#" with "."
-     */
-    private final boolean normalizeSignature;
+  /** Append "%" to signature and replace "#" with "." */
+  private final boolean normalizeSignature;
 
-    /**
-     * Only include methods that have been invoked before this timestamp.
-     */
-    @Min(value = 0, message = "onlyInvokedBeforeMillis must be >= 0")
-    private final long onlyInvokedBeforeMillis;
+  /** Only include methods that have been invoked before this timestamp. */
+  @Min(value = 0, message = "onlyInvokedBeforeMillis must be >= 0")
+  private final long onlyInvokedBeforeMillis;
 
-    /**
-     * Only include methods that have been invoked after this timestamp.
-     */
-    @Min(value = 0, message = "onlyInvokedAfterMillis must be >= 0")
-    private final long onlyInvokedAfterMillis;
+  /** Only include methods that have been invoked after this timestamp. */
+  @Min(value = 0, message = "onlyInvokedAfterMillis must be >= 0")
+  private final long onlyInvokedAfterMillis;
 
-    /**
-     * Suppress methods that are untracked by the java agent.
-     */
-    private final boolean suppressUntrackedMethods;
+  /** Suppress methods that are untracked by the java agent. */
+  private final boolean suppressUntrackedMethods;
 
-    /**
-     * Only include methods that have been collected for this number of days
-     */
-    @Min(value = 0, message = "minCollectedDays must be >= 0")
-    private final int minCollectedDays;
+  /** Only include methods that have been collected for this number of days */
+  @Min(value = 0, message = "minCollectedDays must be >= 0")
+  private final int minCollectedDays;
 
-    private final List<String> applications;
+  private final List<String> applications;
 
-    private final List<String> environments;
+  private final List<String> environments;
 
-    private final List<String> locations;
+  private final List<String> locations;
 
-    public String getNormalizedSignature() {
-        String result;
-        if (!normalizeSignature) {
-            result = signature;
-        } else {
-            String sig = signature.replace("*", "%").replace("?", "_").replace("#", ".");
-            sig = sig + "%";
-            result = sig.replaceAll("%+", "%");
-        }
-        if (!result.equals(signature)) {
-            logger.debug("Normalized '{}' to '{}'", signature, result);
-        }
-        return result;
+  public String getNormalizedSignature() {
+    String result;
+    if (!normalizeSignature) {
+      result = signature;
+    } else {
+      String sig = signature.replace("*", "%").replace("?", "_").replace("#", ".");
+      sig = sig + "%";
+      result = sig.replaceAll("%+", "%");
     }
-
-    public static GetMethodsRequest defaults() {
-        return builder()
-            .onlyInvokedBeforeMillis(Long.MAX_VALUE)
-            .onlyInvokedAfterMillis(0L)
-            .suppressUntrackedMethods(true)
-            .maxResults(100)
-            .minCollectedDays(14)
-            .normalizeSignature(true)
-            .signature("")
-            .build();
+    if (!result.equals(signature)) {
+      logger.debug("Normalized '{}' to '{}'", signature, result);
     }
+    return result;
+  }
 
+  public static GetMethodsRequest defaults() {
+    return builder()
+        .onlyInvokedBeforeMillis(Long.MAX_VALUE)
+        .onlyInvokedAfterMillis(0L)
+        .suppressUntrackedMethods(true)
+        .maxResults(100)
+        .minCollectedDays(14)
+        .normalizeSignature(true)
+        .signature("")
+        .build();
+  }
 }

@@ -30,8 +30,8 @@ import io.codekvast.common.messaging.EventService;
  */
 public interface CodekvastEvent {
 
-    /**
-     * @return The customer the event is related to. In case no customer is associated, return -1L.
-     */
-    Long getCustomerId();
+  /**
+   * @return The customer the event is related to. In case no customer is associated, return -1L.
+   */
+  Long getCustomerId();
 }

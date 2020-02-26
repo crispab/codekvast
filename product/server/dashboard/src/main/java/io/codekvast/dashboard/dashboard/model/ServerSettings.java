@@ -24,13 +24,11 @@ package io.codekvast.dashboard.dashboard.model;
 import lombok.Builder;
 import lombok.Value;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Value
 @Builder
 public class ServerSettings {
-    private final String loginUrl;
-    private final String logoutUrl;
-    private final String serverVersion;
+  private final String loginUrl;
+  private final String logoutUrl;
+  private final String serverVersion;
 }

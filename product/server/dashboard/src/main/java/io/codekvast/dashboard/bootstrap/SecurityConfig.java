@@ -21,8 +21,13 @@
  */
 package io.codekvast.dashboard.bootstrap;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
+
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.dashboard.dashboard.DashboardTokenFilter;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -36,18 +41,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
-
 /**
  * Configuration of Spring Security.
  *
  * @author olle.hallin@crisp.se
  */
-
 @SuppressWarnings("SpringJavaAutowiringInspection")
 @Configuration
 @EnableWebSecurity
@@ -56,38 +54,49 @@ import static org.springframework.security.config.http.SessionCreationPolicy.IF_
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UnauthorizedHandler unauthorizedHandler;
-    private final DashboardTokenFilter dashboardTokenFilter;
+  private final UnauthorizedHandler unauthorizedHandler;
+  private final DashboardTokenFilter dashboardTokenFilter;
+
+  @Override
+  protected void configure(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity
+        .csrf()
+        .ignoringAntMatchers(
+            "/management/**", "/javaagent/**", "/dashboard/launch/**", "/dashboard/heroku/sso/**")
+        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(IF_REQUIRED)
+        .and()
+        .exceptionHandling()
+        .authenticationEntryPoint(unauthorizedHandler)
+        .and()
+        .authorizeRequests()
+        .antMatchers(
+            "/management/**",
+            "/dashboard/launch/**",
+            "/dashboard/heroku/sso/**",
+            "/dashboard/api/v1/serverSettings",
+            "/javaagent/**")
+        .permitAll()
+        .antMatchers("/dashboard/**")
+        .hasRole(SecurityService.USER_ROLE)
+        .and()
+        .addFilterBefore(dashboardTokenFilter, UsernamePasswordAuthenticationFilter.class)
+        .headers()
+        .cacheControl();
+  }
+
+  @Component
+  public static class UnauthorizedHandler implements AuthenticationEntryPoint {
 
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        // @formatter:off
-        httpSecurity
-            .csrf()
-                .ignoringAntMatchers("/management/**", "/javaagent/**", "/dashboard/launch/**", "/dashboard/heroku/sso/**")
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            .and()
-                .sessionManagement().sessionCreationPolicy(IF_REQUIRED)
-            .and()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
-            .and()
-                .authorizeRequests()
-                .antMatchers("/management/**", "/dashboard/launch/**", "/dashboard/heroku/sso/**", "/dashboard/api/v1/serverSettings", "/javaagent/**").permitAll()
-                .antMatchers("/dashboard/**").hasRole(SecurityService.USER_ROLE)
-            .and()
-                .addFilterBefore(dashboardTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .headers().cacheControl();
-        // @formatter:on
+    public void commence(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        AuthenticationException authException)
+        throws IOException {
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
-
-    @Component
-    public static class UnauthorizedHandler implements AuthenticationEntryPoint {
-
-        @Override
-        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-        }
-    }
-
+  }
 }

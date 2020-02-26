@@ -19,7 +19,5 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * REST API offered to the Codekvast Agent.
- */
+/** REST API offered to the Codekvast Agent. */
 package io.codekvast.dashboard.agent;

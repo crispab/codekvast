@@ -23,18 +23,14 @@ package io.codekvast.dashboard.file_import;
 
 import java.io.File;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public interface PublicationImporter {
 
-    /**
-     * De-serializes and handles a publication.
-     * Does never throw any exceptions.
-     *
-     * @param file The file that contains the serialized publication.
-     *
-     * @return true iff the contained object was handled.
-     */
-    boolean importPublicationFile(File file);
+  /**
+   * De-serializes and handles a publication. Does never throw any exceptions.
+   *
+   * @param file The file that contains the serialized publication.
+   * @return true iff the contained object was handled.
+   */
+  boolean importPublicationFile(File file);
 }

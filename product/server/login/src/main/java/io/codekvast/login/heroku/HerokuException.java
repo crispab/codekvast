@@ -21,12 +21,10 @@
  */
 package io.codekvast.login.heroku;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public class HerokuException extends Exception {
 
-    public HerokuException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public HerokuException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

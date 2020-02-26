@@ -23,29 +23,19 @@ package io.codekvast.dashboard.dashboard.model.status;
 
 import lombok.*;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Data
 @Setter(AccessLevel.NONE)
 @Builder
 @EqualsAndHashCode(of = {"appName", "environment"})
 public class ApplicationDescriptor2 {
-    @NonNull
-    private final String appName;
+  @NonNull private final String appName;
 
-    @NonNull
-    private final String environment;
+  @NonNull private final String environment;
 
-    /**
-     * When was collection started in this environment?
-     */
-    @NonNull
-    private final Long collectedSinceMillis;
+  /** When was collection started in this environment? */
+  @NonNull private final Long collectedSinceMillis;
 
-    /**
-     * When was the last instant collection data was received from this environment?
-     */
-    @NonNull
-    private final Long collectedToMillis;
+  /** When was the last instant collection data was received from this environment? */
+  @NonNull private final Long collectedToMillis;
 }

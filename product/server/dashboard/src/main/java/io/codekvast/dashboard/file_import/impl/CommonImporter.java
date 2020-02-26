@@ -37,38 +37,33 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class CommonImporter {
 
-    private final ImportDAO importDAO;
+  private final ImportDAO importDAO;
 
-    ImportContext importCommonData(CommonPublicationData2 data) {
-        long appId = importDAO.importApplication(data);
-        long environmentId = importDAO.importEnvironment(data);
-        long jvmId = importDAO.importJvm(data, appId, environmentId);
+  ImportContext importCommonData(CommonPublicationData2 data) {
+    long appId = importDAO.importApplication(data);
+    long environmentId = importDAO.importEnvironment(data);
+    long jvmId = importDAO.importJvm(data, appId, environmentId);
 
-        return ImportContext.builder()
-                            .customerId(data.getCustomerId())
-                            .appId(appId)
-                            .environmentId(environmentId)
-                            .jvmId(jvmId)
-                            .publishedAtMillis(data.getPublishedAtMillis())
-                            .build();
-    }
+    return ImportContext.builder()
+        .customerId(data.getCustomerId())
+        .appId(appId)
+        .environmentId(environmentId)
+        .jvmId(jvmId)
+        .publishedAtMillis(data.getPublishedAtMillis())
+        .build();
+  }
 
-    @Value
-    @Builder
-    static class ImportContext {
-        @NonNull
-        private final Long customerId;
+  @Value
+  @Builder
+  static class ImportContext {
+    @NonNull private final Long customerId;
 
-        @NonNull
-        private final Long appId;
+    @NonNull private final Long appId;
 
-        @NonNull
-        private final Long environmentId;
+    @NonNull private final Long environmentId;
 
-        @NonNull
-        private final Long jvmId;
+    @NonNull private final Long jvmId;
 
-        @NonNull
-        private final Long publishedAtMillis;
-    }
+    @NonNull private final Long publishedAtMillis;
+  }
 }

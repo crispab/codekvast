@@ -27,51 +27,55 @@ import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
-import lombok.extern.java.Log;
-
 import java.io.File;
 import java.io.IOException;
+import lombok.extern.java.Log;
 
 /**
  * A HTTP implementation of CodeBasePublisher.
  *
- * It uses the FileSystemCodeBasePublisherImpl for creating a file, which then is POSTed to the server.
+ * <p>It uses the FileSystemCodeBasePublisherImpl for creating a file, which then is POSTed to the
+ * server.
  *
  * @author olle.hallin@crisp.se
  */
 @Log
 public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
-    static final String NAME = "http";
+  static final String NAME = "http";
 
-    HttpCodeBasePublisherImpl(AgentConfig config) {
-        super(logger, config);
+  HttpCodeBasePublisherImpl(AgentConfig config) {
+    super(logger, config);
+  }
+
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  public void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException {
+    String url = getConfig().getCodeBaseUploadEndpoint();
+
+    File file = null;
+    try {
+
+      CodeBasePublication3 publication =
+          codeBase.getCodeBasePublication(getCustomerId(), this.getSequenceNumber());
+      file =
+          FileUtils.serializeToFile(
+              publication, getConfig().getFilenamePrefix("codebase-"), ".ser");
+
+      doPost(file, url, codeBase.getFingerprint().toString(), publication.getEntries().size());
+
+      logger.fine(
+          String.format(
+              "Codekvast uploaded %d methods (%s) to %s",
+              publication.getEntries().size(), LogUtil.humanReadableByteCount(file.length()), url));
+    } catch (IOException e) {
+      throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
+    } finally {
+      FileUtils.safeDelete(file);
     }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException {
-        String url = getConfig().getCodeBaseUploadEndpoint();
-
-        File file = null;
-        try {
-
-            CodeBasePublication3 publication = codeBase.getCodeBasePublication(getCustomerId(), this.getSequenceNumber());
-            file = FileUtils.serializeToFile(publication, getConfig().getFilenamePrefix("codebase-"), ".ser");
-
-            doPost(file, url, codeBase.getFingerprint().toString(), publication.getEntries().size());
-
-            logger.fine(String.format("Codekvast uploaded %d methods (%s) to %s", publication.getEntries().size(),
-                                    LogUtil.humanReadableByteCount(file.length()), url));
-        } catch (IOException e) {
-            throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
-        } finally {
-            FileUtils.safeDelete(file);
-        }
-    }
-
+  }
 }

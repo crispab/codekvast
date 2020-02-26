@@ -24,29 +24,27 @@ package io.codekvast.javaagent.publishing;
 import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
 
-/**
- * Strategy for publishing a {@link CodeBase}
- */
+/** Strategy for publishing a {@link CodeBase} */
 public interface CodeBasePublisher extends Publisher {
 
-    /**
-     * Publishes a codebase.
-     *
-     * @throws CodekvastPublishingException when no contact with the consumer. Try again.
-     */
-    void publishCodeBase() throws CodekvastPublishingException;
+  /**
+   * Publishes a codebase.
+   *
+   * @throws CodekvastPublishingException when no contact with the consumer. Try again.
+   */
+  void publishCodeBase() throws CodekvastPublishingException;
 
-    /**
-     * Retrieve the latest CodeBaseFingerprint
-     *
-     * @return The latest CodeBaseFingerprint
-     */
-    CodeBaseFingerprint getCodeBaseFingerprint();
+  /**
+   * Retrieve the latest CodeBaseFingerprint
+   *
+   * @return The latest CodeBaseFingerprint
+   */
+  CodeBaseFingerprint getCodeBaseFingerprint();
 
-    /**
-     * How many times has the code base been checked for differences?
-     *
-     * @return The number of times the code base has been scanned for changes.
-     */
-    int getCodeBaseCheckCount();
+  /**
+   * How many times has the code base been checked for differences?
+   *
+   * @return The number of times the code base has been scanned for changes.
+   */
+  int getCodeBaseCheckCount();
 }

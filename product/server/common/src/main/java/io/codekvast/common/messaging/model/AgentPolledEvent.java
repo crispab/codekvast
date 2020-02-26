@@ -21,11 +21,10 @@
  */
 package io.codekvast.common.messaging.model;
 
+import java.time.Instant;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
-import java.time.Instant;
 
 /**
  * An event that is sent when an agent polls after the expiration of the trial period.
@@ -35,31 +34,31 @@ import java.time.Instant;
 @Value
 @Builder
 public class AgentPolledEvent implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull String appName;
-    @NonNull String environment;
-    @NonNull String jvmUuid;
-    @NonNull Instant polledAt;
-    @NonNull Boolean disabledEnvironment;
-    @NonNull Boolean afterTrialPeriod;
-    @NonNull Boolean tooManyLiveAgents;
-    Instant trialPeriodEndsAt;
+  @NonNull Long customerId;
+  @NonNull String appName;
+  @NonNull String environment;
+  @NonNull String jvmUuid;
+  @NonNull Instant polledAt;
+  @NonNull Boolean disabledEnvironment;
+  @NonNull Boolean afterTrialPeriod;
+  @NonNull Boolean tooManyLiveAgents;
+  Instant trialPeriodEndsAt;
 
-    public boolean isAgentEnabled() {
-        return !disabledEnvironment && !afterTrialPeriod && !tooManyLiveAgents;
-    }
+  public boolean isAgentEnabled() {
+    return !disabledEnvironment && !afterTrialPeriod && !tooManyLiveAgents;
+  }
 
-    public static AgentPolledEvent sample() {
-        return AgentPolledEvent.builder()
-                               .afterTrialPeriod(false)
-                               .appName("appName")
-                               .customerId(1L)
-                               .disabledEnvironment(false)
-                               .environment("environment")
-                               .jvmUuid("jvmUuid")
-                               .polledAt(Instant.now())
-                               .tooManyLiveAgents(false)
-                               .trialPeriodEndsAt(null)
-                               .build();
-    }
+  public static AgentPolledEvent sample() {
+    return AgentPolledEvent.builder()
+        .afterTrialPeriod(false)
+        .appName("appName")
+        .customerId(1L)
+        .disabledEnvironment(false)
+        .environment("environment")
+        .jvmUuid("jvmUuid")
+        .polledAt(Instant.now())
+        .tooManyLiveAgents(false)
+        .trialPeriodEndsAt(null)
+        .build();
+  }
 }

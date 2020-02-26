@@ -21,8 +21,6 @@
  */
 package io.codekvast.common.messaging.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -35,23 +33,23 @@ import lombok.Value;
 @Value
 @Builder
 public class CodeBaseReceivedEvent implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull String appName;
-    @NonNull String appVersion;
-    @NonNull String agentVersion;
-    @NonNull String environment;
-    @NonNull String hostname;
-    @NonNull Integer size;
+  @NonNull Long customerId;
+  @NonNull String appName;
+  @NonNull String appVersion;
+  @NonNull String agentVersion;
+  @NonNull String environment;
+  @NonNull String hostname;
+  @NonNull Integer size;
 
-    public static CodeBaseReceivedEvent sample() {
-        return CodeBaseReceivedEvent.builder()
-                                    .customerId(1L)
-                                    .appName("appName")
-                                    .appVersion("appVersion")
-                                    .agentVersion("agentVersion")
-                                    .environment("environment")
-                                    .hostname("hostname")
-                                    .size(17)
-                                    .build();
-    }
+  public static CodeBaseReceivedEvent sample() {
+    return CodeBaseReceivedEvent.builder()
+        .customerId(1L)
+        .appName("appName")
+        .appVersion("appVersion")
+        .agentVersion("agentVersion")
+        .environment("environment")
+        .hostname("hostname")
+        .size(17)
+        .build();
+  }
 }

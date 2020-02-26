@@ -23,9 +23,10 @@ package io.codekvast.javaagent.scheduler;
 
 /**
  * Interface to the system clock, to facilitate testing.
+ *
  * @author olle.hallin@crisp.se
  */
 public interface SystemClock {
 
-    long currentTimeMillis();
+  long currentTimeMillis();
 }

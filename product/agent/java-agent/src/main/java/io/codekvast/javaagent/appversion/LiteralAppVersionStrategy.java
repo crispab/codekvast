@@ -21,10 +21,9 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import lombok.extern.java.Log;
-
 import java.io.File;
 import java.util.Collection;
+import lombok.extern.java.Log;
 
 /**
  * A strategy for literal versions. Handles "literal v" and "constant v".
@@ -34,17 +33,17 @@ import java.util.Collection;
 @Log
 public class LiteralAppVersionStrategy extends AbstractAppVersionStrategy {
 
-    LiteralAppVersionStrategy() {
-        super("constant", "literal");
-    }
+  LiteralAppVersionStrategy() {
+    super("constant", "literal");
+  }
 
-    @Override
-    public String resolveAppVersion(Collection<File> codeBases, String[] args) {
-        return args[1].trim();
-    }
+  @Override
+  public String resolveAppVersion(Collection<File> codeBases, String[] args) {
+    return args[1].trim();
+  }
 
-    @Override
-    public boolean canHandle(String[] args) {
-        return args != null && args.length == 2 && recognizes(args[0]);
-    }
+  @Override
+  public boolean canHandle(String[] args) {
+    return args != null && args.length == 2 && recognizes(args[0]);
+  }
 }

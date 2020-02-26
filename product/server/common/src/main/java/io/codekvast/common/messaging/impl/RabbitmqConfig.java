@@ -21,6 +21,9 @@
  */
 package io.codekvast.common.messaging.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -29,12 +32,9 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Don't forget to set spring.rabbitmq.listener.simple.default-requeue-rejected=false in application.yml, or else DLQ will not work.
+ * Don't forget to set spring.rabbitmq.listener.simple.default-requeue-rejected=false in
+ * application.yml, or else DLQ will not work.
  *
  * @author olle.hallin@crisp.se
  */
@@ -44,20 +44,19 @@ import java.util.Map;
 @Slf4j
 public class RabbitmqConfig {
 
-    public static final String CODEKVAST_EVENT_QUEUE = "codekvast.events";
-    public static final String CODEKVAST_EVENT_DLQ = "codekvast.events.dlq";
+  public static final String CODEKVAST_EVENT_QUEUE = "codekvast.events";
+  public static final String CODEKVAST_EVENT_DLQ = "codekvast.events.dlq";
 
-    private final AmqpAdmin amqpAdmin;
+  private final AmqpAdmin amqpAdmin;
 
-    @PostConstruct
-    public void declareRabbitMQEntities() {
-        amqpAdmin.declareQueue(new Queue(CODEKVAST_EVENT_DLQ));
+  @PostConstruct
+  public void declareRabbitMQEntities() {
+    amqpAdmin.declareQueue(new Queue(CODEKVAST_EVENT_DLQ));
 
-        Map<String, Object> args = new HashMap<>();
-        args.put("x-dead-letter-exchange", DirectExchange.DEFAULT.getName());
-        args.put("x-dead-letter-routing-key", CODEKVAST_EVENT_DLQ);
-        Queue queue = new Queue(CODEKVAST_EVENT_QUEUE, true, false, false, args);
-        amqpAdmin.declareQueue(queue);
-    }
-
+    Map<String, Object> args = new HashMap<>();
+    args.put("x-dead-letter-exchange", DirectExchange.DEFAULT.getName());
+    args.put("x-dead-letter-routing-key", CODEKVAST_EVENT_DLQ);
+    Queue queue = new Queue(CODEKVAST_EVENT_QUEUE, true, false, false, args);
+    amqpAdmin.declareQueue(queue);
+  }
 }

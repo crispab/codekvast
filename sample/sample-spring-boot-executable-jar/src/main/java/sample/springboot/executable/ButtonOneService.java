@@ -8,8 +8,8 @@ import sample.lib.used.Bar1;
 @Slf4j
 public class ButtonOneService {
 
-    @SuppressWarnings("unused")
-    void doSomething() {
-        log.info("Doing something 1: {}", new Bar1().declaredOnBar());
-    }
+  @SuppressWarnings("unused")
+  void doSomething() {
+    log.info("Doing something 1: {}", new Bar1().declaredOnBar());
+  }
 }

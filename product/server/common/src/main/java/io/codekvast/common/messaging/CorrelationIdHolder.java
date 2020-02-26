@@ -21,10 +21,9 @@
  */
 package io.codekvast.common.messaging;
 
+import java.util.UUID;
 import lombok.NonNull;
 import org.slf4j.MDC;
-
-import java.util.UUID;
 
 /**
  * A wrapper for a ThreadLocal that holds a correlationId.
@@ -32,66 +31,66 @@ import java.util.UUID;
  * @author olle.hallin@crisp.se
  */
 public class CorrelationIdHolder {
-    private final static ThreadLocal<String> holder = new ThreadLocal<>();
-    private static final String CORRELATION_ID = "correlationId";
+  private static final ThreadLocal<String> holder = new ThreadLocal<>();
+  private static final String CORRELATION_ID = "correlationId";
 
-    /**
-     * Retrieves the thread's correlationId. Creates one if missing.
-     *
-     * @return The correlationId for the thread. Does never return null.
-     */
-    public static String get() {
-        String id = holder.get();
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-            set(id);
-        }
-        return id;
+  /**
+   * Retrieves the thread's correlationId. Creates one if missing.
+   *
+   * @return The correlationId for the thread. Does never return null.
+   */
+  public static String get() {
+    String id = holder.get();
+    if (id == null) {
+      id = UUID.randomUUID().toString();
+      set(id);
     }
+    return id;
+  }
 
-    /**
-     * Sets a new correlationId in a ThreadLocal.
-     *
-     * The value can be obtained e.g., via an HTTP request parameter, or an event received from another service.
-     * It also invokes {@code MDC.put("correlationId", id)}.
-     *
-     * @param id The new id to set. May not be null.
-     */
-    public static void set(@NonNull String id) {
-        holder.set(id);
-        MDC.put(CORRELATION_ID, id);
-    }
+  /**
+   * Sets a new correlationId in a ThreadLocal.
+   *
+   * <p>The value can be obtained e.g., via an HTTP request parameter, or an event received from
+   * another service. It also invokes {@code MDC.put("correlationId", id)}.
+   *
+   * @param id The new id to set. May not be null.
+   */
+  public static void set(@NonNull String id) {
+    holder.set(id);
+    MDC.put(CORRELATION_ID, id);
+  }
 
-    /**
-     * Generates and stores a new random correlationId.
-     *
-     * It invokes {@link #generateNew()} and {@link #set(String)}
-     *
-     * @return The new unique random correlationId. Does never return null.
-     */
-    public static String generateAndSetNew() {
-        String id = generateNew();
-        set(id);
-        return id;
-    }
+  /**
+   * Generates and stores a new random correlationId.
+   *
+   * <p>It invokes {@link #generateNew()} and {@link #set(String)}
+   *
+   * @return The new unique random correlationId. Does never return null.
+   */
+  public static String generateAndSetNew() {
+    String id = generateNew();
+    set(id);
+    return id;
+  }
 
-    /**
-     * Generates a new random correlationId, but does <b>NOT</b> invoke {@link #set(String)}.
-     *
-     * @return The new unique random correlationId. Does never return null.
-     */
-    public static String generateNew() {
-        return UUID.randomUUID().toString();
-    }
+  /**
+   * Generates a new random correlationId, but does <b>NOT</b> invoke {@link #set(String)}.
+   *
+   * @return The new unique random correlationId. Does never return null.
+   */
+  public static String generateNew() {
+    return UUID.randomUUID().toString();
+  }
 
-    /**
-     * Removes the correlation id from the thread, to prevent leaking to other tasks.
-     * It also invokes {@code MDC.remove("correlationId")}.
-     *
-     * Should be used in a finally block.
-     */
-    public static void clear() {
-        holder.remove();
-        MDC.remove(CORRELATION_ID);
-    }
+  /**
+   * Removes the correlation id from the thread, to prevent leaking to other tasks. It also invokes
+   * {@code MDC.remove("correlationId")}.
+   *
+   * <p>Should be used in a finally block.
+   */
+  public static void clear() {
+    holder.remove();
+    MDC.remove(CORRELATION_ID);
+  }
 }

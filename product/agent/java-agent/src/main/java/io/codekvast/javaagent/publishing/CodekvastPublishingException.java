@@ -21,12 +21,10 @@
  */
 package io.codekvast.javaagent.publishing;
 
-/**
- * An exception to signal publishing problems.
- */
+/** An exception to signal publishing problems. */
 public class CodekvastPublishingException extends Exception {
 
-    public CodekvastPublishingException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public CodekvastPublishingException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

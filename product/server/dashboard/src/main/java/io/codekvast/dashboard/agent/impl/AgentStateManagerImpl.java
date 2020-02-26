@@ -28,6 +28,7 @@ import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -35,61 +36,67 @@ import lombok.val;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class AgentStateManagerImpl implements AgentStateManager {
 
-    private final CodekvastDashboardSettings settings;
-    private final CustomerService customerService;
-    private final EventService eventService;
-    private final AgentDAO agentDAO;
-    private final LockTemplate lockTemplate;
+  private final CodekvastDashboardSettings settings;
+  private final CustomerService customerService;
+  private final EventService eventService;
+  private final AgentDAO agentDAO;
+  private final LockTemplate lockTemplate;
 
-    @Override
-    @Transactional
-    @SneakyThrows
-    public boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment) {
-        return lockTemplate.doWithLock(Lock.forCustomer(customerData.getCustomerId()),
-                                       () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
-                                       () -> {
-                                           logger.error("Failed to acquire lock, treating agent as disabled.");
-                                           return false;
-                                       });
-    }
+  @Override
+  @Transactional
+  @SneakyThrows
+  public boolean updateAgentState(
+      CustomerData customerData, String jvmUuid, String appName, String environment) {
+    return lockTemplate.doWithLock(
+        Lock.forCustomer(customerData.getCustomerId()),
+        () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
+        () -> {
+          logger.error("Failed to acquire lock, treating agent as disabled.");
+          return false;
+        });
+  }
 
-    private boolean doUpdateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment) {
-        long customerId = customerData.getCustomerId();
-        Instant now = Instant.now();
+  private boolean doUpdateAgentState(
+      CustomerData customerData, String jvmUuid, String appName, String environment) {
+    long customerId = customerData.getCustomerId();
+    Instant now = Instant.now();
 
-        agentDAO.disableDeadAgents(customerId, jvmUuid, now.minusSeconds(settings.getFileImportIntervalSeconds() * 2));
+    agentDAO.disableDeadAgents(
+        customerId, jvmUuid, now.minusSeconds(settings.getFileImportIntervalSeconds() * 2));
 
-        agentDAO.setAgentTimestamps(customerId, jvmUuid, now, now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
+    agentDAO.setAgentTimestamps(
+        customerId,
+        jvmUuid,
+        now,
+        now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
 
-        CustomerData cd = customerService.registerAgentPoll(customerData, now);
-        int numOtherEnabledLiveAgents = agentDAO.getNumOtherAliveAgents(customerId, jvmUuid, now.minusSeconds(10));
+    CustomerData cd = customerService.registerAgentPoll(customerData, now);
+    int numOtherEnabledLiveAgents =
+        agentDAO.getNumOtherAliveAgents(customerId, jvmUuid, now.minusSeconds(10));
 
-        val event = AgentPolledEvent.builder()
-                                    .afterTrialPeriod(cd.isTrialPeriodExpired(now))
-                                    .appName(appName)
-                                    .customerId(customerId)
-                                    .disabledEnvironment(!agentDAO.isEnvironmentEnabled(customerId, jvmUuid))
-                                    .environment(environment)
-                                    .jvmUuid(jvmUuid)
-                                    .polledAt(now)
-                                    .tooManyLiveAgents(numOtherEnabledLiveAgents >= customerData.getPricePlan().getMaxNumberOfAgents())
-                                    .trialPeriodEndsAt(cd.getTrialPeriodEndsAt())
-                                    .build();
+    val event =
+        AgentPolledEvent.builder()
+            .afterTrialPeriod(cd.isTrialPeriodExpired(now))
+            .appName(appName)
+            .customerId(customerId)
+            .disabledEnvironment(!agentDAO.isEnvironmentEnabled(customerId, jvmUuid))
+            .environment(environment)
+            .jvmUuid(jvmUuid)
+            .polledAt(now)
+            .tooManyLiveAgents(
+                numOtherEnabledLiveAgents >= customerData.getPricePlan().getMaxNumberOfAgents())
+            .trialPeriodEndsAt(cd.getTrialPeriodEndsAt())
+            .build();
 
-        logger.debug("Agent {} is {}", jvmUuid, event.isAgentEnabled() ? "enabled" : "disabled");
-        eventService.send(event);
-        agentDAO.updateAgentEnabledState(customerId, jvmUuid, event.isAgentEnabled());
-        return event.isAgentEnabled();
-    }
-
+    logger.debug("Agent {} is {}", jvmUuid, event.isAgentEnabled() ? "enabled" : "disabled");
+    eventService.send(event);
+    agentDAO.updateAgentEnabledState(customerId, jvmUuid, event.isAgentEnabled());
+    return event.isAgentEnabled();
+  }
 }

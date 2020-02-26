@@ -21,130 +21,129 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import lombok.extern.java.Log;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
+import lombok.extern.java.Log;
 
 /**
  * A strategy for picking the app version from one or more properties in a properties file.
- * <p>
- * It handles the cases {@code properties somefile.conf prop1[,prop2...]}. The values of properties (separated by a dash '-') are used
- * as resolved version.
- *</p>
+ *
+ * <p>It handles the cases {@code properties somefile.conf prop1[,prop2...]}. The values of
+ * properties (separated by a dash '-') are used as resolved version.
+ *
  * @author olle.hallin@crisp.se
  */
 @Log
 public class PropertiesAppVersionStrategy extends AbstractAppVersionStrategy {
 
-    PropertiesAppVersionStrategy() {
-        super("properties", "property");
+  PropertiesAppVersionStrategy() {
+    super("properties", "property");
+  }
+
+  @Override
+  public boolean canHandle(String[] args) {
+    return args != null && args.length >= 3 && recognizes(args[0]);
+  }
+
+  @Override
+  public String resolveAppVersion(Collection<File> codeBases, String[] args) {
+
+    // Try to read directly from the file
+    File file = new File(args[1]);
+    if (file.canRead()) {
+      return getVersionFrom(file, args);
     }
 
-    @Override
-    public boolean canHandle(String[] args) {
-        return args != null && args.length >= 3 && recognizes(args[0]);
+    // Else locate it within codeBases
+    String baseName = args[1];
+    for (File codeBaseFile : codeBases) {
+      String version = search(codeBaseFile, baseName, args);
+      if (version != null) {
+        return version;
+      }
+    }
+    logger.severe(String.format("Cannot resolve '%s': file not found", join(args)));
+    return UNKNOWN_VERSION;
+  }
+
+  private String search(File dir, String baseName, String[] args) {
+    if (!dir.isDirectory()) {
+      logger.warning(dir + " is not a directory");
+      return null;
     }
 
-    @Override
-    public String resolveAppVersion(Collection<File> codeBases, String[] args) {
+    File[] files = dir.listFiles();
 
-        // Try to read directly from the file
-        File file = new File(args[1]);
-        if (file.canRead()) {
-            return getVersionFrom(file, args);
+    if (files != null) {
+      for (File file : files) {
+        if (file.isFile()) {
+          if (file.getName().equals(baseName)) {
+            String version = getVersionFrom(file, args);
+            logger.fine(String.format("Found version '%s' in %s", version, file));
+            return version;
+          }
         }
+      }
+      for (File file : files) {
+        if (file.isDirectory()) {
+          String version = search(file, baseName, args);
+          if (version != null) {
+            return version;
+          }
+        }
+      }
+    }
+    return null;
+  }
 
-        // Else locate it within codeBases
-        String baseName = args[1];
-        for (File codeBaseFile : codeBases) {
-            String version = search(codeBaseFile, baseName, args);
-            if (version != null) {
-                return version;
-            }
-        }
-        logger.severe(String.format("Cannot resolve '%s': file not found", join(args)));
-        return UNKNOWN_VERSION;
+  String getVersionFrom(File file, String[] args) {
+    Properties props = new Properties();
+
+    try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(file))) {
+      props.load(is);
+    } catch (IOException e) {
+      logger.severe("Cannot load " + file + ": " + e.getMessage());
+      return UNKNOWN_VERSION;
     }
 
-    private String search(File dir, String baseName, String[] args) {
-        if (!dir.isDirectory()) {
-            logger.warning(dir + " is not a directory");
-            return null;
-        }
+    StringBuilder sb = new StringBuilder();
+    String delimiter = "";
 
-        File[] files = dir.listFiles();
-
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile()) {
-                    if (file.getName().equals(baseName)) {
-                        String version = getVersionFrom(file, args);
-                        logger.fine(String.format("Found version '%s' in %s", version, file));
-                        return version;
-                    }
-                }
-            }
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    String version = search(file, baseName, args);
-                    if (version != null) {
-                        return version;
-                    }
-                }
-            }
-        }
-        return null;
+    for (int i = 2; i < args.length; i++) {
+      String key = args[i];
+      String value = props.getProperty(key);
+      if (value == null) {
+        logger.warning("Cannot find " + key + " in " + file.getAbsolutePath());
+      } else {
+        sb.append(delimiter).append(removeQuotes(value).trim());
+        delimiter = "-";
+      }
     }
+    return sb.toString();
+  }
 
-    String getVersionFrom(File file, String[] args) {
-        Properties props = new Properties();
-
-        try(BufferedInputStream is = new BufferedInputStream(new FileInputStream(file))) {
-            props.load(is);
-        } catch (IOException e) {
-            logger.severe("Cannot load " + file + ": " + e.getMessage());
-            return UNKNOWN_VERSION;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        String delimiter = "";
-
-        for (int i = 2; i < args.length; i++) {
-            String key = args[i];
-            String value = props.getProperty(key);
-            if (value == null) {
-                logger.warning("Cannot find " + key + " in " + file.getAbsolutePath());
-            } else {
-                sb.append(delimiter).append(removeQuotes(value).trim());
-                delimiter = "-";
-            }
-        }
-        return sb.toString();
+  private String removeQuotes(String value) {
+    int len = value.length();
+    if (value.startsWith("\"") && value.endsWith("\"")) {
+      return value.substring(1, len - 1);
     }
-
-    private String removeQuotes(String value) {
-        int len = value.length();
-        if (value.startsWith("\"") && value.endsWith("\"")) {
-            return value.substring(1, len - 1);
-        }
-        if (value.startsWith("'") && value.endsWith("'")) {
-            return value.substring(1, len - 1);
-        }
-        return value;
+    if (value.startsWith("'") && value.endsWith("'")) {
+      return value.substring(1, len - 1);
     }
+    return value;
+  }
 
-    private String join(String[] args) {
-        StringBuilder sb = new StringBuilder();
-        String delimiter ="";
-        for (String arg : args) {
-            sb.append(delimiter).append(arg);
-            delimiter = " ";
-        }
-        return sb.toString();
+  private String join(String[] args) {
+    StringBuilder sb = new StringBuilder();
+    String delimiter = "";
+    for (String arg : args) {
+      sb.append(delimiter).append(arg);
+      delimiter = " ";
     }
+    return sb.toString();
+  }
 }

@@ -22,6 +22,8 @@
 package io.codekvast.backoffice.service.impl;
 
 import io.codekvast.backoffice.service.MailSender;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -31,41 +33,44 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @Profile("!no-mail-sender")
 public class MailSenderImpl implements MailSender {
 
-    private final JavaMailSender javaMailSender;
-    private final MailTemplateRenderer mailTemplateRenderer;
+  private final JavaMailSender javaMailSender;
+  private final MailTemplateRenderer mailTemplateRenderer;
 
-    @Override
-    @SneakyThrows(MessagingException.class)
-    public void sendMail(Template template, String emailAddress, Object... args) {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        mimeMessage.setHeader("Return-Path", "postmaster@codekvast.io");
+  @Override
+  @SneakyThrows(MessagingException.class)
+  public void sendMail(Template template, String emailAddress, Object... args) {
+    MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+    mimeMessage.setHeader("Return-Path", "postmaster@codekvast.io");
 
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
-        helper.setSubject(template.getSubject());
-        helper.setFrom("no-reply@codekvast.io");
-        helper.setTo(emailAddress);
-        String body = mailTemplateRenderer.renderTemplate(template, args);
-        helper.setText(body, true);
+    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+    helper.setSubject(template.getSubject());
+    helper.setFrom("no-reply@codekvast.io");
+    helper.setTo(emailAddress);
+    String body = mailTemplateRenderer.renderTemplate(template, args);
+    helper.setText(body, true);
 
-        try {
-            javaMailSender.send(mimeMessage);
-            logger.info("Sent mail with subject='{}' and body='{}' to {}", template.getSubject(), body, emailAddress);
-        } catch (MailSendException e) {
-            logger.warn("Failed to send mail with subject='{}' and body='{}' to {}: {}", template.getSubject(), body, emailAddress, e.toString());
-            // Do not rethrow. Avoid spamming the log with stack traces.
-        }
+    try {
+      javaMailSender.send(mimeMessage);
+      logger.info(
+          "Sent mail with subject='{}' and body='{}' to {}",
+          template.getSubject(),
+          body,
+          emailAddress);
+    } catch (MailSendException e) {
+      logger.warn(
+          "Failed to send mail with subject='{}' and body='{}' to {}: {}",
+          template.getSubject(),
+          body,
+          emailAddress,
+          e.toString());
+      // Do not rethrow. Avoid spamming the log with stack traces.
     }
-
+  }
 }

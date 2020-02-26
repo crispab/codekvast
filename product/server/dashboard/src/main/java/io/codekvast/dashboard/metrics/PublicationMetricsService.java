@@ -22,7 +22,6 @@
 package io.codekvast.dashboard.metrics;
 
 import io.codekvast.dashboard.model.PublicationType;
-
 import java.time.Duration;
 
 /**
@@ -32,25 +31,24 @@ import java.time.Duration;
  */
 public interface PublicationMetricsService {
 
-    /**
-     * Updates the gauge for the number of queued publications.
-     *
-     * @param queueLength The queue length.
-     */
-    void gaugePublicationQueueLength(int queueLength);
+  /**
+   * Updates the gauge for the number of queued publications.
+   *
+   * @param queueLength The queue length.
+   */
+  void gaugePublicationQueueLength(int queueLength);
 
-    /**
-     * Count the fact that a publication was rejected.
-     */
-    void countRejectedPublication(PublicationType type);
+  /** Count the fact that a publication was rejected. */
+  void countRejectedPublication(PublicationType type);
 
-    /**
-     * Record the fact that a publication was imported.
-     *
-     * @param type                       The type of publication.
-     * @param size                       The size of the publication.
-     * @param ignoredSyntheticSignatures The number of synthetic signatures that were ignored.
-     * @param duration                   The time it took to import it.
-     */
-    void recordImportedPublication(PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration);
+  /**
+   * Record the fact that a publication was imported.
+   *
+   * @param type The type of publication.
+   * @param size The size of the publication.
+   * @param ignoredSyntheticSignatures The number of synthetic signatures that were ignored.
+   * @param duration The time it took to import it.
+   */
+  void recordImportedPublication(
+      PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration);
 }

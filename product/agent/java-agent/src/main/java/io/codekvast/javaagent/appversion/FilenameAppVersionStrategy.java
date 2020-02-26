@@ -21,78 +21,81 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import lombok.extern.java.Log;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import lombok.extern.java.Log;
 
 /**
  * A strategy for picking the app version from the name of a file
- * <p>
- * It handles the cases {@code filename somefile-(.*).jar}. The part inside the parenthesis is used as version.
- *</p>
+ *
+ * <p>It handles the cases {@code filename somefile-(.*).jar}. The part inside the parenthesis is
+ * used as version.
+ *
  * @author olle.hallin@crisp.se
  */
 @Log
 public class FilenameAppVersionStrategy extends AbstractAppVersionStrategy {
 
-    FilenameAppVersionStrategy() {
-        super("filename", "pattern");
-    }
+  FilenameAppVersionStrategy() {
+    super("filename", "pattern");
+  }
 
-    @Override
-    public String resolveAppVersion(Collection<File> codeBases, String[] args) {
-        try {
-            Pattern pattern = Pattern.compile(args[1]);
-            for (File codeBaseFile : codeBases) {
-                String version = search(codeBaseFile, pattern);
-                if (version != null) {
-                    return version;
-                }
-            }
-            logger.severe(String.format("Cannot resolve %s %s: pattern not matched", args[0], args[1]));
-        } catch (PatternSyntaxException e) {
-            logger.severe(String.format("Cannot resolve %s %s: illegal syntax for %s", args[0], args[1], Pattern.class.getName()));
+  @Override
+  public String resolveAppVersion(Collection<File> codeBases, String[] args) {
+    try {
+      Pattern pattern = Pattern.compile(args[1]);
+      for (File codeBaseFile : codeBases) {
+        String version = search(codeBaseFile, pattern);
+        if (version != null) {
+          return version;
         }
-        return UNKNOWN_VERSION;
+      }
+      logger.severe(String.format("Cannot resolve %s %s: pattern not matched", args[0], args[1]));
+    } catch (PatternSyntaxException e) {
+      logger.severe(
+          String.format(
+              "Cannot resolve %s %s: illegal syntax for %s",
+              args[0], args[1], Pattern.class.getName()));
+    }
+    return UNKNOWN_VERSION;
+  }
+
+  private String search(File dir, Pattern pattern) {
+    if (!dir.isDirectory()) {
+      logger.warning(dir + " is not a directory");
+      return null;
     }
 
-    private String search(File dir, Pattern pattern) {
-        if (!dir.isDirectory()) {
-            logger.warning(dir + " is not a directory");
-            return null;
+    File[] files = dir.listFiles();
+
+    if (files != null) {
+      for (File file : files) {
+        if (file.isFile()) {
+          Matcher matcher = pattern.matcher(file.getName());
+          if (matcher.matches()) {
+            String version = matcher.group(matcher.groupCount());
+            logger.fine(String.format("Found version '%s' in %s", version, file));
+            return version;
+          }
         }
-
-        File[] files = dir.listFiles();
-
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile()) {
-                    Matcher matcher = pattern.matcher(file.getName());
-                    if (matcher.matches()) {
-                        String version = matcher.group(matcher.groupCount());
-                        logger.fine(String.format("Found version '%s' in %s", version, file));
-                        return version;
-                    }
-                }
-            }
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    String version = search(file, pattern);
-                    if (version != null) {
-                        return version;
-                    }
-                }
-            }
+      }
+      for (File file : files) {
+        if (file.isDirectory()) {
+          String version = search(file, pattern);
+          if (version != null) {
+            return version;
+          }
         }
-        return null;
+      }
     }
+    return null;
+  }
 
-    @Override
-    public boolean canHandle(String[] args) {
-        return args != null && args.length == 2 && recognizes(args[0]);
-    }
+  @Override
+  public boolean canHandle(String[] args) {
+    return args != null && args.length == 2 && recognizes(args[0]);
+  }
 }

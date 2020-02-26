@@ -27,9 +27,9 @@ import io.codekvast.common.messaging.model.CodekvastEvent;
 /**
  * Marker interface for facts that are *NOT* persisted in the database.
  *
- * They are instead constructed by querying CustomerService in {@link RuleEngine#handle(CodekvastEvent)}*
+ * <p>They are instead constructed by querying CustomerService in {@link
+ * RuleEngine#handle(CodekvastEvent)}*
  *
  * @author olle.hallin@crisp.se
  */
-public interface TransientFact {
-}
+public interface TransientFact {}

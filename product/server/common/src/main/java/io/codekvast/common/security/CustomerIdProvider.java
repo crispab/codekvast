@@ -28,11 +28,11 @@ package io.codekvast.common.security;
  */
 public interface CustomerIdProvider {
 
-    /**
-     * Interfaces to the Spring SecurityContextHolder for getting the customerId of the current request's
-     * authenticated customer.
-     *
-     * @return The id of the currently authenticated customer or null.
-     */
-    Long getCustomerId();
+  /**
+   * Interfaces to the Spring SecurityContextHolder for getting the customerId of the current
+   * request's authenticated customer.
+   *
+   * @return The id of the currently authenticated customer or null.
+   */
+  Long getCustomerId();
 }

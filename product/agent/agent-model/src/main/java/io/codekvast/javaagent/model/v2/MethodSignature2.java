@@ -21,9 +21,14 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import lombok.*;
-
 import java.io.Serializable;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.Value;
 
 /**
  * Immutable representation of a method signature.
@@ -36,41 +41,32 @@ import java.io.Serializable;
 @ToString(of = "aspectjString")
 @EqualsAndHashCode(of = "aspectjString")
 public class MethodSignature2 implements Serializable {
-    // This is the value that happens to be out there in io.codekvast:codekvast-agent:0.24.0
-    private static final long serialVersionUID = -7147483656689129200L;
+  // This is the value that happens to be out there in io.codekvast:codekvast-agent:0.24.0
+  private static final long serialVersionUID = -7147483656689129200L;
 
-    @NonNull
-    private final String aspectjString;
-    private final Boolean bridge;
-    @NonNull
-    private final String declaringType;
-    @NonNull
-    private final String exceptionTypes;
-    @NonNull
-    private final String methodName;
-    @NonNull
-    private final String modifiers;
-    @NonNull
-    private final String packageName;
-    @NonNull
-    private final String parameterTypes;
-    @NonNull
-    private final String returnType;
-    private final Boolean synthetic;
+  @NonNull private final String aspectjString;
+  private final Boolean bridge;
+  @NonNull private final String declaringType;
+  @NonNull private final String exceptionTypes;
+  @NonNull private final String methodName;
+  @NonNull private final String modifiers;
+  @NonNull private final String packageName;
+  @NonNull private final String parameterTypes;
+  @NonNull private final String returnType;
+  private final Boolean synthetic;
 
-    public static MethodSignature2 createSampleMethodSignature() {
-        return builder()
-            .aspectjString("aspectjString")
-            .bridge(false)
-            .declaringType("declaringType")
-            .exceptionTypes("exceptionTypes")
-            .methodName("methodName")
-            .modifiers("modifiers")
-            .packageName("packageName")
-            .parameterTypes("parameterTypes")
-            .returnType("returnType")
-            .synthetic(false)
-            .build();
-    }
-
+  public static MethodSignature2 createSampleMethodSignature() {
+    return builder()
+        .aspectjString("aspectjString")
+        .bridge(false)
+        .declaringType("declaringType")
+        .exceptionTypes("exceptionTypes")
+        .methodName("methodName")
+        .modifiers("modifiers")
+        .packageName("packageName")
+        .parameterTypes("parameterTypes")
+        .returnType("returnType")
+        .synthetic(false)
+        .build();
+  }
 }

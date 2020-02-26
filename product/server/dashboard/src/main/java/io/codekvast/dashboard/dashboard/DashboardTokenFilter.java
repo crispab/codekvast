@@ -22,18 +22,17 @@
 package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.common.security.SecurityService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
+import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * This is a Spring Security filter that picks up and validates a JWT contained in either the
@@ -46,43 +45,43 @@ import java.io.IOException;
 @Slf4j
 public class DashboardTokenFilter extends OncePerRequestFilter {
 
-    private final SecurityService securityService;
+  private final SecurityService securityService;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws ServletException, IOException {
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+      throws ServletException, IOException {
 
-        securityService.authenticateToken(getSessionToken(request));
-        try {
-            chain.doFilter(request, response);
-        } finally {
-            securityService.removeAuthentication();
-        }
+    securityService.authenticateToken(getSessionToken(request));
+    try {
+      chain.doFilter(request, response);
+    } finally {
+      securityService.removeAuthentication();
     }
+  }
 
-    private String getSessionToken(HttpServletRequest request) {
-        String token = getTokenFromCookie(request, CookieNames.SESSION_TOKEN);
-        if (token != null) {
-            logger.debug("Found sessionToken in cookie");
-        } else {
-            token = request.getHeader(HttpHeaders.AUTHORIZATION);
-            if (token != null) {
-                logger.debug("Found sessionToken in header");
-            }
-        }
-        return token;
+  private String getSessionToken(HttpServletRequest request) {
+    String token = getTokenFromCookie(request, CookieNames.SESSION_TOKEN);
+    if (token != null) {
+      logger.debug("Found sessionToken in cookie");
+    } else {
+      token = request.getHeader(HttpHeaders.AUTHORIZATION);
+      if (token != null) {
+        logger.debug("Found sessionToken in header");
+      }
     }
+    return token;
+  }
 
-    private String getTokenFromCookie(HttpServletRequest request, String cookieName) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(cookieName)) {
-                    return cookie.getValue();
-                }
-            }
+  private String getTokenFromCookie(HttpServletRequest request, String cookieName) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if (cookie.getName().equals(cookieName)) {
+          return cookie.getValue();
         }
-        return null;
+      }
     }
-
+    return null;
+  }
 }

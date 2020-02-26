@@ -21,44 +21,34 @@
  */
 package io.codekvast.dashboard.dashboard.model.methods;
 
+import java.util.SortedSet;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
 
-import java.util.SortedSet;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Value
 @Builder
 public class GetMethodsFormData {
 
-    @NonNull
-    @Singular
-    private final SortedSet<String> applications;
+  @NonNull @Singular private final SortedSet<String> applications;
 
-    @NonNull
-    @Singular
-    private final SortedSet<String> environments;
+  @NonNull @Singular private final SortedSet<String> environments;
 
-    @NonNull
-    @Singular
-    private final SortedSet<String> locations;
+  @NonNull @Singular private final SortedSet<String> locations;
 
-    private final Integer retentionPeriodDays;
+  private final Integer retentionPeriodDays;
 
-    public static GetMethodsFormData sample() {
-        return GetMethodsFormData.builder()
-                                 .application("app2")
-                                 .application("app1")
-                                 .environment("env2")
-                                 .environment("env1")
-                                 .location("shared-lib.jar")
-                                 .location("BOOT-INF/classes/")
-                                 .retentionPeriodDays(14)
-                                 .build();
-    }
-
+  public static GetMethodsFormData sample() {
+    return GetMethodsFormData.builder()
+        .application("app2")
+        .application("app1")
+        .environment("env2")
+        .environment("env1")
+        .location("shared-lib.jar")
+        .location("BOOT-INF/classes/")
+        .retentionPeriodDays(14)
+        .build();
+  }
 }

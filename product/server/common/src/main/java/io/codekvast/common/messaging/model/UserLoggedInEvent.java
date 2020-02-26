@@ -33,15 +33,15 @@ import lombok.Value;
 @Value
 @Builder
 public class UserLoggedInEvent implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull String emailAddress;
-    @NonNull String authenticationProvider; // "facebook", "github", "google" etc
+  @NonNull Long customerId;
+  @NonNull String emailAddress;
+  @NonNull String authenticationProvider; // "facebook", "github", "google" etc
 
-    public static UserLoggedInEvent sample() {
-        return UserLoggedInEvent.builder()
-                                .customerId(1L)
-                                .emailAddress("emailAddress")
-                                .authenticationProvider("authenticationProvider")
-                                .build();
-    }
+  public static UserLoggedInEvent sample() {
+    return UserLoggedInEvent.builder()
+        .customerId(1L)
+        .emailAddress("emailAddress")
+        .authenticationProvider("authenticationProvider")
+        .build();
+  }
 }

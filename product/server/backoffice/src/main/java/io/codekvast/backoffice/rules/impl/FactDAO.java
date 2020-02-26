@@ -24,6 +24,13 @@ package io.codekvast.backoffice.rules.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.codekvast.backoffice.facts.PersistentFact;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLDataException;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.Instant;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,88 +41,96 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.*;
-import java.time.Instant;
-import java.util.List;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Repository
 @Slf4j
 @RequiredArgsConstructor
 public class FactDAO {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
+  private final JdbcTemplate jdbcTemplate;
+  private final Gson gson =
+      new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    public List<FactWrapper> getFacts(Long customerId) {
-        List<FactWrapper> wrappers = jdbcTemplate.query("SELECT id, type, data FROM facts WHERE customerId = ?", (rs, rowNum) -> {
-            Long id = rs.getLong("id");
-            String type = rs.getString("type");
-            String data = rs.getString("data");
-            try {
+  @Transactional(propagation = Propagation.MANDATORY)
+  public List<FactWrapper> getFacts(Long customerId) {
+    List<FactWrapper> wrappers =
+        jdbcTemplate.query(
+            "SELECT id, type, data FROM facts WHERE customerId = ?",
+            (rs, rowNum) -> {
+              Long id = rs.getLong("id");
+              String type = rs.getString("type");
+              String data = rs.getString("data");
+              try {
                 Object fact = gson.fromJson(data, Class.forName(type));
                 return new FactWrapper(id, (PersistentFact) fact);
-            } catch (ClassCastException | ClassNotFoundException e) {
+              } catch (ClassCastException | ClassNotFoundException e) {
                 throw new SQLDataException("Cannot load fact of type '" + type + "'", e);
-            }
-        }, customerId);
+              }
+            },
+            customerId);
 
-        logger.trace("Retrieved the persistent facts {} for customer {}", wrappers, customerId);
-        logger.debug("Retrieved {} persistent facts for customer {}", wrappers.size(), customerId);
-        return wrappers;
+    logger.trace("Retrieved the persistent facts {} for customer {}", wrappers, customerId);
+    logger.debug("Retrieved {} persistent facts for customer {}", wrappers.size(), customerId);
+    return wrappers;
+  }
+
+  @Transactional(propagation = Propagation.MANDATORY)
+  public Long addFact(Long customerId, PersistentFact fact) {
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+    int inserted =
+        jdbcTemplate.update(
+            new AddFactStatementCreator(customerId, getType(fact), gson.toJson(fact)), keyHolder);
+    long factId = keyHolder.getKey().longValue();
+    if (inserted <= 0) {
+      logger.error("Attempt to insert duplicate fact {}:{}", customerId, factId);
     }
+    return factId;
+  }
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    public Long addFact(Long customerId, PersistentFact fact) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        int inserted = jdbcTemplate.update(new AddFactStatementCreator(customerId, getType(fact), gson.toJson(fact)), keyHolder);
-        long factId = keyHolder.getKey().longValue();
-        if (inserted <= 0) {
-            logger.error("Attempt to insert duplicate fact {}:{}", customerId, factId);
-        }
-        return factId;
+  private String getType(PersistentFact fact) {
+    return fact.getClass().getName();
+  }
+
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void updateFact(Long customerId, Long factId, PersistentFact fact) {
+    int updated =
+        jdbcTemplate.update(
+            "UPDATE facts SET type = ?, data = ? WHERE id = ? AND customerId = ?",
+            getType(fact),
+            gson.toJson(fact),
+            factId,
+            customerId);
+    if (updated <= 0) {
+      logger.error("Failed to update fact {}:{}", customerId, factId);
     }
+  }
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    public void updateFact(Long customerId, Long factId, PersistentFact fact) {
-        int updated = jdbcTemplate.update("UPDATE facts SET type = ?, data = ? WHERE id = ? AND customerId = ?",
-                                          getType(fact), gson.toJson(fact), factId, customerId);
-        if (updated <= 0) {
-            logger.error("Failed to update fact {}:{}", customerId, factId);
-        }
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void removeFact(Long customerId, Long factId) {
+    int deleted =
+        jdbcTemplate.update(
+            "DELETE FROM facts WHERE id = ? AND customerId = ?", factId, customerId);
+    if (deleted <= 0) {
+      logger.error("Failed to delete fact {}:{}", customerId, factId);
     }
+  }
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    public void removeFact(Long customerId, Long factId) {
-        int deleted = jdbcTemplate
-            .update("DELETE FROM facts WHERE id = ? AND customerId = ?", factId, customerId);
-        if (deleted <= 0) {
-            logger.error("Failed to delete fact {}:{}", customerId, factId);
-        }
+  @RequiredArgsConstructor
+  private static class AddFactStatementCreator implements PreparedStatementCreator {
+    private final Long customerId;
+    private final String type;
+    private final String data;
+
+    @Override
+    public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+      PreparedStatement ps =
+          con.prepareStatement(
+              "INSERT IGNORE INTO facts(customerId, type, data) VALUES(?, ?, ?)",
+              Statement.RETURN_GENERATED_KEYS);
+      ps.setLong(1, customerId);
+      ps.setString(2, type);
+      ps.setString(3, data);
+      return ps;
     }
-
-    private String getType(PersistentFact fact) {
-        return fact.getClass().getName();
-    }
-
-    @RequiredArgsConstructor
-    private static class AddFactStatementCreator implements PreparedStatementCreator {
-        private final Long customerId;
-        private final String type;
-        private final String data;
-
-        @Override
-        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            PreparedStatement ps = con.prepareStatement("INSERT IGNORE INTO facts(customerId, type, data) VALUES(?, ?, ?)",
-                                                        Statement.RETURN_GENERATED_KEYS);
-            ps.setLong(1, customerId);
-            ps.setString(2, type);
-            ps.setString(3, data);
-            return ps;
-        }
-    }
-
+  }
 }

@@ -23,10 +23,8 @@ package io.codekvast.javaagent.scheduler;
 
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public interface ConfigPoller {
 
-    GetConfigResponse2 doPoll() throws Exception;
+  GetConfigResponse2 doPoll() throws Exception;
 }

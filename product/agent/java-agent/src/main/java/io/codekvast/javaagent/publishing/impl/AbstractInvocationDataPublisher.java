@@ -26,53 +26,51 @@ import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.util.SignatureUtils;
-import lombok.Getter;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import lombok.Getter;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Getter
-public abstract class AbstractInvocationDataPublisher extends AbstractPublisher implements InvocationDataPublisher {
+public abstract class AbstractInvocationDataPublisher extends AbstractPublisher
+    implements InvocationDataPublisher {
 
-    private CodeBaseFingerprint codeBaseFingerprint;
+  private CodeBaseFingerprint codeBaseFingerprint;
 
-    AbstractInvocationDataPublisher(Logger log, AgentConfig config) {
-        super(log, config);
+  AbstractInvocationDataPublisher(Logger log, AgentConfig config) {
+    super(log, config);
+  }
+
+  @Override
+  public void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint) {
+    codeBaseFingerprint = fingerprint;
+  }
+
+  @Override
+  public void publishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
+      throws CodekvastPublishingException {
+    if (isEnabled() && getCodeBaseFingerprint() != null) {
+      incrementSequenceNumber();
+
+      logger.fine("Publishing invocation data #" + this.getSequenceNumber());
+
+      doPublishInvocationData(recordingIntervalStartedAtMillis, normalizeSignatures(invocations));
     }
+  }
 
-    @Override
-    public void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint) {
-        codeBaseFingerprint = fingerprint;
+  private Set<String> normalizeSignatures(Set<String> invocations) {
+    Set<String> result = new HashSet<>();
+    for (String s : invocations) {
+      String normalizedSignature = SignatureUtils.normalizeSignature(s);
+      if (normalizedSignature != null) {
+        result.add(SignatureUtils.stripModifiers(normalizedSignature));
+      }
     }
+    return result;
+  }
 
-    @Override
-    public void publishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
-        throws CodekvastPublishingException {
-        if (isEnabled() && getCodeBaseFingerprint() != null) {
-            incrementSequenceNumber();
-
-            logger.fine("Publishing invocation data #" + this.getSequenceNumber());
-
-            doPublishInvocationData(recordingIntervalStartedAtMillis, normalizeSignatures(invocations));
-        }
-    }
-
-    private Set<String> normalizeSignatures(Set<String> invocations) {
-        Set<String> result = new HashSet<>();
-        for (String s : invocations) {
-            String normalizedSignature = SignatureUtils.normalizeSignature(s);
-            if (normalizedSignature != null) {
-                result.add(SignatureUtils.stripModifiers(normalizedSignature));
-            }
-        }
-        return result;
-    }
-
-    abstract void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
-        throws CodekvastPublishingException;
-
+  abstract void doPublishInvocationData(
+      long recordingIntervalStartedAtMillis, Set<String> invocations)
+      throws CodekvastPublishingException;
 }

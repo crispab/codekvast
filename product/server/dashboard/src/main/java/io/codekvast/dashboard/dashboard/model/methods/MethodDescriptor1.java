@@ -22,16 +22,18 @@
 package io.codekvast.dashboard.dashboard.model.methods;
 
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
-import lombok.*;
-
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.Singular;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 // Cannot use @Value here, since that will prohibit computed fields.
 @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Data
@@ -39,70 +41,82 @@ import java.util.stream.Collectors;
 @Builder(toBuilder = true)
 public class MethodDescriptor1 {
 
-    @NonNull
-    private final Long id;
+  @NonNull private final Long id;
 
-    @NonNull
-    private final String signature;
+  @NonNull private final String signature;
 
-    /**
-     * public, protected, package-private or private
-     */
-    @NonNull
-    private final String visibility;
+  /** public, protected, package-private or private */
+  @NonNull private final String visibility;
 
-    /**
-     * static, final, etc
-     */
-    private final String modifiers;
+  /** static, final, etc */
+  private final String modifiers;
 
-    private final Boolean bridge;
+  private final Boolean bridge;
 
-    private final Boolean synthetic;
+  private final Boolean synthetic;
 
-    private final String packageName;
+  private final String packageName;
 
-    private final String declaringType;
+  private final String declaringType;
 
-    @Singular
-    private final SortedSet<ApplicationDescriptor> occursInApplications;
+  @Singular private final SortedSet<ApplicationDescriptor> occursInApplications;
 
-    @Singular
-    private final SortedSet<EnvironmentDescriptor> collectedInEnvironments;
+  @Singular private final SortedSet<EnvironmentDescriptor> collectedInEnvironments;
 
-    // Computed fields, to make it work with Gson. Gson does not serialize using getters.
-    private Long collectedSinceMillis;
-    private Long collectedToMillis;
-    private Long lastInvokedAtMillis;
-    private Integer collectedDays;
-    private Integer trackedPercent;
-    private Set<SignatureStatus2> statuses;
-    private Set<String> tags;
+  // Computed fields, to make it work with Gson. Gson does not serialize using getters.
+  private Long collectedSinceMillis;
+  private Long collectedToMillis;
+  private Long lastInvokedAtMillis;
+  private Integer collectedDays;
+  private Integer trackedPercent;
+  private Set<SignatureStatus2> statuses;
+  private Set<String> tags;
 
-    @Singular
-    private SortedSet<String> locations;
+  @Singular private SortedSet<String> locations;
 
-    /**
-     * Assigns values to all computed fields.
-     * @return this
-     */
-    public MethodDescriptor1 computeFields() {
-        this.collectedSinceMillis =
-            occursInApplications.stream().map(ApplicationDescriptor::getStartedAtMillis).reduce(Math::min).orElse(0L);
+  /**
+   * Assigns values to all computed fields.
+   *
+   * @return this
+   */
+  public MethodDescriptor1 computeFields() {
+    this.collectedSinceMillis =
+        occursInApplications
+            .stream()
+            .map(ApplicationDescriptor::getStartedAtMillis)
+            .reduce(Math::min)
+            .orElse(0L);
 
-        this.collectedToMillis =
-            occursInApplications.stream().map(ApplicationDescriptor::getPublishedAtMillis).reduce(Math::max).orElse(0L);
+    this.collectedToMillis =
+        occursInApplications
+            .stream()
+            .map(ApplicationDescriptor::getPublishedAtMillis)
+            .reduce(Math::max)
+            .orElse(0L);
 
-        int dayInMillis = 24 * 60 * 60 * 1000;
-        this.collectedDays = Math.toIntExact((this.collectedToMillis - this.collectedSinceMillis) / dayInMillis);
-        this.lastInvokedAtMillis =
-            occursInApplications.stream().map(ApplicationDescriptor::getInvokedAtMillis).reduce(Math::max).orElse(0L);
-        this.statuses = occursInApplications.stream().map(ApplicationDescriptor::getStatus).collect(Collectors.toSet());
-        this.tags = new TreeSet<>();
-        collectedInEnvironments.stream().map(EnvironmentDescriptor::getTags).forEach(tags::addAll);
-        long tracked = occursInApplications.stream().map(ApplicationDescriptor::getStatus).filter(SignatureStatus2::isTracked).count();
-        this.trackedPercent = (int) Math.round(tracked * 100D / occursInApplications.size());
-        return this;
-    }
-
+    int dayInMillis = 24 * 60 * 60 * 1000;
+    this.collectedDays =
+        Math.toIntExact((this.collectedToMillis - this.collectedSinceMillis) / dayInMillis);
+    this.lastInvokedAtMillis =
+        occursInApplications
+            .stream()
+            .map(ApplicationDescriptor::getInvokedAtMillis)
+            .reduce(Math::max)
+            .orElse(0L);
+    this.statuses =
+        occursInApplications
+            .stream()
+            .map(ApplicationDescriptor::getStatus)
+            .collect(Collectors.toSet());
+    this.tags = new TreeSet<>();
+    collectedInEnvironments.stream().map(EnvironmentDescriptor::getTags).forEach(tags::addAll);
+    long tracked =
+        occursInApplications
+            .stream()
+            .map(ApplicationDescriptor::getStatus)
+            .filter(SignatureStatus2::isTracked)
+            .count();
+    this.trackedPercent = (int) Math.round(tracked * 100D / occursInApplications.size());
+    return this;
+  }
 }

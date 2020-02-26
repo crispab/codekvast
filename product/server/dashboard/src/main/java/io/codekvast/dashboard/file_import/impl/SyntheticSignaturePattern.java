@@ -25,14 +25,10 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Value
 @Builder
 class SyntheticSignaturePattern {
-    @NonNull
-    private final Long id;
-    @NonNull
-    private final String pattern;
+  @NonNull private final Long id;
+  @NonNull private final String pattern;
 }

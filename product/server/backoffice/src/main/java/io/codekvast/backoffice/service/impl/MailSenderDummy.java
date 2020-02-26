@@ -27,18 +27,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Service
 @Slf4j
 @Profile("no-mail-sender")
 @RequiredArgsConstructor
 public class MailSenderDummy implements MailSender {
-    private final MailTemplateRenderer mailTemplateRenderer;
+  private final MailTemplateRenderer mailTemplateRenderer;
 
-    @Override
-    public void sendMail(Template template, String emailAddress, Object... args) {
-        logger.info("Would have sent '{}' to {}", mailTemplateRenderer.renderTemplate(template, args), emailAddress);
-    }
+  @Override
+  public void sendMail(Template template, String emailAddress, Object... args) {
+    logger.info(
+        "Would have sent '{}' to {}",
+        mailTemplateRenderer.renderTemplate(template, args),
+        emailAddress);
+  }
 }

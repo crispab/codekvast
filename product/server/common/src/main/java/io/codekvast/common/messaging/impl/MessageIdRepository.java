@@ -38,25 +38,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class MessageIdRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+  private final JdbcTemplate jdbcTemplate;
 
-    @Transactional(readOnly = true)
-    public boolean isDuplicate(@NonNull String messageId) {
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM rabbitmq_message_ids WHERE messageId = ?", Integer.class, messageId);
-        if (count != 0) {
-            logger.info("MessageId {} has already been processed", messageId);
-        }
-        return count != 0;
+  @Transactional(readOnly = true)
+  public boolean isDuplicate(@NonNull String messageId) {
+    Integer count =
+        jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM rabbitmq_message_ids WHERE messageId = ?",
+            Integer.class,
+            messageId);
+    if (count != 0) {
+      logger.info("MessageId {} has already been processed", messageId);
     }
+    return count != 0;
+  }
 
-
-    @Transactional
-    public void remember(@NonNull String messageId) {
-        int inserted = jdbcTemplate.update("INSERT INTO rabbitmq_message_ids(messageId) VALUE (?)", messageId);
-        if (inserted != 1) {
-            logger.error("Failed to remember messageId {}", messageId);
-        } else {
-            logger.debug("Remembered messageId {}", messageId);
-        }
+  @Transactional
+  public void remember(@NonNull String messageId) {
+    int inserted =
+        jdbcTemplate.update("INSERT INTO rabbitmq_message_ids(messageId) VALUE (?)", messageId);
+    if (inserted != 1) {
+      logger.error("Failed to remember messageId {}", messageId);
+    } else {
+      logger.debug("Remembered messageId {}", messageId);
     }
+  }
 }

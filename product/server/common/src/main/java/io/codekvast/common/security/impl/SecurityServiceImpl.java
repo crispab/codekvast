@@ -21,6 +21,8 @@
  */
 package io.codekvast.common.security.impl;
 
+import static java.util.Collections.singleton;
+
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
@@ -31,6 +33,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
+import javax.annotation.PostConstruct;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -49,220 +61,227 @@ import org.springframework.security.web.authentication.www.NonceExpiredException
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
-import java.util.Set;
-import java.util.UUID;
-
-import static java.util.Collections.singleton;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class SecurityServiceImpl implements SecurityService {
 
-    private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_" + USER_ROLE));
+  private static final Set<SimpleGrantedAuthority> USER_AUTHORITY =
+      singleton(new SimpleGrantedAuthority("ROLE_" + USER_ROLE));
 
-    private static final String JWT_CLAIM_EMAIL = "email";
-    private static final String JWT_CLAIM_SOURCE = "source";
-    private static final String BEARER_ = "Bearer ";
+  private static final String JWT_CLAIM_EMAIL = "email";
+  private static final String JWT_CLAIM_SOURCE = "source";
+  private static final String BEARER_ = "Bearer ";
 
-    private final CodekvastCommonSettings settings;
-    private final CustomerService customerService;
-    private final JdbcTemplate jdbcTemplate;
+  private final CodekvastCommonSettings settings;
+  private final CustomerService customerService;
+  private final JdbcTemplate jdbcTemplate;
 
-    private TokenFactory tokenFactory;
-    private byte[] jwtSecret;
+  private TokenFactory tokenFactory;
+  private byte[] jwtSecret;
 
-    @PostConstruct
-    public void postConstruct() {
-        String secret = settings.getJwtSecret();
-        if (secret == null) {
-            secret = "";
-        }
-
-        this.tokenFactory = TokenFactory.builder()
-                                        .jwtExpirationHours(settings.getJwtExpirationHours())
-                                        .jwtSecret(secret)
-                                        .build();
-        this.jwtSecret = secret.getBytes(StandardCharsets.UTF_8);
+  @PostConstruct
+  public void postConstruct() {
+    String secret = settings.getJwtSecret();
+    if (secret == null) {
+      secret = "";
     }
 
-    @Override
-    public Long getCustomerId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null ? null : (Long) authentication.getPrincipal();
+    this.tokenFactory =
+        TokenFactory.builder()
+            .jwtExpirationHours(settings.getJwtExpirationHours())
+            .jwtSecret(secret)
+            .build();
+    this.jwtSecret = secret.getBytes(StandardCharsets.UTF_8);
+  }
+
+  @Override
+  public Long getCustomerId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication == null ? null : (Long) authentication.getPrincipal();
+  }
+
+  @Override
+  public void authenticateToken(String token) {
+    SecurityContextHolder.getContext().setAuthentication(toAuthentication(token));
+  }
+
+  @Override
+  public void removeAuthentication() {
+    SecurityContextHolder.getContext().setAuthentication(null);
+  }
+
+  @Override
+  @Transactional
+  public String createCodeForWebappToken(Long customerId, WebappCredentials credentials) {
+    String token = tokenFactory.createWebappToken(customerId, credentials);
+    String code = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+    Instant expiresAt = Instant.now().plusSeconds(300);
+    jdbcTemplate.update(
+        "INSERT INTO tokens(code, token, expiresAtSeconds) VALUES(?, ?, ?)",
+        code,
+        token,
+        expiresAt.getEpochSecond());
+    logger.info(
+        "Inserted token with code '{}' into the database, expires at {}",
+        maskSecondHalf(code),
+        expiresAt);
+    return code;
+  }
+
+  @Override
+  @Transactional
+  public String tradeCodeToWebappToken(String code) {
+    String token;
+    try {
+      token =
+          jdbcTemplate.queryForObject(
+              "SELECT token FROM tokens WHERE code = ? AND expiresAtSeconds > ? FOR UPDATE ",
+              String.class,
+              code,
+              Instant.now().getEpochSecond());
+    } catch (IncorrectResultSizeDataAccessException e) {
+      logger.warn("Invalid token code: {}", maskSecondHalf(code));
+      return null;
+    }
+    int deleted = jdbcTemplate.update("DELETE FROM tokens WHERE code = ? ", code);
+    if (deleted > 0) {
+      logger.info("Deleted token with code '{}' from database", maskSecondHalf(code));
+    } else {
+      logger.error("Could node delete token with code '{}' from database", maskSecondHalf(code));
+    }
+    return token;
+  }
+
+  @Scheduled(initialDelay = 60_000L, fixedRate = 600_000L)
+  @Transactional
+  @Override
+  public void removeExpiredTokenCodes() {
+    new NamedThreadTemplate().doInNamedThread("Token Cleaner", this::doRemoveExpiredTokens);
+  }
+
+  private void doRemoveExpiredTokens() {
+    int expired =
+        jdbcTemplate.update(
+            "DELETE FROM tokens WHERE expiresAtSeconds <= ? ", Instant.now().getEpochSecond());
+    if (expired > 0) {
+      logger.info("Deleted {} expired token codes", expired);
+    }
+  }
+
+  private Authentication toAuthentication(String token) throws AuthenticationException {
+    if (token == null) {
+      return null;
     }
 
-    @Override
-    public void authenticateToken(String token) {
-        SecurityContextHolder.getContext().setAuthentication(toAuthentication(token));
+    int pos = token.startsWith(BEARER_) ? BEARER_.length() : 0;
+
+    try {
+      Jws<Claims> claims =
+          Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token.substring(pos));
+
+      return new PreAuthenticatedAuthenticationToken(
+          Long.valueOf(claims.getBody().getId()),
+          WebappCredentials.builder()
+              .customerName((claims.getBody().getSubject()))
+              .email(claims.getBody().get(JWT_CLAIM_EMAIL, String.class))
+              .source(claims.getBody().get(JWT_CLAIM_SOURCE, String.class))
+              .build(),
+          USER_AUTHORITY);
+    } catch (Exception e) {
+      logger.debug("Failed to authenticate token: " + e);
+      return null;
+    }
+  }
+
+  @SneakyThrows(NoSuchAlgorithmException.class)
+  String makeHerokuSsoToken(String externalId, long timestampSeconds, String salt) {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+
+    byte[] digest =
+        sha1.digest(String.format("%s:%s:%d", externalId, salt, timestampSeconds).getBytes());
+    return String.format("%x", new BigInteger(1, digest));
+  }
+
+  @Override
+  @Transactional
+  public String doHerokuSingleSignOn(
+      String token, String externalId, String email, long timestampSeconds, String salt)
+      throws AuthenticationException {
+    String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds, salt);
+    logger.debug(
+        "id={}, token={}, timestamp={}, expectedToken={}",
+        externalId,
+        maskSecondHalf(token),
+        timestampSeconds,
+        maskSecondHalf(expectedToken));
+
+    long nowSeconds = Instant.now().getEpochSecond();
+    if (timestampSeconds > nowSeconds + 60) {
+      throw new NonceExpiredException("Timestamp is too far into the future");
     }
 
-    @Override
-    public void removeAuthentication() {
-        SecurityContextHolder.getContext().setAuthentication(null);
+    if (timestampSeconds < nowSeconds - 5 * 60) {
+      throw new NonceExpiredException("Timestamp is too old");
     }
 
-    @Override
-    @Transactional
-    public String createCodeForWebappToken(Long customerId, WebappCredentials credentials) {
-        String token = tokenFactory.createWebappToken(customerId, credentials);
-        String code = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-        Instant expiresAt = Instant.now().plusSeconds(300);
-        jdbcTemplate.update("INSERT INTO tokens(code, token, expiresAtSeconds) VALUES(?, ?, ?)", code, token,
-                            expiresAt.getEpochSecond());
-        logger.info("Inserted token with code '{}' into the database, expires at {}", maskSecondHalf(code), expiresAt);
-        return code;
+    if (!expectedToken.equals(token)) {
+      throw new BadCredentialsException("Invalid token");
     }
 
-    @Override
-    @Transactional
-    public String tradeCodeToWebappToken(String code) {
-        String token;
-        try {
-            token = jdbcTemplate.queryForObject(
-                "SELECT token FROM tokens WHERE code = ? AND expiresAtSeconds > ? FOR UPDATE ", String.class,
-                code, Instant.now().getEpochSecond());
-        } catch (IncorrectResultSizeDataAccessException e) {
-            logger.warn("Invalid token code: {}", maskSecondHalf(code));
-            return null;
-        }
-        int deleted = jdbcTemplate.update("DELETE FROM tokens WHERE code = ? ", code);
-        if (deleted > 0) {
-            logger.info("Deleted token with code '{}' from database", maskSecondHalf(code));
-        } else {
-            logger.error("Could node delete token with code '{}' from database", maskSecondHalf(code));
-        }
-        return token;
+    CustomerData customerData =
+        customerService.getCustomerDataByExternalId(CustomerService.Source.HEROKU, externalId);
+
+    customerService.registerLogin(
+        CustomerService.LoginRequest.builder()
+            .customerId(customerData.getCustomerId())
+            .source(CustomerService.Source.HEROKU)
+            .email(email)
+            .build());
+
+    return createCodeForWebappToken(
+        customerData.getCustomerId(),
+        WebappCredentials.builder()
+            .customerName(customerData.getCustomerName())
+            .email(email)
+            .source(CustomerService.Source.HEROKU)
+            .build());
+  }
+
+  @Value
+  @Builder
+  public static class TokenFactory {
+    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
+    private final long jwtExpirationHours;
+    private final String jwtSecret;
+
+    private Date calculateExpirationDate() {
+      long hours = jwtExpirationHours;
+      Duration duration = hours <= 0L ? Duration.ofMinutes(-hours) : Duration.ofHours(hours);
+      logger.debug("The session token will live for {}", duration);
+      return Date.from(Instant.now().plus(duration));
     }
 
-    @Scheduled(initialDelay = 60_000L, fixedRate = 600_000L)
-    @Transactional
-    @Override
-    public void removeExpiredTokenCodes() {
-        new NamedThreadTemplate().doInNamedThread("Token Cleaner", this::doRemoveExpiredTokens);
+    public String createWebappToken(Long customerId, WebappCredentials credentials) {
+      return Jwts.builder()
+          .setId(Long.toString(customerId))
+          .setSubject(credentials.getCustomerName())
+          .setIssuedAt(new Date())
+          .setExpiration(calculateExpirationDate())
+          .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
+          .claim(JWT_CLAIM_SOURCE, credentials.getSource())
+          .signWith(signatureAlgorithm, jwtSecret.getBytes(StandardCharsets.UTF_8))
+          .compact();
     }
+  }
 
-    private void doRemoveExpiredTokens() {
-        int expired = jdbcTemplate.update("DELETE FROM tokens WHERE expiresAtSeconds <= ? ", Instant.now().getEpochSecond());
-        if (expired > 0) {
-            logger.info("Deleted {} expired token codes", expired);
-        }
+  static String maskSecondHalf(String s) {
+    int pos = s.length() / 2;
+    StringBuilder sb = new StringBuilder(s.substring(0, pos));
+    while (sb.length() < s.length()) {
+      sb.append('X');
     }
-
-    private Authentication toAuthentication(String token) throws AuthenticationException {
-        if (token == null) {
-            return null;
-        }
-
-        int pos = token.startsWith(BEARER_) ? BEARER_.length() : 0;
-
-        try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token.substring(pos));
-
-            return new PreAuthenticatedAuthenticationToken(
-                Long.valueOf(claims.getBody().getId()),
-                WebappCredentials.builder()
-                                 .customerName((claims.getBody().getSubject()))
-                                 .email(claims.getBody().get(JWT_CLAIM_EMAIL, String.class))
-                                 .source(claims.getBody().get(JWT_CLAIM_SOURCE, String.class))
-                                 .build(),
-                USER_AUTHORITY);
-        } catch (Exception e) {
-            logger.debug("Failed to authenticate token: " + e);
-            return null;
-        }
-    }
-
-    @SneakyThrows(NoSuchAlgorithmException.class)
-    String makeHerokuSsoToken(String externalId, long timestampSeconds, String salt) {
-        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-
-        byte[] digest = sha1.digest(String.format("%s:%s:%d", externalId, salt, timestampSeconds).getBytes());
-        return String.format("%x", new BigInteger(1, digest));
-    }
-
-    @Override
-    @Transactional
-    public String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds, String salt)
-        throws AuthenticationException {
-        String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds, salt);
-        logger.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, maskSecondHalf(token), timestampSeconds,
-                     maskSecondHalf(expectedToken));
-
-        long nowSeconds = Instant.now().getEpochSecond();
-        if (timestampSeconds > nowSeconds + 60) {
-            throw new NonceExpiredException("Timestamp is too far into the future");
-        }
-
-        if (timestampSeconds < nowSeconds - 5 * 60) {
-            throw new NonceExpiredException("Timestamp is too old");
-        }
-
-        if (!expectedToken.equals(token)) {
-            throw new BadCredentialsException("Invalid token");
-        }
-
-        CustomerData customerData = customerService.getCustomerDataByExternalId(CustomerService.Source.HEROKU, externalId);
-
-        customerService.registerLogin(CustomerService.LoginRequest.builder()
-                                                                  .customerId(customerData.getCustomerId())
-                                                                  .source(CustomerService.Source.HEROKU)
-                                                                  .email(email)
-                                                                  .build());
-
-        return createCodeForWebappToken(
-            customerData.getCustomerId(),
-            WebappCredentials.builder()
-                             .customerName(customerData.getCustomerName())
-                             .email(email)
-                             .source(CustomerService.Source.HEROKU)
-                             .build());
-    }
-
-    @Value
-    @Builder
-    public static class TokenFactory {
-        private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
-        private final long jwtExpirationHours;
-        private final String jwtSecret;
-
-        private Date calculateExpirationDate() {
-            long hours = jwtExpirationHours;
-            Duration duration = hours <= 0L ? Duration.ofMinutes(-hours) : Duration.ofHours(hours);
-            logger.debug("The session token will live for {}", duration);
-            return Date.from(Instant.now().plus(duration));
-        }
-
-        public String createWebappToken(Long customerId, WebappCredentials credentials) {
-            return Jwts.builder()
-                       .setId(Long.toString(customerId))
-                       .setSubject(credentials.getCustomerName())
-                       .setIssuedAt(new Date())
-                       .setExpiration(calculateExpirationDate())
-                       .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
-                       .claim(JWT_CLAIM_SOURCE, credentials.getSource())
-                       .signWith(signatureAlgorithm, jwtSecret.getBytes(StandardCharsets.UTF_8))
-                       .compact();
-        }
-    }
-
-    static String maskSecondHalf(String s) {
-        int pos = s.length() / 2;
-        StringBuilder sb = new StringBuilder(s.substring(0, pos));
-        while (sb.length() < s.length()) {
-            sb.append('X');
-        }
-        return sb.toString();
-    }
+    return sb.toString();
+  }
 }

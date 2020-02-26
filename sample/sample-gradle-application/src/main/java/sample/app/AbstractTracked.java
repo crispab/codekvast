@@ -1,13 +1,11 @@
 package sample.app;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 abstract class AbstractTracked {
 
-    int count;
+  int count;
 
-    protected int protectedMethod() {
-        return count++;
-    }
+  protected int protectedMethod() {
+    return count++;
+  }
 }

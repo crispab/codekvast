@@ -26,70 +26,79 @@ import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
-import lombok.extern.java.Log;
-
 import java.io.File;
 import java.util.Set;
+import lombok.extern.java.Log;
 
 /**
  * A HTTP implementation of InvocationDataPublisher.
  *
- * It uses the FileSystemInvocationDataPublisherImpl for creating a file, which then is POSTed to the server.
+ * <p>It uses the FileSystemInvocationDataPublisherImpl for creating a file, which then is POSTed to
+ * the server.
  *
  * @author olle.hallin@crisp.se
  */
 @Log
 public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPublisher {
 
-    static final String NAME = "http";
+  static final String NAME = "http";
 
-    HttpInvocationDataPublisherImpl(AgentConfig config) {
-        super(logger, config);
+  HttpInvocationDataPublisherImpl(AgentConfig config) {
+    super(logger, config);
+  }
+
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
+      throws CodekvastPublishingException {
+
+    if (invocations.isEmpty()) {
+      logger.fine("Codekvast detected no invocations to publish");
+      return;
     }
 
-    @Override
-    public String getName() {
-        return NAME;
+    String url = getConfig().getInvocationDataUploadEndpoint();
+    File file = null;
+    try {
+      InvocationDataPublication2 publication =
+          createPublication(getCustomerId(), recordingIntervalStartedAtMillis, invocations);
+      file =
+          FileUtils.serializeToFile(
+              publication, getConfig().getFilenamePrefix("invocations-"), ".ser");
+
+      doPost(file, url, getCodeBaseFingerprint().toString(), publication.getInvocations().size());
+
+      logger.fine(
+          String.format(
+              "Codekvast uploaded %d invocations (%s) to %s",
+              publication.getInvocations().size(),
+              LogUtil.humanReadableByteCount(file.length()),
+              url));
+    } catch (Exception e) {
+      throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);
+    } finally {
+      FileUtils.safeDelete(file);
     }
+  }
 
-    @Override
-    void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
-        throws CodekvastPublishingException {
+  private InvocationDataPublication2 createPublication(
+      long customerId, long recordingIntervalStartedAtMillis, Set<String> invocations) {
 
-        if (invocations.isEmpty()) {
-            logger.fine("Codekvast detected no invocations to publish");
-            return;
-        }
-
-        String url = getConfig().getInvocationDataUploadEndpoint();
-        File file = null;
-        try {
-            InvocationDataPublication2 publication = createPublication(getCustomerId(), recordingIntervalStartedAtMillis, invocations);
-            file = FileUtils.serializeToFile(publication,
-                                             getConfig().getFilenamePrefix("invocations-"), ".ser");
-
-            doPost(file, url, getCodeBaseFingerprint().toString(), publication.getInvocations().size());
-
-            logger.fine(String.format("Codekvast uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
-                                      LogUtil.humanReadableByteCount(file.length()), url));
-        } catch (Exception e) {
-            throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);
-        } finally {
-            FileUtils.safeDelete(file);
-        }
-    }
-
-    private InvocationDataPublication2 createPublication(long customerId, long recordingIntervalStartedAtMillis, Set<String> invocations) {
-
-        return InvocationDataPublication2.builder()
-                                         .commonData(getConfig().commonPublicationData().toBuilder()
-                                                                .codeBaseFingerprint(getCodeBaseFingerprint().toString())
-                                                                .customerId(customerId)
-                                                                .sequenceNumber(this.getSequenceNumber())
-                                                                .build())
-                                         .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
-                                         .invocations(invocations)
-                                         .build();
-    }
-
+    return InvocationDataPublication2.builder()
+        .commonData(
+            getConfig()
+                .commonPublicationData()
+                .toBuilder()
+                .codeBaseFingerprint(getCodeBaseFingerprint().toString())
+                .customerId(customerId)
+                .sequenceNumber(this.getSequenceNumber())
+                .build())
+        .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
+        .invocations(invocations)
+        .build();
+  }
 }

@@ -22,9 +22,9 @@
 /**
  * Version 1 of the model objects.
  *
- * Once published model objects may never be modified.
+ * <p>Once published model objects may never be modified.
  *
- * Instead, a new version of the class should be created.
+ * <p>Instead, a new version of the class should be created.
  *
  * @author olle.hallin@crisp.se
  */

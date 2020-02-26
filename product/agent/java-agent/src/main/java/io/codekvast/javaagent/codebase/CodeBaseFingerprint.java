@@ -21,17 +21,20 @@
  */
 package io.codekvast.javaagent.codebase;
 
-import io.codekvast.javaagent.config.AgentConfig;
-import lombok.*;
-import lombok.extern.java.Log;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
+import io.codekvast.javaagent.config.AgentConfig;
 import java.io.File;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.Set;
 import java.util.TreeSet;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.Value;
+import lombok.extern.java.Log;
+import lombok.val;
 
 /**
  * An immutable fingerprint of a code base. Used for comparing different code bases for equality.
@@ -42,72 +45,69 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RequiredArgsConstructor
 @Log
 public class CodeBaseFingerprint {
-    private final int numClassFiles;
-    private final int numJarFiles;
+  private final int numClassFiles;
+  private final int numJarFiles;
 
-    @NonNull
-    private final String sha256;
+  @NonNull private final String sha256;
 
-    int getNumFiles() {
-        return numClassFiles + numJarFiles;
+  int getNumFiles() {
+    return numClassFiles + numJarFiles;
+  }
+
+  public static Builder builder(AgentConfig config) {
+    return new Builder(config);
+  }
+
+  /** Builder for incrementally building a CodeBaseFingerprint */
+  @RequiredArgsConstructor
+  public static class Builder {
+    private final AgentConfig config;
+
+    private final Set<File> files = new TreeSet<>();
+
+    Builder record(File file) {
+      if (files.add(file)) {
+        logger.finest("Recorded " + file);
+      } else {
+        logger.fine("Ignored duplicate file " + file);
+      }
+      return this;
     }
 
-    public static Builder builder(AgentConfig config) {
-        return new Builder(config);
+    byte[] longToBytes(long l) {
+      long value = l;
+      byte[] result = new byte[Long.SIZE / Byte.SIZE];
+      for (int i = 0; i < result.length; i++) {
+        result[i] = (byte) (value & 0xFF);
+        value >>= Byte.SIZE;
+      }
+      return result;
     }
 
-    /**
-     * Builder for incrementally building a CodeBaseFingerprint
-     */
-    @RequiredArgsConstructor
-    public static class Builder {
-        private final AgentConfig config;
+    @SneakyThrows
+    public CodeBaseFingerprint build() {
+      MessageDigest md = MessageDigest.getInstance("SHA-256");
+      md.update(config.getNormalizedPackages().toString().getBytes(UTF_8));
+      md.update(config.getNormalizedExcludePackages().toString().getBytes(UTF_8));
+      md.update(config.getMethodAnalyzer().toString().getBytes(UTF_8));
+      md.update(longToBytes(files.size()));
 
-        private final Set<File> files = new TreeSet<>();
+      int numClassFiles = 0;
+      int numJarFiles = 0;
 
-        Builder record(File file) {
-            if (files.add(file)) {
-                logger.finest("Recorded " + file);
-            } else {
-                logger.fine("Ignored duplicate file " + file);
-            }
-            return this;
+      for (File file : files) {
+        md.update(longToBytes(file.length()));
+        md.update(longToBytes(file.lastModified()));
+        md.update(file.getName().getBytes(UTF_8));
+
+        if (file.getName().endsWith(".class")) {
+          numClassFiles += 1;
+        } else {
+          numJarFiles += 1;
         }
-
-        byte[] longToBytes(long l) {
-            long value = l;
-            byte[] result = new byte[Long.SIZE / Byte.SIZE];
-            for (int i = 0; i < result.length; i++) {
-                result[i] = (byte) (value & 0xFF);
-                value >>= Byte.SIZE;
-            }
-            return result;
-        }
-
-        @SneakyThrows
-        public CodeBaseFingerprint build() {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(config.getNormalizedPackages().toString().getBytes(UTF_8));
-            md.update(config.getNormalizedExcludePackages().toString().getBytes(UTF_8));
-            md.update(config.getMethodAnalyzer().toString().getBytes(UTF_8));
-            md.update(longToBytes(files.size()));
-
-            int numClassFiles = 0;
-            int numJarFiles = 0;
-
-            for (File file : files) {
-                md.update(longToBytes(file.length()));
-                md.update(longToBytes(file.lastModified()));
-                md.update(file.getName().getBytes(UTF_8));
-
-                if (file.getName().endsWith(".class")) {
-                    numClassFiles += 1;
-                } else {
-                    numJarFiles += 1;
-                }
-            }
-            val digest = String.format("%x", new BigInteger(1, md.digest()));
-            return new CodeBaseFingerprint(numClassFiles, numJarFiles, digest);
-        }
+      }
+      val digest = String.format("%x", new BigInteger(1, md.digest()));
+      return new CodeBaseFingerprint(numClassFiles, numJarFiles, digest);
     }
+  }
 }

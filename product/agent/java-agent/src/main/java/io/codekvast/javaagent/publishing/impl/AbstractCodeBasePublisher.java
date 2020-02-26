@@ -27,38 +27,33 @@ import io.codekvast.javaagent.codebase.CodeBaseScanner;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
+import java.util.logging.Logger;
 import lombok.Getter;
 
-import java.util.logging.Logger;
-
-/**
- * Abstract base class for code base publishers.
- */
+/** Abstract base class for code base publishers. */
 abstract class AbstractCodeBasePublisher extends AbstractPublisher implements CodeBasePublisher {
 
-    @Getter
-    private CodeBaseFingerprint codeBaseFingerprint;
+  @Getter private CodeBaseFingerprint codeBaseFingerprint;
 
-    @Getter
-    private int codeBaseCheckCount = 0;
+  @Getter private int codeBaseCheckCount = 0;
 
-    AbstractCodeBasePublisher(Logger log, AgentConfig config) {
-        super(log, config);
+  AbstractCodeBasePublisher(Logger log, AgentConfig config) {
+    super(log, config);
+  }
+
+  @Override
+  public void publishCodeBase() throws CodekvastPublishingException {
+    if (isEnabled()) {
+      codeBaseCheckCount += 1;
+      CodeBase newCodeBase = new CodeBase(getConfig());
+      if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {
+        incrementSequenceNumber();
+        new CodeBaseScanner().scanSignatures(newCodeBase);
+        doPublishCodeBase(newCodeBase);
+        codeBaseFingerprint = newCodeBase.getFingerprint();
+      }
     }
+  }
 
-    @Override
-    public void publishCodeBase() throws CodekvastPublishingException {
-        if (isEnabled()) {
-            codeBaseCheckCount += 1;
-            CodeBase newCodeBase = new CodeBase(getConfig());
-            if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {
-                incrementSequenceNumber();
-                new CodeBaseScanner().scanSignatures(newCodeBase);
-                doPublishCodeBase(newCodeBase);
-                codeBaseFingerprint = newCodeBase.getFingerprint();
-            }
-        }
-    }
-
-    abstract void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException;
+  abstract void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException;
 }

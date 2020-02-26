@@ -34,9 +34,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class FactWrapper {
-    @NonNull
-    final Long id;
+  @NonNull final Long id;
 
-    @NonNull
-    final PersistentFact fact;
+  @NonNull final PersistentFact fact;
 }

@@ -26,73 +26,70 @@ import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import io.codekvast.javaagent.util.Constants;
+import java.io.IOException;
 import lombok.extern.java.Log;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import java.io.IOException;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Log
 public class ConfigPollerImpl implements ConfigPoller {
-    private final AgentConfig config;
-    private final GetConfigRequest2 requestTemplate;
+  private final AgentConfig config;
+  private final GetConfigRequest2 requestTemplate;
 
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+  private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private final Gson gson = new Gson();
+  private final Gson gson = new Gson();
 
-    public ConfigPollerImpl(AgentConfig config) {
-        this.config = config;
-        this.requestTemplate = GetConfigRequest2.builder()
-                                                .appName(config.getAppName())
-                                                .appVersion("to-be-resolved")
-                                                .environment(config.getEnvironment())
-                                                .agentVersion(Constants.AGENT_VERSION)
-                                                .computerId(Constants.COMPUTER_ID)
-                                                .hostname(Constants.HOST_NAME)
-                                                .jvmUuid(Constants.JVM_UUID)
-                                                .licenseKey(config.getLicenseKey())
-                                                .startedAtMillis(System.currentTimeMillis())
-                                                .build();
-    }
+  public ConfigPollerImpl(AgentConfig config) {
+    this.config = config;
+    this.requestTemplate =
+        GetConfigRequest2.builder()
+            .appName(config.getAppName())
+            .appVersion("to-be-resolved")
+            .environment(config.getEnvironment())
+            .agentVersion(Constants.AGENT_VERSION)
+            .computerId(Constants.COMPUTER_ID)
+            .hostname(Constants.HOST_NAME)
+            .jvmUuid(Constants.JVM_UUID)
+            .licenseKey(config.getLicenseKey())
+            .startedAtMillis(System.currentTimeMillis())
+            .build();
+  }
 
-    @Override
-    public GetConfigResponse2 doPoll() throws Exception {
-        GetConfigRequest2 request = expandRequestTemplate();
+  @Override
+  public GetConfigResponse2 doPoll() throws Exception {
+    GetConfigRequest2 request = expandRequestTemplate();
 
-        logger.fine(String.format("Posting %s to %s", request, config.getPollConfigRequestEndpoint()));
+    logger.fine(String.format("Posting %s to %s", request, config.getPollConfigRequestEndpoint()));
 
-        GetConfigResponse2 response =
-            gson.fromJson(doHttpPost(gson.toJson(request)), GetConfigResponse2.class);
+    GetConfigResponse2 response =
+        gson.fromJson(doHttpPost(gson.toJson(request)), GetConfigResponse2.class);
 
-        logger.fine("Received " + response + " in response");
-        return response;
-    }
+    logger.fine("Received " + response + " in response");
+    return response;
+  }
 
-    private GetConfigRequest2 expandRequestTemplate() {
-        return requestTemplate.toBuilder()
-                              .appVersion(config.getResolvedAppVersion())
-                              .build();
-    }
+  private GetConfigRequest2 expandRequestTemplate() {
+    return requestTemplate.toBuilder().appVersion(config.getResolvedAppVersion()).build();
+  }
 
-    private String doHttpPost(String bodyJson) throws IOException {
+  private String doHttpPost(String bodyJson) throws IOException {
 
-        Request request = new Request.Builder()
+    Request request =
+        new Request.Builder()
             .url(config.getPollConfigRequestEndpoint())
             .post(RequestBody.create(JSON, bodyJson))
             .build();
 
-        try (Response response = config.getHttpClient().newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException(response.body().string());
-            }
+    try (Response response = config.getHttpClient().newCall(request).execute()) {
+      if (!response.isSuccessful()) {
+        throw new IOException(response.body().string());
+      }
 
-            return response.body().string();
-        }
+      return response.body().string();
     }
+  }
 }

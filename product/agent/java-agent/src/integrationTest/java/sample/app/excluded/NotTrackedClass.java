@@ -1,11 +1,9 @@
 package sample.app.excluded;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public class NotTrackedClass {
 
-    public void doSomething() {
-        // doing something
-    }
+  public void doSomething() {
+    // doing something
+  }
 }

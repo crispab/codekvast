@@ -21,10 +21,8 @@
  */
 package io.codekvast.dashboard.dashboard;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public interface CookieNames {
-    String SESSION_TOKEN = "sessionToken";
-    String NAV_DATA = "navData";
+  String SESSION_TOKEN = "sessionToken";
+  String NAV_DATA = "navData";
 }

@@ -25,26 +25,23 @@ import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.config.AgentConfig;
 import lombok.extern.java.Log;
 
-/**
- * Dummy (no-op) implementation of CodeBasePublisher.
- */
+/** Dummy (no-op) implementation of CodeBasePublisher. */
 @Log
 public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
-    public static final String NAME = "no-op";
+  public static final String NAME = "no-op";
 
-    public NoOpCodeBasePublisherImpl(AgentConfig config) {
-        super(logger, config);
-    }
+  public NoOpCodeBasePublisherImpl(AgentConfig config) {
+    super(logger, config);
+  }
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
-    @Override
-    public void doPublishCodeBase(CodeBase codeBase) {
-        // Nothing to do here
-    }
-
+  @Override
+  public void doPublishCodeBase(CodeBase codeBase) {
+    // Nothing to do here
+  }
 }

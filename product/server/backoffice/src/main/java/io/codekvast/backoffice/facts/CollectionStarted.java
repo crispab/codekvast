@@ -23,28 +23,26 @@ package io.codekvast.backoffice.facts;
 
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.common.messaging.model.CollectionStartedEvent;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 
-import java.time.Instant;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Data
 @AllArgsConstructor
 public class CollectionStarted implements PersistentFact {
-    @NonNull final Instant collectionStartedAt;
-    final Instant trialPeriodEndsAt;
-    String welcomeMailSentTo;
-    Instant welcomeMailSentAt;
+  @NonNull final Instant collectionStartedAt;
+  final Instant trialPeriodEndsAt;
+  String welcomeMailSentTo;
+  Instant welcomeMailSentAt;
 
-    public static CollectionStarted of (CollectionStartedEvent event) {
-        return new CollectionStarted(event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), null, null);
-    }
+  public static CollectionStarted of(CollectionStartedEvent event) {
+    return new CollectionStarted(
+        event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), null, null);
+  }
 
-    public static CollectionStarted of (AgentPolledEvent event) {
-        return new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), null, null);
-    }
+  public static CollectionStarted of(AgentPolledEvent event) {
+    return new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), null, null);
+  }
 }

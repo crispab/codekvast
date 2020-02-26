@@ -21,46 +21,49 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import lombok.extern.java.Log;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.extern.java.Log;
 
 @Log
 public class AppVersionResolver {
 
-    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
-    private final String version;
-    private final List<File> codeBaseFiles;
+  private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
+  private final String version;
+  private final List<File> codeBaseFiles;
 
-    public AppVersionResolver(String version, List<File> codeBaseFiles) {
-        this.version = version.trim();
-        this.codeBaseFiles = new ArrayList<>(codeBaseFiles);
+  public AppVersionResolver(String version, List<File> codeBaseFiles) {
+    this.version = version.trim();
+    this.codeBaseFiles = new ArrayList<>(codeBaseFiles);
 
-        this.appVersionStrategies.add(new LiteralAppVersionStrategy());
-        this.appVersionStrategies.add(new ManifestAppVersionStrategy());
-        this.appVersionStrategies.add(new FilenameAppVersionStrategy());
-        this.appVersionStrategies.add(new PropertiesAppVersionStrategy());
+    this.appVersionStrategies.add(new LiteralAppVersionStrategy());
+    this.appVersionStrategies.add(new ManifestAppVersionStrategy());
+    this.appVersionStrategies.add(new FilenameAppVersionStrategy());
+    this.appVersionStrategies.add(new PropertiesAppVersionStrategy());
+  }
+
+  public String resolveAppVersion() {
+    String[] args = version.split("\\s+");
+
+    for (AppVersionStrategy strategy : appVersionStrategies) {
+      if (strategy.canHandle(args)) {
+        String resolvedVersion = strategy.resolveAppVersion(codeBaseFiles, args);
+        logger.info(
+            String.format(
+                "%s resolved appVersion '%s' to '%s'",
+                strategy.getClass().getSimpleName(), version, resolvedVersion));
+        return resolvedVersion;
+      }
     }
 
-    public String resolveAppVersion() {
-        String[] args = version.split("\\s+");
+    logger.info(
+        String.format("Don't know how to resolve appVersion '%s', using it as-is", version));
+    return version;
+  }
 
-        for (AppVersionStrategy strategy : appVersionStrategies) {
-            if (strategy.canHandle(args)) {
-                String resolvedVersion = strategy.resolveAppVersion(codeBaseFiles, args);
-                logger.info(String.format("%s resolved appVersion '%s' to '%s'", strategy.getClass().getSimpleName(), version, resolvedVersion));
-                return resolvedVersion;
-            }
-        }
-
-        logger.info(String.format("Don't know how to resolve appVersion '%s', using it as-is", version));
-        return version;
-    }
-
-    public static boolean isUnresolved(String appVersion) {
-        return appVersion == null || appVersion.equals(AppVersionStrategy.UNKNOWN_VERSION);
-    }
+  public static boolean isUnresolved(String appVersion) {
+    return appVersion == null || appVersion.equals(AppVersionStrategy.UNKNOWN_VERSION);
+  }
 }

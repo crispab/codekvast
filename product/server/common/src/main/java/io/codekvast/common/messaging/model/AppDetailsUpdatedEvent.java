@@ -33,15 +33,15 @@ import lombok.Value;
 @Value
 @Builder
 public class AppDetailsUpdatedEvent implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull String applicationName;
-    @NonNull String contactEmail;
+  @NonNull Long customerId;
+  @NonNull String applicationName;
+  @NonNull String contactEmail;
 
-    public static AppDetailsUpdatedEvent sample() {
-        return AppDetailsUpdatedEvent.builder()
-                                     .customerId(1L)
-                                     .applicationName("applicationName")
-                                     .contactEmail("contactEmail")
-                                     .build();
-    }
+  public static AppDetailsUpdatedEvent sample() {
+    return AppDetailsUpdatedEvent.builder()
+        .customerId(1L)
+        .applicationName("applicationName")
+        .contactEmail("contactEmail")
+        .build();
+  }
 }

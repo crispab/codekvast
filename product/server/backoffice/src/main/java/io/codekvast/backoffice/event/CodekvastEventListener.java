@@ -28,23 +28,21 @@ import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Component
 @Slf4j
 public class CodekvastEventListener extends AbstractCodekvastEventListener {
 
-    private final RuleEngine ruleEngine;
+  private final RuleEngine ruleEngine;
 
-    public CodekvastEventListener(MessageIdRepository messageIdRepository, RuleEngine ruleEngine) {
-        super(messageIdRepository);
-        this.ruleEngine = ruleEngine;
-    }
+  public CodekvastEventListener(MessageIdRepository messageIdRepository, RuleEngine ruleEngine) {
+    super(messageIdRepository);
+    this.ruleEngine = ruleEngine;
+  }
 
-    @Override
-    public void onCodekvastEvent(CodekvastEvent event) {
-        logger.debug("Received {}", event);
-        ruleEngine.handle(event);
-    }
+  @Override
+  public void onCodekvastEvent(CodekvastEvent event) {
+    logger.debug("Received {}", event);
+    ruleEngine.handle(event);
+  }
 }

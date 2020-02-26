@@ -30,10 +30,10 @@ import io.codekvast.common.messaging.model.CodekvastEvent;
  */
 public interface EventService {
 
-    /**
-     * Sends an event.
-     *
-     * @param event The event to send.
-     */
-    void send(CodekvastEvent event);
+  /**
+   * Sends an event.
+   *
+   * @param event The event to send.
+   */
+  void send(CodekvastEvent event);
 }

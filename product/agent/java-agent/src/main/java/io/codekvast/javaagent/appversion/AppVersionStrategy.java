@@ -31,21 +31,22 @@ import java.util.Collection;
  */
 public interface AppVersionStrategy {
 
-    String UNKNOWN_VERSION = "<unknown>";
+  String UNKNOWN_VERSION = "<unknown>";
 
-    /**
-     * Can this strategy handle these args?
-     * @param args The white-space separated value from AgentConfig.appVersion
-     * @return true if-and-only-if the strategy recognizes the args.
-     */
-    boolean canHandle(String[] args);
+  /**
+   * Can this strategy handle these args?
+   *
+   * @param args The white-space separated value from AgentConfig.appVersion
+   * @return true if-and-only-if the strategy recognizes the args.
+   */
+  boolean canHandle(String[] args);
 
-    /**
-     * Use args for resolving the app version
-     *
-     * @param codeBases The locations of the code base.
-     * @param args The value of AgentConfig.appVersion
-     * @return The resolved application version.
-     */
-    String resolveAppVersion(Collection<File> codeBases, String[] args);
+  /**
+   * Use args for resolving the app version
+   *
+   * @param codeBases The locations of the code base.
+   * @param args The value of AgentConfig.appVersion
+   * @return The resolved application version.
+   */
+  String resolveAppVersion(Collection<File> codeBases, String[] args);
 }

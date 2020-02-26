@@ -22,11 +22,10 @@
 package io.codekvast.javaagent.model.v2;
 
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
+import javax.validation.constraints.Size;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
-import javax.validation.constraints.Size;
 
 /**
  * A validated parameter object for getting config from the Codekvast Service.
@@ -37,89 +36,70 @@ import javax.validation.constraints.Size;
 @Builder(toBuilder = true)
 public class GetConfigRequest2 {
 
-    /**
-     * What is my license key? Blank is acceptable and means run with a trial license.
-     */
-    @NonNull
-    private final String licenseKey;
+  /** What is my license key? Blank is acceptable and means run with a trial license. */
+  @NonNull private final String licenseKey;
 
-    /**
-     * What is my app's name?
-     */
-    @NonNull
-    @Size(min = 1, message = "appName must be at least 1 characters")
-    private final String appName;
+  /** What is my app's name? */
+  @NonNull
+  @Size(min = 1, message = "appName must be at least 1 characters")
+  private final String appName;
 
-    /**
-     * What is my app's version?
-     */
-    @NonNull
-    @Size(min = 1, message = "appVersion must be at least 1 characters")
-    private final String appVersion;
+  /** What is my app's version? */
+  @NonNull
+  @Size(min = 1, message = "appVersion must be at least 1 characters")
+  private final String appVersion;
 
-    /**
-     * What is my environment?
-     */
-    @NonNull
-    @Size(min = 1, message = "environment must be at least 1 characters")
-    private final String environment;
+  /** What is my environment? */
+  @NonNull
+  @Size(min = 1, message = "environment must be at least 1 characters")
+  private final String environment;
 
-    /**
-     * Which version of the agent is doing this request?
-     */
-    @NonNull
-    @Size(min = 1, message = "agentVersion must be at least 1 characters")
-    private final String agentVersion;
+  /** Which version of the agent is doing this request? */
+  @NonNull
+  @Size(min = 1, message = "agentVersion must be at least 1 characters")
+  private final String agentVersion;
 
-    /**
-     * What is the name of the host in which the agent executes?
-     */
-    @NonNull
-    @Size(min = 1, message = "hostname must be at least 1 characters")
-    private final String hostname;
+  /** What is the name of the host in which the agent executes? */
+  @NonNull
+  @Size(min = 1, message = "hostname must be at least 1 characters")
+  private final String hostname;
 
-    /**
-     * What is the random UUID of the JVM in which the agent executes?
-     */
-    @NonNull
-    @Size(min = 1, message = "jvmUuid must be at least 1 characters")
-    private final String jvmUuid;
+  /** What is the random UUID of the JVM in which the agent executes? */
+  @NonNull
+  @Size(min = 1, message = "jvmUuid must be at least 1 characters")
+  private final String jvmUuid;
 
-    /**
-     * When was the JVM in which the agent executes started?
-     */
-    private final long startedAtMillis;
+  /** When was the JVM in which the agent executes started? */
+  private final long startedAtMillis;
 
-    /**
-     * What is the ID of the computer in which the agent executes?
-     */
-    @NonNull
-    @Size(min = 1, message = "computerId must be at least 1 characters")
-    private final String computerId;
+  /** What is the ID of the computer in which the agent executes? */
+  @NonNull
+  @Size(min = 1, message = "computerId must be at least 1 characters")
+  private final String computerId;
 
-    public static GetConfigRequest2 sample() {
-        return GetConfigRequest2.builder()
-                                .appName("appName")
-                                .appVersion("appVersion")
-                                .agentVersion("agentVersion")
-                                .environment("environment")
-                                .computerId("computerId")
-                                .hostname("hostname")
-                                .jvmUuid("jvmUuid")
-                                .licenseKey("licenseKey")
-                                .build();
-    }
+  public static GetConfigRequest2 sample() {
+    return GetConfigRequest2.builder()
+        .appName("appName")
+        .appVersion("appVersion")
+        .agentVersion("agentVersion")
+        .environment("environment")
+        .computerId("computerId")
+        .hostname("hostname")
+        .jvmUuid("jvmUuid")
+        .licenseKey("licenseKey")
+        .build();
+  }
 
-    public static GetConfigRequest2 fromFormat1(GetConfigRequest1 req, String environment) {
-        return GetConfigRequest2.builder()
-                                .appName(req.getAppName())
-                                .appVersion(req.getAppVersion())
-                                .agentVersion(req.getAgentVersion())
-                                .environment(environment)
-                                .computerId(req.getComputerId())
-                                .hostname(req.getHostname())
-                                .jvmUuid(req.getJvmUuid())
-                                .licenseKey(req.getLicenseKey())
-                                .build();
-    }
+  public static GetConfigRequest2 fromFormat1(GetConfigRequest1 req, String environment) {
+    return GetConfigRequest2.builder()
+        .appName(req.getAppName())
+        .appVersion(req.getAppVersion())
+        .agentVersion(req.getAgentVersion())
+        .environment(environment)
+        .computerId(req.getComputerId())
+        .hostname(req.getHostname())
+        .jvmUuid(req.getJvmUuid())
+        .licenseKey(req.getLicenseKey())
+        .build();
+  }
 }

@@ -23,143 +23,149 @@ package io.codekvast.login.heroku.impl;
 
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.CipherException;
+import io.codekvast.common.security.Roles;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.heroku.HerokuApiWrapper;
 import io.codekvast.login.heroku.HerokuDetailsDAO;
 import io.codekvast.login.heroku.HerokuException;
 import io.codekvast.login.heroku.HerokuService;
-import io.codekvast.login.heroku.model.*;
-import io.codekvast.common.security.Roles;
+import io.codekvast.login.heroku.model.HerokuAppDetails;
+import io.codekvast.login.heroku.model.HerokuChangePlanRequest;
+import io.codekvast.login.heroku.model.HerokuOAuthTokenResponse;
+import io.codekvast.login.heroku.model.HerokuProvisionRequest;
+import io.codekvast.login.heroku.model.HerokuProvisionResponse;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class HerokuServiceImpl implements HerokuService {
 
-    private final CodekvastLoginSettings settings;
-    private final CustomerService customerService;
-    private final HerokuApiWrapper herokuApiWrapper;
-    private final HerokuDetailsDAO herokuDetailsDAO;
+  private final CodekvastLoginSettings settings;
+  private final CustomerService customerService;
+  private final HerokuApiWrapper herokuApiWrapper;
+  private final HerokuDetailsDAO herokuDetailsDAO;
 
-    @Override
-    @Transactional
-    public HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException {
-        logger.debug("Handling {}", request);
-        try {
-            String heroku = CustomerService.Source.HEROKU;
-            CustomerService.AddCustomerResponse response = customerService.addCustomer(CustomerService.AddCustomerRequest
-                                                                                           .builder()
-                                                                                           .source(heroku)
-                                                                                           .externalId(request.getUuid())
-                                                                                           .name(request.getHeroku_id())
-                                                                                           .plan(request.getPlan())
-                                                                                           .build());
+  @Override
+  @Transactional
+  public HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException {
+    logger.debug("Handling {}", request);
+    try {
+      String heroku = CustomerService.Source.HEROKU;
+      CustomerService.AddCustomerResponse response =
+          customerService.addCustomer(
+              CustomerService.AddCustomerRequest.builder()
+                  .source(heroku)
+                  .externalId(request.getUuid())
+                  .name(request.getHeroku_id())
+                  .plan(request.getPlan())
+                  .build());
 
-            String accessToken = exchangeOAuthGrant(request, response.getLicenseKey());
+      String accessToken = exchangeOAuthGrant(request, response.getLicenseKey());
 
-            fetchAppDetails(heroku, request.getUuid(), accessToken, response.getCustomerId());
+      fetchAppDetails(heroku, request.getUuid(), accessToken, response.getCustomerId());
 
-            Map<String, String> config = new HashMap<>();
-            config.put("CODEKVAST_URL", settings.getHerokuCodekvastUrl());
-            config.put("CODEKVAST_LICENSE_KEY", response.getLicenseKey());
+      Map<String, String> config = new HashMap<>();
+      config.put("CODEKVAST_URL", settings.getHerokuCodekvastUrl());
+      config.put("CODEKVAST_LICENSE_KEY", response.getLicenseKey());
 
-            HerokuProvisionResponse herokuProvisionResponse = HerokuProvisionResponse.builder()
-                                                                                     .id(request.getUuid())
-                                                                                     .config(config)
-                                                                                     .build();
-            logger.debug("Returning {}", herokuProvisionResponse);
-            return herokuProvisionResponse;
-        } catch (Exception e) {
-            throw new HerokuException("Could not execute " + request, e);
-        }
+      HerokuProvisionResponse herokuProvisionResponse =
+          HerokuProvisionResponse.builder().id(request.getUuid()).config(config).build();
+      logger.debug("Returning {}", herokuProvisionResponse);
+      return herokuProvisionResponse;
+    } catch (Exception e) {
+      throw new HerokuException("Could not execute " + request, e);
+    }
+  }
+
+  private String exchangeOAuthGrant(HerokuProvisionRequest request, String licenseKey)
+      throws CipherException {
+    HerokuProvisionRequest.OAuthGrant oauthGrant = request.getOauth_grant();
+    if (oauthGrant == null) {
+      // Happens when you do `kensa test provision'
+      return null;
     }
 
-    private String exchangeOAuthGrant(HerokuProvisionRequest request, String licenseKey) throws CipherException {
-        HerokuProvisionRequest.OAuthGrant oauthGrant = request.getOauth_grant();
-        if (oauthGrant == null) {
-            // Happens when you do `kensa test provision'
-            return null;
-        }
-
-        if (herokuDetailsDAO.existsRow(licenseKey)) {
-            // Happens if Heroku retries a request
-            logger.info("OAuth tokens already fetched for {}", request);
-            return null;
-        }
-
-        HerokuOAuthTokenResponse tokenResponse = herokuApiWrapper.exchangeGrantCode(oauthGrant);
-
-        herokuDetailsDAO.saveTokens(tokenResponse, request.getCallback_url(), licenseKey);
-
-        return tokenResponse.getAccess_token();
+    if (herokuDetailsDAO.existsRow(licenseKey)) {
+      // Happens if Heroku retries a request
+      logger.info("OAuth tokens already fetched for {}", request);
+      return null;
     }
 
-    @Override
-    public void changePlan(String externalId, HerokuChangePlanRequest request) throws HerokuException {
-        logger.debug("Received {} for customers.externalId={}", request, externalId);
-        try {
-            customerService.changePlanForExternalId(CustomerService.Source.HEROKU, externalId, request.getPlan());
-        } catch (Exception e) {
-            throw new HerokuException("Could not execute " + request + " for externalId '" + externalId + "'", e);
-        }
+    HerokuOAuthTokenResponse tokenResponse = herokuApiWrapper.exchangeGrantCode(oauthGrant);
+
+    herokuDetailsDAO.saveTokens(tokenResponse, request.getCallback_url(), licenseKey);
+
+    return tokenResponse.getAccess_token();
+  }
+
+  @Override
+  public void changePlan(String externalId, HerokuChangePlanRequest request)
+      throws HerokuException {
+    logger.debug("Received {} for customers.externalId={}", request, externalId);
+    try {
+      customerService.changePlanForExternalId(
+          CustomerService.Source.HEROKU, externalId, request.getPlan());
+    } catch (Exception e) {
+      throw new HerokuException(
+          "Could not execute " + request + " for externalId '" + externalId + "'", e);
+    }
+  }
+
+  @Override
+  public void deprovision(String externalId) throws HerokuException {
+    try {
+      customerService.deleteCustomerByExternalId(CustomerService.Source.HEROKU, externalId);
+    } catch (Exception e) {
+      throw new HerokuException("Could not deprovision externalId '" + externalId + "'", e);
+    }
+  }
+
+  @Override
+  @Transactional
+  @Secured(Roles.ADMIN)
+  public String getAccessTokenFor(Long customerId) throws CipherException {
+    String accessToken = herokuDetailsDAO.getAccessToken(customerId);
+    if (accessToken == null) {
+      String refreshToken = herokuDetailsDAO.getRefreshToken(customerId);
+      if (refreshToken != null) {
+        HerokuOAuthTokenResponse response = herokuApiWrapper.refreshAccessToken(refreshToken);
+        accessToken = response.getAccess_token();
+        Instant expiresAt = Instant.now().plusSeconds(response.getExpires_in());
+        herokuDetailsDAO.updateAccessToken(customerId, accessToken, expiresAt);
+      }
+    }
+    return accessToken;
+  }
+
+  @Override
+  @Secured(Roles.ADMIN)
+  public Instant getAccessTokenExpiresAtFor(Long customerId) {
+    return herokuDetailsDAO.getAccessTokenExpiresAt(customerId);
+  }
+
+  @Override
+  public String getCallbackUrlFor(Long customerId) {
+    return herokuDetailsDAO.getCallbackUrl(customerId);
+  }
+
+  private void fetchAppDetails(
+      String source, String externalId, String accessToken, Long customerId) {
+    if (accessToken == null) {
+      logger.info("Cannot get application details from {} for externalId '{}'", source, externalId);
+      return;
     }
 
-    @Override
-    public void deprovision(String externalId) throws HerokuException {
-        try {
-            customerService.deleteCustomerByExternalId(CustomerService.Source.HEROKU, externalId);
-        } catch (Exception e) {
-            throw new HerokuException("Could not deprovision externalId '" + externalId + "'", e);
-        }
-    }
-
-    @Override
-    @Transactional
-    @Secured(Roles.ADMIN)
-    public String getAccessTokenFor(Long customerId) throws CipherException {
-        String accessToken = herokuDetailsDAO.getAccessToken(customerId);
-        if (accessToken == null) {
-            String refreshToken = herokuDetailsDAO.getRefreshToken(customerId);
-            if (refreshToken != null) {
-                HerokuOAuthTokenResponse response = herokuApiWrapper.refreshAccessToken(refreshToken);
-                accessToken = response.getAccess_token();
-                Instant expiresAt = Instant.now().plusSeconds(response.getExpires_in());
-                herokuDetailsDAO.updateAccessToken(customerId, accessToken, expiresAt);
-            }
-        }
-        return accessToken;
-    }
-
-    @Override
-    @Secured(Roles.ADMIN)
-    public Instant getAccessTokenExpiresAtFor(Long customerId) {
-        return herokuDetailsDAO.getAccessTokenExpiresAt(customerId);
-    }
-
-    @Override
-    public String getCallbackUrlFor(Long customerId) {
-        return herokuDetailsDAO.getCallbackUrl(customerId);
-    }
-
-    private void fetchAppDetails(String source, String externalId, String accessToken, Long customerId) {
-        if (accessToken == null) {
-            logger.info("Cannot get application details from {} for externalId '{}'", source, externalId);
-            return;
-        }
-
-        HerokuAppDetails appDetails = herokuApiWrapper.getAppDetails(externalId, accessToken);
-        customerService.updateAppDetails(appDetails.getAppName(), appDetails.getOwnerEmail(), customerId);
-    }
+    HerokuAppDetails appDetails = herokuApiWrapper.getAppDetails(externalId, accessToken);
+    customerService.updateAppDetails(
+        appDetails.getAppName(), appDetails.getOwnerEmail(), customerId);
+  }
 }

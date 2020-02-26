@@ -21,33 +21,30 @@
  */
 package io.codekvast.javaagent.util;
 
-import lombok.experimental.UtilityClass;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
+import lombok.experimental.UtilityClass;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @UtilityClass
 public class Constants {
-    public static final String AGENT_VERSION = getAgentVersion();
-    public static final String COMPUTER_ID = ComputerID.compute().toString();
-    public static final String HOST_NAME = getHostname();
-    public static final String JVM_UUID = UUID.randomUUID().toString();
-    public static final long JVM_STARTED_AT_MILLIS = System.currentTimeMillis();
+  public static final String AGENT_VERSION = getAgentVersion();
+  public static final String COMPUTER_ID = ComputerID.compute().toString();
+  public static final String HOST_NAME = getHostname();
+  public static final String JVM_UUID = UUID.randomUUID().toString();
+  public static final long JVM_STARTED_AT_MILLIS = System.currentTimeMillis();
 
-    private static String getAgentVersion() {
-        String version = Constants.class.getPackage().getImplementationVersion();
-        return version == null ? "dev" : version;
-    }
+  private static String getAgentVersion() {
+    String version = Constants.class.getPackage().getImplementationVersion();
+    return version == null ? "dev" : version;
+  }
 
-    private static String getHostname() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            return "-unknown-";
-        }
+  private static String getHostname() {
+    try {
+      return InetAddress.getLocalHost().getHostName();
+    } catch (UnknownHostException e) {
+      return "-unknown-";
     }
+  }
 }

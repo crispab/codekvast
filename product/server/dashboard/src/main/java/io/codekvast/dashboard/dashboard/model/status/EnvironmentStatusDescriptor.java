@@ -24,22 +24,17 @@ package io.codekvast.dashboard.dashboard.model.status;
 import lombok.*;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Data
 @Setter(AccessLevel.NONE)
 @Builder
 @EqualsAndHashCode(of = {"name"})
 public class EnvironmentStatusDescriptor {
-    @NonNull
-    private final String name;
+  @NonNull private final String name;
 
-    private final boolean enabled;
+  private final boolean enabled;
 
-    @Nullable
-    private final String updatedBy;
+  @Nullable private final String updatedBy;
 
-    @Nullable
-    private final String notes;
+  @Nullable private final String notes;
 }

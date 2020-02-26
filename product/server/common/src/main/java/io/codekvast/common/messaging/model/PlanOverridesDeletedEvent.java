@@ -35,15 +35,15 @@ import lombok.Value;
 @Value
 @Builder
 public class PlanOverridesDeletedEvent implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull PricePlan oldEffectivePlan;
-    @NonNull PricePlan newEffectivePlan;
+  @NonNull Long customerId;
+  @NonNull PricePlan oldEffectivePlan;
+  @NonNull PricePlan newEffectivePlan;
 
-    public static PlanOverridesDeletedEvent sample() {
-        return PlanOverridesDeletedEvent.builder()
-                                        .customerId(1L)
-                                        .oldEffectivePlan(PricePlan.of(PricePlanDefaults.TEST))
-                                        .newEffectivePlan(PricePlan.of(PricePlanDefaults.DEMO))
-                                        .build();
-    }
+  public static PlanOverridesDeletedEvent sample() {
+    return PlanOverridesDeletedEvent.builder()
+        .customerId(1L)
+        .oldEffectivePlan(PricePlan.of(PricePlanDefaults.TEST))
+        .newEffectivePlan(PricePlan.of(PricePlanDefaults.DEMO))
+        .build();
+  }
 }

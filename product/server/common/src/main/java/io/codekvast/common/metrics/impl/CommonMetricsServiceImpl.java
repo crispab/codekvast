@@ -27,52 +27,54 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Component("commonMetricsService")
 @RequiredArgsConstructor
 public class CommonMetricsServiceImpl implements CommonMetricsService {
 
-    private static final String EVENT_TAG = "event";
-    public static final String LOCK_TAG = "lock";
+  private static final String EVENT_TAG = "event";
+  public static final String LOCK_TAG = "lock";
 
-    private final MeterRegistry meterRegistry;
+  private final MeterRegistry meterRegistry;
 
-    @Override
-    public void countApplicationStartup() {
-        meterRegistry.counter("codekvast.lifecycle", EVENT_TAG, "startup").increment();
-    }
+  @Override
+  public void countApplicationStartup() {
+    meterRegistry.counter("codekvast.lifecycle", EVENT_TAG, "startup").increment();
+  }
 
-    @Override
-    public void countApplicationStarted() {
-        meterRegistry.counter("codekvast.lifecycle", EVENT_TAG, "started").increment();
-    }
+  @Override
+  public void countApplicationStarted() {
+    meterRegistry.counter("codekvast.lifecycle", EVENT_TAG, "started").increment();
+  }
 
-    @Override
-    public void countApplicationShutdown() {
-        meterRegistry.counter("codekvast.lifecycle", EVENT_TAG, "shutdown").increment();
-    }
+  @Override
+  public void countApplicationShutdown() {
+    meterRegistry.counter("codekvast.lifecycle", EVENT_TAG, "shutdown").increment();
+  }
 
-    @Override
-    public void countSentSlackMessage() {
-        meterRegistry.counter("codekvast.slack_messages").increment();
-    }
+  @Override
+  public void countSentSlackMessage() {
+    meterRegistry.counter("codekvast.slack_messages").increment();
+  }
 
-    @Override
-    public void countLogin(String source) {
-        meterRegistry.counter("codekvast.login.count", "source", source).increment();
-        meterRegistry.counter("codekvast.login.count" + "." + source).increment();
-    }
+  @Override
+  public void countLogin(String source) {
+    meterRegistry.counter("codekvast.login.count", "source", source).increment();
+    meterRegistry.counter("codekvast.login.count" + "." + source).increment();
+  }
 
-    @Override
-    public void recordLockUsage(Lock lock) {
-        meterRegistry.timer("codekvast.lock.wait.millis", LOCK_TAG, lock.getName()).record(lock.getWaitDuration());
-        meterRegistry.timer("codekvast.lock.duration.millis", LOCK_TAG, lock.getName()).record(lock.getLockDuration());
-    }
+  @Override
+  public void recordLockUsage(Lock lock) {
+    meterRegistry
+        .timer("codekvast.lock.wait.millis", LOCK_TAG, lock.getName())
+        .record(lock.getWaitDuration());
+    meterRegistry
+        .timer("codekvast.lock.duration.millis", LOCK_TAG, lock.getName())
+        .record(lock.getLockDuration());
+  }
 
-    @Override
-    public void countLockFailure(Lock lock) {
-        meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.getName()).increment();
-    }
+  @Override
+  public void countLockFailure(Lock lock) {
+    meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.getName()).increment();
+  }
 }

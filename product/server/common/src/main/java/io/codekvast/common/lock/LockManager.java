@@ -26,26 +26,25 @@ import java.util.Optional;
 /**
  * A low-level lock manager.
  *
- * This class is not intended to be used directly. It should be used from {@link LockTemplate}.
+ * <p>This class is not intended to be used directly. It should be used from {@link LockTemplate}.
  *
  * @author olle.hallin@crisp.se
  * @see LockTemplate
  */
 public interface LockManager {
 
-    /**
-     * Acquire a lock.
-     *
-     * @param lock The lock to acquire.
-     * @return A filled optional if the lock was acquired, else an empty optional.
-     */
-    Optional<Lock> acquireLock(Lock lock);
+  /**
+   * Acquire a lock.
+   *
+   * @param lock The lock to acquire.
+   * @return A filled optional if the lock was acquired, else an empty optional.
+   */
+  Optional<Lock> acquireLock(Lock lock);
 
-    /**
-     * Releases a lock acquired by {@link #acquireLock(Lock)}.
-     * Should be invoked in a finally block.
-     *
-     * @param lock The lock to release.
-     */
-    void releaseLock(Lock lock);
+  /**
+   * Releases a lock acquired by {@link #acquireLock(Lock)}. Should be invoked in a finally block.
+   *
+   * @param lock The lock to release.
+   */
+  void releaseLock(Lock lock);
 }

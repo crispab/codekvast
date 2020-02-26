@@ -34,25 +34,27 @@ import lombok.extern.java.Log;
 @Log
 public class CodeBasePublisherFactoryImpl implements CodeBasePublisherFactory {
 
-    /**
-     * Creates an instance of the CodeBasePublisher strategy.
-     *
-     * @param name   The name of the strategy to create.
-     * @param config Is passed to the created strategy.
-     * @return A configured implementation of CodeBasePublisher
-     */
-    @Override
-    public CodeBasePublisher create(String name, AgentConfig config) {
-        if (name.equals(NoOpCodeBasePublisherImpl.NAME)) {
-            return new NoOpCodeBasePublisherImpl(config);
-        }
-
-        if (name.equals(HttpCodeBasePublisherImpl.NAME)) {
-            return new HttpCodeBasePublisherImpl(config);
-        }
-
-        logger.warning(String.format("Unrecognized code base publisher name: '%s', will use %s", name, NoOpCodeBasePublisherImpl.NAME));
-        return new NoOpCodeBasePublisherImpl(config);
+  /**
+   * Creates an instance of the CodeBasePublisher strategy.
+   *
+   * @param name The name of the strategy to create.
+   * @param config Is passed to the created strategy.
+   * @return A configured implementation of CodeBasePublisher
+   */
+  @Override
+  public CodeBasePublisher create(String name, AgentConfig config) {
+    if (name.equals(NoOpCodeBasePublisherImpl.NAME)) {
+      return new NoOpCodeBasePublisherImpl(config);
     }
 
+    if (name.equals(HttpCodeBasePublisherImpl.NAME)) {
+      return new HttpCodeBasePublisherImpl(config);
+    }
+
+    logger.warning(
+        String.format(
+            "Unrecognized code base publisher name: '%s', will use %s",
+            name, NoOpCodeBasePublisherImpl.NAME));
+    return new NoOpCodeBasePublisherImpl(config);
+  }
 }

@@ -30,46 +30,44 @@ import io.codekvast.common.lock.Lock;
  */
 public interface CommonMetricsService {
 
-    /**
-     * Counts an application startup attempt.
-     *
-     * NOTE: The counter is incremented early in the startup sequence, so there is no guarantee that the application manages to start
-     * successfully.
-     */
-    void countApplicationStartup();
+  /**
+   * Counts an application startup attempt.
+   *
+   * <p>NOTE: The counter is incremented early in the startup sequence, so there is no guarantee
+   * that the application manages to start successfully.
+   */
+  void countApplicationStartup();
 
-    /**
-     * Counts a finished application startup sequence.
-     *
-     * NOTE: The counter is incremented only when the application is ready to receive traffic.
-     */
-    void countApplicationStarted();
+  /**
+   * Counts a finished application startup sequence.
+   *
+   * <p>NOTE: The counter is incremented only when the application is ready to receive traffic.
+   */
+  void countApplicationStarted();
 
-    /**
-     * Counts shutdown events.
-     */
-    void countApplicationShutdown();
+  /** Counts shutdown events. */
+  void countApplicationShutdown();
 
-    void countSentSlackMessage();
+  void countSentSlackMessage();
 
-    /**
-     * Counts a login
-     *
-     * @param source The authentication source, e.g., "google", "github" etc.
-     */
-    void countLogin(String source);
+  /**
+   * Counts a login
+   *
+   * @param source The authentication source, e.g., "google", "github" etc.
+   */
+  void countLogin(String source);
 
-    /**
-     * Records how a lock was used.
-     *
-     * @param lock The lock
-     */
-    void recordLockUsage(Lock lock);
+  /**
+   * Records how a lock was used.
+   *
+   * @param lock The lock
+   */
+  void recordLockUsage(Lock lock);
 
-    /**
-     * Count a failure to get a lock.
-     *
-     * @param lock The lock
-     */
-    void countLockFailure(Lock lock);
+  /**
+   * Count a failure to get a lock.
+   *
+   * @param lock The lock
+   */
+  void countLockFailure(Lock lock);
 }

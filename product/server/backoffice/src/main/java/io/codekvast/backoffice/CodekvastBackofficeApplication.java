@@ -34,8 +34,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = "io.codekvast")
 public class CodekvastBackofficeApplication {
 
-    public static void main(String[] args) {
-        new SpringApplication(CodekvastBackofficeApplication.class).run(args);
-    }
-
+  public static void main(String[] args) {
+    new SpringApplication(CodekvastBackofficeApplication.class).run(args);
+  }
 }

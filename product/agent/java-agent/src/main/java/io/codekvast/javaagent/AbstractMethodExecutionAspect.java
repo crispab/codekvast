@@ -28,8 +28,8 @@ import org.aspectj.lang.annotation.Pointcut;
 
 /**
  * This is an AspectJ aspect that captures execution of methods in the scope of interest.
- * <p>
- * It is weaved into the target app by the AspectJ load-time weaver.
+ *
+ * <p>It is weaved into the target app by the AspectJ load-time weaver.
  *
  * @author olle.hallin@crisp.se
  * @see CodekvastAgent
@@ -38,26 +38,25 @@ import org.aspectj.lang.annotation.Pointcut;
 @Aspect
 public abstract class AbstractMethodExecutionAspect {
 
-    /**
-     * This abstract pointcut specifies what method executions to detect.
-     * <p>
-     * It is made concrete by an XML file that is created on-the-fly by {@link CodekvastAgent} before
-     * loading the AspectJ load-time weaving javaagent.
-     */
-    @Pointcut
-    public abstract void methodExecution();
+  /**
+   * This abstract pointcut specifies what method executions to detect.
+   *
+   * <p>It is made concrete by an XML file that is created on-the-fly by {@link CodekvastAgent}
+   * before loading the AspectJ load-time weaving javaagent.
+   */
+  @Pointcut
+  public abstract void methodExecution();
 
-    @SuppressWarnings("NoopMethodInAbstractClass")
-    @Pointcut("execution(int compareTo(Object)) " +
-        "|| execution(boolean equals(Object)) " +
-        "|| execution(int hashCode()) " +
-        "|| execution(String toString()) ")
-    public void trivialMethodExecution() {
-    }
+  @SuppressWarnings("NoopMethodInAbstractClass")
+  @Pointcut(
+      "execution(int compareTo(Object)) "
+          + "|| execution(boolean equals(Object)) "
+          + "|| execution(int hashCode()) "
+          + "|| execution(String toString()) ")
+  public void trivialMethodExecution() {}
 
-    @Before("methodExecution() && !trivialMethodExecution()")
-    public void registerInvocation(JoinPoint.StaticPart thisJointPoint) {
-        InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature());
-    }
-
+  @Before("methodExecution() && !trivialMethodExecution()")
+  public void registerInvocation(JoinPoint.StaticPart thisJointPoint) {
+    InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature());
+  }
 }

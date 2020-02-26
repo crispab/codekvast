@@ -26,80 +26,84 @@ import io.codekvast.backoffice.bootstrap.CodekvastBackofficeSettings;
 import io.codekvast.backoffice.service.MailSender;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Component
 @RequiredArgsConstructor
 public class MailTemplateRenderer {
-    private final Mustache.Compiler compiler;
-    private final CustomerService customerService;
-    private final CodekvastBackofficeSettings settings;
+  private final Mustache.Compiler compiler;
+  private final CustomerService customerService;
+  private final CodekvastBackofficeSettings settings;
 
-    String renderTemplate(MailSender.Template template, Object... args) {
-        Map<String, Object> data = collectCommonData();
+  String renderTemplate(MailSender.Template template, Object... args) {
+    Map<String, Object> data = collectCommonData();
 
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (template) {
-        case WELCOME_TO_CODEKVAST:
-            Long customerId = (Long) args[0];
-            collectWelcomeToCodekvastData(customerId, data);
-            break;
-        default:
-            throw new IllegalArgumentException("Don't know how to render " + template);
-        }
-
-        return compiler.withFormatter(new CodekvastFormatter()).loadTemplate(getTemplateName(template)).execute(data);
+    //noinspection SwitchStatementWithTooFewBranches
+    switch (template) {
+      case WELCOME_TO_CODEKVAST:
+        Long customerId = (Long) args[0];
+        collectWelcomeToCodekvastData(customerId, data);
+        break;
+      default:
+        throw new IllegalArgumentException("Don't know how to render " + template);
     }
 
-    private void collectWelcomeToCodekvastData(Long customerId, Map<String, Object> data) {
-        CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
-        data.put("customerName", customerData.getDisplayName());
-        data.put("pricePlan", customerData.getPricePlan());
-        data.put("inTrialPeriod", customerData.getCollectionStartedAt() != null && customerData.getTrialPeriodEndsAt() != null);
-        data.put("hasTrialPeriodDays", customerData.getPricePlan().getTrialPeriodDays() > 0);
-        data.put("trialPeriodEndsAt", customerData.getTrialPeriodEndsAt());
-        data.put("trialPeriodStartedAt", customerData.getCollectionStartedAt());
-    }
+    return compiler
+        .withFormatter(new CodekvastFormatter())
+        .loadTemplate(getTemplateName(template))
+        .execute(data);
+  }
 
-    private Map<String, Object> collectCommonData() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("codekvastDisplayVersion", settings.getDisplayVersion());
-        data.put("homepageUrl", settings.getHomepageBaseUrl());
-        data.put("loginUrl", settings.getLoginBaseUrl());
-        data.put("supportEmail", settings.getSupportEmail());
-        return data;
-    }
+  private Map<String, Object> collectCommonData() {
+    Map<String, Object> data = new HashMap<>();
+    data.put("codekvastDisplayVersion", settings.getDisplayVersion());
+    data.put("homepageUrl", settings.getHomepageBaseUrl());
+    data.put("loginUrl", settings.getLoginBaseUrl());
+    data.put("supportEmail", settings.getSupportEmail());
+    return data;
+  }
 
-    private String getTemplateName(MailSender.Template template) {
-        return String.format("mail/%s", template.name().toLowerCase());
-    }
+  private void collectWelcomeToCodekvastData(Long customerId, Map<String, Object> data) {
+    CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
+    data.put("customerName", customerData.getDisplayName());
+    data.put("pricePlan", customerData.getPricePlan());
+    data.put(
+        "inTrialPeriod",
+        customerData.getCollectionStartedAt() != null
+            && customerData.getTrialPeriodEndsAt() != null);
+    data.put("hasTrialPeriodDays", customerData.getPricePlan().getTrialPeriodDays() > 0);
+    data.put("trialPeriodEndsAt", customerData.getTrialPeriodEndsAt());
+    data.put("trialPeriodStartedAt", customerData.getCollectionStartedAt());
+  }
 
-    static class CodekvastFormatter implements Mustache.Formatter {
-        @SuppressWarnings("ChainOfInstanceofChecks")
-        @Override
-        public String format(Object value) {
-            if (value instanceof Instant) {
-                return value.toString()
-                            .replace("T", " ") // the 'T' between date and time
-                            .replaceAll("\\.[0-9]+Z$", " UTC"); // the milliseconds and timezone part
-            }
-            if (value instanceof Integer) {
-                return new Formatter(Locale.ENGLISH).format("%,d", value).toString();
-            }
-            if (value instanceof Long) {
-                return new Formatter(Locale.ENGLISH).format("%,d", value).toString();
-            }
-            return String.valueOf(value);
-        }
+  private String getTemplateName(MailSender.Template template) {
+    return String.format("mail/%s", template.name().toLowerCase());
+  }
+
+  static class CodekvastFormatter implements Mustache.Formatter {
+    @SuppressWarnings("ChainOfInstanceofChecks")
+    @Override
+    public String format(Object value) {
+      if (value instanceof Instant) {
+        return value
+            .toString()
+            .replace("T", " ") // the 'T' between date and time
+            .replaceAll("\\.[0-9]+Z$", " UTC"); // the milliseconds and timezone part
+      }
+      if (value instanceof Integer) {
+        return new Formatter(Locale.ENGLISH).format("%,d", value).toString();
+      }
+      if (value instanceof Long) {
+        return new Formatter(Locale.ENGLISH).format("%,d", value).toString();
+      }
+      return String.valueOf(value);
     }
+  }
 }

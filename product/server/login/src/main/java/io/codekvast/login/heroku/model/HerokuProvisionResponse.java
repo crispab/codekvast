@@ -21,21 +21,18 @@
  */
 package io.codekvast.login.heroku.model;
 
+import java.util.Map;
 import lombok.Builder;
 import lombok.Value;
 
-import java.util.Map;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Value
 @Builder
 public class HerokuProvisionResponse {
 
-    private final String id;
+  private final String id;
 
-    private final String message;
+  private final String message;
 
-    private final Map<String, String> config;
+  private final Map<String, String> config;
 }

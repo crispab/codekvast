@@ -36,119 +36,93 @@ import lombok.Value;
 @Builder(toBuilder = true)
 public class GetConfigResponse2 {
 
-    /**
-     * What customerId should I use when publishing data?
-     */
-    @NonNull
-    private final Long customerId;
+  /** What customerId should I use when publishing data? */
+  @NonNull private final Long customerId;
 
-    /**
-     * How often shall the server be polled for dynamic config?
-     */
-    @NonNull
-    private final Integer configPollIntervalSeconds;
+  /** How often shall the server be polled for dynamic config? */
+  @NonNull private final Integer configPollIntervalSeconds;
 
-    /**
-     * How fast shall a failed config poll be retried?
-     */
-    @NonNull
-    private final Integer configPollRetryIntervalSeconds;
+  /** How fast shall a failed config poll be retried? */
+  @NonNull private final Integer configPollRetryIntervalSeconds;
 
-    /**
-     * The name of the code base publisher to use.
-     *
-     * Each implementation defines it's own name.
-     */
-    @NonNull
-    private final String codeBasePublisherName;
+  /**
+   * The name of the code base publisher to use.
+   *
+   * <p>Each implementation defines it's own name.
+   */
+  @NonNull private final String codeBasePublisherName;
 
-    /**
-     * The configuration of the CodeBasePublisher to use, coded as
-     * semicolon-separated list of key=value pairs.
-     * Neither keys nor values may contains semicolons, space or tab characters.
-     *
-     * It is up to the specified CodeBasePublisher to parse the config.
-     */
-    @NonNull
-    private final String codeBasePublisherConfig;
+  /**
+   * The configuration of the CodeBasePublisher to use, coded as semicolon-separated list of
+   * key=value pairs. Neither keys nor values may contains semicolons, space or tab characters.
+   *
+   * <p>It is up to the specified CodeBasePublisher to parse the config.
+   */
+  @NonNull private final String codeBasePublisherConfig;
 
-    /**
-     * How often shall the codebase be re-scanned for changes?
-     */
-    @NonNull
-    private final Integer codeBasePublisherCheckIntervalSeconds;
+  /** How often shall the codebase be re-scanned for changes? */
+  @NonNull private final Integer codeBasePublisherCheckIntervalSeconds;
 
-    /**
-     * How often shall a failed codebase publishing be retried?
-     */
-    @NonNull
-    private final Integer codeBasePublisherRetryIntervalSeconds;
+  /** How often shall a failed codebase publishing be retried? */
+  @NonNull private final Integer codeBasePublisherRetryIntervalSeconds;
 
-    /**
-     * The name of the invocation data publisher to use.
-     *
-     * Each implementation defines it's own name.
-     */
-    @NonNull
-    private final String invocationDataPublisherName;
+  /**
+   * The name of the invocation data publisher to use.
+   *
+   * <p>Each implementation defines it's own name.
+   */
+  @NonNull private final String invocationDataPublisherName;
 
-    /**
-     * The configuration of the InvocationDataPublisher to use, coded as
-     * semicolon-separated list of key=value pairs.
-     * Neither keys nor values may contains semicolons, space or tab characters.
-     *
-     * It is up to the specified InvocationDataPublisher to parse the config.
-     */
-    @NonNull
-    private final String invocationDataPublisherConfig;
+  /**
+   * The configuration of the InvocationDataPublisher to use, coded as semicolon-separated list of
+   * key=value pairs. Neither keys nor values may contains semicolons, space or tab characters.
+   *
+   * <p>It is up to the specified InvocationDataPublisher to parse the config.
+   */
+  @NonNull private final String invocationDataPublisherConfig;
 
-    /**
-     * How often shall the invocation data be published?
-     */
-    @NonNull
-    private final Integer invocationDataPublisherIntervalSeconds;
+  /** How often shall the invocation data be published? */
+  @NonNull private final Integer invocationDataPublisherIntervalSeconds;
 
-    /**
-     * How often shall a failed invocation data publishing be retried?
-     */
-    @NonNull
-    private final Integer invocationDataPublisherRetryIntervalSeconds;
+  /** How often shall a failed invocation data publishing be retried? */
+  @NonNull private final Integer invocationDataPublisherRetryIntervalSeconds;
 
-    /**
-     * Convert a format 2 response back to format 1.
-     *
-     * @param rsp A response to a {@link GetConfigRequest2}.
-     * @return A format 1 version of the response,
-     */
-    public static GetConfigResponse1 toFormat1(GetConfigResponse2 rsp) {
-        return GetConfigResponse1.builder()
-                                 .codeBasePublisherCheckIntervalSeconds(rsp.codeBasePublisherCheckIntervalSeconds)
-                                 .codeBasePublisherConfig(rsp.codeBasePublisherConfig)
-                                 .codeBasePublisherName(rsp.codeBasePublisherName)
-                                 .codeBasePublisherRetryIntervalSeconds(rsp.codeBasePublisherRetryIntervalSeconds)
-                                 .configPollIntervalSeconds(rsp.getConfigPollIntervalSeconds())
-                                 .configPollRetryIntervalSeconds(rsp.configPollRetryIntervalSeconds)
-                                 .customerId(rsp.customerId)
-                                 .invocationDataPublisherConfig(rsp.invocationDataPublisherConfig)
-                                 .invocationDataPublisherIntervalSeconds(rsp.invocationDataPublisherIntervalSeconds)
-                                 .invocationDataPublisherName(rsp.invocationDataPublisherName)
-                                 .invocationDataPublisherRetryIntervalSeconds(rsp.invocationDataPublisherRetryIntervalSeconds)
-                                 .build();
-    }
+  /**
+   * Convert a format 2 response back to format 1.
+   *
+   * @param rsp A response to a {@link GetConfigRequest2}.
+   * @return A format 1 version of the response,
+   */
+  public static GetConfigResponse1 toFormat1(GetConfigResponse2 rsp) {
+    return GetConfigResponse1.builder()
+        .codeBasePublisherCheckIntervalSeconds(rsp.codeBasePublisherCheckIntervalSeconds)
+        .codeBasePublisherConfig(rsp.codeBasePublisherConfig)
+        .codeBasePublisherName(rsp.codeBasePublisherName)
+        .codeBasePublisherRetryIntervalSeconds(rsp.codeBasePublisherRetryIntervalSeconds)
+        .configPollIntervalSeconds(rsp.getConfigPollIntervalSeconds())
+        .configPollRetryIntervalSeconds(rsp.configPollRetryIntervalSeconds)
+        .customerId(rsp.customerId)
+        .invocationDataPublisherConfig(rsp.invocationDataPublisherConfig)
+        .invocationDataPublisherIntervalSeconds(rsp.invocationDataPublisherIntervalSeconds)
+        .invocationDataPublisherName(rsp.invocationDataPublisherName)
+        .invocationDataPublisherRetryIntervalSeconds(
+            rsp.invocationDataPublisherRetryIntervalSeconds)
+        .build();
+  }
 
-    public static GetConfigResponse2 sample() {
-        return builder()
-            .customerId(1L)
-            .configPollIntervalSeconds(60)
-            .configPollRetryIntervalSeconds(60)
-            .codeBasePublisherConfig("enabled=true")
-            .codeBasePublisherName("no-op")
-            .codeBasePublisherCheckIntervalSeconds(60)
-            .codeBasePublisherRetryIntervalSeconds(60)
-            .invocationDataPublisherConfig("enabled=true")
-            .invocationDataPublisherName("no-op")
-            .invocationDataPublisherIntervalSeconds(60)
-            .invocationDataPublisherRetryIntervalSeconds(60)
-            .build();
-    }
+  public static GetConfigResponse2 sample() {
+    return builder()
+        .customerId(1L)
+        .configPollIntervalSeconds(60)
+        .configPollRetryIntervalSeconds(60)
+        .codeBasePublisherConfig("enabled=true")
+        .codeBasePublisherName("no-op")
+        .codeBasePublisherCheckIntervalSeconds(60)
+        .codeBasePublisherRetryIntervalSeconds(60)
+        .invocationDataPublisherConfig("enabled=true")
+        .invocationDataPublisherName("no-op")
+        .invocationDataPublisherIntervalSeconds(60)
+        .invocationDataPublisherRetryIntervalSeconds(60)
+        .build();
+  }
 }

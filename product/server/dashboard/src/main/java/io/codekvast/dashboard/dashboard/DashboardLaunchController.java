@@ -23,6 +23,10 @@ package io.codekvast.dashboard.dashboard;
 
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -30,11 +34,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 /**
  * A CORS-enabled REST controller that participates in the login dance with the codekvast-login app.
@@ -47,48 +46,57 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class DashboardLaunchController {
 
-    private final SecurityService securityService;
-    private final CodekvastDashboardSettings settings;
+  private final SecurityService securityService;
+  private final CodekvastDashboardSettings settings;
 
-    @PostMapping("/dashboard/launch/{code}")
-    public String launchNative(@PathVariable("code") String code, HttpServletResponse response) {
-        logger.debug("Handling launch request, code={}", code);
+  @PostMapping("/dashboard/launch/{code}")
+  public String launchNative(@PathVariable("code") String code, HttpServletResponse response) {
+    logger.debug("Handling launch request, code={}", code);
 
-        String sessionToken = securityService.tradeCodeToWebappToken(code);
+    String sessionToken = securityService.tradeCodeToWebappToken(code);
 
-        response.addCookie(createCookie(CookieNames.SESSION_TOKEN, sessionToken));
-        response.addCookie(createCookie(CookieNames.NAV_DATA, null));
-        return getRedirectUrl(sessionToken);
-    }
+    response.addCookie(createCookie(CookieNames.SESSION_TOKEN, sessionToken));
+    response.addCookie(createCookie(CookieNames.NAV_DATA, null));
+    return getRedirectUrl(sessionToken);
+  }
 
-    @PostMapping("/dashboard/heroku/sso/{code}/{navData}")
-    public String launchHeroku(@PathVariable("code") String code, @PathVariable("navData") String navData, HttpServletResponse response) {
-        logger.debug("Handling Heroku SSO request, code={}, navData={}", code, navData);
+  @PostMapping("/dashboard/heroku/sso/{code}/{navData}")
+  public String launchHeroku(
+      @PathVariable("code") String code,
+      @PathVariable("navData") String navData,
+      HttpServletResponse response) {
+    logger.debug("Handling Heroku SSO request, code={}, navData={}", code, navData);
 
-        String sessionToken = securityService.tradeCodeToWebappToken(code);
+    String sessionToken = securityService.tradeCodeToWebappToken(code);
 
-        response.addCookie(createCookie(CookieNames.SESSION_TOKEN, sessionToken));
-        response.addCookie(createCookie(CookieNames.NAV_DATA, navData));
-        return getRedirectUrl(sessionToken);
-    }
+    response.addCookie(createCookie(CookieNames.SESSION_TOKEN, sessionToken));
+    response.addCookie(createCookie(CookieNames.NAV_DATA, navData));
+    return getRedirectUrl(sessionToken);
+  }
 
-    @PostMapping("/dashboard/logout")
-    @ResponseBody
-    public String logout(HttpServletResponse response) {
-        response.addCookie(createCookie(CookieNames.SESSION_TOKEN, null));
-        response.addCookie(createCookie(CookieNames.NAV_DATA, null));
-        return String.format("%s%s", settings.getLoginBaseUrl(), "/logout");
-    }
+  @PostMapping("/dashboard/logout")
+  @ResponseBody
+  public String logout(HttpServletResponse response) {
+    response.addCookie(createCookie(CookieNames.SESSION_TOKEN, null));
+    response.addCookie(createCookie(CookieNames.NAV_DATA, null));
+    return String.format("%s%s", settings.getLoginBaseUrl(), "/logout");
+  }
 
-    private String getRedirectUrl(String sessionToken) {
-        return String.format("redirect:%s/%s", settings.getDashboardBaseUrl(), sessionToken == null ? "not-logged-in" : "home");
-    }
+  private String getRedirectUrl(String sessionToken) {
+    return String.format(
+        "redirect:%s/%s",
+        settings.getDashboardBaseUrl(), sessionToken == null ? "not-logged-in" : "home");
+  }
 
-    private Cookie createCookie(String name, String value) {
-        Cookie cookie = new Cookie(name, value == null || value.isEmpty() ? "" : URLEncoder.encode(value, StandardCharsets.UTF_8));
-        cookie.setPath("/");
-        cookie.setMaxAge(value == null ? 0 : -1);
-        return cookie;
-    }
-
+  private Cookie createCookie(String name, String value) {
+    Cookie cookie =
+        new Cookie(
+            name,
+            value == null || value.isEmpty()
+                ? ""
+                : URLEncoder.encode(value, StandardCharsets.UTF_8));
+    cookie.setPath("/");
+    cookie.setMaxAge(value == null ? 0 : -1);
+    return cookie;
+  }
 }

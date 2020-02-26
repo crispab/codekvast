@@ -24,11 +24,7 @@ package io.codekvast.common.bootstrap;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Configuration
 @EnableCaching
-public class CachingConfig {
-
-}
+public class CachingConfig {}

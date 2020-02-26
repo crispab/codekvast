@@ -27,37 +27,38 @@ import lombok.RequiredArgsConstructor;
 /**
  * Default values for all defined price plans.
  *
- * The names of the plans corresponds 1-to-1 to rows in the table price_plans.
+ * <p>The names of the plans corresponds 1-to-1 to rows in the table price_plans.
  *
- * The price plans are also defined at Heroku (except for DEMO).
+ * <p>The price plans are also defined at Heroku (except for DEMO).
  *
  * @author olle.hallin@crisp.se
  * @see "https://addons.heroku.com/provider/addons/codekvast/plans"
- * @see "https://docs.google.com/spreadsheets/d/1FJN9YBk0Yxp6Npb0mW3yMQmcYSIrv_Tux3SOnjRTjvE/edit?folder=0B8WxpL3zK856WktGTDM5YUpIMG8#gid=0"
+ * @see
+ *     "https://docs.google.com/spreadsheets/d/1FJN9YBk0Yxp6Npb0mW3yMQmcYSIrv_Tux3SOnjRTjvE/edit?folder=0B8WxpL3zK856WktGTDM5YUpIMG8#gid=0"
  */
 @Getter
 @RequiredArgsConstructor
 public enum PricePlanDefaults {
-    DEMO(25_000, 1, 5, 5, 5, -1, 30),
-    TEST(25_000, 3, 3_600, 600, 60, 60, 14),
-    BRONZE(50_000, 25, 3_600, 900, 60, -1, 14),
-    SILVER(100_000, 250, 7_200, 1_200, 60, -1, 30),
-    GOLD(250_000, 1_000, 7_200, 1_800, 60, -1, 60),
-    PLATINUM(500_000, 3_000, 7_200, 1_800, 60, -1, 90);
+  DEMO(25_000, 1, 5, 5, 5, -1, 30),
+  TEST(25_000, 3, 3_600, 600, 60, 60, 14),
+  BRONZE(50_000, 25, 3_600, 900, 60, -1, 14),
+  SILVER(100_000, 250, 7_200, 1_200, 60, -1, 30),
+  GOLD(250_000, 1_000, 7_200, 1_800, 60, -1, 60),
+  PLATINUM(500_000, 3_000, 7_200, 1_800, 60, -1, 90);
 
-    private final int maxMethods;
-    private final int maxNumberOfAgents;
-    private final int publishIntervalSeconds;
-    private final int pollIntervalSeconds;
-    private final int retryIntervalSeconds;
-    private final int trialPeriodDays;
-    private final int retentionPeriodDays;
+  private final int maxMethods;
+  private final int maxNumberOfAgents;
+  private final int publishIntervalSeconds;
+  private final int pollIntervalSeconds;
+  private final int retryIntervalSeconds;
+  private final int trialPeriodDays;
+  private final int retentionPeriodDays;
 
-    public String toDatabaseName() {
-        return name().toLowerCase();
-    }
+  public String toDatabaseName() {
+    return name().toLowerCase();
+  }
 
-    public static PricePlanDefaults ofDatabaseName(String planName) {
-        return PricePlanDefaults.valueOf(planName.toUpperCase());
-    }
+  public static PricePlanDefaults ofDatabaseName(String planName) {
+    return PricePlanDefaults.valueOf(planName.toUpperCase());
+  }
 }

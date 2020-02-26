@@ -26,8 +26,8 @@ import java.lang.annotation.*;
 /**
  * Target annotation for {@link RestartableTransactionAspect}.
  *
- * Put it on a {@code @Transactional} method to make the transaction restarted
- * should an exception that indicates a deadlock or lock wait timeout be thrown.
+ * <p>Put it on a {@code @Transactional} method to make the transaction restarted should an
+ * exception that indicates a deadlock or lock wait timeout be thrown.
  *
  * @author olle.hallin@crisp.se
  * @see RestartableTransactionAspect
@@ -36,5 +36,4 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface Restartable {
-}
+public @interface Restartable {}

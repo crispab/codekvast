@@ -30,73 +30,78 @@ import io.codekvast.javaagent.model.v2.GetConfigRequest2;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Handles requests from the {@link AgentController}.
- */
+/** Handles requests from the {@link AgentController}. */
 public interface AgentService {
 
-    /**
-     * What config parameters should this javaagent use?
-     *
-     * @param request The request object
-     * @return Does never return null
-     * @throws LicenseViolationException when license is violated
-     */
-    GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException;
+  /**
+   * What config parameters should this javaagent use?
+   *
+   * @param request The request object
+   * @return Does never return null
+   * @throws LicenseViolationException when license is violated
+   */
+  GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException;
 
-    /**
-     * What config parameters should this javaagent use?
-     *
-     * @param request The request object
-     * @return Does never return null
-     * @throws LicenseViolationException when license is violated
-     */
-    GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException;
+  /**
+   * What config parameters should this javaagent use?
+   *
+   * @param request The request object
+   * @return Does never return null
+   * @throws LicenseViolationException when license is violated
+   */
+  GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException;
 
-    /**
-     * Save an uploaded publication into the import area where it will be processed by another thread.
-     *
-     * @param publicationType     The type of publication.
-     * @param licenseKey          The javaagent's licenseKey.
-     * @param codebaseFingerprint The publication's origin codebase's fingerprint
-     * @param publicationSize     The size of the publication. Used for price plan enforcement.
-     * @param inputStream         The data input stream.  @return The resulting file or null of the code base was already uploaded.
-     * @return the resulting file in the queue directory. The filename is made up of the publicationType, the customer ID and the
-     * correlationId.
-     * @throws LicenseViolationException If invalid license or license violations.
-     * @throws IOException               If failure to create the file.
-     * @see CodeBasePublication2
-     * @see CodeBasePublication3
-     * @see InvocationDataPublication2
-     * @see #getCorrelationIdFromPublicationFile(File)
-     */
-    File savePublication(PublicationType publicationType, String licenseKey, String codebaseFingerprint, int publicationSize,
-                         InputStream inputStream)
-        throws LicenseViolationException, IOException;
+  /**
+   * Save an uploaded publication into the import area where it will be processed by another thread.
+   *
+   * @param publicationType The type of publication.
+   * @param licenseKey The javaagent's licenseKey.
+   * @param codebaseFingerprint The publication's origin codebase's fingerprint
+   * @param publicationSize The size of the publication. Used for price plan enforcement.
+   * @param inputStream The data input stream. @return The resulting file or null of the code base
+   *     was already uploaded.
+   * @return the resulting file in the queue directory. The filename is made up of the
+   *     publicationType, the customer ID and the correlationId.
+   * @throws LicenseViolationException If invalid license or license violations.
+   * @throws IOException If failure to create the file.
+   * @see CodeBasePublication2
+   * @see CodeBasePublication3
+   * @see InvocationDataPublication2
+   * @see #getCorrelationIdFromPublicationFile(File)
+   */
+  File savePublication(
+      PublicationType publicationType,
+      String licenseKey,
+      String codebaseFingerprint,
+      int publicationSize,
+      InputStream inputStream)
+      throws LicenseViolationException, IOException;
 
-    /**
-     * Generates a file name from the supplied parameters.
-     *
-     * @param publicationType The type of publication.
-     * @param customerId      The customer ID.
-     * @param correlationId   The correlation ID.
-     * @return A filename to use when saving a publication file. The generated file name can be parsed by
-     * {@link #getCorrelationIdFromPublicationFile(File)}.
-     */
-    File generatePublicationFile(PublicationType publicationType, Long customerId, String correlationId);
+  /**
+   * Generates a file name from the supplied parameters.
+   *
+   * @param publicationType The type of publication.
+   * @param customerId The customer ID.
+   * @param correlationId The correlation ID.
+   * @return A filename to use when saving a publication file. The generated file name can be parsed
+   *     by {@link #getCorrelationIdFromPublicationFile(File)}.
+   */
+  File generatePublicationFile(
+      PublicationType publicationType, Long customerId, String correlationId);
 
-    PublicationType getPublicationTypeFromPublicationFile(File publicationFile);
+  PublicationType getPublicationTypeFromPublicationFile(File publicationFile);
 
-    /**
-     * Retrieve the correlationId from a file name generated by {@link #generatePublicationFile(PublicationType, Long, String)}.
-     *
-     * @param publicationFile A file created by {@link #savePublication(PublicationType, String, String, int, InputStream)}.
-     * @return The correlationId part of the file name.
-     */
-    String getCorrelationIdFromPublicationFile(File publicationFile);
+  /**
+   * Retrieve the correlationId from a file name generated by {@link
+   * #generatePublicationFile(PublicationType, Long, String)}.
+   *
+   * @param publicationFile A file created by {@link #savePublication(PublicationType, String,
+   *     String, int, InputStream)}.
+   * @return The correlationId part of the file name.
+   */
+  String getCorrelationIdFromPublicationFile(File publicationFile);
 }

@@ -1,47 +1,47 @@
 package io.codekvast.javaagent.appversion;
 
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Test;
+
 public class LiteralAppVersionStrategyTest {
 
-    private final AppVersionStrategy strategy = new LiteralAppVersionStrategy();
+  private final AppVersionStrategy strategy = new LiteralAppVersionStrategy();
 
-    @Test
-    public void should_not_handle_unknown_strategy_name() {
-        String args[] = {"foobar", "slf4j-api-(.*).jar"};
+  @Test
+  public void should_not_handle_unknown_strategy_name() {
+    String args[] = {"foobar", "slf4j-api-(.*).jar"};
 
-        assertThat(strategy.canHandle(args), is(false));
-    }
+    assertThat(strategy.canHandle(args), is(false));
+  }
 
-    @Test
-    public void should_not_handle_when_missing_pattern() {
-        String args[] = {"literal"};
+  @Test
+  public void should_not_handle_when_missing_pattern() {
+    String args[] = {"literal"};
 
-        assertThat(strategy.canHandle(args), is(false));
-    }
+    assertThat(strategy.canHandle(args), is(false));
+  }
 
-    @Test
-    public void should_not_handle_too_many_patterns() {
-        String args[] = {"literal", "value1", "value2"};
+  @Test
+  public void should_not_handle_too_many_patterns() {
+    String args[] = {"literal", "value1", "value2"};
 
-        assertThat(strategy.canHandle(args), is(false));
-    }
+    assertThat(strategy.canHandle(args), is(false));
+  }
 
-    @Test
-    public void should_handle_one_pattern() {
-        String args[] = {"literal", "value"};
+  @Test
+  public void should_handle_one_pattern() {
+    String args[] = {"literal", "value"};
 
-        assertThat(strategy.canHandle(args), is(true));
-    }
+    assertThat(strategy.canHandle(args), is(true));
+  }
 
-    @Test
-    public void should_handle_ungrouped_pattern() {
-        String args[] = {"literal", " v1.2.3 "};
+  @Test
+  public void should_handle_ungrouped_pattern() {
+    String args[] = {"literal", " v1.2.3 "};
 
-        assertThat(strategy.canHandle(args), is(true));
-        assertThat(strategy.resolveAppVersion(null, args), is("v1.2.3"));
-    }
+    assertThat(strategy.canHandle(args), is(true));
+    assertThat(strategy.resolveAppVersion(null, args), is("v1.2.3"));
+  }
 }

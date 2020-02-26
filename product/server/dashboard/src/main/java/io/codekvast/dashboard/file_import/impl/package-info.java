@@ -21,7 +21,7 @@
  */
 /**
  * Implementations of the file import stuff.
- * 
+ *
  * @author olle.hallin@crisp.se
  */
 package io.codekvast.dashboard.file_import.impl;

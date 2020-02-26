@@ -27,9 +27,6 @@ package io.codekvast.login.metrics;
  * @author olle.hallin@crisp.se
  */
 public interface LoginMetricsService {
-    /**
-     * Increments the counter for dashboard launches.
-     */
-    void countDashboardLaunch();
+  /** Increments the counter for dashboard launches. */
+  void countDashboardLaunch();
 }
-

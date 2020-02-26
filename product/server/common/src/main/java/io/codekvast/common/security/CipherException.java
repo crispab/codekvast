@@ -21,11 +21,9 @@
  */
 package io.codekvast.common.security;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public class CipherException extends Exception {
-    public CipherException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public CipherException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

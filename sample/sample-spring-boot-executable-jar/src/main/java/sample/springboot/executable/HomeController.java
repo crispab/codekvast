@@ -13,32 +13,30 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @SuppressWarnings("SameReturnValue")
 public class HomeController {
 
-    private final ButtonOneService buttonOneService;
-    private final ButtonTwoService buttonTwoService;
+  private final ButtonOneService buttonOneService;
+  private final ButtonTwoService buttonTwoService;
 
-    @Autowired
-    public HomeController(ButtonOneService buttonOneService,
-                          ButtonTwoService buttonTwoService) {
-        this.buttonOneService = buttonOneService;
-        this.buttonTwoService = buttonTwoService;
-    }
+  @Autowired
+  public HomeController(ButtonOneService buttonOneService, ButtonTwoService buttonTwoService) {
+    this.buttonOneService = buttonOneService;
+    this.buttonTwoService = buttonTwoService;
+  }
 
-    @RequestMapping(value = "/", method = GET)
-    String home()  {
-        log.info("Welcome home.");
-        return "/home.html";
-    }
+  @RequestMapping(value = "/", method = GET)
+  String home() {
+    log.info("Welcome home.");
+    return "/home.html";
+  }
 
-    @RequestMapping("/button1")
-    String buttonOne() {
-        buttonOneService.doSomething();
-        return "/buttonOne.html";
-    }
+  @RequestMapping("/button1")
+  String buttonOne() {
+    buttonOneService.doSomething();
+    return "/buttonOne.html";
+  }
 
-    @RequestMapping("/button2")
-    String buttonTwo() {
-        buttonTwoService.doSomething();
-        return "/buttonTwo.html";
-    }
+  @RequestMapping("/button2")
+  String buttonTwo() {
+    buttonTwoService.doSomething();
+    return "/buttonTwo.html";
+  }
 }
-

@@ -21,7 +21,7 @@
  */
 /**
  * Implementations of weeding services.
- * 
+ *
  * @author olle.hallin@crisp.se
  */
 package io.codekvast.dashboard.weeding.impl;

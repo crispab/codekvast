@@ -1,17 +1,14 @@
 package sample.aspect;
 
+import io.codekvast.javaagent.AbstractMethodExecutionAspect;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import io.codekvast.javaagent.AbstractMethodExecutionAspect;
 
-/**
- * Example that shows how to make methodExecution() concrete
- */
+/** Example that shows how to make methodExecution() concrete */
 @Aspect
 public class MethodExecutionAspect extends AbstractMethodExecutionAspect {
 
-    @Pointcut("execution(* *..*(..)) && within(sample..*)")
-    @Override
-    public void methodExecution() {
-    }
+  @Pointcut("execution(* *..*(..)) && within(sample..*)")
+  @Override
+  public void methodExecution() {}
 }

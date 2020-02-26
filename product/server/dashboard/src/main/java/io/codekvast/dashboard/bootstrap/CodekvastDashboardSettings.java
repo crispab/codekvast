@@ -22,15 +22,14 @@
 package io.codekvast.dashboard.bootstrap;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import java.io.File;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.io.File;
 
 /**
  * Wrapper for environment properties codekvast.*
@@ -46,94 +45,62 @@ import java.io.File;
 @ToString(exclude = {"jwtSecret", "slackWebHookToken"})
 public class CodekvastDashboardSettings implements CodekvastCommonSettings {
 
-    /**
-     * The name of the application, injected from the build system.
-     */
-    private String applicationName;
+  /** The name of the application, injected from the build system. */
+  private String applicationName;
 
-    /**
-     * The version of the application, injected from the build system.
-     */
-    private String displayVersion;
+  /** The version of the application, injected from the build system. */
+  private String displayVersion;
 
-    /**
-     * The name of the person doing the last commit, injected from the build system.
-     */
-    private String committer;
+  /** The name of the person doing the last commit, injected from the build system. */
+  private String committer;
 
-    /**
-     * The date of the last commit, injected from the build system.
-     */
-    private String commitDate;
+  /** The date of the last commit, injected from the build system. */
+  private String commitDate;
 
-    /**
-     * The last commit message, injected from the build system.
-     */
-    private String commitMessage;
+  /** The last commit message, injected from the build system. */
+  private String commitMessage;
 
-    /**
-     * The path to the agent publication queue
-     */
-    private File fileImportQueuePath;
+  /** The path to the agent publication queue */
+  private File fileImportQueuePath;
 
-    /**
-     * How often to scan fileImportQueuePath for new files.
-     */
-    private int fileImportIntervalSeconds;
+  /** How often to scan fileImportQueuePath for new files. */
+  private int fileImportIntervalSeconds;
 
-    /**
-     * Should imported files be deleted after successful import?
-     */
-    private boolean deleteImportedFiles = true;
+  /** Should imported files be deleted after successful import? */
+  private boolean deleteImportedFiles = true;
 
-    /**
-     * What secret should be used for signing JWT tokens?
-     */
-    private String jwtSecret;
+  /** What secret should be used for signing JWT tokens? */
+  private String jwtSecret;
 
-    /**
-     * How long shall a webapp authentication token live?
-     */
-    private Long jwtExpirationHours = 8760L;
+  /** How long shall a webapp authentication token live? */
+  private Long jwtExpirationHours = 8760L;
 
-    /**
-     * What is the dashboard base url?
-     */
-    private String dashboardBaseUrl;
+  /** What is the dashboard base url? */
+  private String dashboardBaseUrl;
 
-    /**
-     * What is the login base url?
-     */
-    private String loginBaseUrl;
+  /** What is the login base url? */
+  private String loginBaseUrl;
 
-    /**
-     * Which is the token to use when posting to slackWebHookUrl?
-     */
-    private String slackWebHookToken;
+  /** Which is the token to use when posting to slackWebHookUrl? */
+  private String slackWebHookToken;
 
-    /**
-     * What is my server's CNAME?
-     * Used in Slack messages.
-     */
-    private String dnsCname;
+  /** What is my server's CNAME? Used in Slack messages. */
+  private String dnsCname;
 
-    /**
-     * In which environment are we running? dev, staging or prod
-     */
-    private String environment;
+  /** In which environment are we running? dev, staging or prod */
+  private String environment;
 
-    @PostConstruct
-    public void logStartup() {
-        //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%n%s starts%n%n", this);
-        logger.info("{} starts", this);
-    }
+  @PostConstruct
+  public void logStartup() {
+    //noinspection UseOfSystemOutOrSystemErr
+    System.out.printf("%n%s starts%n%n", this);
+    logger.info("{} starts", this);
+  }
 
-    @PreDestroy
-    public void logShutdown() {
-        //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, commitDate);
-        logger.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
-    }
-
+  @PreDestroy
+  public void logShutdown() {
+    //noinspection UseOfSystemOutOrSystemErr
+    System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, commitDate);
+    logger.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
+  }
 }

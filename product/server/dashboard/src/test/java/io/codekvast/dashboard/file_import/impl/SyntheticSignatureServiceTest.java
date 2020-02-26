@@ -1,5 +1,16 @@
 package io.codekvast.dashboard.file_import.impl;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,67 +19,61 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
-
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @RequiredArgsConstructor
 public class SyntheticSignatureServiceTest {
 
-    @Mock
-    private SyntheticSignatureDAO dao;
+  @Mock private SyntheticSignatureDAO dao;
 
-    private SyntheticSignatureService syntheticSignatureService;
+  private SyntheticSignatureService syntheticSignatureService;
 
-    @BeforeEach
-    public void beforeTest() {
-        MockitoAnnotations.initMocks(this); 
-        when(dao.getPatterns()).thenReturn(Collections.emptyList()); 
+  @BeforeEach
+  public void beforeTest() {
+    MockitoAnnotations.initMocks(this);
+    when(dao.getPatterns()).thenReturn(Collections.emptyList());
 
-        syntheticSignatureService = new SyntheticSignatureService(dao); 
-    }
+    syntheticSignatureService = new SyntheticSignatureService(dao);
+  }
 
-    @ParameterizedTest
-    @CsvSource( delimiter = ';', value = {
-        "true; foo",
-        "true; bar",
-        "false; baz"
-    })
-    public void should_compose_patterns(boolean expected, String signature) {
-        // given
-        SyntheticSignaturePattern p1 = SyntheticSignaturePattern.builder().id(1L).pattern(".*foo.*").build();
-        SyntheticSignaturePattern p2 = SyntheticSignaturePattern.builder().id(2L).pattern(".*bar.*").build();
-        when(dao.getPatterns()).thenReturn(asList(p1, p2));
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = ';',
+      value = {"true; foo", "true; bar", "false; baz"})
+  public void should_compose_patterns(boolean expected, String signature) {
+    // given
+    SyntheticSignaturePattern p1 =
+        SyntheticSignaturePattern.builder().id(1L).pattern(".*foo.*").build();
+    SyntheticSignaturePattern p2 =
+        SyntheticSignaturePattern.builder().id(2L).pattern(".*bar.*").build();
+    when(dao.getPatterns()).thenReturn(asList(p1, p2));
 
-        // when
-        boolean isSyntheticMethod = syntheticSignatureService.isSyntheticMethod(signature);
+    // when
+    boolean isSyntheticMethod = syntheticSignatureService.isSyntheticMethod(signature);
 
-        // then
-        assertThat(isSyntheticMethod, is(expected));
-        verify(dao, never()).rejectPattern(any(SyntheticSignaturePattern.class), anyString());
-    }
+    // then
+    assertThat(isSyntheticMethod, is(expected));
+    verify(dao, never()).rejectPattern(any(SyntheticSignaturePattern.class), anyString());
+  }
 
-    @Test
-    public void should_reject_bad_patterns() {
-        // given
-        SyntheticSignaturePattern p1 = SyntheticSignaturePattern.builder().id(1L).pattern(".*foo.*(").build();
-        SyntheticSignaturePattern p2 = SyntheticSignaturePattern.builder().id(2L).pattern(".*bar.*").build();
-        when(dao.getPatterns()).thenReturn(asList(p1, p2));
+  @Test
+  public void should_reject_bad_patterns() {
+    // given
+    SyntheticSignaturePattern p1 =
+        SyntheticSignaturePattern.builder().id(1L).pattern(".*foo.*(").build();
+    SyntheticSignaturePattern p2 =
+        SyntheticSignaturePattern.builder().id(2L).pattern(".*bar.*").build();
+    when(dao.getPatterns()).thenReturn(asList(p1, p2));
 
-        // when, then
-        assertThat(syntheticSignatureService.isSyntheticMethod("foo"), is(false));
-        assertThat(syntheticSignatureService.isSyntheticMethod("bar"), is(true));
-        verify(dao).rejectPattern(eq(p1), anyString());
-    }
+    // when, then
+    assertThat(syntheticSignatureService.isSyntheticMethod("foo"), is(false));
+    assertThat(syntheticSignatureService.isSyntheticMethod("bar"), is(true));
+    verify(dao).rejectPattern(eq(p1), anyString());
+  }
 
-    @ParameterizedTest
-    @CsvSource(delimiter=';', value = {
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = ';',
+      value = {
         "false; foo.()", // Constructor of Scala companion obj,
         "false; foo..bar()", // Method in Scala companion obj,
         "false; foo.bar$1()", // Anonymous inner cl,
@@ -126,11 +131,9 @@ public class SyntheticSignatureServiceTest {
         "true; views.html.customer1.application.export.header.copy$default$1()",
         "true; views.html.defaultpages.devError.copy$default$1()",
         "true; io.codekvast.backoffice.facts.CollectionStarted.canEqual(java.lang.Object)",
-    })
-    public void should_have_decent_fallbacks(boolean expected, String signature) {
-        when(dao.getPatterns()).thenReturn(Collections.emptyList());
-        assertThat(syntheticSignatureService.isSyntheticMethod(signature), is(expected)); 
-    }
-
-
+      })
+  public void should_have_decent_fallbacks(boolean expected, String signature) {
+    when(dao.getPatterns()).thenReturn(Collections.emptyList());
+    assertThat(syntheticSignatureService.isSyntheticMethod(signature), is(expected));
+  }
 }

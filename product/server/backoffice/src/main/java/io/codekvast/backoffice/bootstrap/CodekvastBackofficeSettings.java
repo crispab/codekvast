@@ -22,15 +22,14 @@
 package io.codekvast.backoffice.bootstrap;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 /**
  * Wrapper for environment properties codekvast.*
@@ -46,82 +45,56 @@ import javax.annotation.PreDestroy;
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
 public class CodekvastBackofficeSettings implements CodekvastCommonSettings {
 
-    /**
-     * The name of the application, injected from the build system.
-     */
-    private String applicationName;
+  /** The name of the application, injected from the build system. */
+  private String applicationName;
 
-    /**
-     * The version of the application, injected from the build system.
-     */
-    private String displayVersion;
+  /** The version of the application, injected from the build system. */
+  private String displayVersion;
 
-    /**
-     * The name of the person doing the last commit, injected from the build system.
-     */
-    private String committer;
+  /** The name of the person doing the last commit, injected from the build system. */
+  private String committer;
 
-    /**
-     * The date of the last commit, injected from the build system.
-     */
-    private String commitDate;
+  /** The date of the last commit, injected from the build system. */
+  private String commitDate;
 
-    /**
-     * The last commit message, injected from the build system.
-     */
-    private String commitMessage;
+  /** The last commit message, injected from the build system. */
+  private String commitMessage;
 
-    /**
-     * Which is our CNAME in the DNS?
-     */
-    private String dnsCname;
+  /** Which is our CNAME in the DNS? */
+  private String dnsCname;
 
-    /**
-     * In which environment are we running? dev, staging or prod
-     */
-    private String environment;
+  /** In which environment are we running? dev, staging or prod */
+  private String environment;
 
-    /**
-     * Which token should we use when POSTing to Slack?
-     */
-    private String slackWebHookToken;
+  /** Which token should we use when POSTing to Slack? */
+  private String slackWebHookToken;
 
-    /**
-     * Which secret should be used when creating a webapp JWT?
-     */
-    private String jwtSecret;
+  /** Which secret should be used when creating a webapp JWT? */
+  private String jwtSecret;
 
-    /**
-     * How many hours shall a JWT be valid?
-     */
-    private Long jwtExpirationHours;
+  /** How many hours shall a JWT be valid? */
+  private Long jwtExpirationHours;
 
-    /**
-     * What is the login base url?
-     */
-    private String loginBaseUrl = "https://login.codekvast.io";
+  /** What is the login base url? */
+  private String loginBaseUrl = "https://login.codekvast.io";
 
-    /**
-     * What is the homepage base url?
-     */
-    private String homepageBaseUrl = "https://www.codekvast.io";
+  /** What is the homepage base url? */
+  private String homepageBaseUrl = "https://www.codekvast.io";
 
-    /**
-     * What is the support email?
-     */
-    private String supportEmail = "support@codekvast.io";
+  /** What is the support email? */
+  private String supportEmail = "support@codekvast.io";
 
-    @PostConstruct
-    public void logStartup() {
-        //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%s starts%n", this);
-        logger.info("{} starts", this);
-    }
+  @PostConstruct
+  public void logStartup() {
+    //noinspection UseOfSystemOutOrSystemErr
+    System.out.printf("%s starts%n", this);
+    logger.info("{} starts", this);
+  }
 
-    @PreDestroy
-    public void logShutdown() {
-        //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%s shuts down%n", this);
-        logger.info("{} shuts down", this);
-    }
+  @PreDestroy
+  public void logShutdown() {
+    //noinspection UseOfSystemOutOrSystemErr
+    System.out.printf("%s shuts down%n", this);
+    logger.info("{} shuts down", this);
+  }
 }

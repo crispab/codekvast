@@ -21,11 +21,10 @@
  */
 package io.codekvast.javaagent.model.v1.rest;
 
+import javax.validation.constraints.Size;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
-import javax.validation.constraints.Size;
 
 /**
  * A validated parameter object for getting config from the Codekvast Service.
@@ -36,68 +35,51 @@ import javax.validation.constraints.Size;
 @Builder(toBuilder = true)
 public class GetConfigRequest1 {
 
-    /**
-     * What is my license key? Blank is acceptable and means run with a trial license.
-     */
-    @NonNull
-    private final String licenseKey;
+  /** What is my license key? Blank is acceptable and means run with a trial license. */
+  @NonNull private final String licenseKey;
 
-    /**
-     * What is my app's name?
-     */
-    @NonNull
-    @Size(min = 1, message = "appName must be at least 1 characters")
-    private final String appName;
+  /** What is my app's name? */
+  @NonNull
+  @Size(min = 1, message = "appName must be at least 1 characters")
+  private final String appName;
 
-    /**
-     * What is my app's version?
-     */
-    @NonNull
-    @Size(min = 1, message = "appVersion must be at least 1 characters")
-    private final String appVersion;
+  /** What is my app's version? */
+  @NonNull
+  @Size(min = 1, message = "appVersion must be at least 1 characters")
+  private final String appVersion;
 
-    /**
-     * Which version of the agent is doing this request?
-     */
-    @NonNull
-    @Size(min = 1, message = "agentVersion must be at least 1 characters")
-    private final String agentVersion;
+  /** Which version of the agent is doing this request? */
+  @NonNull
+  @Size(min = 1, message = "agentVersion must be at least 1 characters")
+  private final String agentVersion;
 
-    /**
-     * What is the name of the host in which the agent executes?
-     */
-    @NonNull
-    @Size(min = 1, message = "hostname must be at least 1 characters")
-    private final String hostname;
+  /** What is the name of the host in which the agent executes? */
+  @NonNull
+  @Size(min = 1, message = "hostname must be at least 1 characters")
+  private final String hostname;
 
-    /**
-     * What is the random UUID of the JVM in which the agent executes?
-     */
-    @NonNull
-    @Size(min = 1, message = "jvmUuid must be at least 1 characters")
-    private final String jvmUuid;
+  /** What is the random UUID of the JVM in which the agent executes? */
+  @NonNull
+  @Size(min = 1, message = "jvmUuid must be at least 1 characters")
+  private final String jvmUuid;
 
-    /**
-     * When was the JVM in which the agent executes started?
-     */
-    private final long startedAtMillis;
+  /** When was the JVM in which the agent executes started? */
+  private final long startedAtMillis;
 
-    /**
-     * What is the ID of the computer in which the agent executes?
-     */
-    @NonNull
-    @Size(min = 1, message = "computerId must be at least 1 characters")
-    private final String computerId;
+  /** What is the ID of the computer in which the agent executes? */
+  @NonNull
+  @Size(min = 1, message = "computerId must be at least 1 characters")
+  private final String computerId;
 
-    public static GetConfigRequest1 sample() {
-        return GetConfigRequest1.builder()
-                                .appName("appName")
-                                .appVersion("appVersion")
-                                .agentVersion("agentVersion")
-                                .computerId("computerId")
-                                .hostname("hostname")
-                                .jvmUuid("jvmUuid")
-                                .licenseKey("licenseKey")
-                                .build();
-    }
+  public static GetConfigRequest1 sample() {
+    return GetConfigRequest1.builder()
+        .appName("appName")
+        .appVersion("appVersion")
+        .agentVersion("agentVersion")
+        .computerId("computerId")
+        .hostname("hostname")
+        .jvmUuid("jvmUuid")
+        .licenseKey("licenseKey")
+        .build();
+  }
 }

@@ -21,88 +21,88 @@
  */
 package io.codekvast.javaagent.config;
 
+import static io.codekvast.javaagent.util.SignatureUtils.PACKAGE_PRIVATE;
+import static io.codekvast.javaagent.util.SignatureUtils.PRIVATE;
+import static io.codekvast.javaagent.util.SignatureUtils.PROTECTED;
+import static io.codekvast.javaagent.util.SignatureUtils.PUBLIC;
+
 import lombok.EqualsAndHashCode;
 
-import static io.codekvast.javaagent.util.SignatureUtils.*;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @EqualsAndHashCode
 public class MethodAnalyzer {
 
-    private boolean selectsPublic = false;
-    private boolean selectsProtected = false;
-    private boolean selectsPrivate = false;
-    private boolean selectsPackagePrivate = false;
+  private boolean selectsPublic = false;
+  private boolean selectsProtected = false;
+  private boolean selectsPrivate = false;
+  private boolean selectsPackagePrivate = false;
 
-    public MethodAnalyzer(String visibility) {
-        boolean recognized = false;
+  public MethodAnalyzer(String visibility) {
+    boolean recognized = false;
 
-        String value = visibility == null ? PUBLIC : visibility.trim().toLowerCase();
-        if (value.equals(PUBLIC)) {
-            selectsPublic = true;
-            recognized = true;
-        }
-        if (value.equals(PROTECTED)) {
-            selectsPublic = true;
-            selectsProtected = true;
-            recognized = true;
-        }
-
-        if (value.equals(PACKAGE_PRIVATE) || value.equals("!private")) {
-            selectsPublic = true;
-            selectsProtected = true;
-            selectsPackagePrivate = true;
-            recognized = true;
-        }
-
-        if (value.equals(PRIVATE) || value.equals("all")) {
-            selectsPublic = true;
-            selectsProtected = true;
-            selectsPackagePrivate = true;
-            selectsPrivate = true;
-            recognized = true;
-        }
-
-        if (!recognized) {
-            if (!value.isEmpty()) {
-                //noinspection UseOfSystemOutOrSystemErr
-                System.err.println("Unrecognized value for methodVisibility: \"" + value + "\", assuming \"public\"");
-            }
-            selectsPublic = true;
-        }
-
+    String value = visibility == null ? PUBLIC : visibility.trim().toLowerCase();
+    if (value.equals(PUBLIC)) {
+      selectsPublic = true;
+      recognized = true;
+    }
+    if (value.equals(PROTECTED)) {
+      selectsPublic = true;
+      selectsProtected = true;
+      recognized = true;
     }
 
-    public boolean selectsPublicMethods() {
-        return selectsPublic;
+    if (value.equals(PACKAGE_PRIVATE) || value.equals("!private")) {
+      selectsPublic = true;
+      selectsProtected = true;
+      selectsPackagePrivate = true;
+      recognized = true;
     }
 
-    public boolean selectsProtectedMethods() {
-        return selectsProtected;
+    if (value.equals(PRIVATE) || value.equals("all")) {
+      selectsPublic = true;
+      selectsProtected = true;
+      selectsPackagePrivate = true;
+      selectsPrivate = true;
+      recognized = true;
     }
 
-    public boolean selectsPackagePrivateMethods() {
-        return selectsPackagePrivate;
+    if (!recognized) {
+      if (!value.isEmpty()) {
+        //noinspection UseOfSystemOutOrSystemErr
+        System.err.println(
+            "Unrecognized value for methodVisibility: \"" + value + "\", assuming \"public\"");
+      }
+      selectsPublic = true;
     }
+  }
 
-    public boolean selectsPrivateMethods() {
-        return selectsPrivate;
+  public boolean selectsPublicMethods() {
+    return selectsPublic;
+  }
+
+  public boolean selectsProtectedMethods() {
+    return selectsProtected;
+  }
+
+  public boolean selectsPackagePrivateMethods() {
+    return selectsPackagePrivate;
+  }
+
+  public boolean selectsPrivateMethods() {
+    return selectsPrivate;
+  }
+
+  @Override
+  public String toString() {
+    if (selectsPrivateMethods()) {
+      return PRIVATE;
     }
-
-    @Override
-    public String toString() {
-        if (selectsPrivateMethods()) {
-            return PRIVATE;
-        }
-        if (selectsPackagePrivateMethods()) {
-            return PACKAGE_PRIVATE;
-        }
-        if (selectsProtectedMethods()) {
-            return PROTECTED;
-        }
-        return PUBLIC;
+    if (selectsPackagePrivateMethods()) {
+      return PACKAGE_PRIVATE;
     }
-
+    if (selectsProtectedMethods()) {
+      return PROTECTED;
+    }
+    return PUBLIC;
+  }
 }

@@ -25,42 +25,39 @@ import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Service
 @RequiredArgsConstructor
 public class PublicationMetricsServiceImpl implements PublicationMetricsService {
 
-    private final MeterRegistry meterRegistry;
+  private final MeterRegistry meterRegistry;
 
-    @Override
-    public void gaugePublicationQueueLength(int queueLength) {
-        meterRegistry.gauge("codekvast.publication.queueLength", queueLength);
-    }
+  @Override
+  public void gaugePublicationQueueLength(int queueLength) {
+    meterRegistry.gauge("codekvast.publication.queueLength", queueLength);
+  }
 
-    @Override
-    public void countRejectedPublication(PublicationType type) {
-        Tags tags = getTags(type);
-        meterRegistry.counter("codekvast.publication.rejected", tags).increment();
-    }
+  @Override
+  public void countRejectedPublication(PublicationType type) {
+    Tags tags = getTags(type);
+    meterRegistry.counter("codekvast.publication.rejected", tags).increment();
+  }
 
-    @Override
-    public void recordImportedPublication(PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration) {
-        Tags tags = getTags(type);
-        meterRegistry.counter("codekvast.publication.accepted", tags).increment();
-        meterRegistry.gauge("codekvast.publication.size", tags, size);
-        meterRegistry.gauge("codekvast.publication.synthetic", tags, ignoredSyntheticSignatures);
-        meterRegistry.timer("codekvast.publication.imported_in.millis", tags).record(duration);
-    }
+  @Override
+  public void recordImportedPublication(
+      PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration) {
+    Tags tags = getTags(type);
+    meterRegistry.counter("codekvast.publication.accepted", tags).increment();
+    meterRegistry.gauge("codekvast.publication.size", tags, size);
+    meterRegistry.gauge("codekvast.publication.synthetic", tags, ignoredSyntheticSignatures);
+    meterRegistry.timer("codekvast.publication.imported_in.millis", tags).record(duration);
+  }
 
-    private Tags getTags(PublicationType type) {
-        return Tags.of("type", type.toString());
-    }
-
+  private Tags getTags(PublicationType type) {
+    return Tags.of("type", type.toString());
+  }
 }

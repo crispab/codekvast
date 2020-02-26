@@ -21,21 +21,21 @@
  */
 package io.codekvast.common.customer;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
+import java.time.Clock;
+import java.time.Instant;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.time.Clock;
-import java.time.Instant;
-
-import static java.time.temporal.ChronoUnit.DAYS;
-
 /**
  * The resolved price plan. Contains values from the table price_plan_overrides.
  *
- * Missing row or null column values is defaulted by picking values from {@link PricePlanDefaults}.
+ * <p>Missing row or null column values is defaulted by picking values from {@link
+ * PricePlanDefaults}.
  *
- * The price plans are also defined at Heroku (except for those marked as internal).
+ * <p>The price plans are also defined at Heroku (except for those marked as internal).
  *
  * @author olle.hallin@crisp.se
  * @see "https://addons.heroku.com/provider/addons/codekvast/plans"
@@ -44,100 +44,100 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Builder(toBuilder = true)
 public class PricePlan {
 
-    @NonNull
-    private final String name;
+  @NonNull private final String name;
 
-    // These fields will be null unless there is a row in price_plan_overrides
-    private final String overrideBy;
-    private final String note;
+  // These fields will be null unless there is a row in price_plan_overrides
+  private final String overrideBy;
+  private final String note;
 
-    // These are the effective values to use
-    private final int maxMethods;
-    private final int maxNumberOfAgents;
-    private final int pollIntervalSeconds;
-    private final int publishIntervalSeconds;
-    private final int retentionPeriodDays;
-    private final int retryIntervalSeconds;
-    private final int trialPeriodDays;
+  // These are the effective values to use
+  private final int maxMethods;
+  private final int maxNumberOfAgents;
+  private final int pollIntervalSeconds;
+  private final int publishIntervalSeconds;
+  private final int retentionPeriodDays;
+  private final int retryIntervalSeconds;
+  private final int trialPeriodDays;
 
-    /**
-     * Adjusts the number of collected days with respect to the retention period.
-     * If the retention period is defined (i.e., positive) then return the minimum value of the parameter and the retention period.
-     *
-     * @param realCollectedDays The real value of collectedDays. May be null.
-     * @return The value to present to the user (or null).
-     */
-    public Integer adjustCollectedDays(Integer realCollectedDays) {
-        if (realCollectedDays == null || retentionPeriodDays < 0) {
-            return realCollectedDays;
-        }
-        return Math.min(realCollectedDays, retentionPeriodDays);
+  /**
+   * Adjusts the number of collected days with respect to the retention period. If the retention
+   * period is defined (i.e., positive) then return the minimum value of the parameter and the
+   * retention period.
+   *
+   * @param realCollectedDays The real value of collectedDays. May be null.
+   * @return The value to present to the user (or null).
+   */
+  public Integer adjustCollectedDays(Integer realCollectedDays) {
+    if (realCollectedDays == null || retentionPeriodDays < 0) {
+      return realCollectedDays;
+    }
+    return Math.min(realCollectedDays, retentionPeriodDays);
+  }
+
+  /**
+   * Adjusts an instant with respect to the retention period.
+   *
+   * <p>If a retention period is defined, the the returned instant will not be before the start of
+   * the retention period.
+   *
+   * @param realInstant The real instant (or null).
+   * @param clock The clock to use when calculating beginning of the retention period.
+   * @return The value to present to the user.
+   */
+  public Instant adjustInstant(Instant realInstant, Clock clock) {
+    if (realInstant == null || retentionPeriodDays < 0) {
+      return realInstant;
     }
 
-    /**
-     * Adjusts an instant with respect to the retention period.
-     *
-     * If a retention period is defined, the the returned instant will not be
-     * before the start of the retention period.
-     *
-     * @param realInstant The real instant (or null).
-     * @param clock       The clock to use when calculating beginning of the retention period.
-     * @return The value to present to the user.
-     */
-    public Instant adjustInstant(Instant realInstant, Clock clock) {
-        if (realInstant == null || retentionPeriodDays < 0) {
-            return realInstant;
-        }
+    Instant retentionPeriodStart = clock.instant().minus(retentionPeriodDays, DAYS);
+    return realInstant.isBefore(retentionPeriodStart) ? retentionPeriodStart : realInstant;
+  }
 
-        Instant retentionPeriodStart = clock.instant().minus(retentionPeriodDays, DAYS);
-        return realInstant.isBefore(retentionPeriodStart) ? retentionPeriodStart : realInstant;
-    }
+  /**
+   * Adjusts an instant with respect to the retention period.
+   *
+   * <p>If a retention period is defined, the the returned instant will not be before the start of
+   * the retention period.
+   *
+   * @param realInstant The real instant. May be null.
+   * @param clock The clock to use when calculating beginning of the retention period.
+   * @return The value to present to the user (or null).
+   */
+  public Long adjustInstantToMillis(Instant realInstant, Clock clock) {
+    Instant instant = adjustInstant(realInstant, clock);
+    return instant == null ? null : instant.toEpochMilli();
+  }
 
-    /**
-     * Adjusts an instant with respect to the retention period.
-     *
-     * If a retention period is defined, the the returned instant will not be
-     * before the start of the retention period.
-     *
-     * @param realInstant The real instant. May be null.
-     * @param clock       The clock to use when calculating beginning of the retention period.
-     * @return The value to present to the user (or null).
-     */
-    public Long adjustInstantToMillis(Instant realInstant, Clock clock) {
-        Instant instant = adjustInstant(realInstant, clock);
-        return instant == null ? null : instant.toEpochMilli();
+  /**
+   * Adjusts an instant with respect to the retention period.
+   *
+   * <p>If a retention period is defined, the returned instant will not be before the start of the
+   * retention period.
+   *
+   * @param realTimestampMillis The real instant. May be null.
+   * @param clock The clock to use when calculating beginning of the retention period.
+   * @return The value to present to the user (or null).
+   */
+  public Long adjustTimestampMillis(Long realTimestampMillis, Clock clock) {
+    if (realTimestampMillis == null || realTimestampMillis == 0L || retentionPeriodDays <= 0) {
+      return realTimestampMillis;
     }
+    long retentionPeriodStart = clock.instant().minus(retentionPeriodDays, DAYS).toEpochMilli();
+    return Math.max(realTimestampMillis, retentionPeriodStart);
+  }
 
-    /**
-     * Adjusts an instant with respect to the retention period.
-     *
-     * If a retention period is defined, the returned instant will not be
-     * before the start of the retention period.
-     *
-     * @param realTimestampMillis The real instant. May be null.
-     * @param clock               The clock to use when calculating beginning of the retention period.
-     * @return The value to present to the user (or null).
-     */
-    public Long adjustTimestampMillis(Long realTimestampMillis, Clock clock) {
-        if (realTimestampMillis == null || realTimestampMillis == 0L || retentionPeriodDays <= 0) {
-            return realTimestampMillis;
-        }
-        long retentionPeriodStart = clock.instant().minus(retentionPeriodDays, DAYS).toEpochMilli();
-        return Math.max(realTimestampMillis, retentionPeriodStart);
-    }
-
-    public static PricePlan of(PricePlanDefaults ppd) {
-        return PricePlan.builder()
-                        .maxMethods(ppd.getMaxMethods())
-                        .maxNumberOfAgents(ppd.getMaxNumberOfAgents())
-                        .name(ppd.name())
-                        .note(null)
-                        .overrideBy(null)
-                        .pollIntervalSeconds(ppd.getPollIntervalSeconds())
-                        .publishIntervalSeconds(ppd.getPublishIntervalSeconds())
-                        .retentionPeriodDays(ppd.getRetentionPeriodDays())
-                        .retryIntervalSeconds(ppd.getRetryIntervalSeconds())
-                        .trialPeriodDays(ppd.getTrialPeriodDays())
-                        .build();
-    }
+  public static PricePlan of(PricePlanDefaults ppd) {
+    return PricePlan.builder()
+        .maxMethods(ppd.getMaxMethods())
+        .maxNumberOfAgents(ppd.getMaxNumberOfAgents())
+        .name(ppd.name())
+        .note(null)
+        .overrideBy(null)
+        .pollIntervalSeconds(ppd.getPollIntervalSeconds())
+        .publishIntervalSeconds(ppd.getPublishIntervalSeconds())
+        .retentionPeriodDays(ppd.getRetentionPeriodDays())
+        .retryIntervalSeconds(ppd.getRetryIntervalSeconds())
+        .trialPeriodDays(ppd.getTrialPeriodDays())
+        .build();
+  }
 }

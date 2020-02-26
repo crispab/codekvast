@@ -21,38 +21,36 @@
  */
 package io.codekvast.javaagent.publishing;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @SuppressWarnings("MethodReturnAlwaysConstant")
 public interface Publisher {
-    /**
-     * What is the nick-name of this publisher implementation.
-     *
-     * @return The name of the publisher.
-     */
-    String getName();
+  /**
+   * What is the nick-name of this publisher implementation.
+   *
+   * @return The name of the publisher.
+   */
+  String getName();
 
-    /**
-     * Configure this publisher.
-     *
-     * @param customerId    The customerId to use when publishing stuff
-     * @param keyValuePairs The specialized config received from the server, a semi-colon separated list of key=value pairs.
-     */
-    void configure(long customerId, String keyValuePairs);
+  /**
+   * Configure this publisher.
+   *
+   * @param customerId The customerId to use when publishing stuff
+   * @param keyValuePairs The specialized config received from the server, a semi-colon separated
+   *     list of key=value pairs.
+   */
+  void configure(long customerId, String keyValuePairs);
 
-    /**
-     * How many times has a publication actually been executed?
-     *
-     * @return The number of performed publications.
-     */
-    int getSequenceNumber();
+  /**
+   * How many times has a publication actually been executed?
+   *
+   * @return The number of performed publications.
+   */
+  int getSequenceNumber();
 
-    /**
-     * Is the publisher enabled?
-     *
-     * @return true iff the publisher is enabled.
-     */
-    boolean isEnabled();
-
+  /**
+   * Is the publisher enabled?
+   *
+   * @return true iff the publisher is enabled.
+   */
+  boolean isEnabled();
 }

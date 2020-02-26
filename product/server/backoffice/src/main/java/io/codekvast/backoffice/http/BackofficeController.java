@@ -21,6 +21,7 @@
  */
 package io.codekvast.backoffice.http;
 
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -28,20 +29,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import javax.servlet.http.HttpServletRequest;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 public class BackofficeController {
 
-    @GetMapping({"/", "/index", "/home"})
-    public String index(HttpServletRequest request, Authentication authentication, Model model) {
-        logger.debug("index(): Request.contextPath={}", request.getContextPath());
-        model.addAttribute("title", "");
-        return "index";
-    }
+  @GetMapping({"/", "/index", "/home"})
+  public String index(HttpServletRequest request, Authentication authentication, Model model) {
+    logger.debug("index(): Request.contextPath={}", request.getContextPath());
+    model.addAttribute("title", "");
+    return "index";
+  }
 }

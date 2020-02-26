@@ -21,11 +21,10 @@
  */
 package io.codekvast.common.customer;
 
+import java.time.Instant;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
-import java.time.Instant;
 
 /**
  * Data that describes a customer.
@@ -35,42 +34,38 @@ import java.time.Instant;
 @Value
 @Builder(toBuilder = true)
 public class CustomerData {
-    @NonNull
-    private Long customerId;
+  @NonNull private Long customerId;
 
-    @NonNull
-    private String customerName;
+  @NonNull private String customerName;
 
-    @NonNull
-    private String source;
+  @NonNull private String source;
 
-    private String contactEmail;
+  private String contactEmail;
 
-    private String customerNotes;
+  private String customerNotes;
 
-    @NonNull
-    private PricePlan pricePlan;
+  @NonNull private PricePlan pricePlan;
 
-    private Instant createdAt;
+  private Instant createdAt;
 
-    private Instant collectionStartedAt;
+  private Instant collectionStartedAt;
 
-    private Instant trialPeriodEndsAt;
+  private Instant trialPeriodEndsAt;
 
-    public boolean isTrialPeriodExpired(Instant now) {
-        return trialPeriodEndsAt != null && trialPeriodEndsAt.isBefore(now);
-    }
+  public boolean isTrialPeriodExpired(Instant now) {
+    return trialPeriodEndsAt != null && trialPeriodEndsAt.isBefore(now);
+  }
 
-    public String getDisplayName() {
-        return customerNotes != null ? customerNotes : customerName;
-    }
+  public String getDisplayName() {
+    return customerNotes != null ? customerNotes : customerName;
+  }
 
-    public static CustomerData sample() {
-        return CustomerData.builder()
-                           .customerId(1L)
-                           .customerName("customerName")
-                           .source("source")
-                           .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
-                           .build();
-    }
+  public static CustomerData sample() {
+    return CustomerData.builder()
+        .customerId(1L)
+        .customerName("customerName")
+        .source("source")
+        .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
+        .build();
+  }
 }

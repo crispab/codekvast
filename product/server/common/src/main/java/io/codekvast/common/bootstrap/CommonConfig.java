@@ -21,25 +21,22 @@
  */
 package io.codekvast.common.bootstrap;
 
+import java.time.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.time.Clock;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Configuration
 @EnableAspectJAutoProxy
 @EnableAsync
 @EnableScheduling
 public class CommonConfig {
 
-    @Bean
-    public Clock clock() {
-        return Clock.systemUTC();
-    }
+  @Bean
+  public Clock clock() {
+    return Clock.systemUTC();
+  }
 }

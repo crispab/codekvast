@@ -40,78 +40,85 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class HerokuApiWrapperImpl implements HerokuApiWrapper {
 
-    private final CodekvastLoginSettings settings;
+  private final CodekvastLoginSettings settings;
 
-    // TODO inject the RestTemplateBuilder to get metrics
-    private final RestTemplate restTemplate = new RestTemplateBuilder()
-        .messageConverters(new FormHttpMessageConverter(),
-                           new StringHttpMessageConverter(),
-                           new GsonHttpMessageConverter()).build();
+  // TODO inject the RestTemplateBuilder to get metrics
+  private final RestTemplate restTemplate =
+      new RestTemplateBuilder()
+          .messageConverters(
+              new FormHttpMessageConverter(),
+              new StringHttpMessageConverter(),
+              new GsonHttpMessageConverter())
+          .build();
 
-    @Override
-    public HerokuOAuthTokenResponse exchangeGrantCode(HerokuProvisionRequest.OAuthGrant grant) {
-        logger.debug("Exchanging {}", grant);
+  @Override
+  public HerokuOAuthTokenResponse exchangeGrantCode(HerokuProvisionRequest.OAuthGrant grant) {
+    logger.debug("Exchanging {}", grant);
 
-        MultiValueMap<String, String> form = createGetOAuthTokenForm("authorization_code", "code", grant.getCode());
+    MultiValueMap<String, String> form =
+        createGetOAuthTokenForm("authorization_code", "code", grant.getCode());
 
-        return getHerokuOAuthTokenResponse(form);
-    }
+    return getHerokuOAuthTokenResponse(form);
+  }
 
-    @Override
-    public HerokuOAuthTokenResponse refreshAccessToken(String refreshToken) {
-        logger.debug("Refreshing an access token");
+  @Override
+  public HerokuOAuthTokenResponse refreshAccessToken(String refreshToken) {
+    logger.debug("Refreshing an access token");
 
-        MultiValueMap<String, String> form = createGetOAuthTokenForm("refresh_token", "refresh_token", refreshToken);
+    MultiValueMap<String, String> form =
+        createGetOAuthTokenForm("refresh_token", "refresh_token", refreshToken);
 
-        return getHerokuOAuthTokenResponse(form);
-    }
+    return getHerokuOAuthTokenResponse(form);
+  }
 
-    @Override
-    public HerokuAppDetails getAppDetails(String externalId, String accessToken) {
-        logger.debug("Getting Heroku app details for {}", externalId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/vnd.heroku+json; version=3");
-        headers.set("Authorization", "Bearer " + accessToken);
+  @Override
+  public HerokuAppDetails getAppDetails(String externalId, String accessToken) {
+    logger.debug("Getting Heroku app details for {}", externalId);
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Accept", "application/vnd.heroku+json; version=3");
+    headers.set("Authorization", "Bearer " + accessToken);
 
-        String url = String.format("%s/addons/%s", settings.getHerokuApiBaseUrl(), externalId);
-        ResponseEntity<String> json = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null, headers), String.class);
-        String appId = JsonPath.read(json.getBody(), "$.app.id");
-        String appName = JsonPath.read(json.getBody(), "$.app.name");
+    String url = String.format("%s/addons/%s", settings.getHerokuApiBaseUrl(), externalId);
+    ResponseEntity<String> json =
+        restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null, headers), String.class);
+    String appId = JsonPath.read(json.getBody(), "$.app.id");
+    String appName = JsonPath.read(json.getBody(), "$.app.name");
 
-        url = String.format("%s/apps/%s", settings.getHerokuApiBaseUrl(), appId);
-        json = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null, headers), String.class);
+    url = String.format("%s/apps/%s", settings.getHerokuApiBaseUrl(), appId);
+    json =
+        restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null, headers), String.class);
 
-        String ownerEmail = JsonPath.read(json.getBody(), "$.owner.email");
+    String ownerEmail = JsonPath.read(json.getBody(), "$.owner.email");
 
-        return HerokuAppDetails.builder().appName(appName).ownerEmail(ownerEmail).build();
-    }
+    return HerokuAppDetails.builder().appName(appName).ownerEmail(ownerEmail).build();
+  }
 
-    private MultiValueMap<String, String> createGetOAuthTokenForm(String grantType, String key, String value) {
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("grant_type", grantType);
-        form.add(key, value);
-        form.add("client_secret", settings.getHerokuOAuthClientSecret());
-        return form;
-    }
+  private MultiValueMap<String, String> createGetOAuthTokenForm(
+      String grantType, String key, String value) {
+    MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+    form.add("grant_type", grantType);
+    form.add(key, value);
+    form.add("client_secret", settings.getHerokuOAuthClientSecret());
+    return form;
+  }
 
-    private HerokuOAuthTokenResponse getHerokuOAuthTokenResponse(MultiValueMap<String, String> requestForm) {
-        val headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+  private HerokuOAuthTokenResponse getHerokuOAuthTokenResponse(
+      MultiValueMap<String, String> requestForm) {
+    val headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        String url = String.format("%s/oauth/token", settings.getHerokuOAuthBaseUrl());
-        val responseEntity =
-            restTemplate.postForEntity(url, new HttpEntity<>(requestForm, headers), HerokuOAuthTokenResponse.class);
-        val response = responseEntity.getBody();
-        logger.info("Received {}", response);
-        return response;
-    }
-
+    String url = String.format("%s/oauth/token", settings.getHerokuOAuthBaseUrl());
+    val responseEntity =
+        restTemplate.postForEntity(
+            url, new HttpEntity<>(requestForm, headers), HerokuOAuthTokenResponse.class);
+    val response = responseEntity.getBody();
+    logger.info("Received {}", response);
+    return response;
+  }
 }

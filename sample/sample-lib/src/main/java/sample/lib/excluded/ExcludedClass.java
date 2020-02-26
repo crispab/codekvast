@@ -1,11 +1,7 @@
 package sample.lib.excluded;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @SuppressWarnings("unused")
 public class ExcludedClass {
-    public void foobar() {
-
-    }
+  public void foobar() {}
 }

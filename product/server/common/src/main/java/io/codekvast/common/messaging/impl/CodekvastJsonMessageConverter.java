@@ -24,6 +24,10 @@ package io.codekvast.common.messaging.impl;
 import com.google.gson.Gson;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.messaging.CorrelationIdHolder;
+import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.util.Date;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -33,11 +37,6 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-
-import java.nio.charset.StandardCharsets;
-import java.time.Clock;
-import java.util.Date;
-import java.util.UUID;
 
 /**
  * An AMQP message converter that converts to/from JSON by means of Gson.
@@ -49,45 +48,49 @@ import java.util.UUID;
 @Slf4j
 public class CodekvastJsonMessageConverter implements MessageConverter {
 
-    private final CodekvastCommonSettings settings;
-    private final Clock clock;
-    private final Gson gson = new Gson();
+  private final CodekvastCommonSettings settings;
+  private final Clock clock;
+  private final Gson gson = new Gson();
 
-    @Override
-    public @NonNull Message toMessage(@NonNull Object object, @Nullable MessageProperties messagePropertiesArg) throws MessageConversionException {
-        logger.debug("Converting {} to JSON", object);
+  @Override
+  public @NonNull Message toMessage(
+      @NonNull Object object, @Nullable MessageProperties messagePropertiesArg)
+      throws MessageConversionException {
+    logger.debug("Converting {} to JSON", object);
 
-        try {
-            byte[] bytes = gson.toJson(object).getBytes(StandardCharsets.UTF_8.name());
+    try {
+      byte[] bytes = gson.toJson(object).getBytes(StandardCharsets.UTF_8.name());
 
-            MessageProperties messageProperties = messagePropertiesArg;
-            if (messageProperties == null) {
-                messageProperties = new MessageProperties();
-            }
+      MessageProperties messageProperties = messagePropertiesArg;
+      if (messageProperties == null) {
+        messageProperties = new MessageProperties();
+      }
 
-            messageProperties.setAppId(settings.getApplicationName());
-            messageProperties.setContentEncoding(StandardCharsets.UTF_8.name());
-            messageProperties.setContentLength(bytes.length);
-            messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
-            messageProperties.setCorrelationId(CorrelationIdHolder.get());
-            messageProperties.setMessageId(UUID.randomUUID().toString());
-            messageProperties.setType(object.getClass().getName());
-            messageProperties.setTimestamp(Date.from(clock.instant()));
-            return new Message(bytes, messageProperties);
-        } catch (Exception e) {
-            throw new MessageConversionException("Cannot convert to JSON", e);
-        }
+      messageProperties.setAppId(settings.getApplicationName());
+      messageProperties.setContentEncoding(StandardCharsets.UTF_8.name());
+      messageProperties.setContentLength(bytes.length);
+      messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
+      messageProperties.setCorrelationId(CorrelationIdHolder.get());
+      messageProperties.setMessageId(UUID.randomUUID().toString());
+      messageProperties.setType(object.getClass().getName());
+      messageProperties.setTimestamp(Date.from(clock.instant()));
+      return new Message(bytes, messageProperties);
+    } catch (Exception e) {
+      throw new MessageConversionException("Cannot convert to JSON", e);
     }
+  }
 
-    @Override
-    public @NonNull Object fromMessage(@NonNull Message message) throws MessageConversionException {
-        try {
-            Object payload = gson.fromJson(new String(message.getBody(), StandardCharsets.UTF_8),
-                                           Class.forName(message.getMessageProperties().getType()));
-            logger.debug("Converted {} from JSON", payload);
-            return payload;
-        } catch (Exception e) {
-            throw new MessageConversionException("Cannot convert from JSON", e);
-        }
+  @Override
+  public @NonNull Object fromMessage(@NonNull Message message) throws MessageConversionException {
+    try {
+      Object payload =
+          gson.fromJson(
+              new String(message.getBody(), StandardCharsets.UTF_8),
+              Class.forName(message.getMessageProperties().getType()));
+      logger.debug("Converted {} from JSON", payload);
+      return payload;
+    } catch (Exception e) {
+      throw new MessageConversionException("Cannot convert from JSON", e);
     }
+  }
 }

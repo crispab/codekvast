@@ -26,10 +26,9 @@ import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse2;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor1;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
-
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 /**
  * The service used by the {@link DashboardApiController}.
@@ -38,36 +37,40 @@ import java.util.Optional;
  */
 public interface DashboardService {
 
-    /**
-     * Retrieve information about a set of methods.
-     *
-     * Use case: <ol> <li>In IDEA: Right-click a method name -&gt; Copy Reference (Ctrl-Alt-Shift-C)</li> <li>In Codekvast Dashboard web UI:
-     * paste into the search field (Ctrl-V)</li> </ol>
-     *
-     * @param request The request parameters.
-     * @return A response object. Does never return null.
-     */
-    GetMethodsResponse2 getMethods2(@Valid GetMethodsRequest request);
+  /**
+   * Retrieve information about a set of methods.
+   *
+   * <p>Use case:
+   *
+   * <ol>
+   *   <li>In IDEA: Right-click a method name -&gt; Copy Reference (Ctrl-Alt-Shift-C)
+   *   <li>In Codekvast Dashboard web UI: paste into the search field (Ctrl-V)
+   * </ol>
+   *
+   * @param request The request parameters.
+   * @return A response object. Does never return null.
+   */
+  GetMethodsResponse2 getMethods2(@Valid GetMethodsRequest request);
 
-    /**
-     * Retrieve information about a particular method.
-     *
-     * @param methodId The primary key of the method.
-     * @return an optional MethodDescriptor1. Does never return null.
-     */
-    Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId);
+  /**
+   * Retrieve information about a particular method.
+   *
+   * @param methodId The primary key of the method.
+   * @return an optional MethodDescriptor1. Does never return null.
+   */
+  Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId);
 
-    /**
-     * Retrieve status for the authenticated customer.
-     *
-     * @return A status object. Does never return null.
-     */
-    GetStatusResponse getStatus();
+  /**
+   * Retrieve status for the authenticated customer.
+   *
+   * @return A status object. Does never return null.
+   */
+  GetStatusResponse getStatus();
 
-    /**
-     * Get data to use in the search methods form.
-     *
-     * @return A GetMethodsFormData object. Does never return null.
-     */
-    GetMethodsFormData getMethodsFormData();
+  /**
+   * Get data to use in the search methods form.
+   *
+   * @return A GetMethodsFormData object. Does never return null.
+   */
+  GetMethodsFormData getMethodsFormData();
 }

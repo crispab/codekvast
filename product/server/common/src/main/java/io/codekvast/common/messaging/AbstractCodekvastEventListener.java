@@ -21,6 +21,8 @@
  */
 package io.codekvast.common.messaging;
 
+import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_QUEUE;
+
 import io.codekvast.common.messaging.impl.MessageIdRepository;
 import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
@@ -30,47 +32,44 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 
-import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_QUEUE;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractCodekvastEventListener {
 
-    private final MessageIdRepository messageIdRepository;
+  private final MessageIdRepository messageIdRepository;
 
-    @RabbitListener(queues = CODEKVAST_EVENT_QUEUE, ackMode = "AUTO")
-    public void onMessage(Message message, @Payload CodekvastEvent event) throws Exception {
-        logger.debug("Received {}", message);
-        MessageProperties messageProperties = message.getMessageProperties();
-        CorrelationIdHolder.set(messageProperties.getCorrelationId());
-        try {
-            String messageId = messageProperties.getMessageId();
-            if (!messageIdRepository.isDuplicate(messageId)) {
+  @RabbitListener(queues = CODEKVAST_EVENT_QUEUE, ackMode = "AUTO")
+  public void onMessage(Message message, @Payload CodekvastEvent event) throws Exception {
+    logger.debug("Received {}", message);
+    MessageProperties messageProperties = message.getMessageProperties();
+    CorrelationIdHolder.set(messageProperties.getCorrelationId());
+    try {
+      String messageId = messageProperties.getMessageId();
+      if (!messageIdRepository.isDuplicate(messageId)) {
 
-                onCodekvastEvent(event);
+        onCodekvastEvent(event);
 
-                messageIdRepository.remember(messageId);
-            }
-        } catch (Exception e) {
-            logger.error("Failed to process " + event, e);
+        messageIdRepository.remember(messageId);
+      }
+    } catch (Exception e) {
+      logger.error("Failed to process " + event, e);
 
-            // Move the message to the DLQ for later inspection
-            throw e;
-        } finally {
-            CorrelationIdHolder.clear();
-        }
+      // Move the message to the DLQ for later inspection
+      throw e;
+    } finally {
+      CorrelationIdHolder.clear();
     }
+  }
 
-    /**
-     * Business logic for handling one Codekvast event.
-     *
-     * The event is guaranteed to be unique.
-     *
-     * @param event The event to handle. Is never null.
-     * @throws Exception If the event cannot be handled. Will cause the message to be moved to the dead letter queue.
-     */
-    public abstract void onCodekvastEvent(CodekvastEvent event) throws Exception;
+  /**
+   * Business logic for handling one Codekvast event.
+   *
+   * <p>The event is guaranteed to be unique.
+   *
+   * @param event The event to handle. Is never null.
+   * @throws Exception If the event cannot be handled. Will cause the message to be moved to the
+   *     dead letter queue.
+   */
+  public abstract void onCodekvastEvent(CodekvastEvent event) throws Exception;
 }

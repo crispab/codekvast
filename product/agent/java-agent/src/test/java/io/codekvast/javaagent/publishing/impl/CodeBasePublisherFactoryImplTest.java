@@ -1,5 +1,10 @@
 package io.codekvast.javaagent.publishing.impl;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
@@ -8,39 +13,34 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.system.OutputCaptureRule;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public class CodeBasePublisherFactoryImplTest {
 
-    private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
+  private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
-    @Rule
-    public OutputCaptureRule output = new JulAwareOutputCapture();
+  @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
 
-    private final CodeBasePublisherFactory factory = new CodeBasePublisherFactoryImpl();
+  private final CodeBasePublisherFactory factory = new CodeBasePublisherFactoryImpl();
 
-    @Test
-    public void should_handle_noop_name() throws Exception {
-        // given
-        CodeBasePublisher publisher = factory.create(NoOpCodeBasePublisherImpl.NAME, config);
+  @Test
+  public void should_handle_noop_name() throws Exception {
+    // given
+    CodeBasePublisher publisher = factory.create(NoOpCodeBasePublisherImpl.NAME, config);
 
-        // then
-        assertThat(publisher, instanceOf(NoOpCodeBasePublisherImpl.class));
-        output.expect(is(""));
-    }
+    // then
+    assertThat(publisher, instanceOf(NoOpCodeBasePublisherImpl.class));
+    output.expect(is(""));
+  }
 
-    @Test
-    public void should_warn_when_unrecognized_name() throws Exception {
-        // given
-        CodeBasePublisher publisher = factory.create("foobar", config);
+  @Test
+  public void should_warn_when_unrecognized_name() throws Exception {
+    // given
+    CodeBasePublisher publisher = factory.create("foobar", config);
 
-        // then
-        assertThat(publisher, instanceOf(NoOpCodeBasePublisherImpl.class));
-        output.expect(containsString("[WARNING]"));
-        output.expect(containsString("Unrecognized code base publisher name: 'foobar', will use no-op"));
-    }
+    // then
+    assertThat(publisher, instanceOf(NoOpCodeBasePublisherImpl.class));
+    output.expect(containsString("[WARNING]"));
+    output.expect(
+        containsString("Unrecognized code base publisher name: 'foobar', will use no-op"));
+  }
 }

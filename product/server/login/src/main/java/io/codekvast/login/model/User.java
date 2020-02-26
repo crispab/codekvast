@@ -22,21 +22,17 @@
 package io.codekvast.login.model;
 
 import io.codekvast.common.customer.CustomerData;
+import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.util.List;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Value
 @Builder
 public class User {
-    String email;
-    String errorMessage;
+  String email;
+  String errorMessage;
 
-    @NonNull
-    List<CustomerData> customerData;
+  @NonNull List<CustomerData> customerData;
 }

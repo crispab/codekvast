@@ -22,9 +22,14 @@
 package io.codekvast.javaagent.model.v3;
 
 import io.codekvast.javaagent.model.v2.MethodSignature2;
-import lombok.*;
-
 import java.io.Serializable;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.Value;
 
 /**
  * Immutable representation of a method signature.
@@ -37,57 +42,49 @@ import java.io.Serializable;
 @ToString(of = "aspectjString")
 @EqualsAndHashCode(of = "aspectjString")
 public class MethodSignature3 implements Serializable {
-    private static final long serialVersionUID = 3L;
+  private static final long serialVersionUID = 3L;
 
-    @NonNull
-    private final String aspectjString;
-    private final Boolean bridge;
-    @NonNull
-    private final String declaringType;
-    @NonNull
-    private final String exceptionTypes;
-    @NonNull
-    private final String methodName;
-    @NonNull
-    private final String modifiers;
-    @NonNull
-    private final String packageName;
-    @NonNull
-    private final String parameterTypes;
-    @NonNull
-    private final String returnType;
-    private final Boolean synthetic;
-    private final String location;
+  @NonNull private final String aspectjString;
+  private final Boolean bridge;
+  @NonNull private final String declaringType;
+  @NonNull private final String exceptionTypes;
+  @NonNull private final String methodName;
+  @NonNull private final String modifiers;
+  @NonNull private final String packageName;
+  @NonNull private final String parameterTypes;
+  @NonNull private final String returnType;
+  private final Boolean synthetic;
+  private final String location;
 
-    public static MethodSignature3 createSampleMethodSignature() {
-        return builder()
-            .aspectjString("aspectjString")
-            .bridge(false)
-            .declaringType("declaringType")
-            .exceptionTypes("exceptionTypes")
-            .methodName("methodName")
-            .modifiers("modifiers")
-            .packageName("packageName")
-            .parameterTypes("parameterTypes")
-            .returnType("returnType")
-            .synthetic(false)
-            .location("location")
-            .build();
-    }
+  public static MethodSignature3 createSampleMethodSignature() {
+    return builder()
+        .aspectjString("aspectjString")
+        .bridge(false)
+        .declaringType("declaringType")
+        .exceptionTypes("exceptionTypes")
+        .methodName("methodName")
+        .modifiers("modifiers")
+        .packageName("packageName")
+        .parameterTypes("parameterTypes")
+        .returnType("returnType")
+        .synthetic(false)
+        .location("location")
+        .build();
+  }
 
-    public static MethodSignature3 fromFormat2(MethodSignature2 methodSignature2) {
-        return builder()
-            .aspectjString(methodSignature2.getAspectjString())
-            .bridge(methodSignature2.getBridge())
-            .declaringType(methodSignature2.getDeclaringType())
-            .exceptionTypes(methodSignature2.getExceptionTypes())
-            .methodName(methodSignature2.getMethodName())
-            .modifiers(methodSignature2.getModifiers())
-            .packageName(methodSignature2.getPackageName())
-            .parameterTypes(methodSignature2.getParameterTypes())
-            .returnType(methodSignature2.getReturnType())
-            .synthetic(methodSignature2.getSynthetic())
-            .location(null)
-            .build();
-    }
+  public static MethodSignature3 fromFormat2(MethodSignature2 methodSignature2) {
+    return builder()
+        .aspectjString(methodSignature2.getAspectjString())
+        .bridge(methodSignature2.getBridge())
+        .declaringType(methodSignature2.getDeclaringType())
+        .exceptionTypes(methodSignature2.getExceptionTypes())
+        .methodName(methodSignature2.getMethodName())
+        .modifiers(methodSignature2.getModifiers())
+        .packageName(methodSignature2.getPackageName())
+        .parameterTypes(methodSignature2.getParameterTypes())
+        .returnType(methodSignature2.getReturnType())
+        .synthetic(methodSignature2.getSynthetic())
+        .location(null)
+        .build();
+  }
 }

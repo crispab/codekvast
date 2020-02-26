@@ -21,13 +21,11 @@
  */
 package io.codekvast.javaagent.scheduler;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public class SystemClockImpl implements SystemClock {
 
-    @Override
-    public long currentTimeMillis() {
-        return System.currentTimeMillis();
-    }
+  @Override
+  public long currentTimeMillis() {
+    return System.currentTimeMillis();
+  }
 }

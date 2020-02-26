@@ -30,11 +30,10 @@ import io.codekvast.common.messaging.model.CodekvastEvent;
  */
 public interface RuleEngine {
 
-    /**
-     * Handle an event
-     *
-     * @param event The event to handle. Is never null.
-     */
-    void handle(CodekvastEvent event);
-
+  /**
+   * Handle an event
+   *
+   * @param event The event to handle. Is never null.
+   */
+  void handle(CodekvastEvent event);
 }

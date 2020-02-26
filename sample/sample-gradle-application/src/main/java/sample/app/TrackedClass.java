@@ -6,58 +6,57 @@ package sample.app;
  * @author olle.hallin@crisp.se
  */
 public class TrackedClass extends AbstractTracked implements Tracked, Comparable<TrackedClass> {
-    public int getCount() {
-        return count;
+  public int getCount() {
+    return count;
+  }
+
+  public void setCount(int count) {
+    this.count = count;
+  }
+
+  public void setCount2(int count, int p2) {
+    this.count = count;
+  }
+
+  @Override
+  public int publicMethod() {
+    return count++;
+  }
+
+  private int privateMethod() {
+    return count++;
+  }
+
+  int packagePrivateMethod() {
+    return count++;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
 
-    public void setCount(int count) {
-        this.count = count;
-    }
+    TrackedClass that = (TrackedClass) o;
 
-    public void setCount2(int count, int p2) {
-        this.count = count;
-    }
+    return count == that.count;
+  }
 
-    @Override
-    public int publicMethod() {
-        return count++;
-    }
+  @Override
+  public int hashCode() {
+    return count;
+  }
 
-    private int privateMethod() {
-        return count++;
-    }
+  @Override
+  public int compareTo(TrackedClass that) {
+    return that.count - this.count;
+  }
 
-    int packagePrivateMethod() {
-        return count++;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        TrackedClass that = (TrackedClass) o;
-
-        return count == that.count;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return count;
-    }
-
-    @Override
-    public int compareTo(TrackedClass that) {
-        return that.count - this.count;
-    }
-
-    @Override
-    public String toString() {
-        return "TrackedClass{count=" + count + '}';
-    }
+  @Override
+  public String toString() {
+    return "TrackedClass{count=" + count + '}';
+  }
 }

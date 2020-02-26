@@ -21,6 +21,8 @@
  */
 package io.codekvast.common.messaging.impl;
 
+import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_QUEUE;
+
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.CodekvastEvent;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.stereotype.Service;
-
-import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_QUEUE;
 
 /**
  * An AMQP implementation of the EventService.
@@ -41,15 +41,18 @@ import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_
 @Slf4j
 public class EventServiceAmqpImpl implements EventService {
 
-    private final AmqpTemplate amqpTemplate;
+  private final AmqpTemplate amqpTemplate;
 
-    @Override
-    public void send(CodekvastEvent event) {
-        logger.debug("Sending {} to {}", event, CODEKVAST_EVENT_QUEUE);
-        amqpTemplate.convertAndSend(CODEKVAST_EVENT_QUEUE, event, message -> {
-            logger.trace("Message={}", message);
-            message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
-            return message;
+  @Override
+  public void send(CodekvastEvent event) {
+    logger.debug("Sending {} to {}", event, CODEKVAST_EVENT_QUEUE);
+    amqpTemplate.convertAndSend(
+        CODEKVAST_EVENT_QUEUE,
+        event,
+        message -> {
+          logger.trace("Message={}", message);
+          message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+          return message;
         });
-    }
+  }
 }

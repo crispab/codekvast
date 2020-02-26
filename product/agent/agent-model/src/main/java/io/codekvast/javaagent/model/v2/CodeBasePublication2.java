@@ -21,10 +21,15 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import lombok.*;
-
 import java.io.Serializable;
 import java.util.Collection;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Output of the CodeBasePublisher implementations.
@@ -37,17 +42,16 @@ import java.util.Collection;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class CodeBasePublication2 implements Serializable {
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    @NonNull
-    private CommonPublicationData2 commonData;
+  @NonNull private CommonPublicationData2 commonData;
 
-    @NonNull
-    private Collection<CodeBaseEntry2> entries;
+  @NonNull private Collection<CodeBaseEntry2> entries;
 
-    @Override
-    public String toString() {
-        return String.format("%s(commonData=%s, entries.size()=%d)",
-                             this.getClass().getSimpleName(), commonData, entries.size());
-    }
+  @Override
+  public String toString() {
+    return String.format(
+        "%s(commonData=%s, entries.size()=%d)",
+        this.getClass().getSimpleName(), commonData, entries.size());
+  }
 }

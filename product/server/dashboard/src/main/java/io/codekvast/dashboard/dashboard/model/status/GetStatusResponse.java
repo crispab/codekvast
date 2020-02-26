@@ -21,11 +21,10 @@
  */
 package io.codekvast.dashboard.dashboard.model.status;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
-import java.util.List;
 
 /**
  * Data about the agent status for a certain customer.
@@ -36,111 +35,62 @@ import java.util.List;
 @Value
 @Builder
 public class GetStatusResponse {
-    //--- Query performance stuff -----------------------------------
-    /**
-     * When was the request received? Millis since epoch.
-     */
-    @NonNull
-    private final Long timestamp;
+  // --- Query performance stuff -----------------------------------
+  /** When was the request received? Millis since epoch. */
+  @NonNull private final Long timestamp;
 
-    /**
-     * How long did it take to execute the request?
-     */
-    @NonNull
-    private final Long queryTimeMillis;
+  /** How long did it take to execute the request? */
+  @NonNull private final Long queryTimeMillis;
 
-    //--- Price plan ------------------------------------------------
-    /**
-     * Which price plan does this customer use?
-     */
-    @NonNull
-    private final String pricePlan;
+  // --- Price plan ------------------------------------------------
+  /** Which price plan does this customer use? */
+  @NonNull private final String pricePlan;
 
-    /**
-     * Which retention period does the price plan specify?
-     */
-    @NonNull
-    private final Integer retentionPeriodDays;
+  /** Which retention period does the price plan specify? */
+  @NonNull private final Integer retentionPeriodDays;
 
-    /**
-     * Which collection resolution does the price plan specify?
-     */
-    @NonNull
-    private final Integer collectionResolutionSeconds;
+  /** Which collection resolution does the price plan specify? */
+  @NonNull private final Integer collectionResolutionSeconds;
 
-    /**
-     * How many agents does the price plan allow?
-     */
-    @NonNull
-    private final Integer maxNumberOfAgents;
+  /** How many agents does the price plan allow? */
+  @NonNull private final Integer maxNumberOfAgents;
 
-    /**
-     * How many methods does the price plan allow?
-     */
-    @NonNull
-    private final Integer maxNumberOfMethods;
+  /** How many methods does the price plan allow? */
+  @NonNull private final Integer maxNumberOfMethods;
 
-    //--- actual values ---------------------------------------------
-    /**
-     * At which instant will the trial period end? Null if not in a trial period.
-     */
-    private final Long trialPeriodEndsAtMillis;
+  // --- actual values ---------------------------------------------
+  /** At which instant will the trial period end? Null if not in a trial period. */
+  private final Long trialPeriodEndsAtMillis;
 
-    /**
-     * What percentage of the trial period has been used? Null if not in a trial period.
-     */
-    private final Integer trialPeriodPercent;
+  /** What percentage of the trial period has been used? Null if not in a trial period. */
+  private final Integer trialPeriodPercent;
 
-    /**
-     * Is there a trial period, and if so, has it expired?
-     */
-    @NonNull
-    private final Boolean trialPeriodExpired;
+  /** Is there a trial period, and if so, has it expired? */
+  @NonNull private final Boolean trialPeriodExpired;
 
-    /**
-     * How many methods does this customer have?
-     */
-    @NonNull
-    private final Integer numMethods;
+  /** How many methods does this customer have? */
+  @NonNull private final Integer numMethods;
 
-    /**
-     * At which instant was the first data received?
-     * Null if no data yet has been collected.
-     */
-    private final Long collectedSinceMillis;
+  /** At which instant was the first data received? Null if no data yet has been collected. */
+  private final Long collectedSinceMillis;
 
-    /**
-     * How many agents has ever attempted to deliver data to Codekvast?
-     */
-    @NonNull
-    private final Integer numAgents;
+  /** How many agents has ever attempted to deliver data to Codekvast? */
+  @NonNull private final Integer numAgents;
 
-    /**
-     * How many live agents are attempting to deliver data to Codekvast?
-     */
-    @NonNull
-    private final Integer numLiveAgents;
+  /** How many live agents are attempting to deliver data to Codekvast? */
+  @NonNull private final Integer numLiveAgents;
 
-    /**
-     * How many live and enabled agents are attempting to deliver data to Codekvast?
-     */
-    @NonNull
-    private final Integer numLiveEnabledAgents;
+  /** How many live and enabled agents are attempting to deliver data to Codekvast? */
+  @NonNull private final Integer numLiveEnabledAgents;
 
-    //--- Details ---------------------------------------------------
+  // --- Details ---------------------------------------------------
 
-    /**
-     * The environments this customer has.
-     */
-    private final List<EnvironmentStatusDescriptor> environments;
+  /** The environments this customer has. */
+  private final List<EnvironmentStatusDescriptor> environments;
 
-    /**
-     * The applications reporting to this customer account.
-     */
-    private final List<ApplicationDescriptor2> applications;
+  /** The applications reporting to this customer account. */
+  private final List<ApplicationDescriptor2> applications;
 
-    /**
-     * The agents (JVMs) reporting to this customer account.
-     */
-    private final List<AgentDescriptor> agents;
+  /** The agents (JVMs) reporting to this customer account. */
+  private final List<AgentDescriptor> agents;
 }

@@ -23,9 +23,7 @@ package io.codekvast.javaagent.publishing;
 
 import io.codekvast.javaagent.config.AgentConfig;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public interface CodeBasePublisherFactory {
-    CodeBasePublisher create(String name, AgentConfig config);
+  CodeBasePublisher create(String name, AgentConfig config);
 }

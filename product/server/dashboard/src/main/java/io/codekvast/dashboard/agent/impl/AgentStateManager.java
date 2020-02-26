@@ -29,5 +29,6 @@ import io.codekvast.common.customer.CustomerData;
  * @author olle.hallin@crisp.se
  */
 public interface AgentStateManager {
-    boolean updateAgentState(CustomerData customerData, String jvmUuid, String appName, String environment);
+  boolean updateAgentState(
+      CustomerData customerData, String jvmUuid, String appName, String environment);
 }

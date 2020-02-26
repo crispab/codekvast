@@ -21,31 +21,28 @@
  */
 package io.codekvast.login.heroku.model;
 
+import java.util.Map;
 import lombok.Builder;
 import lombok.Value;
 
-import java.util.Map;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Value
 @Builder
 public class HerokuProvisionRequest {
-    private final String heroku_id;
-    private final String name;
-    private final String plan;
-    private final String region;
-    private final String callback_url;
-    private final Map<String, String> options;
-    private final String uuid;
-    private final OAuthGrant oauth_grant;
+  private final String heroku_id;
+  private final String name;
+  private final String plan;
+  private final String region;
+  private final String callback_url;
+  private final Map<String, String> options;
+  private final String uuid;
+  private final OAuthGrant oauth_grant;
 
-    @Value
-    @Builder
-    public static class OAuthGrant {
-        private final String code;
-        private final String type;
-        private final String expires_at;
-    }
+  @Value
+  @Builder
+  public static class OAuthGrant {
+    private final String code;
+    private final String type;
+    private final String expires_at;
+  }
 }

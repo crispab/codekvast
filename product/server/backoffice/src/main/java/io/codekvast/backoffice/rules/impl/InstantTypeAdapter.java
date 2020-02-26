@@ -24,22 +24,19 @@ package io.codekvast.backoffice.rules.impl;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
 import java.time.Instant;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public class InstantTypeAdapter extends TypeAdapter<Instant> {
 
-    @Override
-    public void write(JsonWriter out, Instant instant) throws IOException {
-        out.value(instant == null ? null : instant.toString());
-    }
+  @Override
+  public void write(JsonWriter out, Instant instant) throws IOException {
+    out.value(instant == null ? null : instant.toString());
+  }
 
-    @Override
-    public Instant read(JsonReader in) throws IOException {
-        return Instant.parse(in.nextString());
-    }
+  @Override
+  public Instant read(JsonReader in) throws IOException {
+    return Instant.parse(in.nextString());
+  }
 }

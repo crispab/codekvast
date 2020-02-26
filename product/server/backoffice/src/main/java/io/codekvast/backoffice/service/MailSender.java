@@ -24,25 +24,23 @@ package io.codekvast.backoffice.service;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public interface MailSender {
 
-    @RequiredArgsConstructor
-    @Getter
-    enum Template {
-        WELCOME_TO_CODEKVAST("Welcome to Codekvast!");
+  /**
+   * Sends an email using a named template to a given email address.
+   *
+   * @param template The template to use.
+   * @param emailAddress The email address to send to.
+   * @param args The arguments to the template.
+   */
+  void sendMail(Template template, String emailAddress, Object... args);
 
-        private final String subject;
-    }
+  @RequiredArgsConstructor
+  @Getter
+  enum Template {
+    WELCOME_TO_CODEKVAST("Welcome to Codekvast!");
 
-    /**
-     * Sends an email using a named template to a given email address.
-     *
-     * @param template     The template to use.
-     * @param emailAddress The email address to send to.
-     * @param args         The arguments to the template.
-     */
-    void sendMail(Template template, String emailAddress, Object... args);
+    private final String subject;
+  }
 }

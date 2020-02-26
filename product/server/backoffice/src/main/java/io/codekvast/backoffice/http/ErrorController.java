@@ -21,6 +21,7 @@
  */
 package io.codekvast.backoffice.http;
 
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpStatus;
@@ -28,28 +29,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import javax.servlet.http.HttpServletRequest;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Controller
 public class ErrorController extends AbstractErrorController {
 
-    public ErrorController(ErrorAttributes errorAttributes) {
-        super(errorAttributes);
-    }
+  public ErrorController(ErrorAttributes errorAttributes) {
+    super(errorAttributes);
+  }
 
-    @Override
-    public String getErrorPath() {
-        return "/error";
-    }
+  @Override
+  public String getErrorPath() {
+    return "/error";
+  }
 
-    @GetMapping("/error")
-    public String handleError(HttpServletRequest request, Model model) {
-        HttpStatus status = getStatus(request);
-        model.addAttribute("title", "Error");
-        model.addAttribute("status", status);
-        return "error";
-    }
+  @GetMapping("/error")
+  public String handleError(HttpServletRequest request, Model model) {
+    HttpStatus status = getStatus(request);
+    model.addAttribute("title", "Error");
+    model.addAttribute("status", status);
+    return "error";
+  }
 }

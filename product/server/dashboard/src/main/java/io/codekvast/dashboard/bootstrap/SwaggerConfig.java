@@ -21,7 +21,14 @@
  */
 package io.codekvast.dashboard.bootstrap;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.service.ApiInfo;
@@ -33,9 +40,6 @@ import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-
 /**
  * Configure the embedded Swagger API docs stuff.
  *
@@ -45,53 +49,56 @@ import java.util.ArrayList;
 @EnableSwagger2
 public class SwaggerConfig {
 
-    @Bean
-    UiConfiguration swaggerUiConfig() {
-        // disable validationUrl
-        return UiConfigurationBuilder.builder().validatorUrl(null).build();
-    }
+  @Bean
+  UiConfiguration swaggerUiConfig() {
+    // disable validationUrl
+    return UiConfigurationBuilder.builder().validatorUrl(null).build();
+  }
 
-    @Bean
-    public Docket agentDocket(CodekvastDashboardSettings settings) {
-        return new Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(getApiInfo(settings, "Endpoints used by the Java agent"))
-            .groupName("Java agent endpoints")
-            .select()
-            .paths(path -> path.startsWith("/javaagent"))
-            .build();
-    }
+  @Bean
+  public Docket agentDocket(CodekvastDashboardSettings settings) {
+    return new Docket(DocumentationType.SWAGGER_2)
+        .apiInfo(getApiInfo(settings, "Endpoints used by the Java agent"))
+        .groupName("Java agent endpoints")
+        .select()
+        .paths(path -> path.startsWith("/javaagent"))
+        .build();
+  }
 
-    @Bean
-    public Docket dashboardDocket(CodekvastDashboardSettings settings) {
-        return new Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(getApiInfo(settings, "Endpoints used by the dashboard web app"))
-            .groupName("Dashboard endpoints")
-            .select()
-            .paths(path -> path.startsWith("/dashboard"))
-            .build();
-    }
+  @Bean
+  public Docket dashboardDocket(CodekvastDashboardSettings settings) {
+    return new Docket(DocumentationType.SWAGGER_2)
+        .apiInfo(getApiInfo(settings, "Endpoints used by the dashboard web app"))
+        .groupName("Dashboard endpoints")
+        .select()
+        .paths(path -> path.startsWith("/dashboard"))
+        .build();
+  }
 
-    private ApiInfo getApiInfo(CodekvastDashboardSettings settings, String description) {
-        return new ApiInfo(settings.getApplicationName(),
-                           description,
-                           settings.getDisplayVersion(),
-                           "https://www.codekvast.io/pages/terms-of-service.html",
-                           new Contact("Codekvast", "https://www.codekvast.io", "support@codekvast.io"),
-                           "Licensed under the MIT license",
-                           "https://opensource.org/licenses/MIT",
-                           new ArrayList<>());
-    }
+  private ApiInfo getApiInfo(CodekvastDashboardSettings settings, String description) {
+    return new ApiInfo(
+        settings.getApplicationName(),
+        description,
+        settings.getDisplayVersion(),
+        "https://www.codekvast.io/pages/terms-of-service.html",
+        new Contact("Codekvast", "https://www.codekvast.io", "support@codekvast.io"),
+        "Licensed under the MIT license",
+        "https://opensource.org/licenses/MIT",
+        new ArrayList<>());
+  }
 
-    // Hack to make swagger-ui.html work with Gson instead of Jackson
-    @Bean
-    public Gson gson() {
-        return new GsonBuilder().registerTypeAdapter(Json.class, new SpringfoxJsonToGsonAdapter()).create();
-    }
+  // Hack to make swagger-ui.html work with Gson instead of Jackson
+  @Bean
+  public Gson gson() {
+    return new GsonBuilder()
+        .registerTypeAdapter(Json.class, new SpringfoxJsonToGsonAdapter())
+        .create();
+  }
 
-    public static class SpringfoxJsonToGsonAdapter implements JsonSerializer<Json> {
-        @Override
-        public JsonElement serialize(Json json, Type type, JsonSerializationContext context) {
-            return JsonParser.parseString(json.value());
-        }
+  public static class SpringfoxJsonToGsonAdapter implements JsonSerializer<Json> {
+    @Override
+    public JsonElement serialize(Json json, Type type, JsonSerializationContext context) {
+      return JsonParser.parseString(json.value());
     }
+  }
 }

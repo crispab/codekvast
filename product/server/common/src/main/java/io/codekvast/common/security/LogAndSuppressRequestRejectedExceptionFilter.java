@@ -21,6 +21,13 @@
  */
 package io.codekvast.common.security;
 
+import java.io.IOException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -29,44 +36,38 @@ import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 /**
  * A filter that turns a RequestRejectedException into a HTTP status 404 (Not Found).
  *
- * Stolen with pride from stackoverflow.com
+ * <p>Stolen with pride from stackoverflow.com
  *
  * @author olle.hallin@crisp.se
- * @see
- * <a href="https://stackoverflow.com/questions/51788764/how-to-intercept-a-requestrejectedexception-in-spring">How to intercept a RequestRejectedException in Spring?</a>
+ * @see <a
+ *     href="https://stackoverflow.com/questions/51788764/how-to-intercept-a-requestrejectedexception-in-spring">How
+ *     to intercept a RequestRejectedException in Spring?</a>
  */
 @Component
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class LogAndSuppressRequestRejectedExceptionFilter extends GenericFilterBean {
 
-    @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        try {
-            chain.doFilter(req, res);
-        } catch (RequestRejectedException e) {
-            HttpServletRequest request = (HttpServletRequest) req;
-            HttpServletResponse response = (HttpServletResponse) res;
+  @Override
+  public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+      throws IOException, ServletException {
+    try {
+      chain.doFilter(req, res);
+    } catch (RequestRejectedException e) {
+      HttpServletRequest request = (HttpServletRequest) req;
+      HttpServletResponse response = (HttpServletResponse) res;
 
-            logger.warn(
-                "Request rejected: remote_host={}, user_agent='{}', request_url='{}', reason='{}'",
-                request.getRemoteHost(),
-                request.getHeader(HttpHeaders.USER_AGENT),
-                request.getRequestURL(),
-                e.getMessage());
+      logger.warn(
+          "Request rejected: remote_host={}, user_agent='{}', request_url='{}', reason='{}'",
+          request.getRemoteHost(),
+          request.getHeader(HttpHeaders.USER_AGENT),
+          request.getRequestURL(),
+          e.getMessage());
 
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        }
+      response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
+  }
 }

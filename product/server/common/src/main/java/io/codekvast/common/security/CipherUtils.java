@@ -21,73 +21,69 @@
  */
 package io.codekvast.common.security;
 
-import lombok.experimental.UtilityClass;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import lombok.experimental.UtilityClass;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @UtilityClass
 public class CipherUtils {
 
-    private static final String CIPHER_INSTANCE = "AES/ECB/PKCS5Padding";
+  private static final String CIPHER_INSTANCE = "AES/ECB/PKCS5Padding";
 
-    /**
-     * Encrypts a string.
-     *
-     * @param plainText The string to encrypt
-     * @param key       The UTF-8 encoded string containing the encryption key.
-     * @return A Base64-encoded encrypted version of the plain text.
-     * @throws CipherException When failed to encrypt.
-     */
-    public static String encrypt(String plainText, String key) throws CipherException {
-        try {
-            Cipher cipher = Cipher.getInstance(CIPHER_INSTANCE);
-            cipher.init(Cipher.ENCRYPT_MODE, stringToKey(key));
-            byte[] encrypted = Base64.getEncoder().encode(cipher.doFinal(plainText.getBytes(UTF_8)));
-            return new String(encrypted, UTF_8);
-        } catch (Exception e) {
-            throw new CipherException("Cannot encrypt", e);
-        }
+  /**
+   * Encrypts a string.
+   *
+   * @param plainText The string to encrypt
+   * @param key The UTF-8 encoded string containing the encryption key.
+   * @return A Base64-encoded encrypted version of the plain text.
+   * @throws CipherException When failed to encrypt.
+   */
+  public static String encrypt(String plainText, String key) throws CipherException {
+    try {
+      Cipher cipher = Cipher.getInstance(CIPHER_INSTANCE);
+      cipher.init(Cipher.ENCRYPT_MODE, stringToKey(key));
+      byte[] encrypted = Base64.getEncoder().encode(cipher.doFinal(plainText.getBytes(UTF_8)));
+      return new String(encrypted, UTF_8);
+    } catch (Exception e) {
+      throw new CipherException("Cannot encrypt", e);
     }
+  }
 
-    /**
-     * Decrypts a string.
-     *
-     * @param cipherText The string to decrypt. It comes from {@link #encrypt(String, String)}.
-     * @param key        The UTF-8 encoded string containing the encryption key.
-     * @return The plain text.
-     * @throws CipherException When failed to decrypt.
-     */
-    public static String decrypt(String cipherText, String key) throws CipherException {
-        try {
-            Cipher cipher = Cipher.getInstance(CIPHER_INSTANCE);
-            cipher.init(Cipher.DECRYPT_MODE, stringToKey(key));
-            byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
-            return new String(decrypted, UTF_8);
-        } catch (Exception e) {
-            throw new CipherException("Cannot decrypt", e);
-        }
+  /**
+   * Decrypts a string.
+   *
+   * @param cipherText The string to decrypt. It comes from {@link #encrypt(String, String)}.
+   * @param key The UTF-8 encoded string containing the encryption key.
+   * @return The plain text.
+   * @throws CipherException When failed to decrypt.
+   */
+  public static String decrypt(String cipherText, String key) throws CipherException {
+    try {
+      Cipher cipher = Cipher.getInstance(CIPHER_INSTANCE);
+      cipher.init(Cipher.DECRYPT_MODE, stringToKey(key));
+      byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
+      return new String(decrypted, UTF_8);
+    } catch (Exception e) {
+      throw new CipherException("Cannot decrypt", e);
     }
+  }
 
-    private static Key stringToKey(String key) {
-        return new SecretKeySpec(key.getBytes(UTF_8), "AES");
-    }
+  private static Key stringToKey(String key) {
+    return new SecretKeySpec(key.getBytes(UTF_8), "AES");
+  }
 
-    static String generateRandomKey() throws NoSuchAlgorithmException {
-        KeyGenerator generator = KeyGenerator.getInstance("AES");
-        generator.init(128);
-        SecretKey key = generator.generateKey();
-        return new String(Base64.getEncoder().encode(key.getEncoded()), UTF_8);
-    }
-
+  static String generateRandomKey() throws NoSuchAlgorithmException {
+    KeyGenerator generator = KeyGenerator.getInstance("AES");
+    generator.init(128);
+    SecretKey key = generator.generateKey();
+    return new String(Base64.getEncoder().encode(key.getEncoded()), UTF_8);
+  }
 }

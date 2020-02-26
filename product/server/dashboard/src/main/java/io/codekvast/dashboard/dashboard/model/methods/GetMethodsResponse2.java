@@ -21,11 +21,10 @@
  */
 package io.codekvast.dashboard.dashboard.model.methods;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.ToString;
 import lombok.Value;
-
-import java.util.List;
 
 /**
  * Response to {@link GetMethodsRequest}.
@@ -36,28 +35,18 @@ import java.util.List;
 @Builder
 @ToString(exclude = "methods")
 public class GetMethodsResponse2 {
-    /**
-     * When was the request received? Millis since epoch.
-     */
-    private final Long timestamp;
+  /** When was the request received? Millis since epoch. */
+  private final Long timestamp;
 
-    /**
-     * What was the original request?
-     */
-    private final GetMethodsRequest request;
+  /** What was the original request? */
+  private final GetMethodsRequest request;
 
-    /**
-     * How long did it take to execute the request?
-     */
-    private final Long queryTimeMillis;
+  /** How long did it take to execute the request? */
+  private final Long queryTimeMillis;
 
-    /**
-     * How many methods were found?
-     */
-    private final int numMethods;
+  /** How many methods were found? */
+  private final int numMethods;
 
-    /**
-     * The resulting methods.
-     */
-    private final List<MethodDescriptor2> methods;
+  /** The resulting methods. */
+  private final List<MethodDescriptor2> methods;
 }

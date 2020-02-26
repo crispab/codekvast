@@ -21,39 +21,40 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
-import lombok.*;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Repository
 @RequiredArgsConstructor
 public class SyntheticSignatureDAO {
-    public static final String SYNTHETIC_SIGNATURE_PATTERNS_CACHE = "synthetic_signature_patterns";
+  public static final String SYNTHETIC_SIGNATURE_PATTERNS_CACHE = "synthetic_signature_patterns";
 
-    private final JdbcTemplate jdbcTemplate;
+  private final JdbcTemplate jdbcTemplate;
 
-    @Cacheable(SYNTHETIC_SIGNATURE_PATTERNS_CACHE)
-    @Transactional(readOnly = true)
-    public List<SyntheticSignaturePattern> getPatterns() {
-        return jdbcTemplate.query("SELECT id, pattern FROM synthetic_signature_patterns WHERE errorMessage IS NULL",
-                                  (rs, index) -> SyntheticSignaturePattern.builder()
-                                                                          .id(rs.getLong("id"))
-                                                                          .pattern(rs.getString("pattern"))
-                                                                          .build());
-    }
+  @Cacheable(SYNTHETIC_SIGNATURE_PATTERNS_CACHE)
+  @Transactional(readOnly = true)
+  public List<SyntheticSignaturePattern> getPatterns() {
+    return jdbcTemplate.query(
+        "SELECT id, pattern FROM synthetic_signature_patterns WHERE errorMessage IS NULL",
+        (rs, index) ->
+            SyntheticSignaturePattern.builder()
+                .id(rs.getLong("id"))
+                .pattern(rs.getString("pattern"))
+                .build());
+  }
 
-    @CacheEvict(SYNTHETIC_SIGNATURE_PATTERNS_CACHE)
-    @Transactional
-    public void rejectPattern(SyntheticSignaturePattern pattern, String errorMessage) {
-        jdbcTemplate.update("UPDATE synthetic_signature_patterns SET errorMessage = ? WHERE id = ?", errorMessage, pattern.getId());
-    }
-
+  @CacheEvict(SYNTHETIC_SIGNATURE_PATTERNS_CACHE)
+  @Transactional
+  public void rejectPattern(SyntheticSignaturePattern pattern, String errorMessage) {
+    jdbcTemplate.update(
+        "UPDATE synthetic_signature_patterns SET errorMessage = ? WHERE id = ?",
+        errorMessage,
+        pattern.getId());
+  }
 }

@@ -25,7 +25,6 @@ import io.codekvast.common.security.CipherException;
 import io.codekvast.login.heroku.model.HerokuChangePlanRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionRequest;
 import io.codekvast.login.heroku.model.HerokuProvisionResponse;
-
 import java.time.Instant;
 
 /**
@@ -34,53 +33,53 @@ import java.time.Instant;
  * @author olle.hallin@crisp.se
  */
 public interface HerokuService {
-    /**
-     * Provision Codekvast for one Heroku app.
-     *
-     * @param request The provisioning request sent by Heroku.
-     * @return The response that Heroku will forward to the app developer.
-     * @throws HerokuException should the request fail.
-     */
-    HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException;
+  /**
+   * Provision Codekvast for one Heroku app.
+   *
+   * @param request The provisioning request sent by Heroku.
+   * @return The response that Heroku will forward to the app developer.
+   * @throws HerokuException should the request fail.
+   */
+  HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException;
 
-    /**
-     * Request to change plan.
-     *
-     * @param externalId The value of {@link HerokuProvisionResponse#id}.
-     * @param request    The change plan request.
-     * @throws HerokuException should the request fail.
-     */
-    void changePlan(String externalId, HerokuChangePlanRequest request) throws HerokuException;
+  /**
+   * Request to change plan.
+   *
+   * @param externalId The value of {@link HerokuProvisionResponse#id}.
+   * @param request The change plan request.
+   * @throws HerokuException should the request fail.
+   */
+  void changePlan(String externalId, HerokuChangePlanRequest request) throws HerokuException;
 
-    /**
-     * Deprovision Codekvast from one Heroku app.
-     *
-     * @param externalId The value of {@link HerokuProvisionResponse#id}.
-     * @throws HerokuException should the request fail.
-     */
-    void deprovision(String externalId) throws HerokuException;
+  /**
+   * Deprovision Codekvast from one Heroku app.
+   *
+   * @param externalId The value of {@link HerokuProvisionResponse#id}.
+   * @throws HerokuException should the request fail.
+   */
+  void deprovision(String externalId) throws HerokuException;
 
-    /**
-     * Get a valid access token for a certain customer.
-     *
-     * @param customerId The customerId
-     * @return A valid access token. Returns null if not possible to refresh an expired access token.
-     * @throws CipherException When failed to encrypt the access token.
-     */
-    String getAccessTokenFor(Long customerId) throws CipherException;
+  /**
+   * Get a valid access token for a certain customer.
+   *
+   * @param customerId The customerId
+   * @return A valid access token. Returns null if not possible to refresh an expired access token.
+   * @throws CipherException When failed to encrypt the access token.
+   */
+  String getAccessTokenFor(Long customerId) throws CipherException;
 
-    /**
-     *
-     * @param customerId The customerId
-     * @return The instant the access token expires. Returns null if customerId is not a Heroku customer.
-     */
-    Instant getAccessTokenExpiresAtFor(Long customerId) throws CipherException;
+  /**
+   * @param customerId The customerId
+   * @return The instant the access token expires. Returns null if customerId is not a Heroku
+   *     customer.
+   */
+  Instant getAccessTokenExpiresAtFor(Long customerId) throws CipherException;
 
-    /**
-     * Get the callback URL for a certain customer.
-     *
-     * @param customerId The customerId
-     * @return The callback URL.
-     */
-    String getCallbackUrlFor(Long customerId);
+  /**
+   * Get the callback URL for a certain customer.
+   *
+   * @param customerId The customerId
+   * @return The callback URL.
+   */
+  String getCallbackUrlFor(Long customerId);
 }

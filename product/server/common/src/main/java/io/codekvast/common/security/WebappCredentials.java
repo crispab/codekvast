@@ -25,24 +25,15 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Value
 @Builder
 public class WebappCredentials {
-    @NonNull
-    private final String customerName;
-    @NonNull
-    private final String email;
-    @NonNull
-    private final String source;
+  @NonNull private final String customerName;
+  @NonNull private final String email;
+  @NonNull private final String source;
 
-    public static WebappCredentials sample() {
-        return builder()
-            .customerName("customerName")
-            .email("email")
-            .source("source")
-            .build();
-    }
+  public static WebappCredentials sample() {
+    return builder().customerName("customerName").email("email").source("source").build();
+  }
 }

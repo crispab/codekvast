@@ -21,11 +21,10 @@
  */
 package io.codekvast.javaagent.model.v2;
 
+import java.io.Serializable;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
-import java.io.Serializable;
 
 /**
  * Representation of a code base entry.
@@ -35,31 +34,22 @@ import java.io.Serializable;
 @Value
 @Builder(toBuilder = true)
 public class CodeBaseEntry2 implements Serializable {
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * The low-level description of the signature.
-     */
-    private final MethodSignature2 methodSignature;
+  /** The low-level description of the signature. */
+  private final MethodSignature2 methodSignature;
 
-    /**
-     * The visibility of the signature. Package private is coded as 'package-private'.
-     */
-    @NonNull
-    private final String visibility;
+  /** The visibility of the signature. Package private is coded as 'package-private'. */
+  @NonNull private final String visibility;
 
-    /**
-     * The signature.
-     */
-    @NonNull
-    private final String signature;
+  /** The signature. */
+  @NonNull private final String signature;
 
-    public static CodeBaseEntry2 sampleCodeBaseEntry() {
-        return builder()
-            .methodSignature(MethodSignature2.createSampleMethodSignature())
-            .signature("signature1()")
-            .visibility("public")
-            .build();
-    }
-
+  public static CodeBaseEntry2 sampleCodeBaseEntry() {
+    return builder()
+        .methodSignature(MethodSignature2.createSampleMethodSignature())
+        .signature("signature1()")
+        .visibility("public")
+        .build();
+  }
 }

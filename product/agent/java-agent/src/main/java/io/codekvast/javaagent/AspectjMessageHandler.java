@@ -21,63 +21,57 @@
  */
 package io.codekvast.javaagent;
 
+import static org.aspectj.bridge.IMessage.Kind;
+import static org.aspectj.bridge.IMessage.WEAVEINFO;
+
 import lombok.extern.java.Log;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 
-import static org.aspectj.bridge.IMessage.Kind;
-import static org.aspectj.bridge.IMessage.WEAVEINFO;
-
-/**
- * A bridge from AspectJ's IMessageHandler to java.util.logging (JUL)
- */
+/** A bridge from AspectJ's IMessageHandler to java.util.logging (JUL) */
 @SuppressWarnings("MethodReturnAlwaysConstant")
 @Log(topic = "io.codekvast.aspectjweaver")
 public class AspectjMessageHandler implements IMessageHandler {
-    public static final String LOGGER_NAME = "io.codekvast.aspectjweaver";
+  public static final String LOGGER_NAME = "io.codekvast.aspectjweaver";
 
-    @Override
-    public boolean handleMessage(IMessage message) throws AbortException {
-        if (message.isDebug()) {
+  @Override
+  public boolean handleMessage(IMessage message) throws AbortException {
+    if (message.isDebug()) {
 
-            String m = message.getMessage();
-            if (!m.contains("not weaving") || !m.contains("codekvast")) {
-                logger.fine(m);
-            }
-            return true;
-        }
-        if (message.isInfo()) {
-            logger.info(message.getMessage());
-            return true;
-        }
-        if (message.isWarning()) {
-            logger.warning(message.getMessage());
-            return true;
-        }
-        if (message.isError()) {
-            logger.severe(message.getMessage());
-            return true;
-        }
-        if (message.getKind() == WEAVEINFO) {
-            logger.info(message.getMessage());
-            return true;
-        }
-        return false;
+      String m = message.getMessage();
+      if (!m.contains("not weaving") || !m.contains("codekvast")) {
+        logger.fine(m);
+      }
+      return true;
     }
-
-    @Override
-    public boolean isIgnoring(Kind kind) {
-        return false;
+    if (message.isInfo()) {
+      logger.info(message.getMessage());
+      return true;
     }
-
-    @Override
-    public void dontIgnore(Kind kind) {
-
+    if (message.isWarning()) {
+      logger.warning(message.getMessage());
+      return true;
     }
-
-    @Override
-    public void ignore(Kind kind) {
-
+    if (message.isError()) {
+      logger.severe(message.getMessage());
+      return true;
     }
+    if (message.getKind() == WEAVEINFO) {
+      logger.info(message.getMessage());
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isIgnoring(Kind kind) {
+    return false;
+  }
+
+  @Override
+  public void dontIgnore(Kind kind) {}
+
+  @Override
+  public void ignore(Kind kind) {}
 }

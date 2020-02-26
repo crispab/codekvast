@@ -27,10 +27,11 @@ package io.codekvast.dashboard.model;
  * @author olle.hallin@crisp.se
  */
 public enum PublicationType {
-    CODEBASE, INVOCATIONS;
+  CODEBASE,
+  INVOCATIONS;
 
-    @Override
-    public String toString() {
-        return name().toLowerCase();
-    }
+  @Override
+  public String toString() {
+    return name().toLowerCase();
+  }
 }

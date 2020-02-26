@@ -23,17 +23,15 @@ package io.codekvast.dashboard.file_import;
 
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public interface InvocationDataImporter {
 
-    /**
-     * Imports an InvocationDataPublication2
-     *
-     * @param publication The publication to import.
-     * @return true iff the publication was handled.
-     */
-    @SuppressWarnings("SameReturnValue")
-    boolean importPublication(InvocationDataPublication2 publication);
+  /**
+   * Imports an InvocationDataPublication2
+   *
+   * @param publication The publication to import.
+   * @return true iff the publication was handled.
+   */
+  @SuppressWarnings("SameReturnValue")
+  boolean importPublication(InvocationDataPublication2 publication);
 }

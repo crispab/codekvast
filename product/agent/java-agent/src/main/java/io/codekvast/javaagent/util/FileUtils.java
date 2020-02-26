@@ -21,13 +21,25 @@
  */
 package io.codekvast.javaagent.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Properties;
 import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
-
-import java.io.*;
-import java.util.Properties;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Low-level file utilities used by the codekvast agent.
@@ -38,88 +50,93 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Log
 public final class FileUtils {
 
-    public static Properties readPropertiesFrom(File file) throws IOException {
-        if (!file.exists()) {
-            throw new IOException(String.format("'%s' does not exist", file.getAbsolutePath()));
-        }
-
-        if (!file.isFile()) {
-            throw new IOException(String.format("'%s' is not a file", file.getAbsolutePath()));
-        }
-
-        if (!file.canRead()) {
-            throw new IOException(String.format("Cannot read '%s'", file.getAbsolutePath()));
-        }
-
-        return readPropertiesFrom(new BufferedInputStream(new FileInputStream(file)));
+  public static Properties readPropertiesFrom(File file) throws IOException {
+    if (!file.exists()) {
+      throw new IOException(String.format("'%s' does not exist", file.getAbsolutePath()));
     }
 
-    private static Properties readPropertiesFrom(InputStream inputStream) throws IOException {
-        Properties result = new Properties();
-        Reader reader = null;
-        try {
-            reader = new InputStreamReader(inputStream, UTF_8);
-            result.load(reader);
-        } finally {
-            safeClose(reader);
-        }
-        return result;
+    if (!file.isFile()) {
+      throw new IOException(String.format("'%s' is not a file", file.getAbsolutePath()));
     }
 
-    private static void safeClose(Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (IOException e) {
-                // ignore
-            }
-        }
+    if (!file.canRead()) {
+      throw new IOException(String.format("Cannot read '%s'", file.getAbsolutePath()));
     }
 
-    public static void safeDelete(File file) {
-        if (file != null && file.exists()) {
-            file.delete();
-        }
-    }
+    return readPropertiesFrom(new BufferedInputStream(new FileInputStream(file)));
+  }
 
-    public static void writeToFile(String text, File file) {
-        Writer writer = null;
-        try {
-            File parentDir = file.getParentFile();
-            if (parentDir != null && !parentDir.isDirectory()) {
-                logger.fine("Creating " + parentDir);
-                parentDir.mkdirs();
-                if (!parentDir.isDirectory()) {
-                    logger.warning("Failed to create " + parentDir);
-                }
-            }
-            writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(file)), UTF_8);
-            writer.write(text);
-            writer.flush();
-        } catch (IOException e) {
-            throw new RuntimeException("Codekvast cannot create " + file, e);
-        } finally {
-            safeClose(writer);
-        }
+  private static Properties readPropertiesFrom(InputStream inputStream) throws IOException {
+    Properties result = new Properties();
+    Reader reader = null;
+    try {
+      reader = new InputStreamReader(inputStream, UTF_8);
+      result.load(reader);
+    } finally {
+      safeClose(reader);
     }
+    return result;
+  }
 
-    @SuppressWarnings("SameParameterValue")
-    public static File serializeToFile(Object object, String prefix, String suffix) throws IOException {
-        long startedAt = System.currentTimeMillis();
-        File file = File.createTempFile(prefix, suffix);
-        try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
-            oos.writeObject(object);
-        }
-        logger.fine(String.format("Serialized %s in %d ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt));
-        return file;
+  private static void safeClose(Closeable closeable) {
+    if (closeable != null) {
+      try {
+        closeable.close();
+      } catch (IOException e) {
+        // ignore
+      }
     }
+  }
 
-    public static <T> T  deserializeFromFile(File file, Class<T> classOfT) {
-        try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
-            return classOfT.cast(ois.readObject());
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+  public static void safeDelete(File file) {
+    if (file != null && file.exists()) {
+      file.delete();
     }
+  }
 
+  public static void writeToFile(String text, File file) {
+    Writer writer = null;
+    try {
+      File parentDir = file.getParentFile();
+      if (parentDir != null && !parentDir.isDirectory()) {
+        logger.fine("Creating " + parentDir);
+        parentDir.mkdirs();
+        if (!parentDir.isDirectory()) {
+          logger.warning("Failed to create " + parentDir);
+        }
+      }
+      writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(file)), UTF_8);
+      writer.write(text);
+      writer.flush();
+    } catch (IOException e) {
+      throw new RuntimeException("Codekvast cannot create " + file, e);
+    } finally {
+      safeClose(writer);
+    }
+  }
+
+  @SuppressWarnings("SameParameterValue")
+  public static File serializeToFile(Object object, String prefix, String suffix)
+      throws IOException {
+    long startedAt = System.currentTimeMillis();
+    File file = File.createTempFile(prefix, suffix);
+    try (ObjectOutputStream oos =
+        new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
+      oos.writeObject(object);
+    }
+    logger.fine(
+        String.format(
+            "Serialized %s in %d ms",
+            object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt));
+    return file;
+  }
+
+  public static <T> T deserializeFromFile(File file, Class<T> classOfT) {
+    try (ObjectInputStream ois =
+        new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+      return classOfT.cast(ois.readObject());
+    } catch (IOException | ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

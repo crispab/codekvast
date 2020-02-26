@@ -21,50 +21,48 @@
  */
 package io.codekvast.common.util;
 
-import lombok.experimental.UtilityClass;
-import lombok.val;
+import static java.lang.String.format;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import lombok.experimental.UtilityClass;
+import lombok.val;
 
-import static java.lang.String.format;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @UtilityClass
 public class LoggingUtils {
 
-    /**
-     * Converts a number of bytes to a human readable string. Example: 12345 is converted to "12,3 kB".
-     * It uses the default locale for formatting the float.
-     *
-     * @param bytes The byte count
-     * @return A human readable string rounded to one decimal.
-     */
-    public static String humanReadableByteCount(long bytes) {
-        if (bytes < 1000) {
-            return bytes + " B";
-        }
-        int exponent = (int) (Math.log(bytes) / Math.log(1000));
-        String unit = " kMGTPE".charAt(exponent) + "B";
-        return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
+  /**
+   * Converts a number of bytes to a human readable string. Example: 12345 is converted to "12,3
+   * kB". It uses the default locale for formatting the float.
+   *
+   * @param bytes The byte count
+   * @return A human readable string rounded to one decimal.
+   */
+  public static String humanReadableByteCount(long bytes) {
+    if (bytes < 1000) {
+      return bytes + " B";
     }
+    int exponent = (int) (Math.log(bytes) / Math.log(1000));
+    String unit = " kMGTPE".charAt(exponent) + "B";
+    return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
+  }
 
-    public static String humanReadableDuration(Duration duration) {
-        boolean roundToSeconds = duration.getSeconds() > 1;
-        val truncateTo = roundToSeconds ? ChronoUnit.SECONDS : ChronoUnit.MILLIS;
-        val plusMillis = roundToSeconds ? 500L : 0L;
-        return duration.plusMillis(plusMillis)
-                       .truncatedTo(truncateTo)
-                       .toString()
-                       .substring(2)
-                       .replaceAll("(\\d[HMS])(?!$)", "$1 ")
-                       .toLowerCase();
-    }
+  public static String humanReadableDuration(Duration duration) {
+    boolean roundToSeconds = duration.getSeconds() > 1;
+    val truncateTo = roundToSeconds ? ChronoUnit.SECONDS : ChronoUnit.MILLIS;
+    val plusMillis = roundToSeconds ? 500L : 0L;
+    return duration
+        .plusMillis(plusMillis)
+        .truncatedTo(truncateTo)
+        .toString()
+        .substring(2)
+        .replaceAll("(\\d[HMS])(?!$)", "$1 ")
+        .toLowerCase();
+  }
 
-    public static String humanReadableDuration(Instant first, Instant last) {
-        return humanReadableDuration(Duration.between(first, last));
-    }
+  public static String humanReadableDuration(Instant first, Instant last) {
+    return humanReadableDuration(Duration.between(first, last));
+  }
 }

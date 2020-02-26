@@ -27,25 +27,30 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
 
-        //@formatter:off
-        http
-            .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers("/management/**")
-            .and()
-                .authorizeRequests()
-                .antMatchers("/", "/home", "/index", "/favicon.ico", "/robots.txt", "/management/**", "/assets/**", "/error").permitAll()
-                .anyRequest().authenticated();
-        //@formatter:on
-    }
+    http.csrf()
+        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        .ignoringAntMatchers("/management/**")
+        .and()
+        .authorizeRequests()
+        .antMatchers(
+            "/",
+            "/home",
+            "/index",
+            "/favicon.ico",
+            "/robots.txt",
+            "/management/**",
+            "/assets/**",
+            "/error")
+        .permitAll()
+        .anyRequest()
+        .authenticated();
+  }
 }

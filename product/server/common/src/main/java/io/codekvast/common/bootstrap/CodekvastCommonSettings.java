@@ -21,26 +21,24 @@
  */
 package io.codekvast.common.bootstrap;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public interface CodekvastCommonSettings {
 
-    String getApplicationName();
+  String getApplicationName();
 
-    String getDisplayVersion();
+  String getDisplayVersion();
 
-    String getDnsCname();
+  String getDnsCname();
 
-    String getSlackWebHookToken();
+  String getSlackWebHookToken();
 
-    default String getSlackWebHookUrl() {
-        return "https://hooks.slack.com/services";
-    }
+  default String getSlackWebHookUrl() {
+    return "https://hooks.slack.com/services";
+  }
 
-    String getJwtSecret();
+  String getJwtSecret();
 
-    Long getJwtExpirationHours();
+  Long getJwtExpirationHours();
 
-    String getEnvironment();
+  String getEnvironment();
 }

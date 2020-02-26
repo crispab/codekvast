@@ -21,56 +21,54 @@
  */
 package io.codekvast.common.lock;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @RequiredArgsConstructor
 @Component
 public class LockTemplate {
-    private final LockManager lockManager;
+  private final LockManager lockManager;
 
-    /**
-     * Acquires a lock, executes an action, and then releases the lock.
-     *
-     * @param lock         The lock to acquire
-     * @param lockAction   The action to execute within the lock
-     * @param failedAction The value to return if failure to acquire the lock.
-     * @param <V>          The type to return
-     * @return The result of either lockAction or failedAction, depending on if the lock was acquired.
-     */
-    public <V> V doWithLock(Lock lock, Callable<V> lockAction, Supplier<V> failedAction) throws Exception {
-        Optional<Lock> optionalLock = lockManager.acquireLock(lock);
-        if (optionalLock.isPresent()) {
-            try {
-                return lockAction.call();
-            } finally {
-                lockManager.releaseLock(optionalLock.get());
-            }
-        }
-        return failedAction.get();
+  /**
+   * Acquires a lock, executes an action, and then releases the lock.
+   *
+   * @param lock The lock to acquire
+   * @param lockAction The action to execute within the lock
+   * @param failedAction The value to return if failure to acquire the lock.
+   * @param <V> The type to return
+   * @return The result of either lockAction or failedAction, depending on if the lock was acquired.
+   */
+  public <V> V doWithLock(Lock lock, Callable<V> lockAction, Supplier<V> failedAction)
+      throws Exception {
+    Optional<Lock> optionalLock = lockManager.acquireLock(lock);
+    if (optionalLock.isPresent()) {
+      try {
+        return lockAction.call();
+      } finally {
+        lockManager.releaseLock(optionalLock.get());
+      }
     }
+    return failedAction.get();
+  }
 
-    /**
-     * Executes an action within a lock.
-     *
-     * @param lock     The lock to acquire
-     * @param runnable The action to perform within the lock.
-     */
-    public void doWithLock(Lock lock, Runnable runnable) {
-        Optional<Lock> optionalLock = lockManager.acquireLock(lock);
-        if (optionalLock.isPresent()) {
-            try {
-                runnable.run();
-            } finally {
-                lockManager.releaseLock(optionalLock.get());
-            }
-        }
+  /**
+   * Executes an action within a lock.
+   *
+   * @param lock The lock to acquire
+   * @param runnable The action to perform within the lock.
+   */
+  public void doWithLock(Lock lock, Runnable runnable) {
+    Optional<Lock> optionalLock = lockManager.acquireLock(lock);
+    if (optionalLock.isPresent()) {
+      try {
+        runnable.run();
+      } finally {
+        lockManager.releaseLock(optionalLock.get());
+      }
     }
+  }
 }

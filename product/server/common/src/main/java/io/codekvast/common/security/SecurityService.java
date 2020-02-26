@@ -28,59 +28,59 @@ package io.codekvast.common.security;
  */
 public interface SecurityService extends CustomerIdProvider {
 
-    String USER_ROLE = "USER";
+  String USER_ROLE = "USER";
 
-    /**
-     * Used for converting a successful login to a webapp JWT token.
-     *
-     * @param customerId  The internal customerId
-     * @param credentials The credentials to convert to a token
-     * @return A one-time code that can be used by {@link #tradeCodeToWebappToken(String)}
-     */
-    String createCodeForWebappToken(Long customerId, WebappCredentials credentials);
+  /**
+   * Used for converting a successful login to a webapp JWT token.
+   *
+   * @param customerId The internal customerId
+   * @param credentials The credentials to convert to a token
+   * @return A one-time code that can be used by {@link #tradeCodeToWebappToken(String)}
+   */
+  String createCodeForWebappToken(Long customerId, WebappCredentials credentials);
 
-    /**
-     * Trades a one-time code to a webapp JWT token.
-     *
-     * @param code A code returned by {@link #createCodeForWebappToken(Long, WebappCredentials)}
-     * @return A webapp JWT that can be used for authenticating the dashboard webapp.
-     */
-    String tradeCodeToWebappToken(String code);
+  /**
+   * Trades a one-time code to a webapp JWT token.
+   *
+   * @param code A code returned by {@link #createCodeForWebappToken(Long, WebappCredentials)}
+   * @return A webapp JWT that can be used for authenticating the dashboard webapp.
+   */
+  String tradeCodeToWebappToken(String code);
 
-    /**
-     * Authenticates a token attached to an incoming request.
-     * If successful, the SecurityContextHolder is updated so that the rest of the request runs with a
-     * known principal.
-     *
-     * If failure, the SecurityContextHolder is cleared so that Spring Security will return HTTP status 401.
-     *
-     * @param token The (JWT) token received from the webapp.
-     */
-    void authenticateToken(String token);
+  /**
+   * Authenticates a token attached to an incoming request. If successful, the SecurityContextHolder
+   * is updated so that the rest of the request runs with a known principal.
+   *
+   * <p>If failure, the SecurityContextHolder is cleared so that Spring Security will return HTTP
+   * status 401.
+   *
+   * @param token The (JWT) token received from the webapp.
+   */
+  void authenticateToken(String token);
 
-    /**
-     * Should be invoked in a finally block after chain.doFilter(req, resp) to make sure that the authentication is not leaked to other
-     * threads.
-     */
-    void removeAuthentication();
+  /**
+   * Should be invoked in a finally block after chain.doFilter(req, resp) to make sure that the
+   * authentication is not leaked to other threads.
+   */
+  void removeAuthentication();
 
-    /**
-     * Perform a Single-Sign On using the parameters given by Heroku.
-     *
-     * It creates a token using the stored secret and compares it to the given token. If equal, the SSO is successful.
-     * It also checks the timestamp to detect replay attacks.
-     *
-     * @param token            The token presented by Heroku
-     * @param externalId       The external (Heroku) id of the customer inside the token
-     * @param email            The email inside the token
-     * @param timestampSeconds The timestamp inside the token
-     * @param salt             The salt used by Heroku when hashing the presented token. Is shared between Heroku and Codekvast.
-     * @return A one-time code that can be used by {@link #tradeCodeToWebappToken(String)}
-     */
-    String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds, String salt);
+  /**
+   * Perform a Single-Sign On using the parameters given by Heroku.
+   *
+   * <p>It creates a token using the stored secret and compares it to the given token. If equal, the
+   * SSO is successful. It also checks the timestamp to detect replay attacks.
+   *
+   * @param token The token presented by Heroku
+   * @param externalId The external (Heroku) id of the customer inside the token
+   * @param email The email inside the token
+   * @param timestampSeconds The timestamp inside the token
+   * @param salt The salt used by Heroku when hashing the presented token. Is shared between Heroku
+   *     and Codekvast.
+   * @return A one-time code that can be used by {@link #tradeCodeToWebappToken(String)}
+   */
+  String doHerokuSingleSignOn(
+      String token, String externalId, String email, long timestampSeconds, String salt);
 
-    /**
-     * Should be invoked from a scheduled thread to remove expired token codes.
-     */
-    void removeExpiredTokenCodes();
+  /** Should be invoked from a scheduled thread to remove expired token codes. */
+  void removeExpiredTokenCodes();
 }

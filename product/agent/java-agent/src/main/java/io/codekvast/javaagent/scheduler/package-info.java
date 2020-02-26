@@ -22,7 +22,8 @@
 /**
  * The scheduler is the heart of the Codekvast agent.
  *
- * It schedules when to poll the server, when to publish the code base and when to publish invocation data.
+ * <p>It schedules when to poll the server, when to publish the code base and when to publish
+ * invocation data.
  *
  * @author olle.hallin@crisp.se
  */

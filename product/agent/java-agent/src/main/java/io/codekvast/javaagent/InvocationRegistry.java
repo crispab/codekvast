@@ -25,19 +25,18 @@ import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.util.SignatureUtils;
-import lombok.NonNull;
-import lombok.extern.java.Log;
-import org.aspectj.lang.Signature;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import lombok.NonNull;
+import lombok.extern.java.Log;
+import org.aspectj.lang.Signature;
 
 /**
  * This is the target of the method execution recording aspects.
- * <p>
- * It holds data about method invocations and methods for publishing the data.
+ *
+ * <p>It holds data about method invocations and methods for publishing the data.
  *
  * @author olle.hallin@crisp.se
  */
@@ -45,123 +44,127 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Log
 public class InvocationRegistry {
 
-    @SuppressWarnings("StaticInitializerReferencesSubClass")
-    public static InvocationRegistry instance = new NullInvocationRegistry();
+  @SuppressWarnings("StaticInitializerReferencesSubClass")
+  public static InvocationRegistry instance = new NullInvocationRegistry();
 
-    // Toggle between two invocation sets to avoid synchronisation
-    private final Set<String>[] invocations;
-    private volatile int currentInvocationIndex = 0;
+  // Toggle between two invocation sets to avoid synchronisation
+  private final Set<String>[] invocations;
+  private volatile int currentInvocationIndex = 0;
 
-    // Do all updates to the current set from a single worker thread
-    private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+  // Do all updates to the current set from a single worker thread
+  private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
 
-    private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
+  private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    private InvocationRegistry() {
-        //noinspection unchecked
-        this.invocations = new Set[]{new HashSet<String>(), new HashSet<String>()};
-        startWorker();
+  private InvocationRegistry() {
+    //noinspection unchecked
+    this.invocations = new Set[] {new HashSet<String>(), new HashSet<String>()};
+    startWorker();
+  }
+
+  private void startWorker() {
+    if (!isNullRegistry()) {
+      Thread worker =
+          CodekvastThreadFactory.builder()
+              .name("registry")
+              .build()
+              .newThread(new InvocationsAdder());
+      worker.start();
+    }
+  }
+
+  @SuppressWarnings("MethodReturnAlwaysConstant")
+  public boolean isNullRegistry() {
+    return false;
+  }
+
+  /**
+   * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be
+   * registered.
+   *
+   * @param config The agent configuration. May be null, in which case the registry is disabled.
+   */
+  public static void initialize(AgentConfig config) {
+    if (config == null) {
+      instance = new NullInvocationRegistry();
+      return;
     }
 
-    private void startWorker() {
-        if (!isNullRegistry()) {
-            Thread worker = CodekvastThreadFactory.builder().name("registry").build().newThread(new InvocationsAdder());
-            worker.start();
-        }
+    InvocationRegistry.instance = new InvocationRegistry();
+  }
+
+  /**
+   * Record this method invocation in the current recording interval.
+   *
+   * <p>Thread-safe.
+   *
+   * @param signature The captured method invocation signature.
+   */
+  public void registerMethodInvocation(Signature signature) {
+    String sig = SignatureUtils.signatureToString(signature);
+
+    /*
+     HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
+     a background worker thread.
+    */
+    if (!invocations[currentInvocationIndex].contains(sig)) {
+      queue.add(sig);
     }
+  }
 
-    @SuppressWarnings("MethodReturnAlwaysConstant")
-    public boolean isNullRegistry() {
-        return false;
+  public void publishInvocationData(@NonNull InvocationDataPublisher publisher)
+      throws CodekvastPublishingException {
+    long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
+    int oldIndex = currentInvocationIndex;
+
+    toggleInvocationsIndex();
+
+    try {
+      // Give the InvocationAdder time to see the new currentInvocationIndex so that we
+      // avoid ConcurrentModificationException.
+      Thread.sleep(10L);
+
+      publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
+    } catch (InterruptedException ignored) {
+      // Do nothing here
+    } finally {
+      invocations[oldIndex].clear();
     }
+  }
 
-    /**
-     * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be registered.
-     *
-     * @param config The agent configuration. May be null, in which case the registry is disabled.
-     */
-    public static void initialize(AgentConfig config) {
-        if (config == null) {
-            instance = new NullInvocationRegistry();
-            return;
-        }
+  private synchronized void toggleInvocationsIndex() {
+    recordingIntervalStartedAtMillis = System.currentTimeMillis();
+    currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
+  }
 
-        InvocationRegistry.instance = new InvocationRegistry();
-    }
-
-    /**
-     * Record this method invocation in the current recording interval.
-     * <p>
-     * Thread-safe.
-     *
-     * @param signature The captured method invocation signature.
-     */
-    public void registerMethodInvocation(Signature signature) {
-        String sig = SignatureUtils.signatureToString(signature);
-
-        /*
-         HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
-         a background worker thread.
-        */
-        if (!invocations[currentInvocationIndex].contains(sig)) {
-            queue.add(sig);
-        }
-    }
-
-    public void publishInvocationData(@NonNull InvocationDataPublisher publisher) throws CodekvastPublishingException {
-        long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
-        int oldIndex = currentInvocationIndex;
-
-        toggleInvocationsIndex();
-
+  private class InvocationsAdder implements Runnable {
+    @Override
+    public void run() {
+      while (true) {
         try {
-            // Give the InvocationAdder time to see the new currentInvocationIndex so that we
-            // avoid ConcurrentModificationException.
-            Thread.sleep(10L);
-
-            publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
-        } catch (InterruptedException ignored) {
-            // Do nothing here
-        } finally {
-            invocations[oldIndex].clear();
+          invocations[currentInvocationIndex].add(queue.take());
+        } catch (InterruptedException e) {
+          logger.fine("Interrupted");
+          return;
         }
+      }
+    }
+  }
+
+  @SuppressWarnings("MethodReturnAlwaysConstant")
+  private static class NullInvocationRegistry extends InvocationRegistry {
+    private NullInvocationRegistry() {
+      super();
     }
 
-    private synchronized void toggleInvocationsIndex() {
-        recordingIntervalStartedAtMillis = System.currentTimeMillis();
-        currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
+    @Override
+    public void registerMethodInvocation(Signature signature) {
+      // No operation
     }
 
-    private class InvocationsAdder implements Runnable {
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    invocations[currentInvocationIndex].add(queue.take());
-                } catch (InterruptedException e) {
-                    logger.fine("Interrupted");
-                    return;
-                }
-            }
-        }
+    @Override
+    public boolean isNullRegistry() {
+      return true;
     }
-
-    @SuppressWarnings("MethodReturnAlwaysConstant")
-    private static class NullInvocationRegistry extends InvocationRegistry {
-        private NullInvocationRegistry() {
-            super();
-        }
-
-        @Override
-        public void registerMethodInvocation(Signature signature) {
-            // No operation
-        }
-
-        @Override
-        public boolean isNullRegistry() {
-            return true;
-        }
-
-    }
-
+  }
 }

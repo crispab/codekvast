@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ButtonTwoService {
 
-    @SuppressWarnings("unused")
-    public void doSomething() {
-        log.info("Doing something 2");
-    }
+  @SuppressWarnings("unused")
+  public void doSomething() {
+    log.info("Doing something 2");
+  }
 }

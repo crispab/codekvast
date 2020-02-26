@@ -23,9 +23,7 @@ package io.codekvast.dashboard.dashboard.model.methods;
 
 import lombok.*;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 // Cannot use @Value here, since that will prohibit computed fields.
 @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Data
@@ -33,21 +31,15 @@ import lombok.*;
 @Builder(toBuilder = true)
 public class MethodDescriptor2 {
 
-    @NonNull
-    private final Long id;
+  @NonNull private final Long id;
 
-    @NonNull
-    private final String signature;
+  @NonNull private final String signature;
 
-    @NonNull
-    private final Integer trackedPercent;
+  @NonNull private final Integer trackedPercent;
 
-    @NonNull
-    private final Integer collectedDays;
+  @NonNull private final Integer collectedDays;
 
-    @NonNull
-    private Long lastInvokedAtMillis;
+  @NonNull private Long lastInvokedAtMillis;
 
-    @NonNull
-    private Long collectedToMillis;
+  @NonNull private Long collectedToMillis;
 }

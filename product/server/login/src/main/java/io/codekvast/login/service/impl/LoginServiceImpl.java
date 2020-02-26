@@ -21,6 +21,8 @@
  */
 package io.codekvast.login.service.impl;
 
+import static org.springframework.util.StringUtils.capitalize;
+
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.messaging.EventService;
@@ -30,6 +32,9 @@ import io.codekvast.common.security.WebappCredentials;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.model.User;
 import io.codekvast.login.service.LoginService;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,85 +42,85 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
-
-import static org.springframework.util.StringUtils.capitalize;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
 
-    private final CodekvastLoginSettings settings;
-    private final CustomerService customerService;
-    private final SecurityService securityService;
-    private final EventService eventService;
+  private final CodekvastLoginSettings settings;
+  private final CustomerService customerService;
+  private final SecurityService securityService;
+  private final EventService eventService;
 
-    @Override
-    @Transactional
-    public URI getDashboardLaunchURI(Long customerId) {
-        User user = getUserFromSecurityContext();
+  @Override
+  @Transactional
+  public URI getDashboardLaunchURI(Long customerId) {
+    User user = getUserFromSecurityContext();
 
-        if (user.getCustomerData().stream().anyMatch(cd -> cd.getCustomerId().equals(customerId))) {
-            customerService.registerLogin(
-                CustomerService.LoginRequest.builder()
-                                            .customerId(customerId)
-                                            .email(user.getEmail())
-                                            .source(settings.getApplicationName())
-                                            .build());
-            CustomerData cd = customerService.getCustomerDataByCustomerId(customerId);
+    if (user.getCustomerData().stream().anyMatch(cd -> cd.getCustomerId().equals(customerId))) {
+      customerService.registerLogin(
+          CustomerService.LoginRequest.builder()
+              .customerId(customerId)
+              .email(user.getEmail())
+              .source(settings.getApplicationName())
+              .build());
+      CustomerData cd = customerService.getCustomerDataByCustomerId(customerId);
 
-            String code = securityService.createCodeForWebappToken(
-                customerId,
-                WebappCredentials
-                    .builder()
-                    .customerName(cd.getCustomerName())
-                    .email(user.getEmail())
-                    .source(cd.getSource())
-                    .build());
-            return URI.create(String.format("%s/dashboard/launch/%s", settings.getDashboardBaseUrl(), code));
-        }
-        return null;
+      String code =
+          securityService.createCodeForWebappToken(
+              customerId,
+              WebappCredentials.builder()
+                  .customerName(cd.getCustomerName())
+                  .email(user.getEmail())
+                  .source(cd.getSource())
+                  .build());
+      return URI.create(
+          String.format("%s/dashboard/launch/%s", settings.getDashboardBaseUrl(), code));
+    }
+    return null;
+  }
+
+  @Override
+  public User getUserFromSecurityContext() {
+    return getUserFromAuthentication(
+        (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication());
+  }
+
+  @Override
+  public User getUserFromAuthentication(OAuth2AuthenticationToken authentication) {
+    Map<String, Object> details = authentication.getPrincipal().getAttributes();
+    String clientRegistrationId = authentication.getAuthorizedClientRegistrationId();
+    logger.debug("Details={}", details);
+
+    String email = (String) details.get("email");
+
+    if (email == null) {
+      return User.builder()
+          .errorMessage(
+              String.format(
+                  "Your email addresses on %s are private.", capitalize(clientRegistrationId)))
+          .customerData(Collections.emptyList())
+          .build();
     }
 
-    @Override
-    public User getUserFromSecurityContext() {
-        return getUserFromAuthentication((OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication());
-    }
+    User user =
+        User.builder()
+            .email(email)
+            .customerData(customerService.getCustomerDataByUserEmail(email))
+            .build();
 
-    @Override
-    public User getUserFromAuthentication(OAuth2AuthenticationToken authentication) {
-        Map<String, Object> details = authentication.getPrincipal().getAttributes();
-        String clientRegistrationId = authentication.getAuthorizedClientRegistrationId();
-        logger.debug("Details={}", details);
-
-        String email = (String) details.get("email");
-
-        if (email == null) {
-            return User.builder()
-                       .errorMessage(String.format("Your email addresses on %s are private.", capitalize(clientRegistrationId)))
-                       .customerData(Collections.emptyList())
-                       .build();
-        }
-
-        User user = User.builder()
-                        .email(email)
-                        .customerData(customerService.getCustomerDataByUserEmail(email))
-                        .build();
-
-        eventService.send(UserAuthenticatedEvent.builder()
-                                                .emailAddress(email)
-                                                .authenticationProvider(clientRegistrationId)
-                                                .build());
-        logger.debug("{} authenticated by {} has access to {} Codekvast projects", email, clientRegistrationId,
-                     user.getCustomerData().size());
-        logger.debug("Returning {}", user);
-        return user;
-    }
-
+    eventService.send(
+        UserAuthenticatedEvent.builder()
+            .emailAddress(email)
+            .authenticationProvider(clientRegistrationId)
+            .build());
+    logger.debug(
+        "{} authenticated by {} has access to {} Codekvast projects",
+        email,
+        clientRegistrationId,
+        user.getCustomerData().size());
+    logger.debug("Returning {}", user);
+    return user;
+  }
 }

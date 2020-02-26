@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'com.ofg.uptodate'
 apply plugin: 'jacoco'
 apply plugin: 'io.freefair.lombok'
+apply plugin: 'com.github.sherter.google-java-format'
 apply from: "$rootDir/gradle/libs.gradle"
 
 uptodate {

@@ -21,75 +21,63 @@
  */
 package io.codekvast.common.lock;
 
-import lombok.*;
-
 import java.sql.Connection;
 import java.time.Duration;
 import java.time.Instant;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.Value;
+import lombok.With;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Value
 @Builder
 @EqualsAndHashCode(exclude = "connection")
 public class Lock {
-    @NonNull
-    private final String name;
+  @NonNull private final String name;
 
-    private final Long customerId;
+  private final Long customerId;
 
-    @NonNull
-    private final Integer maxLockWaitSeconds;
+  @NonNull private final Integer maxLockWaitSeconds;
 
-    private final Instant waitStartedAt = Instant.now();
+  private final Instant waitStartedAt = Instant.now();
 
-    @With
-    private final Instant acquiredAt;
+  @With private final Instant acquiredAt;
 
-    @With
-    private final Instant releasedAt;
+  @With private final Instant releasedAt;
 
-    @With
-    private final Connection connection;
+  @With private final Connection connection;
 
-    public String key() {
-        if (customerId == null || customerId < 0) {
-            return String.format("codekvast-%s", name);
-        }
-        return String.format("codekvast-%s-%d", name, customerId);
+  public String key() {
+    if (customerId == null || customerId < 0) {
+      return String.format("codekvast-%s", name);
     }
+    return String.format("codekvast-%s-%d", name, customerId);
+  }
 
-    public Duration getWaitDuration() {
-        return Duration.between(waitStartedAt, acquiredAt);
-    }
+  public Duration getWaitDuration() {
+    return Duration.between(waitStartedAt, acquiredAt);
+  }
 
-    public Duration getLockDuration() {
-        return Duration.between(acquiredAt, releasedAt);
-    }
+  public Duration getLockDuration() {
+    return Duration.between(acquiredAt, releasedAt);
+  }
 
-    @Override
-    public String toString() {
-        return String.format("%s(key=%s)", getClass().getSimpleName(), key());
-    }
+  @Override
+  public String toString() {
+    return String.format("%s(key=%s)", getClass().getSimpleName(), key());
+  }
 
-    public static Lock forFunction(@NonNull String name) {
-        return Lock.builder()
-                   .name(name)
-                   .maxLockWaitSeconds(2)
-                   .build();
-    }
+  public static Lock forFunction(@NonNull String name) {
+    return Lock.builder().name(name).maxLockWaitSeconds(2).build();
+  }
 
-    public static Lock forSystem() {
-        return forFunction("system");
-    }
+  public static Lock forSystem() {
+    return forFunction("system");
+  }
 
-    public static Lock forCustomer(@NonNull Long customerId) {
-        return Lock.builder()
-                   .name("customer")
-                   .customerId(customerId)
-                   .maxLockWaitSeconds(120)
-                   .build();
-    }
-
+  public static Lock forCustomer(@NonNull Long customerId) {
+    return Lock.builder().name("customer").customerId(customerId).maxLockWaitSeconds(120).build();
+  }
 }

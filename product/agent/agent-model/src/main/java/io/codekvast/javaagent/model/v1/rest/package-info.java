@@ -21,7 +21,7 @@
  */
 /**
  * Model objects used in the REST interface offered by the Codekvast Server.
- * 
+ *
  * @author olle.hallin@crisp.se
  */
 package io.codekvast.javaagent.model.v1.rest;

@@ -21,8 +21,6 @@
  */
 package io.codekvast.common.messaging.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -35,15 +33,11 @@ import lombok.Value;
 @Value
 @Builder
 public class PlanChangedEvent implements CodekvastEvent {
-    @NonNull Long customerId;
-    @NonNull String oldPlan;
-    @NonNull String newPlan;
+  @NonNull Long customerId;
+  @NonNull String oldPlan;
+  @NonNull String newPlan;
 
-    public static PlanChangedEvent sample() {
-        return PlanChangedEvent.builder()
-                               .customerId(1L)
-                               .oldPlan("oldPlan")
-                               .newPlan("newPlan")
-                               .build();
-    }
+  public static PlanChangedEvent sample() {
+    return PlanChangedEvent.builder().customerId(1L).oldPlan("oldPlan").newPlan("newPlan").build();
+  }
 }

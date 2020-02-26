@@ -10,14 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UntrackedClass {
 
-    private int count;
+  private int count;
 
-    public int foo() {
-        return count++;
-    }
+  public int foo() {
+    return count++;
+  }
 
-    public int fooLogged() {
-        logger.trace("Invoked fooLogged() #{}", count);
-        return count++;
-    }
+  public int fooLogged() {
+    logger.trace("Invoked fooLogged() #{}", count);
+    return count++;
+  }
 }

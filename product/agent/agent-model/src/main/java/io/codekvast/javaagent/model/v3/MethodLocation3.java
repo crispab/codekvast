@@ -21,11 +21,10 @@
  */
 package io.codekvast.javaagent.model.v3;
 
+import java.io.Serializable;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
-
-import java.io.Serializable;
 
 /**
  * Holds a pair of method signature and it's location in code.
@@ -34,10 +33,8 @@ import java.io.Serializable;
  */
 @Value
 public class MethodLocation3 implements Serializable {
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    @NonNull
-    @With
-    private final String signature;
-    private final String location;
+  @NonNull @With private final String signature;
+  private final String location;
 }

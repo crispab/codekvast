@@ -26,17 +26,15 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Service
 @RequiredArgsConstructor
 public class LoginMetricsServiceImpl implements LoginMetricsService {
 
-    private final MeterRegistry meterRegistry;
+  private final MeterRegistry meterRegistry;
 
-    @Override
-    public void countDashboardLaunch() {
-        meterRegistry.counter("codekvast.login.dashboard.launches").increment();
-    }
+  @Override
+  public void countDashboardLaunch() {
+    meterRegistry.counter("codekvast.login.dashboard.launches").increment();
+  }
 }

@@ -31,15 +31,14 @@ import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
 import io.codekvast.javaagent.util.LogUtil;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
-
 import java.io.File;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 
 /**
  * Responsible for executing recurring tasks within the agent.
@@ -49,287 +48,301 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("ClassWithTooManyFields")
 @Log
 public class Scheduler implements Runnable {
-    // Collaborators
-    private final AgentConfig config;
-    private final ConfigPoller configPoller;
-    private final CodeBasePublisherFactory codeBasePublisherFactory;
-    private final InvocationDataPublisherFactory invocationDataPublisherFactory;
-    private final ScheduledExecutorService executor;
+  // Collaborators
+  private final AgentConfig config;
+  private final ConfigPoller configPoller;
+  private final CodeBasePublisherFactory codeBasePublisherFactory;
+  private final InvocationDataPublisherFactory invocationDataPublisherFactory;
+  private final ScheduledExecutorService executor;
+  private final SystemClock systemClock;
+
+  // Mutable state
+  private long stopWaitingForResolvedAppVersionAtMillis;
+
+  private GetConfigResponse2 dynamicConfig;
+  private final SchedulerState pollState;
+
+  private final SchedulerState codeBasePublisherState;
+  private CodeBasePublisher codeBasePublisher;
+
+  private final SchedulerState invocationDataPublisherState;
+  private InvocationDataPublisher invocationDataPublisher;
+
+  public Scheduler(
+      AgentConfig config,
+      ConfigPoller configPoller,
+      CodeBasePublisherFactory codeBasePublisherFactory,
+      InvocationDataPublisherFactory invocationDataPublisherFactory,
+      SystemClock systemClock) {
+    this.config = config;
+    this.configPoller = configPoller;
+    this.codeBasePublisherFactory = codeBasePublisherFactory;
+    this.invocationDataPublisherFactory = invocationDataPublisherFactory;
+    this.systemClock = systemClock;
+
+    this.pollState = new SchedulerState("configPoll", systemClock).initialize(10, 10);
+
+    this.codeBasePublisherState = new SchedulerState("codeBase", systemClock).initialize(10, 10);
+
+    this.invocationDataPublisherState =
+        new SchedulerState("invocationData", systemClock).initialize(10, 10);
+
+    this.executor =
+        Executors.newScheduledThreadPool(
+            1, CodekvastThreadFactory.builder().name("scheduler").relativePriority(-1).build());
+  }
+
+  /**
+   * Starts the scheduler.
+   *
+   * @return this
+   */
+  public Scheduler start() {
+    stopWaitingForResolvedAppVersionAtMillis = System.currentTimeMillis() + 120_000L;
+
+    executor.scheduleAtFixedRate(
+        this,
+        config.getSchedulerInitialDelayMillis(),
+        config.getSchedulerIntervalMillis(),
+        TimeUnit.MILLISECONDS);
+    logger.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
+    return this;
+  }
+
+  /** Shuts down the scheduler. Performs a last publishing before returning. */
+  public void shutdown() {
+    long startedAt = systemClock.currentTimeMillis();
+    synchronized (executor) {
+      logger.fine("Stopping scheduler");
+      executor.shutdown();
+      try {
+        executor.awaitTermination(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        logger.fine("Stop interrupted");
+      }
+
+      if (dynamicConfig != null) {
+        // We have done at least one successful config poll
+
+        codeBasePublisherState.scheduleNow();
+        publishCodeBaseIfNeeded();
+
+        invocationDataPublisherState.scheduleNow();
+        publishInvocationDataIfNeeded();
+      }
+    }
+    logger.info(
+        String.format(
+            "Codekvast scheduler stopped in %d ms", systemClock.currentTimeMillis() - startedAt));
+  }
+
+  @Override
+  public void run() {
+    synchronized (executor) {
+      if (executor.isShutdown()) {
+        logger.fine("Codekvast scheduler is shutting down");
+        return;
+      }
+
+      if (!resolvedAndReady()) {
+        if (System.currentTimeMillis() < stopWaitingForResolvedAppVersionAtMillis) {
+          return;
+        }
+
+        if (stopWaitingForResolvedAppVersionAtMillis > 0L) {
+          logger.warning(
+              String.format(
+                  "Codekvast is not ready, check codeBase='%s' and appVersion='%s' in %s.",
+                  config.getCodeBase(), config.getAppVersion(), "codekvast.conf"));
+          // log warning only once
+          stopWaitingForResolvedAppVersionAtMillis = -1L;
+        }
+      }
+
+      try {
+        pollDynamicConfigIfNeeded();
+        publishCodeBaseIfNeeded();
+        publishInvocationDataIfNeeded();
+      } catch (Throwable t) {
+        //noinspection UseOfSystemOutOrSystemErr
+        System.err.println("Codekvast scheduler failure: " + t);
+      }
+    }
+  }
+
+  private boolean resolvedAndReady() {
+    for (File file : config.getCodeBaseFiles()) {
+      if (!file.exists()) {
+        logger.fine("Codebase file " + file + " does not exist");
+        return false;
+      }
+    }
+
+    if (AppVersionResolver.isUnresolved(config.getResolvedAppVersion())) {
+      logger.fine(String.format("appVersion='%s' has not resolved", config.getAppVersion()));
+      return false;
+    }
+
+    return true;
+  }
+
+  private void pollDynamicConfigIfNeeded() {
+    if (pollState.isDueTime()) {
+      try {
+        dynamicConfig = configPoller.doPoll();
+
+        configureCodeBasePublisher();
+        configureInvocationDataPublisher();
+
+        pollState.updateIntervals(
+            dynamicConfig.getConfigPollIntervalSeconds(),
+            dynamicConfig.getConfigPollRetryIntervalSeconds());
+        pollState.scheduleNext();
+      } catch (Exception e) {
+        LogUtil.logException(logger, "Failed to poll " + config.getPollConfigRequestEndpoint(), e);
+        pollState.scheduleRetry();
+      }
+    }
+  }
+
+  private void configureCodeBasePublisher() {
+    codeBasePublisherState.updateIntervals(
+        dynamicConfig.getCodeBasePublisherCheckIntervalSeconds(),
+        dynamicConfig.getCodeBasePublisherRetryIntervalSeconds());
+
+    String newName = dynamicConfig.getCodeBasePublisherName();
+    if (codeBasePublisher == null || !newName.equals(codeBasePublisher.getName())) {
+      codeBasePublisher = codeBasePublisherFactory.create(newName, config);
+      codeBasePublisherState.scheduleNow();
+    }
+    codeBasePublisher.configure(
+        dynamicConfig.getCustomerId(), dynamicConfig.getCodeBasePublisherConfig());
+  }
+
+  private void configureInvocationDataPublisher() {
+    invocationDataPublisherState.updateIntervals(
+        dynamicConfig.getInvocationDataPublisherIntervalSeconds(),
+        dynamicConfig.getInvocationDataPublisherRetryIntervalSeconds());
+
+    String newName = dynamicConfig.getInvocationDataPublisherName();
+    if (invocationDataPublisher == null || !newName.equals(invocationDataPublisher.getName())) {
+      invocationDataPublisher = invocationDataPublisherFactory.create(newName, config);
+      invocationDataPublisherState.scheduleNow();
+    }
+
+    if (codeBasePublisher != null) {
+      invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
+      if (codeBasePublisher.getSequenceNumber() == 1
+          && invocationDataPublisher.getSequenceNumber() == 0) {
+        invocationDataPublisherState.scheduleNow();
+      }
+    }
+
+    invocationDataPublisher.configure(
+        dynamicConfig.getCustomerId(), dynamicConfig.getInvocationDataPublisherConfig());
+  }
+
+  private void publishCodeBaseIfNeeded() {
+    if (codeBasePublisherState.isDueTime() && dynamicConfig != null) {
+      logger.finer("Checking if code base needs to be published...");
+
+      try {
+        codeBasePublisher.publishCodeBase();
+        codeBasePublisherState.scheduleNext();
+      } catch (Exception e) {
+        LogUtil.logException(logger, "Failed to publish code base", e);
+        codeBasePublisherState.scheduleRetry();
+      }
+    }
+  }
+
+  private void publishInvocationDataIfNeeded() {
+    if (invocationDataPublisherState.isDueTime() && dynamicConfig != null) {
+      logger.finer("Checking if invocation data needs to be published...");
+
+      if (codeBasePublisher.getCodeBaseFingerprint() != null
+          && invocationDataPublisher.getCodeBaseFingerprint() == null) {
+        logger.finer("Enabled a fast first invocation data publishing");
+        invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
+      }
+
+      try {
+        InvocationRegistry.instance.publishInvocationData(invocationDataPublisher);
+        invocationDataPublisherState.scheduleNext();
+      } catch (Exception e) {
+        LogUtil.logException(logger, "Failed to publish invocation data", e);
+        invocationDataPublisherState.scheduleRetry();
+      }
+    }
+  }
+
+  @Getter
+  @RequiredArgsConstructor
+  @Log
+  static class SchedulerState {
+    private final String name;
     private final SystemClock systemClock;
 
-    // Mutable state
-    private long stopWaitingForResolvedAppVersionAtMillis;
+    private long nextEventAtMillis;
+    private int intervalSeconds;
+    private int retryIntervalSeconds;
+    private int retryIntervalFactor;
+    private int numFailures;
 
-    private GetConfigResponse2 dynamicConfig;
-    private final SchedulerState pollState;
-
-    private final SchedulerState codeBasePublisherState;
-    private CodeBasePublisher codeBasePublisher;
-
-    private final SchedulerState invocationDataPublisherState;
-    private InvocationDataPublisher invocationDataPublisher;
-
-    public Scheduler(AgentConfig config,
-                     ConfigPoller configPoller,
-                     CodeBasePublisherFactory codeBasePublisherFactory,
-                     InvocationDataPublisherFactory invocationDataPublisherFactory,
-                     SystemClock systemClock) {
-        this.config = config;
-        this.configPoller = configPoller;
-        this.codeBasePublisherFactory = codeBasePublisherFactory;
-        this.invocationDataPublisherFactory = invocationDataPublisherFactory;
-        this.systemClock = systemClock;
-
-        this.pollState = new SchedulerState("configPoll", systemClock)
-            .initialize(10, 10);
-
-        this.codeBasePublisherState = new SchedulerState("codeBase", systemClock)
-            .initialize(10, 10);
-
-        this.invocationDataPublisherState = new SchedulerState("invocationData", systemClock)
-            .initialize(10, 10);
-
-        this.executor = Executors.newScheduledThreadPool(1,
-                                                         CodekvastThreadFactory.builder()
-                                                                               .name("scheduler")
-                                                                               .relativePriority(-1)
-                                                                               .build());
-
+    SchedulerState initialize(int intervalSeconds, int retryIntervalSeconds) {
+      this.intervalSeconds = intervalSeconds;
+      this.retryIntervalSeconds = retryIntervalSeconds;
+      this.nextEventAtMillis = 0L;
+      resetRetryCounter();
+      return this;
     }
 
-    /**
-     * Starts the scheduler.
-     *
-     * @return this
-     */
-    public Scheduler start() {
-        stopWaitingForResolvedAppVersionAtMillis = System.currentTimeMillis() + 120_000L;
-
-        executor
-            .scheduleAtFixedRate(this, config.getSchedulerInitialDelayMillis(), config.getSchedulerIntervalMillis(), TimeUnit.MILLISECONDS);
-        logger.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
-        return this;
+    private void resetRetryCounter() {
+      this.numFailures = 0;
+      this.retryIntervalFactor = 1;
     }
 
-    /**
-     * Shuts down the scheduler. Performs a last publishing before returning.
-     */
-    public void shutdown() {
-        long startedAt = systemClock.currentTimeMillis();
-        synchronized (executor) {
-
-            logger.fine("Stopping scheduler");
-            executor.shutdown();
-            try {
-                executor.awaitTermination(10, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                logger.fine("Stop interrupted");
-            }
-
-            if (dynamicConfig != null) {
-                // We have done at least one successful config poll
-
-                codeBasePublisherState.scheduleNow();
-                publishCodeBaseIfNeeded();
-
-                invocationDataPublisherState.scheduleNow();
-                publishInvocationDataIfNeeded();
-            }
-        }
-        logger.info(String.format("Codekvast scheduler stopped in %d ms", systemClock.currentTimeMillis() - startedAt));
+    void updateIntervals(int intervalSeconds, int retryIntervalSeconds) {
+      this.intervalSeconds = intervalSeconds;
+      this.retryIntervalSeconds = retryIntervalSeconds;
     }
 
-    @Override
-    public void run() {
-        synchronized (executor) {
-            if (executor.isShutdown()) {
-                logger.fine("Codekvast scheduler is shutting down");
-                return;
-            }
-
-            if (!resolvedAndReady()) {
-                if (System.currentTimeMillis() < stopWaitingForResolvedAppVersionAtMillis) {
-                    return;
-                }
-
-                if (stopWaitingForResolvedAppVersionAtMillis > 0L) {
-                    logger.warning(String.format("Codekvast is not ready, check codeBase='%s' and appVersion='%s' in %s.",
-                                                 config.getCodeBase(), config.getAppVersion(), "codekvast.conf"));
-                    // log warning only once
-                    stopWaitingForResolvedAppVersionAtMillis = -1L;
-                }
-            }
-
-            try {
-                pollDynamicConfigIfNeeded();
-                publishCodeBaseIfNeeded();
-                publishInvocationDataIfNeeded();
-            } catch (Throwable t) {
-                //noinspection UseOfSystemOutOrSystemErr
-                System.err.println("Codekvast scheduler failure: " + t);
-            }
-        }
+    void scheduleNext() {
+      nextEventAtMillis = systemClock.currentTimeMillis() + intervalSeconds * 1000L;
+      if (numFailures > 0) {
+        logger.fine(name + " is exiting failure state after " + numFailures + " failures");
+      }
+      resetRetryCounter();
+      logger.finer(name + " will execute next at " + new Date(nextEventAtMillis));
     }
 
-    private boolean resolvedAndReady() {
-        for (File file : config.getCodeBaseFiles()) {
-            if (!file.exists()) {
-                logger.fine("Codebase file " + file + " does not exist");
-                return false;
-            }
-        }
-
-        if (AppVersionResolver.isUnresolved(config.getResolvedAppVersion())) {
-            logger.fine(String.format("appVersion='%s' has not resolved", config.getAppVersion()));
-            return false;
-        }
-
-        return true;
+    void scheduleNow() {
+      nextEventAtMillis = 0L;
+      logger.fine(name + " will execute now");
     }
 
-    private void pollDynamicConfigIfNeeded() {
-        if (pollState.isDueTime()) {
-            try {
-                dynamicConfig = configPoller.doPoll();
+    void scheduleRetry() {
+      int backOffLimit = 5;
 
-                configureCodeBasePublisher();
-                configureInvocationDataPublisher();
+      if (numFailures < backOffLimit) {
+        retryIntervalFactor = 1;
+      } else {
+        retryIntervalFactor = (int) Math.pow(2, Math.min(numFailures - backOffLimit + 1, 4));
+      }
+      nextEventAtMillis =
+          systemClock.currentTimeMillis() + retryIntervalSeconds * retryIntervalFactor * 1000L;
+      numFailures += 1;
 
-                pollState.updateIntervals(dynamicConfig.getConfigPollIntervalSeconds(), dynamicConfig.getConfigPollRetryIntervalSeconds());
-                pollState.scheduleNext();
-            } catch (Exception e) {
-                LogUtil.logException(logger, "Failed to poll " + config.getPollConfigRequestEndpoint(), e);
-                pollState.scheduleRetry();
-            }
-        }
+      logger.fine(
+          name
+              + " has failed "
+              + numFailures
+              + " times, will retry at "
+              + new Date(nextEventAtMillis));
     }
 
-    private void configureCodeBasePublisher() {
-        codeBasePublisherState.updateIntervals(dynamicConfig.getCodeBasePublisherCheckIntervalSeconds(),
-                                               dynamicConfig.getCodeBasePublisherRetryIntervalSeconds());
-
-        String newName = dynamicConfig.getCodeBasePublisherName();
-        if (codeBasePublisher == null || !newName.equals(codeBasePublisher.getName())) {
-            codeBasePublisher = codeBasePublisherFactory.create(newName, config);
-            codeBasePublisherState.scheduleNow();
-        }
-        codeBasePublisher.configure(dynamicConfig.getCustomerId(), dynamicConfig.getCodeBasePublisherConfig());
+    boolean isDueTime() {
+      return systemClock.currentTimeMillis() >= nextEventAtMillis;
     }
-
-    private void configureInvocationDataPublisher() {
-        invocationDataPublisherState.updateIntervals(dynamicConfig.getInvocationDataPublisherIntervalSeconds(),
-                                                     dynamicConfig.getInvocationDataPublisherRetryIntervalSeconds());
-
-        String newName = dynamicConfig.getInvocationDataPublisherName();
-        if (invocationDataPublisher == null || !newName.equals(invocationDataPublisher.getName())) {
-            invocationDataPublisher = invocationDataPublisherFactory.create(newName, config);
-            invocationDataPublisherState.scheduleNow();
-        }
-
-        if (codeBasePublisher != null) {
-            invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
-            if (codeBasePublisher.getSequenceNumber() == 1 && invocationDataPublisher.getSequenceNumber() == 0) {
-                invocationDataPublisherState.scheduleNow();
-            }
-        }
-
-        invocationDataPublisher.configure(dynamicConfig.getCustomerId(), dynamicConfig.getInvocationDataPublisherConfig());
-    }
-
-    private void publishCodeBaseIfNeeded() {
-        if (codeBasePublisherState.isDueTime() && dynamicConfig != null) {
-            logger.finer("Checking if code base needs to be published...");
-
-            try {
-                codeBasePublisher.publishCodeBase();
-                codeBasePublisherState.scheduleNext();
-            } catch (Exception e) {
-                LogUtil.logException(logger, "Failed to publish code base", e);
-                codeBasePublisherState.scheduleRetry();
-            }
-        }
-    }
-
-    private void publishInvocationDataIfNeeded() {
-        if (invocationDataPublisherState.isDueTime() && dynamicConfig != null) {
-            logger.finer("Checking if invocation data needs to be published...");
-
-            if (codeBasePublisher.getCodeBaseFingerprint() != null && invocationDataPublisher.getCodeBaseFingerprint() == null) {
-                logger.finer("Enabled a fast first invocation data publishing");
-                invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
-            }
-
-            try {
-                InvocationRegistry.instance.publishInvocationData(invocationDataPublisher);
-                invocationDataPublisherState.scheduleNext();
-            } catch (Exception e) {
-                LogUtil.logException(logger, "Failed to publish invocation data", e);
-                invocationDataPublisherState.scheduleRetry();
-            }
-        }
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    @Log
-    static class SchedulerState {
-        private final String name;
-        private final SystemClock systemClock;
-
-        private long nextEventAtMillis;
-        private int intervalSeconds;
-        private int retryIntervalSeconds;
-        private int retryIntervalFactor;
-        private int numFailures;
-
-        SchedulerState initialize(int intervalSeconds, int retryIntervalSeconds) {
-            this.intervalSeconds = intervalSeconds;
-            this.retryIntervalSeconds = retryIntervalSeconds;
-            this.nextEventAtMillis = 0L;
-            resetRetryCounter();
-            return this;
-        }
-
-        private void resetRetryCounter() {
-            this.numFailures = 0;
-            this.retryIntervalFactor = 1;
-        }
-
-        void updateIntervals(int intervalSeconds, int retryIntervalSeconds) {
-            this.intervalSeconds = intervalSeconds;
-            this.retryIntervalSeconds = retryIntervalSeconds;
-        }
-
-        void scheduleNext() {
-            nextEventAtMillis = systemClock.currentTimeMillis() + intervalSeconds * 1000L;
-            if (numFailures > 0) {
-                logger.fine(name + " is exiting failure state after " + numFailures + " failures");
-            }
-            resetRetryCounter();
-            logger.finer(name + " will execute next at " + new Date(nextEventAtMillis));
-        }
-
-        void scheduleNow() {
-            nextEventAtMillis = 0L;
-            logger.fine(name + " will execute now");
-        }
-
-        void scheduleRetry() {
-            int backOffLimit = 5;
-
-            if (numFailures < backOffLimit) {
-                retryIntervalFactor = 1;
-            } else {
-                retryIntervalFactor = (int) Math.pow(2, Math.min(numFailures - backOffLimit + 1, 4));
-            }
-            nextEventAtMillis = systemClock.currentTimeMillis() + retryIntervalSeconds * retryIntervalFactor * 1000L;
-            numFailures += 1;
-
-            logger.fine(name + " has failed " + numFailures + " times, will retry at " + new Date(nextEventAtMillis));
-        }
-
-        boolean isDueTime() {
-            return systemClock.currentTimeMillis() >= nextEventAtMillis;
-        }
-    }
+  }
 }

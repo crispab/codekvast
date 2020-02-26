@@ -21,74 +21,75 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class SyntheticSignatureService {
-    private static final Pattern FALLBACK_SYNTHETIC_SIGNATURE_PATTERN;
+  private static final Pattern FALLBACK_SYNTHETIC_SIGNATURE_PATTERN;
 
-    static {
-        // See io.codekvast.dashboard.dashboard.impl.DashboardServiceImplSyntheticSignatureTest
-        FALLBACK_SYNTHETIC_SIGNATURE_PATTERN = Pattern.compile(
-            ".*(\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\$[a-z]+\\(\\)$|\\.\\.anonfun\\..*|\\.\\.(Enhancer|FastClass)" +
-                "BySpringCGLIB\\.\\..*|\\.canEqual\\(java\\.lang\\.Object\\))");
+  static {
+    // See io.codekvast.dashboard.dashboard.impl.DashboardServiceImplSyntheticSignatureTest
+    FALLBACK_SYNTHETIC_SIGNATURE_PATTERN =
+        Pattern.compile(
+            ".*(\\$\\$.*|\\$\\w+\\$.*|\\.[A-Z0-9_]+\\(.*\\)$|\\$[a-z]+\\(\\)$|\\.\\.anonfun\\..*|\\.\\.(Enhancer|FastClass)"
+                + "BySpringCGLIB\\.\\..*|\\.canEqual\\(java\\.lang\\.Object\\))");
+  }
+
+  private final SyntheticSignatureDAO syntheticSignatureDAO;
+
+  private Pattern compiledPatterns;
+  private int patternHash = 0;
+
+  public boolean isSyntheticMethod(String signature) {
+    return getCompiledPattern().matcher(signature).matches();
+  }
+
+  private Pattern getCompiledPattern() {
+    List<SyntheticSignaturePattern> dbPatterns = syntheticSignatureDAO.getPatterns();
+    if (dbPatterns.hashCode() != patternHash) {
+
+      List<SyntheticSignaturePattern> validPatterns = validatePatterns(dbPatterns);
+
+      if (validPatterns.isEmpty()) {
+        logger.error("Found no valid synthetic signature patterns, using fallback");
+        compiledPatterns = FALLBACK_SYNTHETIC_SIGNATURE_PATTERN;
+      } else {
+        logger.debug("Combining {} patterns retrieved from the database", validPatterns.size());
+        String regexp =
+            validPatterns
+                .stream()
+                .map(SyntheticSignaturePattern::getPattern)
+                .collect(Collectors.joining("|", "(", ")"));
+        compiledPatterns = Pattern.compile(regexp);
+      }
+      patternHash = dbPatterns.hashCode();
     }
+    return compiledPatterns;
+  }
 
-
-    private final SyntheticSignatureDAO syntheticSignatureDAO;
-
-    private Pattern compiledPatterns;
-    private int patternHash = 0;
-
-    public boolean isSyntheticMethod(String signature) {
-        return getCompiledPattern().matcher(signature).matches();
+  private List<SyntheticSignaturePattern> validatePatterns(
+      List<SyntheticSignaturePattern> patterns) {
+    List<SyntheticSignaturePattern> result = new ArrayList<>(patterns);
+    for (var iterator = result.iterator(); iterator.hasNext(); ) {
+      SyntheticSignaturePattern pattern = iterator.next();
+      try {
+        Pattern.compile(pattern.getPattern());
+      } catch (PatternSyntaxException e) {
+        logger.error("Invalid pattern '{}': {}", pattern, e.getMessage());
+        syntheticSignatureDAO.rejectPattern(pattern, e.getMessage());
+        iterator.remove();
+      }
     }
-
-    private Pattern getCompiledPattern() {
-        List<SyntheticSignaturePattern> dbPatterns = syntheticSignatureDAO.getPatterns();
-        if (dbPatterns.hashCode() != patternHash) {
-
-            List<SyntheticSignaturePattern> validPatterns = validatePatterns(dbPatterns);
-
-            if (validPatterns.isEmpty()) {
-                logger.error("Found no valid synthetic signature patterns, using fallback");
-                compiledPatterns = FALLBACK_SYNTHETIC_SIGNATURE_PATTERN;
-            } else {
-                logger.debug("Combining {} patterns retrieved from the database", validPatterns.size());
-                String regexp = validPatterns.stream().map(SyntheticSignaturePattern::getPattern)
-                                             .collect(Collectors.joining("|", "(", ")"));
-                compiledPatterns = Pattern.compile(regexp);
-            }
-            patternHash = dbPatterns.hashCode();
-        }
-        return compiledPatterns;
-    }
-
-    private List<SyntheticSignaturePattern> validatePatterns(List<SyntheticSignaturePattern> patterns) {
-        List<SyntheticSignaturePattern> result = new ArrayList<>(patterns);
-        for (var iterator = result.iterator(); iterator.hasNext(); ) {
-            SyntheticSignaturePattern pattern = iterator.next();
-            try {
-                Pattern.compile(pattern.getPattern());
-            } catch (PatternSyntaxException e) {
-                logger.error("Invalid pattern '{}': {}", pattern, e.getMessage());
-                syntheticSignatureDAO.rejectPattern(pattern, e.getMessage());
-                iterator.remove();
-            }
-        }
-        return result;
-    }
+    return result;
+  }
 }

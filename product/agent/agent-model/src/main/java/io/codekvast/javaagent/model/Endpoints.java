@@ -26,19 +26,19 @@ package io.codekvast.javaagent.model;
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"MarkerInterface","InnerClassTooDeeplyNested"})
+@SuppressWarnings({"MarkerInterface", "InnerClassTooDeeplyNested"})
 public interface Endpoints {
 
-    interface Agent {
-        String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
-        String V2_POLL_CONFIG = "/javaagent/v2/pollConfig";
-        String V2_UPLOAD_CODEBASE = "/javaagent/v2/uploadCodeBase";
-        String V3_UPLOAD_CODEBASE = "/javaagent/v3/uploadCodeBase";
-        String V2_UPLOAD_INVOCATION_DATA = "/javaagent/v2/uploadInvocationData";
+  interface Agent {
+    String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
+    String V2_POLL_CONFIG = "/javaagent/v2/pollConfig";
+    String V2_UPLOAD_CODEBASE = "/javaagent/v2/uploadCodeBase";
+    String V3_UPLOAD_CODEBASE = "/javaagent/v3/uploadCodeBase";
+    String V2_UPLOAD_INVOCATION_DATA = "/javaagent/v2/uploadInvocationData";
 
-        String PARAM_FINGERPRINT = "fingerprint";
-        String PARAM_LICENSE_KEY = "licenseKey";
-        String PARAM_PUBLICATION_SIZE = "numMethods";
-        String PARAM_PUBLICATION_FILE = "publicationFile";
-    }
+    String PARAM_FINGERPRINT = "fingerprint";
+    String PARAM_LICENSE_KEY = "licenseKey";
+    String PARAM_PUBLICATION_SIZE = "numMethods";
+    String PARAM_PUBLICATION_FILE = "publicationFile";
+  }
 }

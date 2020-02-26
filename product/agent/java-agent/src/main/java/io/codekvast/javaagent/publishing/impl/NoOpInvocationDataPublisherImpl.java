@@ -22,30 +22,28 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.config.AgentConfig;
+import java.util.Set;
 import lombok.extern.java.Log;
 
-import java.util.Set;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @SuppressWarnings("MethodReturnAlwaysConstant")
 @Log
 public class NoOpInvocationDataPublisherImpl extends AbstractInvocationDataPublisher {
 
-    static final String NAME = "no-op";
+  static final String NAME = "no-op";
 
-    public NoOpInvocationDataPublisherImpl(AgentConfig config) {
-        super(logger, config);
-    }
+  public NoOpInvocationDataPublisherImpl(AgentConfig config) {
+    super(logger, config);
+  }
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
-    @Override
-    public void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations) {
-        // Nothing here
-    }
+  @Override
+  public void doPublishInvocationData(
+      long recordingIntervalStartedAtMillis, Set<String> invocations) {
+    // Nothing here
+  }
 }

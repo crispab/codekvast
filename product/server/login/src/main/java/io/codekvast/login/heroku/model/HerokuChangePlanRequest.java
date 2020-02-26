@@ -21,14 +21,13 @@
  */
 package io.codekvast.login.heroku.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 @Value
 @Builder
 public class HerokuChangePlanRequest {
-    private String heroku_id;
-    private String plan;
+  private String heroku_id;
+  private String plan;
 }

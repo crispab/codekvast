@@ -32,28 +32,28 @@ import io.codekvast.login.heroku.model.HerokuProvisionRequest;
  */
 public interface HerokuApiWrapper {
 
-    /**
-     * Exchange an authorization_code grant to an access token and refresh token.
-     *
-     * @param grant Is received in the Heroku provisioning request.
-     * @return A HerokuOAuthTokenResponse object.
-     */
-    HerokuOAuthTokenResponse exchangeGrantCode(HerokuProvisionRequest.OAuthGrant grant);
+  /**
+   * Exchange an authorization_code grant to an access token and refresh token.
+   *
+   * @param grant Is received in the Heroku provisioning request.
+   * @return A HerokuOAuthTokenResponse object.
+   */
+  HerokuOAuthTokenResponse exchangeGrantCode(HerokuProvisionRequest.OAuthGrant grant);
 
-    /**
-     * Refresh the access token by presenting the refreshToken.
-     *
-     * @param refreshToken The permanent refresh token.
-     * @return A HerokuOAuthTokenResponse object.
-     */
-    HerokuOAuthTokenResponse refreshAccessToken(String refreshToken);
+  /**
+   * Refresh the access token by presenting the refreshToken.
+   *
+   * @param refreshToken The permanent refresh token.
+   * @return A HerokuOAuthTokenResponse object.
+   */
+  HerokuOAuthTokenResponse refreshAccessToken(String refreshToken);
 
-    /**
-     * Retrieve Heroku app details for a certain app.
-     *
-     * @param externalId  The Heroku identity of a particular app that has Codekvast attached
-     * @param accessToken The OAuth bearer token.
-     * @return A HerokuAppDetails object.
-     */
-    HerokuAppDetails getAppDetails(String externalId, String accessToken);
+  /**
+   * Retrieve Heroku app details for a certain app.
+   *
+   * @param externalId The Heroku identity of a particular app that has Codekvast attached
+   * @param accessToken The OAuth bearer token.
+   * @return A HerokuAppDetails object.
+   */
+  HerokuAppDetails getAppDetails(String externalId, String accessToken);
 }

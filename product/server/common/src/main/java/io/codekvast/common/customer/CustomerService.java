@@ -21,189 +21,179 @@
  */
 package io.codekvast.common.customer;
 
+import java.time.Instant;
+import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 
-import java.time.Instant;
-import java.util.List;
-
-/**
- * @author olle.hallin@crisp.se
- */
+/** @author olle.hallin@crisp.se */
 public interface CustomerService {
 
-    interface Source {
-        String HEROKU = "heroku";
-    }
+  interface Source {
+    String HEROKU = "heroku";
+  }
 
-    /**
-     * Translates a licenseKey to customer data.
-     *
-     * @param licenseKey The licenseKey to translate.
-     * @return A CustomerData object.
-     * @throws AuthenticationCredentialsNotFoundException iff the licenseKey was invalid.
-     */
-    CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException;
+  /**
+   * Translates a licenseKey to customer data.
+   *
+   * @param licenseKey The licenseKey to translate.
+   * @return A CustomerData object.
+   * @throws AuthenticationCredentialsNotFoundException iff the licenseKey was invalid.
+   */
+  CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey)
+      throws AuthenticationCredentialsNotFoundException;
 
-    /**
-     * Translates an externalId to customer data.
-     *
-     * @param source The external system that has generated externalId
-     * @param externalId The externalId to translate.
-     * @return A CustomerData object.
-     * @throws AuthenticationCredentialsNotFoundException iff source+externalId combo was invalid.
-     */
-    CustomerData getCustomerDataByExternalId(@NonNull String source, @NonNull String externalId) throws AuthenticationCredentialsNotFoundException;
+  /**
+   * Translates an externalId to customer data.
+   *
+   * @param source The external system that has generated externalId
+   * @param externalId The externalId to translate.
+   * @return A CustomerData object.
+   * @throws AuthenticationCredentialsNotFoundException iff source+externalId combo was invalid.
+   */
+  CustomerData getCustomerDataByExternalId(@NonNull String source, @NonNull String externalId)
+      throws AuthenticationCredentialsNotFoundException;
 
-    /**
-     * Translates a customerId to customer data.
-     *
-     * @param customerId The customer ID to translate.
-     * @return A CustomerData object.
-     * @throws AuthenticationCredentialsNotFoundException iff the customerId was invalid.
-     */
-    CustomerData getCustomerDataByCustomerId(long customerId) throws AuthenticationCredentialsNotFoundException;
+  /**
+   * Translates a customerId to customer data.
+   *
+   * @param customerId The customer ID to translate.
+   * @return A CustomerData object.
+   * @throws AuthenticationCredentialsNotFoundException iff the customerId was invalid.
+   */
+  CustomerData getCustomerDataByCustomerId(long customerId)
+      throws AuthenticationCredentialsNotFoundException;
 
-    /**
-     * Retrieve a list of customers which has a user with a certain email address
-     *
-     * @param email The user's email address.
-     * @return A collection of CustomerData objects. Does never return null.
-     */
-    List<CustomerData> getCustomerDataByUserEmail(String email);
+  /**
+   * Retrieve a list of customers which has a user with a certain email address
+   *
+   * @param email The user's email address.
+   * @return A collection of CustomerData objects. Does never return null.
+   */
+  List<CustomerData> getCustomerDataByUserEmail(String email);
 
-    /**
-     * Validates a received publication before accepting it.
-     *
-     * @param customerData    The customer data.
-     * @param publicationSize The size of the publication.
-     * @throws LicenseViolationException iff the publication is larger than the customer's plan permits.
-     */
-    void assertPublicationSize(CustomerData customerData, int publicationSize) throws LicenseViolationException;
+  /**
+   * Validates a received publication before accepting it.
+   *
+   * @param customerData The customer data.
+   * @param publicationSize The size of the publication.
+   * @throws LicenseViolationException iff the publication is larger than the customer's plan
+   *     permits.
+   */
+  void assertPublicationSize(CustomerData customerData, int publicationSize)
+      throws LicenseViolationException;
 
-    /**
-     * Checks that the database does not contain too many methods for a certain customer.
-     *
-     * @param customerId The customer ID
-     * @throws LicenseViolationException iff the database contains more rows than the customer's plan permits.
-     */
-    void assertDatabaseSize(long customerId) throws LicenseViolationException;
+  /**
+   * Checks that the database does not contain too many methods for a certain customer.
+   *
+   * @param customerId The customer ID
+   * @throws LicenseViolationException iff the database contains more rows than the customer's plan
+   *     permits.
+   */
+  void assertDatabaseSize(long customerId) throws LicenseViolationException;
 
-    /**
-     * Counts the number of methods this customer has.
-     *
-     * @param customerId The customer id
-     * @return The number of methods that belong to this customer
-     */
-    int countMethods(long customerId);
+  /**
+   * Counts the number of methods this customer has.
+   *
+   * @param customerId The customer id
+   * @return The number of methods that belong to this customer
+   */
+  int countMethods(long customerId);
 
-    /**
-     * Register that an agent has polled.
-     *
-     * It might result in the start of a trial period, if this is the first poll, and the customer has a price plan with a limitation on
-     * trialPeriodDays.
-     *
-     * @param customerData The customer's data
-     * @param polledAt     The instant the agent polled.
-     * @return An updated customerData should there have been any changes. Does never return null.
-     */
-    CustomerData registerAgentPoll(CustomerData customerData, Instant polledAt);
+  /**
+   * Register that an agent has polled.
+   *
+   * <p>It might result in the start of a trial period, if this is the first poll, and the customer
+   * has a price plan with a limitation on trialPeriodDays.
+   *
+   * @param customerData The customer's data
+   * @param polledAt The instant the agent polled.
+   * @return An updated customerData should there have been any changes. Does never return null.
+   */
+  CustomerData registerAgentPoll(CustomerData customerData, Instant polledAt);
 
-    /**
-     * Register that a user has logged in.
-     *
-     * @param request The login request
-     */
-    void registerLogin(LoginRequest request);
+  /**
+   * Register that a user has logged in.
+   *
+   * @param request The login request
+   */
+  void registerLogin(LoginRequest request);
 
-    /**
-     * Adds a new customer
-     *
-     * @param request The add customer request data
-     * @return A response containing the generated customerId and the unique license key
-     */
-    AddCustomerResponse addCustomer(AddCustomerRequest request);
+  /**
+   * Adds a new customer
+   *
+   * @param request The add customer request data
+   * @return A response containing the generated customerId and the unique license key
+   */
+  AddCustomerResponse addCustomer(AddCustomerRequest request);
 
-    /**
-     * Change plan for an existing customer
-     *
-     * @param source The external system that has generated externalId
-     * @param externalId  The external customer ID.
-     * @param newPlanName The name of the new plan.
-     */
-    void changePlanForExternalId(String source, String externalId, String newPlanName);
+  /**
+   * Change plan for an existing customer
+   *
+   * @param source The external system that has generated externalId
+   * @param externalId The external customer ID.
+   * @param newPlanName The name of the new plan.
+   */
+  void changePlanForExternalId(String source, String externalId, String newPlanName);
 
-    /**
-     * Deletes a customer
-     *
-     * @param source The external system that has generated externalId
-     * @param externalId The external id
-     */
-    void deleteCustomerByExternalId(@NonNull String source, String externalId);
+  /**
+   * Deletes a customer
+   *
+   * @param source The external system that has generated externalId
+   * @param externalId The external id
+   */
+  void deleteCustomerByExternalId(@NonNull String source, String externalId);
 
-    /**
-     * Get a user's authorized roles.
-     *
-     * @param email The user's email address.
-     * @return A list of role names. Does never return null.
-     */
-    List<String> getRoleNamesByUserEmail(String email);
+  /**
+   * Get a user's authorized roles.
+   *
+   * @param email The user's email address.
+   * @return A list of role names. Does never return null.
+   */
+  List<String> getRoleNamesByUserEmail(String email);
 
-    /**
-     * @return A list of all CustomerData. Does never return null.
-     */
-    List<CustomerData> getCustomerData();
+  /** @return A list of all CustomerData. Does never return null. */
+  List<CustomerData> getCustomerData();
 
-    /**
-     * Update the app name and the contact email.
-     *
-     * @param appName      The new app name
-     * @param contactEmail the new contact email
-     * @param customerId   Identifies the customer
-     */
-    void updateAppDetails(String appName, String contactEmail, Long customerId);
+  /**
+   * Update the app name and the contact email.
+   *
+   * @param appName The new app name
+   * @param contactEmail the new contact email
+   * @param customerId Identifies the customer
+   */
+  void updateAppDetails(String appName, String contactEmail, Long customerId);
 
-    /**
-     * Parameter object for {@link #addCustomer(AddCustomerRequest)}
-     */
-    @Value
-    @Builder
-    class AddCustomerRequest {
-        @NonNull
-        String source;
+  /** Parameter object for {@link #addCustomer(AddCustomerRequest)} */
+  @Value
+  @Builder
+  class AddCustomerRequest {
+    @NonNull String source;
 
-        @NonNull
-        String externalId;
+    @NonNull String externalId;
 
-        @NonNull
-        String name;
+    @NonNull String name;
 
-        @NonNull
-        String plan;
-    }
+    @NonNull String plan;
+  }
 
-    @Value
-    @Builder
-    class AddCustomerResponse {
-        @NonNull Long customerId;
-        @NonNull String licenseKey;
-    }
+  @Value
+  @Builder
+  class AddCustomerResponse {
+    @NonNull Long customerId;
+    @NonNull String licenseKey;
+  }
 
-    /**
-     * Parameter object for {@link #registerLogin(LoginRequest)}
-     */
-    @Value
-    @Builder
-    class LoginRequest {
-        @NonNull
-        Long customerId;
+  /** Parameter object for {@link #registerLogin(LoginRequest)} */
+  @Value
+  @Builder
+  class LoginRequest {
+    @NonNull Long customerId;
 
-        @NonNull
-        String email;
+    @NonNull String email;
 
-        @NonNull
-        String source;
-    }
+    @NonNull String source;
+  }
 }

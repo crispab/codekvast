@@ -21,8 +21,12 @@
  */
 package io.codekvast.login.heroku;
 
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -34,11 +38,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletResponse;
-
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
 /**
  * MVC endpoint which takes care of 'heroku addons:open codekvast'
  *
@@ -49,31 +48,38 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequiredArgsConstructor
 public class HerokuSsoController {
 
-    private final CodekvastLoginSettings settings;
-    private final SecurityService securityService;
+  private final CodekvastLoginSettings settings;
+  private final SecurityService securityService;
 
-    @ExceptionHandler
-    public ResponseEntity<String> onAuthenticationException(AuthenticationException e) {
-        logger.warn("Invalid SSO attempt");
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+  @ExceptionHandler
+  public ResponseEntity<String> onAuthenticationException(AuthenticationException e) {
+    logger.warn("Invalid SSO attempt");
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+  }
 
-    @RequestMapping(method = POST, path = "/heroku/sso/", consumes = APPLICATION_FORM_URLENCODED_VALUE)
-    public void doHerokuSingleSignOn(
-        @RequestParam("id") String externalId,
-        @RequestParam("timestamp") long timestampSeconds,
-        @RequestParam("token") String token,
-        @RequestParam("nav-data") String navData,
-        @RequestParam("email") String email,
-        HttpServletResponse response) throws AuthenticationException {
+  @RequestMapping(
+      method = POST,
+      path = "/heroku/sso/",
+      consumes = APPLICATION_FORM_URLENCODED_VALUE)
+  public void doHerokuSingleSignOn(
+      @RequestParam("id") String externalId,
+      @RequestParam("timestamp") long timestampSeconds,
+      @RequestParam("token") String token,
+      @RequestParam("nav-data") String navData,
+      @RequestParam("email") String email,
+      HttpServletResponse response)
+      throws AuthenticationException {
 
-        logger.debug("externalId={}, nav-data={}", externalId, navData);
+    logger.debug("externalId={}, nav-data={}", externalId, navData);
 
-        String code = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds, settings.getHerokuApiSsoSalt());
+    String code =
+        securityService.doHerokuSingleSignOn(
+            token, externalId, email, timestampSeconds, settings.getHerokuApiSsoSalt());
 
-        response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
-        response
-            .setHeader(HttpHeaders.LOCATION, String.format("%s/dashboard/heroku/sso/%s/%s", settings.getDashboardBaseUrl(), code, navData));
-    }
-
+    response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
+    response.setHeader(
+        HttpHeaders.LOCATION,
+        String.format(
+            "%s/dashboard/heroku/sso/%s/%s", settings.getDashboardBaseUrl(), code, navData));
+  }
 }

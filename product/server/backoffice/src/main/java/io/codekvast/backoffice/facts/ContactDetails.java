@@ -33,5 +33,5 @@ import lombok.Value;
 @Value
 @Builder
 public class ContactDetails implements TransientFact {
-    @NonNull private String contactEmail;
+  @NonNull private String contactEmail;
 }
