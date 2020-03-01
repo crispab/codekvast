@@ -21,10 +21,14 @@
  */
 package io.codekvast.backoffice.event;
 
+import io.codekvast.backoffice.metrics.BackofficeMetricsService;
 import io.codekvast.backoffice.rules.RuleEngine;
 import io.codekvast.common.messaging.AbstractCodekvastEventListener;
 import io.codekvast.common.messaging.impl.MessageIdRepository;
 import io.codekvast.common.messaging.model.CodekvastEvent;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -34,15 +38,26 @@ import org.springframework.stereotype.Component;
 public class CodekvastEventListener extends AbstractCodekvastEventListener {
 
   private final RuleEngine ruleEngine;
+  private final Clock clock;
+  private final BackofficeMetricsService metrics;
 
-  public CodekvastEventListener(MessageIdRepository messageIdRepository, RuleEngine ruleEngine) {
+  public CodekvastEventListener(
+      MessageIdRepository messageIdRepository,
+      RuleEngine ruleEngine,
+      Clock clock,
+      BackofficeMetricsService backofficeMetricsService) {
     super(messageIdRepository);
     this.ruleEngine = ruleEngine;
+    this.clock = clock;
+    this.metrics = backofficeMetricsService;
   }
 
   @Override
   public void onCodekvastEvent(CodekvastEvent event) {
     logger.debug("Received {}", event);
+
+    Instant startedAt = clock.instant();
     ruleEngine.handle(event);
+    metrics.recordEventProcessingTime(Duration.between(startedAt, clock.instant()));
   }
 }

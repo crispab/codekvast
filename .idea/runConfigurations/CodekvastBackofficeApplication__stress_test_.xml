@@ -1,0 +1,30 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CodekvastBackofficeApplication (stress-test)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="codekvast.product.server.backoffice.main" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="io.codekvast.backoffice.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.backoffice.CodekvastBackofficeApplication" />
+    <option name="ACTIVE_PROFILES" value="no-mail-sender,dev-secrets,stress-test" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.level.io.codekvast.common.messaging" />
+        <option name="value" value="info" />
+      </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.level.io.codekvast.backoffice" />
+        <option name="value" value="info" />
+      </param>
+    </additionalParameters>
+    <method v="2">
+      <option name="Gradle.BeforeRunTask" enabled="false" tasks="startDockerContainers" externalProjectPath="$PROJECT_DIR$/product/server/backoffice" vmOptions="" scriptParameters="" />
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

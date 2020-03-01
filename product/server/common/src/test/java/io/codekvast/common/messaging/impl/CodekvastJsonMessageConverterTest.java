@@ -1,8 +1,8 @@
 package io.codekvast.common.messaging.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.matchesPattern;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
