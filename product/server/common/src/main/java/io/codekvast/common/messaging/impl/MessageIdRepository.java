@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -40,7 +41,7 @@ public class MessageIdRepository {
 
   private final JdbcTemplate jdbcTemplate;
 
-  @Transactional(readOnly = true)
+  @Transactional(propagation = Propagation.MANDATORY)
   public boolean isDuplicate(@NonNull String messageId) {
     Integer count =
         jdbcTemplate.queryForObject(
@@ -53,7 +54,7 @@ public class MessageIdRepository {
     return count != 0;
   }
 
-  @Transactional
+  @Transactional(propagation = Propagation.MANDATORY)
   public void remember(@NonNull String messageId) {
     int inserted =
         jdbcTemplate.update("INSERT INTO rabbitmq_message_ids(messageId) VALUE (?)", messageId);

@@ -25,23 +25,33 @@ import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_
 
 import io.codekvast.common.messaging.impl.MessageIdRepository;
 import io.codekvast.common.messaging.model.CodekvastEvent;
+import io.codekvast.common.metrics.CommonMetricsService;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.transaction.annotation.Transactional;
 
 /** @author olle.hallin@crisp.se */
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractCodekvastEventListener {
 
+  private final String consumerName;
   private final MessageIdRepository messageIdRepository;
+  private final CommonMetricsService metricsService;
+  private final Clock clock;
 
   @RabbitListener(queues = CODEKVAST_EVENT_QUEUE, ackMode = "AUTO")
+  @Transactional
   public void onMessage(Message message, @Payload CodekvastEvent event) throws Exception {
     logger.debug("Received {}", message);
+    Instant startedAt = clock.instant();
     MessageProperties messageProperties = message.getMessageProperties();
     CorrelationIdHolder.set(messageProperties.getCorrelationId());
     try {
@@ -59,6 +69,8 @@ public abstract class AbstractCodekvastEventListener {
       throw e;
     } finally {
       CorrelationIdHolder.clear();
+      metricsService.recordEventConsumed(
+          consumerName, event, Duration.between(startedAt, clock.instant()));
     }
   }
 

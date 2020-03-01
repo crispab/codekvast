@@ -22,6 +22,8 @@
 package io.codekvast.common.metrics;
 
 import io.codekvast.common.lock.Lock;
+import io.codekvast.common.messaging.model.CodekvastEvent;
+import java.time.Duration;
 
 /**
  * Base interface for metrics-related services
@@ -70,4 +72,13 @@ public interface CommonMetricsService {
    * @param lock The lock
    */
   void countLockFailure(Lock lock);
+
+  /**
+   * Record the time required for consuming one event.
+   *
+   * @param consumerName The name of the consumer
+   * @param event The type of event
+   * @param duration The time it took to process the event
+   */
+  void recordEventConsumed(String consumerName, CodekvastEvent event, Duration duration);
 }

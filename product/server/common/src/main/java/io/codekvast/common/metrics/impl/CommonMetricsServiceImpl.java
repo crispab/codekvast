@@ -22,18 +22,28 @@
 package io.codekvast.common.metrics.impl;
 
 import io.codekvast.common.lock.Lock;
+import io.codekvast.common.messaging.model.CodekvastEvent;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import java.time.Duration;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Component;
 
 /** @author olle.hallin@crisp.se */
 @Component("commonMetricsService")
 @RequiredArgsConstructor
+@Slf4j
 public class CommonMetricsServiceImpl implements CommonMetricsService {
 
   private static final String EVENT_TAG = "event";
   public static final String LOCK_TAG = "lock";
+  public static final String SOURCE_TAG = "source";
+  public static final String CONSUMER_TAG = "consumer";
 
   private final MeterRegistry meterRegistry;
 
@@ -59,8 +69,7 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
 
   @Override
   public void countLogin(String source) {
-    meterRegistry.counter("codekvast.login.count", "source", source).increment();
-    meterRegistry.counter("codekvast.login.count" + "." + source).increment();
+    meterRegistry.counter("codekvast.login.count", SOURCE_TAG, source).increment();
   }
 
   @Override
@@ -76,5 +85,32 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
   @Override
   public void countLockFailure(Lock lock) {
     meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.getName()).increment();
+  }
+
+  @Override
+  public void recordEventConsumed(String consumerName, CodekvastEvent event, Duration duration) {
+
+    Timer timer =
+        meterRegistry.timer(
+            "codekvast.event_consumed.duration.millis",
+            CONSUMER_TAG,
+            consumerName,
+            EVENT_TAG,
+            event.getClass().getSimpleName());
+
+    timer.record(duration);
+
+    val count = timer.count();
+    if (count % 1000 == 0L) {
+      logger.info(
+          "Received {} events. Processing time max = {} ms, mean = {} ms",
+          count,
+          formatDouble(timer.max(TimeUnit.MILLISECONDS)),
+          formatDouble(timer.mean(TimeUnit.MILLISECONDS)));
+    }
+  }
+
+  private String formatDouble(Double d) {
+    return String.format(Locale.ENGLISH, "%.1f", d);
   }
 }
