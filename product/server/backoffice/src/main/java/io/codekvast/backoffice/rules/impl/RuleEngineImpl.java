@@ -157,7 +157,7 @@ public class RuleEngineImpl implements RuleEngine {
 
     Optional.ofNullable(customerService.getCustomerDataByCustomerId(customerId).getContactEmail())
         .map(String::trim)
-        .filter(s -> !s.isEmpty())
+        .filter(s -> !s.isEmpty() && !s.startsWith("!"))
         .ifPresent(s -> result.add(ContactDetails.builder().contactEmail(s).build()));
 
     return result;

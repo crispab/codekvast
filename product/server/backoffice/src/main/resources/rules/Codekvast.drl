@@ -20,7 +20,7 @@ end
 rule "Send welcome mail unless done before"
 when
   $cs: CollectionStarted(welcomeMailSentTo == null)
-  $cd: ContactDetails(contactEmail not matches "^!.*")
+  $cd: ContactDetails()
 then
   mailSender.sendMail(MailSender.Template.WELCOME_TO_CODEKVAST, $cd.getContactEmail(), customerId);
   modify($cs) {
