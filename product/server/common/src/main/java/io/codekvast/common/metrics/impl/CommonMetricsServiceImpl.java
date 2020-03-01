@@ -29,6 +29,7 @@ import io.micrometer.core.instrument.Timer;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -46,6 +47,8 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
   public static final String CONSUMER_TAG = "consumer";
 
   private final MeterRegistry meterRegistry;
+
+  private final AtomicInteger eventCounter = new AtomicInteger();
 
   @Override
   public void countApplicationStartup() {
@@ -97,10 +100,10 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
             consumerName,
             EVENT_TAG,
             event.getClass().getSimpleName());
-
     timer.record(duration);
 
-    val count = timer.count();
+    val count = eventCounter.incrementAndGet();
+
     if (count % 1000 == 0L) {
       logger.info(
           "Received {} events. Processing time max = {} ms, mean = {} ms",
