@@ -5,7 +5,7 @@
 1. Dashboard: handler for deadlock exceptions.
 1. Lock management: now uses the database functions GET_LOCK() and RELEASE_LOCK() instead of SELECT ... FOR UPDATE
 1. Dashboard: now refuses to import synthetic methods. WeederService removes already imported synthetic methods.
-1. Upgraded to Spring Boot 2.2.5, Kotlin 1.3.70, Gradle 5.6.4 plus some more
+1. Upgraded to Gradle 6.2.2, Spring Boot 2.2.5, Kotlin 1.3.70 plus some more
 
 ## 1.3.2
 
