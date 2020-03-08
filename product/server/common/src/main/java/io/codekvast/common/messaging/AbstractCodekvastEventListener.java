@@ -55,13 +55,10 @@ public abstract class AbstractCodekvastEventListener {
     MessageProperties messageProperties = message.getMessageProperties();
     CorrelationIdHolder.set(messageProperties.getCorrelationId());
     try {
-      String messageId = messageProperties.getMessageId();
-      if (!messageIdRepository.isDuplicate(messageId)) {
-
-        onCodekvastEvent(event);
-
-        messageIdRepository.remember(messageId);
-      }
+      messageIdRepository.rememberMessageId(messageProperties.getMessageId());
+      onCodekvastEvent(event);
+    } catch (DuplicateMessageIdException e) {
+      logger.warn("Attempt to re-process already processed message {}", message);
     } catch (Exception e) {
       logger.error("Failed to process " + event, e);
 

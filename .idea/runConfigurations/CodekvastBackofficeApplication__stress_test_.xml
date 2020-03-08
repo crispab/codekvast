@@ -9,6 +9,7 @@
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.backoffice.CodekvastBackofficeApplication" />
     <option name="ACTIVE_PROFILES" value="no-mail-sender,dev-secrets,stress-test" />
+    <option name="VM_PARAMETERS" value="-Xms10m -Xmx100m -XX:+ExitOnOutOfMemoryError" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <additionalParameters>
       <param>

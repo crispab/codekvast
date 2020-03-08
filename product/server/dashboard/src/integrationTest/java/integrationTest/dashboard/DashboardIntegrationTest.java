@@ -24,6 +24,8 @@ import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.messaging.DuplicateMessageIdException;
+import io.codekvast.common.messaging.impl.MessageIdRepository;
 import io.codekvast.common.metrics.CommonMetricsService;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
@@ -59,6 +61,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
@@ -155,7 +158,9 @@ public class DashboardIntegrationTest {
 
   @Inject private LockContentionTestHelper lockContentionTestHelper;
 
-  private Set<Optional<Lock>> heldLocks = new HashSet<>();
+  @Inject private MessageIdRepository messageIdRepository;
+
+  private final Set<Optional<Lock>> heldLocks = new HashSet<>();
 
   private Optional<Lock> acquireLock(Lock lock) {
     Optional<Lock> result = lockManager.acquireLock(lock);
@@ -1085,6 +1090,28 @@ public class DashboardIntegrationTest {
     assertThat(countRowsInTable("method_locations"), is(0));
     assertThat(countRowsInTable("jvms"), is(0));
     assertThat(countRowsInTable("agent_state"), is(0));
+  }
+
+  @Test
+  public void should_accept_new_messageId() throws DuplicateMessageIdException {
+    // when
+    messageIdRepository.rememberMessageId(UUID.randomUUID().toString());
+
+    // then
+    // no exception
+  }
+
+  @Test(expected = DuplicateMessageIdException.class)
+  public void should_reject_duplicate_messageId() throws DuplicateMessageIdException {
+    // given
+    String messageId = UUID.randomUUID().toString();
+    messageIdRepository.rememberMessageId(messageId);
+
+    // when
+    messageIdRepository.rememberMessageId(messageId);
+
+    // then
+    // Exception!
   }
 
   @Test

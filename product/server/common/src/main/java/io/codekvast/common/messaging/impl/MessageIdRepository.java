@@ -21,13 +21,13 @@
  */
 package io.codekvast.common.messaging.impl;
 
+import io.codekvast.common.messaging.DuplicateMessageIdException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A repository (DAO) for keeping track of which messageIds that have been processed.
@@ -41,27 +41,12 @@ public class MessageIdRepository {
 
   private final JdbcTemplate jdbcTemplate;
 
-  @Transactional(propagation = Propagation.MANDATORY)
-  public boolean isDuplicate(@NonNull String messageId) {
-    Integer count =
-        jdbcTemplate.queryForObject(
-            "SELECT COUNT(*) FROM rabbitmq_message_ids WHERE messageId = ?",
-            Integer.class,
-            messageId);
-    if (count != 0) {
-      logger.info("MessageId {} has already been processed", messageId);
-    }
-    return count != 0;
-  }
-
-  @Transactional(propagation = Propagation.MANDATORY)
-  public void remember(@NonNull String messageId) {
-    int inserted =
-        jdbcTemplate.update("INSERT INTO rabbitmq_message_ids(messageId) VALUE (?)", messageId);
-    if (inserted != 1) {
-      logger.error("Failed to remember messageId {}", messageId);
-    } else {
+  public void rememberMessageId(@NonNull String messageId) throws DuplicateMessageIdException {
+    try {
+      jdbcTemplate.update("INSERT INTO rabbitmq_message_ids(messageId) VALUE (?)", messageId);
       logger.debug("Remembered messageId {}", messageId);
+    } catch (DuplicateKeyException e) {
+      throw new DuplicateMessageIdException(messageId);
     }
   }
 }

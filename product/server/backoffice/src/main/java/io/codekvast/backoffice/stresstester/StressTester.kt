@@ -37,12 +37,26 @@ class StressTester(private val eventService: EventService) {
 
     val logger = LoggerFactory.getLogger(javaClass)!!
     var count = 0
+    var firstTime = true
 
     @Scheduled(initialDelay = 10_000, fixedRate = 50)
     fun sendSampleAgentPolledEvent() {
-        eventService.send(AgentPolledEvent.sample())
-        if (++count % 1000 == 0) {
-            logger.info("Sent {} events", count)
+        val oldName = Thread.currentThread().name
+        try {
+            Thread.currentThread().name = "Codekvast StressTester"
+
+            if (firstTime) {
+                logger.info("StressTester started")
+                firstTime = false
+            }
+
+            eventService.send(AgentPolledEvent.sample())
+
+            if (++count % 1000 == 0) {
+                logger.info("Sent {} events", count)
+            }
+        } finally {
+            Thread.currentThread().name = oldName
         }
     }
 }
