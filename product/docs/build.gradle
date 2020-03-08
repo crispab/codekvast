@@ -1,37 +1,23 @@
-buildscript {
-    repositories {
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-    dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-jvm:2.4.0'
-    }
-}
-
-apply plugin: "org.asciidoctor.convert"
+apply plugin: "org.asciidoctor.jvm.convert"
 apply from: "$rootDir/gradle/libs.gradle"
-
-dependencies {
-    asciidoctor 'org.asciidoctor:asciidoctorj-diagram:1.5.18'
-    asciidoctor 'org.asciidoctor:asciidoctorj-pdf:1.5.0-beta.5'
-}
 
 description = "Home for the Codekvast documentation, which built by asciidoctor"
 version = codekvastVersion
 
 asciidoctor {
-    requires = ['asciidoctor-diagram']
-    backends = ['html5', 'pdf']
-    sources {
-        include '**/*.adoc'
-    }
-
-    attributes = [
-            'codekvastVersion': codekvastVersion,
-            'aspectjVersion': aspectjVersion,
-            'gitTime': gitTime,
-            'gitId': gitId,
+    asciidoctorj {
+        modules {
+            diagram.use()
+            diagram.version '1.5.18'
+        }
+        attributes = [
+            'codekvastVersion'       : codekvastVersion,
+            'aspectjVersion'         : aspectjVersion,
+            'gitTime'                : gitTime,
+            'gitId'                  : gitId,
             'codekvastDownloadPrefix': codekvastDownloadPrefix
-    ]
+        ]
+    }
 }
 
 build.dependsOn asciidoctor
