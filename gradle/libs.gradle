@@ -8,7 +8,7 @@ ext {
     seleniumVersion = '3.141.59'
     springBootVersion = '2.2.5.RELEASE'
     springfoxVersion = '2.9.2'
-    wiremockVersion = '2.26.2'
+    wiremockVersion = '2.26.3'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
