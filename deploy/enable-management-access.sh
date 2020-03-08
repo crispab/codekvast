@@ -13,8 +13,6 @@ declare description=${2:-$(hostname)}
 declare groupName=codekvast-default-${environment}-management
 declare myIp=$(curl -s https://api.ipify.org)
 
-declare portsToOpen="22 3306 5010 5011 5012 6010 6011 6012 8080 8081 8082 9080 9081 9082 15672"
-
 # Find the GroupId of the security group
 declare groupId=$($AWS_EC2 describe-security-groups --filters Name=group-name,Values=${groupName}|jq .SecurityGroups[0].GroupId|xargs)
 
@@ -26,7 +24,10 @@ case "$groupId" in
     ;;
 esac
 
-echo -n "Will modify the security group $groupName to enable all ICMP access and TCP access to ports $portsToOpen from $myIp with the description \"$description\". Ok? [y/N]: "
+declare fromPort=22
+declare toPort=65535
+
+echo -n "Will modify the security group $groupName to enable all ICMP access and TCP access on ports $fromPort-$toPort from $myIp with the description \"$description\". Ok? [y/N]: "
 read answer
 case $answer in
     ""|n|N) exit 0;;
@@ -36,7 +37,5 @@ esac
 echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"icmp\"\", \"FromPort\": -1, \"ToPort\": -1, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
 aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"icmp\", \"FromPort\": -1, \"ToPort\": -1, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
 
-for port in ${portsToOpen}; do
-    echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
-    aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"tcp\", \"FromPort\": $port, \"ToPort\": $port, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
-done
+echo aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions "[{\"IpProtocol\": \"tcp\", \"FromPort\": $fromPort, \"ToPort\": $toPort, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
+aws --profile codekvast ec2 authorize-security-group-ingress --group-id $groupId --ip-permissions  "[{\"IpProtocol\": \"tcp\", \"FromPort\": $fromPort, \"ToPort\": $toPort, \"IpRanges\": [{\"CidrIp\": \"$myIp/32\", \"Description\": \"$description\"}]}]"
