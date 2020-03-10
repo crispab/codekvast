@@ -11,42 +11,103 @@ mainClassName = 'io.codekvast.backoffice.CodekvastBackofficeApplication'
 
 apply from: "$projectDir/src/integrationTest/build.gradle"
 
-dependencies {
-    implementation project(":product:server:common")
-    implementation 'org.drools:drools-compiler:7.33.0.Final'
-    implementation "com.google.code.gson:gson:$gsonVersion"
-    implementation 'org.springframework.boot:spring-boot-starter-mustache'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
+configurations {
+  codekvastagent
+}
 
-    runtimeOnly project(':product:server:db-migration')
+
+dependencies {
+  implementation project(":product:server:common")
+  implementation 'org.drools:drools-compiler:7.33.0.Final'
+  implementation "com.google.code.gson:gson:$gsonVersion"
+  implementation 'org.springframework.boot:spring-boot-starter-mustache'
+  implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+  runtimeOnly project(':product:server:db-migration')
+
+  codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
 }
 
 run {
-    dependsOn startDockerContainers
+  dependsOn startDockerContainers
 
-    jvmArgs = [
-        '-enableassertions',
-    ]
+  jvmArgs = [
+    '-enableassertions',
+  ]
 
-    args = [
-        "--logging.file.name=$buildDir/log/${applicationName}.log"
-    ]
+  args = [
+    "--logging.file.name=$buildDir/log/${applicationName}.log"
+  ]
 }
 
 bootRun {
-    dependsOn startDockerContainers
+  dependsOn startDockerContainers
 
-    jvmArgs = run.jvmArgs
-    args = run.args
+  jvmArgs = run.jvmArgs
+  args = run.args
 }
 
 //--- Packaging ------------------------------------------------------------------------------------------------------------------
 bootJar {
-    launchScript {
-        properties([
-            'initInfoProvides'        : applicationName,
-            'initInfoShortDescription': 'Codekvast Backoffice',
-            'initInfoDescription'     : 'Codekvast Backoffice offers a management interface for Codekvast',
-        ])
-    }
+  launchScript {
+    properties([
+      'initInfoProvides'        : applicationName,
+      'initInfoShortDescription': 'Codekvast Backoffice',
+      'initInfoDescription'     : 'Codekvast Backoffice offers a management interface for Codekvast',
+    ])
+  }
+}
+
+task generateCodekvastConfig {
+  group "Build"
+  description "Generates a codekvast.conf for test"
+
+  def configFile = file("$buildDir/codekvast.conf")
+
+  inputs.files file("build.gradle")
+  outputs.file configFile
+
+  doLast {
+    configFile.parentFile.mkdirs()
+    configFile.text = """# Run Codekvast against Sample App
+appName = $archivesBaseName
+appVersion = $codekvastDisplayVersion
+# aspectjOptions = -verbose -showWeaveInfo
+codeBase = build/libs/$archivesBaseName-$version-all.jar
+methodVisibility = all
+packages = io.codekvast
+excludePackages = io.codekvast.common.aspects
+bridgeAspectjMessagesToJUL = false
+environment = Gradle
+
+# serverUrl = https://api-staging.codekvast.io
+httpProxyHost =   
+httpProxyPort = 4711
+"""
+  }
+}
+
+processResources.dependsOn generateCodekvastConfig
+
+task launchBackofficeWithCodekvastAgentAttached(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:agent:java-agent:shadowJar", startDockerContainers]) {
+  def javaVersion = sdkmanJavaVersion_11
+
+  description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
+  group "Application"
+
+  executable "${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}/bin/java"
+  args "-XX:+ExitOnOutOfMemoryError"
+  args "-enableassertions"
+  args "-Xms10m"
+  args "-Xmx100m"
+  // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5011"
+  args "-javaagent:${configurations.codekvastagent.asPath}"
+  args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
+
+  args "-jar", "build/libs/${archivesBaseName}-${version}-all.jar"
+  args "--logging.level.root=INFO"
+  args "--logging.level.io.codekvast=INFO"
+  args "--logging.file.name=$buildDir/log/${applicationName}.log"
+
+  args "--spring.profiles.active=stress-test"
 }

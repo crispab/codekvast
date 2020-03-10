@@ -125,14 +125,19 @@ public class DashboardServiceImpl implements DashboardService {
             + "MAX(i.createdAt) AS latestCollectedSince, "
             + "MAX(i.status) AS status, "
             + "MAX(i.invokedAtMillis) AS lastInvokedAtMillis, "
-            + "MAX(i.timestamp) AS lastPublishedAt "
+            + "MAX(i.timestamp) AS lastPublishedAt, "
+            + "m.annotation AS methodAnnotation, "
+            + "ml.annotation AS methodLocationAnnotation, "
+            + "p.annotation AS packageAnnotation, "
+            + "t.annotation AS typeAnnotation "
             + "FROM invocations i "
-            + "  INNER JOIN methods m ON i.methodId = m.id "
-            + "  INNER JOIN method_locations ml ON ml.methodId = m.id "
+            + "  INNER JOIN methods m ON i.methodId = m.id AND m.customerId = i.customerId "
+            + "  INNER JOIN types t ON m.declaringType = t.name AND t.customerId = m.customerId "
+            + "  INNER JOIN packages p ON m.packageName = p.name AND p.customerId = m.customerId "
+            + "  LEFT JOIN method_locations ml ON ml.methodId = m.id AND ml.customerId = m.customerId "
             + "WHERE "
             + whereClause
-            + " "
-            + "GROUP BY i.methodId "
+            + " GROUP BY i.methodId "
             + "HAVING latestCollectedSince <= :latestCollectedSince "
             + "ORDER BY lastInvokedAtMillis ";
 
@@ -176,6 +181,10 @@ public class DashboardServiceImpl implements DashboardService {
                           getCollectedDays(rs.getTimestamp("latestCollectedSince"))))
                   .lastInvokedAtMillis(lastInvokedAtMillis)
                   .collectedToMillis(rs.getTimestamp("lastPublishedAt").getTime())
+                  .methodAnnotation(rs.getString("methodAnnotation"))
+                  .methodLocationAnnotation(rs.getString("methodLocationAnnotation"))
+                  .typeAnnotation(rs.getString("typeAnnotation"))
+                  .packageAnnotation(rs.getString("packageAnnotation"))
                   .build());
         });
 
@@ -234,19 +243,20 @@ public class DashboardServiceImpl implements DashboardService {
 
     MethodDescriptorRowCallbackHandler rch = new MethodDescriptorRowCallbackHandler(pricePlan);
     namedParameterJdbcTemplate.query(
-        "SELECT i.methodId, a.name AS appName, j.applicationVersion AS appVersion,\n"
-            + "  e.name AS envName, i.invokedAtMillis, i.createdAt, i.status, j.publishedAt, j.hostname, j"
-            + ".tags,\n"
-            + "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m"
-            + ".modifiers,"
-            + "  m.packageName, ml.location\n"
-            + "  FROM invocations i\n"
-            + "  INNER JOIN applications a ON a.id = i.applicationId \n"
-            + "  INNER JOIN environments e ON e.id = i.environmentId \n"
-            + "  INNER JOIN methods m ON m.id = i.methodId \n"
-            + "  INNER JOIN jvms j ON j.applicationId = i.applicationId AND j.environmentId = i.environmentId\n"
-            + "  LEFT JOIN method_locations ml ON m.id = ml.methodId \n"
-            + "  WHERE i.customerId = :customerId AND i.methodId = :methodId AND j.garbage = FALSE\n",
+        "SELECT i.methodId, a.name AS appName, j.applicationVersion AS appVersion, "
+            + "  e.name AS envName, i.invokedAtMillis, i.createdAt, i.status, j.publishedAt, j.hostname, j.tags, "
+            + "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m.modifiers,  m.packageName, ml.location, "
+            + "  m.annotation AS methodAnnotation, ml.annotation AS methodLocationAnnotation, "
+            + "  t.annotation AS typeAnnotation, p.annotation AS packageAnnotation "
+            + "  FROM invocations i "
+            + "    INNER JOIN applications a ON a.id = i.applicationId  "
+            + "    INNER JOIN environments e ON e.id = i.environmentId  "
+            + "    INNER JOIN methods m ON m.id = i.methodId  "
+            + "    INNER JOIN types t ON t.name = m.declaringType "
+            + "    INNER JOIN packages p ON p.name = m.packageName "
+            + "    INNER JOIN jvms j ON j.applicationId = i.applicationId AND j.environmentId = i.environmentId "
+            + "    LEFT JOIN method_locations ml ON m.id = ml.methodId  "
+            + "  WHERE i.customerId = :customerId AND i.methodId = :methodId AND j.garbage = FALSE ",
         params,
         rch);
 
@@ -504,7 +514,11 @@ public class DashboardServiceImpl implements DashboardService {
           .signature(signature)
           .visibility(rs.getString("m.visibility"))
           .bridge(bridge)
-          .synthetic(synthetic);
+          .synthetic(synthetic)
+          .methodAnnotation(rs.getString("methodAnnotation"))
+          .methodLocationAnnotation(rs.getString("methodLocationAnnotation"))
+          .typeAnnotation(rs.getString("typeAnnotation"))
+          .packageAnnotation(rs.getString("packageAnnotation"));
 
       // Left join stuff
       String location = rs.getString("ml.location");
@@ -573,8 +587,8 @@ public class DashboardServiceImpl implements DashboardService {
   /** @author olle.hallin@crisp.se */
   @Value
   static class ApplicationId implements Comparable<ApplicationId> {
-    private final String name;
-    private final String version;
+    String name;
+    String version;
 
     @Override
     public int compareTo(ApplicationId that) {

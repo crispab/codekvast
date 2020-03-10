@@ -74,6 +74,11 @@ public class MethodDescriptor1 {
 
   @Singular private SortedSet<String> locations;
 
+  private String methodAnnotation;
+  private String methodLocationAnnotation;
+  private String typeAnnotation;
+  private String packageAnnotation;
+
   /**
    * Assigns values to all computed fields.
    *

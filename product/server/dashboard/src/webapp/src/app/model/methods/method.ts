@@ -20,6 +20,10 @@ export class Method {
     trackedPercent: number;
     visibility: string;
     locations: string[];
+    methodAnnotation: string;
+    methodLocationAnnotation: string;
+    typeAnnotation: string;
+    packageAnnotation: string;
 
     static hasInconsistentTracking(m: Method) {
         return m.trackedPercent > 0 && m.trackedPercent < 100;
@@ -34,5 +38,12 @@ export class Method {
         let lastReportAgeInMillis = new Date().getTime() - m.collectedToMillis;
         let lastReportAgeInDays = lastReportAgeInMillis / 1000 / 60 / 60 / 24;
         return lastReportAgeInDays >= days;
+    }
+
+    static hasAnnotation(m: Method) {
+        return m.methodAnnotation !== undefined
+            || m.methodLocationAnnotation !== undefined
+            || m.typeAnnotation !== undefined
+            || m.packageAnnotation !== undefined;
     }
 }

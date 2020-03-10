@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import java.time.Duration
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 /**
  * @author olle.hallin@crisp.se
@@ -35,28 +38,29 @@ import org.springframework.stereotype.Component
 @Profile("stress-test")
 class StressTester(private val eventService: EventService) {
 
-    val logger = LoggerFactory.getLogger(javaClass)!!
-    var count = 0
-    var firstTime = true
+  val logger = LoggerFactory.getLogger(javaClass)!!
+  var count = 0
+  var firstTime = true
+  var startedAt = Instant.now()
 
-    @Scheduled(initialDelay = 10_000, fixedRate = 50)
-    fun sendSampleAgentPolledEvent() {
-        val oldName = Thread.currentThread().name
-        try {
-            Thread.currentThread().name = "Codekvast StressTester"
+  @Scheduled(initialDelay = 10_000, fixedRate = 50)
+  fun sendSampleAgentPolledEvent() {
+    val oldName = Thread.currentThread().name
+    try {
+      Thread.currentThread().name = "Codekvast StressTester"
 
-            if (firstTime) {
-                logger.info("StressTester started")
-                firstTime = false
-            }
+      if (firstTime) {
+        logger.info("StressTester started")
+        firstTime = false
+      }
 
-            eventService.send(AgentPolledEvent.sample())
+      eventService.send(AgentPolledEvent.sample())
 
-            if (++count % 1000 == 0) {
-                logger.info("Sent {} events", count)
-            }
-        } finally {
-            Thread.currentThread().name = oldName
-        }
+      if (++count % 1000 == 0) {
+        logger.info("Sent {} events {} after start", count, Duration.between(startedAt, Instant.now()).truncatedTo(ChronoUnit.SECONDS))
+      }
+    } finally {
+      Thread.currentThread().name = oldName
     }
+  }
 }
