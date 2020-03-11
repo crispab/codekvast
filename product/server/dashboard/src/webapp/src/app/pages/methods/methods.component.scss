@@ -1,50 +1,57 @@
 div.wrapper {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .content {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .content div {
-    overflow: auto;
+  overflow: auto;
 }
 
 .wrap-word {
-    word-wrap: break-word;
-    word-break: break-all;
-    white-space: normal;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: normal;
 }
 
 .signature-column {
-    width: 72%;
+  width: 72%;
 }
 
 .collected-days-column {
-    width: 11%;
+  width: 11%;
 }
 
 .age-column {
-    width: 17%;
+  width: 17%;
 }
 
 .date-column {
-    width: 10em;
+  width: 10em;
 }
 
 .row-icon-column {
-    width: 2em;
+  width: 2em;
 }
 
 .w-80 {
-    width: 80% !important;
+  width: 80% !important;
 }
 
 .w-20 {
-    width: 20% !important;
+  width: 20% !important;
 }
 
 .form-inline .col-form-label {
-    width: 7.5em;
-    display: inline;
+  width: 7.5em;
+  display: inline;
+}
+
+span.filtered-result {
+  max-height: 2.6em;
+  min-width: 20em;
+  overflow: auto;
+  width: 60%;
 }

@@ -121,15 +121,15 @@ export class MethodsComponentState {
     }
 
     getFilteredApplications() {
-        return this.applications.filter(a => a.toLowerCase().indexOf(this.searchState.applications.trim().toLowerCase()) >= 0);
+        return this.applications.filter(a => a.toLowerCase().indexOf(this.searchState.applications.trim().toLowerCase()) >= 0).join(', ');
     }
 
     getFilteredEnvironments() {
-        return this.environments.filter(a => a.toLowerCase().indexOf(this.searchState.environments.trim().toLowerCase()) >= 0);
+        return this.environments.filter(a => a.toLowerCase().indexOf(this.searchState.environments.trim().toLowerCase()) >= 0).join(', ');
     }
 
     getFilteredLocations() {
-        return this.locations.filter(a => a.toLowerCase().indexOf(this.searchState.locations.trim().toLowerCase()) >= 0);
+        return this.locations.filter(a => a.toLowerCase().indexOf(this.searchState.locations.trim().toLowerCase()) >= 0).join(', ');
     }
 
     search() {

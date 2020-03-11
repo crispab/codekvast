@@ -50,21 +50,21 @@
                         <label class="col-form-label">In applications:</label>
                         <input class="form-control ml-3" size="20" type="text" name="applications" [(ngModel)]="state.searchState.applications"
                                placeholder="Filter by application">
-                        <span class="ml-2 small form-text text-muted">{{ state.getFilteredApplications() }}</span>
+                        <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredApplications() }}</span>
                     </div>
 
                     <div class="form-inline mt-1">
                         <label class="col-form-label">In environments:</label>
                         <input class="form-control ml-3" size="20" type="text" name="environments" [(ngModel)]="state.searchState.environments"
                                placeholder="Filter by environment">
-                        <span class="ml-2 small form-text text-muted">{{ state.getFilteredEnvironments() }}</span>
+                        <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredEnvironments() }}</span>
                     </div>
 
                     <div class="form-inline mt-1">
                         <label class="col-form-label">In locations:</label>
                         <input class="form-control ml-3" size="20" type="text" name="locations" [(ngModel)]="state.searchState.locations"
                                placeholder="Filter by location">
-                        <span class="ml-2 small form-text text-muted">{{ state.getFilteredLocations() }}</span>
+                        <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredLocations() }}</span>
                     </div>
 
                     <div class="form-inline">
