@@ -41,9 +41,14 @@ export class Method {
     }
 
     static hasAnnotation(m: Method) {
-        return m.methodAnnotation !== undefined
-            || m.methodLocationAnnotation !== undefined
-            || m.typeAnnotation !== undefined
-            || m.packageAnnotation !== undefined;
+        return !this.isNullOrEmpty(m.methodAnnotation)
+            || !this.isNullOrEmpty(m.methodLocationAnnotation)
+            || !this.isNullOrEmpty(m.typeAnnotation)
+            || !this.isNullOrEmpty(m.packageAnnotation)
     }
+
+    private static isNullOrEmpty(s: string) {
+        return !s || s.trim().length === 0
+    }
+
 }
