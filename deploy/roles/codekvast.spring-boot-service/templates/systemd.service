@@ -9,6 +9,8 @@ User=codekvast
 WorkingDirectory=/opt/codekvast/{{ service_name }}
 ExecStart=/bin/sh -c "java \
                       -XX:+ExitOnOutOfMemoryError \
+                      -XX:+HeapDumpOnOutOfMemoryError \
+                      -XX:HeapDumpPath="/tmp/codekvast-{{ service_name }}.hprof" \
                       -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:{{ ports[service_name].jvm_debugger }} \
                       {{ jvm_opts[service_name] }} \
                       -Dcom.sun.management.jmxremote.port={{ ports[service_name].jmx }} \
