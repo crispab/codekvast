@@ -1,0 +1,35 @@
+apply from: "$rootDir/gradle/spring-boot-app.gradle"
+apply from: "$rootDir/gradle/spring-boot-jdbc.gradle"
+apply from: "$rootDir/gradle/spring-boot-web.gradle"
+apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
+
+description = 'The Codekvast Stress Tester'
+applicationName = 'codekvast-stress-tester'
+archivesBaseName = 'codekvast-stress-tester'
+version = codekvastVersion
+mainClassName = 'io.codekvast.stress_tester.StressTesterApplication'
+
+dependencies {
+    implementation project(":product:server:common")
+
+    runtimeOnly project(':product:server:db-migration')
+}
+
+run {
+    dependsOn startDockerContainers
+
+    jvmArgs = [
+            '-enableassertions',
+    ]
+
+    args = [
+            "--logging.file.name=$buildDir/log/${applicationName}.log"
+    ]
+}
+
+bootRun {
+    dependsOn startDockerContainers
+
+    jvmArgs = run.jvmArgs
+    args = run.args
+}

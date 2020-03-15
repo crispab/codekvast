@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,7 @@ import org.springframework.stereotype.Service;
 @Service
 @DependsOn({"defaultValidator", "commonMetricsService"}) // Prevent an exception in notifyShutdown()
 @RequiredArgsConstructor
+@Profile("!no-slack-integration")
 @Slf4j
 public class SlackServiceImpl implements SlackService, ApplicationListener<ApplicationReadyEvent> {
 

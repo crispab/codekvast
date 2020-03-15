@@ -1,0 +1,28 @@
+spring:
+  application.name:    Codekvast Stress Tester
+  datasource:
+    hikari:
+      connection-test-query: SELECT 1 FROM DUAL
+    password: codekvast
+    url:      jdbc:mariadb://localhost/codekvast
+    username: codekvast
+  profiles:
+    include: no-slack-integration
+  rabbitmq:
+    addresses: "amqp://admin:secret@localhost:5672"
+    template:
+      retry:
+        enabled:          true
+        initial-interval: 2s
+management:
+  metrics:
+    export:
+      datadog:
+        enabled: false
+logging:
+  file:
+    name: build/log/stress-tester.log
+  level:
+    io.codekvast: INFO
+
+stressTestRateMillis: 50

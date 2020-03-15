@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CodekvastStressTesterApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="codekvast.product.server.stress-tester.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.stress_tester.StressTesterApplication" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

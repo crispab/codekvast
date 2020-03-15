@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.stresstester
+package io.codekvast.stress_tester
 
 import io.codekvast.common.messaging.EventService
 import io.codekvast.common.messaging.model.AgentPolledEvent
@@ -35,7 +35,6 @@ import java.time.temporal.ChronoUnit
  * @author olle.hallin@crisp.se
  */
 @Component
-@Profile("stress-test")
 class StressTester(private val eventService: EventService) {
 
   val logger = LoggerFactory.getLogger(javaClass)!!
@@ -43,7 +42,7 @@ class StressTester(private val eventService: EventService) {
   var firstTime = true
   var startedAt = Instant.now()
 
-  @Scheduled(initialDelay = 10_000, fixedRate = 50)
+  @Scheduled(fixedRateString = "\${stressTestRateMillis}")
   fun sendSampleAgentPolledEvent() {
     val oldName = Thread.currentThread().name
     try {
@@ -56,7 +55,7 @@ class StressTester(private val eventService: EventService) {
 
       eventService.send(AgentPolledEvent.sample())
 
-      if (++count % 1000 == 0) {
+      if (++count % 100 == 0) {
         logger.info("Sent {} events {} after start", count, Duration.between(startedAt, Instant.now()).truncatedTo(ChronoUnit.SECONDS))
       }
     } finally {
