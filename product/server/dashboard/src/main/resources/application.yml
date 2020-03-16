@@ -6,93 +6,94 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 codekvast:
-    dashboardBaseUrl:                         http://localhost:8081
+  dashboardBaseUrl:                         http://localhost:8081
+  dnsCname:                                 localhost
+  environment:                              dev
+  jwtExpirationHours:                       168
+  jwtSecret:                                secret
+  loginBaseUrl:                             http://localhost:8080
+  slackWebHookToken:
+  dashboard:
     deleteImportedFiles:                      true
-    dnsCname:                                 localhost
-    environment:                              dev
     fileImportIntervalSeconds:                60
     fileImportQueuePath:                      /tmp/codekvast
-    jwtExpirationHours:                       168
-    jwtSecret:                                secret
-    loginBaseUrl:                             http://localhost:8080
-    slackWebHookToken:
 
 logging:
-    file:
-        name: build/log/dashboard.log
-    level:
-        io.codekvast: DEBUG
-        springfox:    WARN
+  file:
+    name: build/log/dashboard.log
+  level:
+    io.codekvast: DEBUG
+    springfox:    WARN
 
 management:
-    endpoint:
-        health:
-            show-details: "ALWAYS"
-    endpoints:
-        jmx.domain: CodekvastDashboard
-        web:
-            base-path:        /management
-            exposure.include: '*'
-    server:
-        port: 9081
-    metrics:
-        web.server.request.autotime.enabled: true
-        export.datadog.enabled:              false
-        tags:
-            service: "codekvast-dashboard"
-            env:     dev
-            host:    localhost
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+  endpoints:
+    jmx.domain: CodekvastDashboard
+    web:
+      base-path:        /management
+      exposure.include: '*'
+  server:
+    port: 9081
+  metrics:
+    web.server.request.autotime.enabled: true
+    export.datadog.enabled:              false
+    tags:
+      service: "codekvast-dashboard"
+      env:     dev
+      host:    localhost
 
 server:
-    compression:
-        enabled:    true
-        mime-types: application/json,application/javascript,text/html,text/xml,text/plain,text/css
-    port:                     8081
-    undertow:
-        accesslog:
-            dir:     build/log
-            enabled: true
-            pattern: combined
-            prefix:  access.
-    forward-headers-strategy: framework
+  compression:
+    enabled:    true
+    mime-types: application/json,application/javascript,text/html,text/xml,text/plain,text/css
+  port:                     8081
+  undertow:
+    accesslog:
+      dir:     build/log
+      enabled: true
+      pattern: combined
+      prefix:  access.
+  forward-headers-strategy: framework
 
 spring:
-    application.name:    Codekvast Dashboard
-    datasource:
-        hikari:
-            connection-test-query: SELECT 1 FROM DUAL
-        password: codekvast
-        url:      jdbc:mariadb://localhost/codekvast
-        username: codekvast
-    rabbitmq:
-        addresses: "amqp://admin:secret@localhost:5672"
-        template:
-            retry:
-                enabled:          true
-                initial-interval: 2s
-        listener:
-            simple:
-                default-requeue-rejected: false
-    flyway:
-        validate-on-migrate: false
-    http:
-        converters.preferred-json-mapper: gson
-        log-request-details:              true
-    output.ansi.enabled: detect
-    servlet:
-        multipart:
-            max-file-size:    100MB
-            max-request-size: 100MB
-    task:
-        execution:
-            pool:
-                core-size:      1
-                max-size:       5
-                queue-capacity: 100
-            thread-name-prefix: 'Codekvast task-'
-        scheduling.pool.size: 5
-    cache:
-        caffeine:
-            spec: 'expireAfterAccess=10m, recordStats'
+  application.name:    Codekvast Dashboard
+  datasource:
+    hikari:
+      connection-test-query: SELECT 1 FROM DUAL
+    password: codekvast
+    url:      jdbc:mariadb://localhost/codekvast
+    username: codekvast
+  rabbitmq:
+    addresses: "amqp://admin:secret@localhost:5672"
+    template:
+      retry:
+        enabled:          true
+        initial-interval: 2s
+    listener:
+      simple:
+        default-requeue-rejected: false
+  flyway:
+    validate-on-migrate: false
+  http:
+    converters.preferred-json-mapper: gson
+    log-request-details:              true
+  output.ansi.enabled: detect
+  servlet:
+    multipart:
+      max-file-size:    100MB
+      max-request-size: 100MB
+  task:
+    execution:
+      pool:
+        core-size:      1
+        max-size:       5
+        queue-capacity: 100
+      thread-name-prefix: 'Codekvast task-'
+    scheduling.pool.size: 5
+  cache:
+    caffeine:
+      spec: 'expireAfterAccess=10m, recordStats'
 
 springfox.documentation.swagger.v2.path: /api-docs

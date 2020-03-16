@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.codekvast.backoffice.bootstrap.CodekvastBackofficeSettings;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
@@ -41,7 +42,7 @@ public class MailTemplateRendererTest {
 
   @MockBean private CustomerService customerService;
 
-  @Inject private CodekvastBackofficeSettings settings;
+  @Inject private CodekvastCommonSettings settings;
 
   @Inject private MailTemplateRenderer mailTemplateRenderer;
 

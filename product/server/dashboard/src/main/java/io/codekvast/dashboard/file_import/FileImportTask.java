@@ -55,8 +55,8 @@ public class FileImportTask {
   }
 
   @Scheduled(
-      initialDelayString = "${codekvast.fileImportInitialDelaySeconds:5}000",
-      fixedRateString = "${codekvast.fileImportIntervalSeconds}000")
+      initialDelayString = "${codekvast.dashboard.fileImportInitialDelaySeconds:5}000",
+      fixedRateString = "${codekvast.dashboard.fileImportIntervalSeconds}000")
   public void importPublicationFiles() {
     new NamedThreadTemplate().doInNamedThread("File Importer", this::run);
   }

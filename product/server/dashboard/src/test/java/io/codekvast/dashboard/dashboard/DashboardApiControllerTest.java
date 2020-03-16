@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.gson.Gson;
-import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.dashboard.dashboard.model.methods.ApplicationDescriptor;
 import io.codekvast.dashboard.dashboard.model.methods.EnvironmentDescriptor;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 public class DashboardApiControllerTest {
   @Mock private DashboardService dashboardService;
 
-  private CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
+  private CodekvastCommonSettings settings = new CodekvastCommonSettings();
 
   private MockMvc mockMvc;
 

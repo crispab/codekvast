@@ -23,11 +23,11 @@ package io.codekvast.login.bootstrap;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.security.CipherException;
 import io.codekvast.common.security.CipherUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -40,79 +40,44 @@ import org.springframework.validation.annotation.Validated;
  *
  * @author olle.hallin@crisp.se
  */
-@Component("codekvastSettings")
-@ConfigurationProperties(prefix = "codekvast")
+@Component
+@ConfigurationProperties(prefix = "codekvast.login")
 @Validated
 @Data
 @Slf4j
 @ToString(
     exclude = {
       "cipherSecret",
-      "jwtSecret",
       "herokuApiPassword",
       "herokuApiSsoSalt",
       "herokuOAuthClientSecret",
-      "slackWebHookToken"
     })
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
-public class CodekvastLoginSettings implements CodekvastCommonSettings {
+public class CodekvastLoginSettings {
 
   /** Which is the key used for encrypting Heroku OAuth tokens in the database? */
-  private String cipherSecret;
-
-  /** The name of the application, injected from the build system. */
-  private String applicationName;
-
-  /** The version of the application, injected from the build system. */
-  private String displayVersion;
-
-  /** The name of the person doing the last commit, injected from the build system. */
-  private String committer;
-
-  /** The date of the last commit, injected from the build system. */
-  private String commitDate;
-
-  /** The last commit message, injected from the build system. */
-  private String commitMessage;
-
-  /** What is the base URL of the Codekvast dashboard? */
-  private String dashboardBaseUrl;
-
-  /** Which is our CNAME in the DNS? */
-  private String dnsCname;
-
-  /** In which environment are we running? dev, staging or prod */
-  private String environment;
-
-  /** Which token should we use when POSTing to Slack? */
-  private String slackWebHookToken;
+  @NotBlank private String cipherSecret;
 
   /** Which CODEKVAST_URL should be used by Heroku addons? */
-  private String herokuCodekvastUrl;
+  @NotBlank private String herokuCodekvastUrl;
 
   /** Where is the Heroku OAuth base URL? */
-  private String herokuOAuthBaseUrl;
+  @NotBlank private String herokuOAuthBaseUrl;
 
   /** What is the base URL for the Heroku API? */
-  private String herokuApiBaseUrl;
+  @NotBlank private String herokuApiBaseUrl;
 
   /** Which password is Heroku using when invoking us? */
-  private String herokuApiPassword;
+  @NotBlank private String herokuApiPassword;
 
   /** Which salt does Heroku use when creating SSO tokens? */
-  private String herokuApiSsoSalt;
+  @NotBlank private String herokuApiSsoSalt;
 
   /** What OAuth client ID should we use when invoking the Heroku API? */
-  private String herokuOAuthClientId;
+  @NotBlank private String herokuOAuthClientId;
 
   /** What OAuth client secret should we use when invoking the Heroku API? */
-  private String herokuOAuthClientSecret;
-
-  /** Which secret should be used when creating a webapp JWT? */
-  private String jwtSecret;
-
-  /** How many hours shall a JWT be valid? */
-  private Long jwtExpirationHours;
+  @NotBlank private String herokuOAuthClientSecret;
 
   @PostConstruct
   public void validateCipherSecret() throws CipherException {

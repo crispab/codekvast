@@ -3,17 +3,17 @@ package integrationTest.common;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.Mockito.mock;
 
-import io.codekvast.common.bootstrap.CodekvastCommonSettingsForTestImpl;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.messaging.SlackService;
 import io.codekvast.common.messaging.impl.SlackServiceImpl;
 import io.codekvast.common.metrics.CommonMetricsService;
 import java.util.Properties;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 /**
@@ -26,13 +26,11 @@ import org.mockito.MockitoAnnotations;
  */
 public class SlackServiceIntegrationTest {
 
-  @Mock private CommonMetricsService metricsService;
-
-  private CodekvastCommonSettingsForTestImpl settings = new CodekvastCommonSettingsForTestImpl();
+  private final CodekvastCommonSettings settings = new CodekvastCommonSettings();
 
   private SlackService slackService;
 
-  @Before
+  @BeforeEach
   public void beforeTest() throws Exception {
     assumeTrue("true".equals(System.getenv("RUN_SLACK_TESTS")));
 
@@ -42,7 +40,7 @@ public class SlackServiceIntegrationTest {
     props.load(getClass().getResourceAsStream("/secrets.properties"));
 
     settings.setSlackWebHookToken(props.getProperty("codekvast.slackWebHookToken"));
-    slackService = new SlackServiceImpl(settings, metricsService);
+    slackService = new SlackServiceImpl(settings, mock(CommonMetricsService.class));
   }
 
   @Test

@@ -21,8 +21,8 @@
  */
 package io.codekvast.dashboard.dashboard;
 
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.security.SecurityService;
-import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import javax.servlet.http.Cookie;
@@ -47,7 +47,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DashboardLaunchController {
 
   private final SecurityService securityService;
-  private final CodekvastDashboardSettings settings;
+  private final CodekvastCommonSettings settings;
 
   @PostMapping("/dashboard/launch/{code}")
   public String launchNative(@PathVariable("code") String code, HttpServletResponse response) {

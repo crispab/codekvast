@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.dashboard;
 
-import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.dashboard.dashboard.model.ServerSettings;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
 import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
@@ -53,7 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DashboardApiController {
 
   private final DashboardService dashboardService;
-  private final CodekvastDashboardSettings settings;
+  private final CodekvastCommonSettings commonSettings;
 
   @ExceptionHandler
   public ResponseEntity<String> onConstraintValidationException(ConstraintViolationException e) {
@@ -66,12 +66,12 @@ public class DashboardApiController {
 
   @GetMapping("/dashboard/api/v1/serverSettings")
   public ServerSettings getServerSettings() {
-    String displayVersion = this.settings.getDisplayVersion();
+    String displayVersion = this.commonSettings.getDisplayVersion();
 
     ServerSettings serverSettings =
         ServerSettings.builder()
-            .loginUrl(this.settings.getLoginBaseUrl() + "/userinfo")
-            .logoutUrl(this.settings.getLoginBaseUrl() + "/userinfo")
+            .loginUrl(this.commonSettings.getLoginBaseUrl() + "/userinfo")
+            .logoutUrl(this.commonSettings.getLoginBaseUrl() + "/userinfo")
             .serverVersion(displayVersion.startsWith("<%=") ? "dev" : displayVersion)
             .build();
 

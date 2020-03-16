@@ -27,6 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import org.springframework.context.annotation.Bean;
@@ -56,7 +57,7 @@ public class SwaggerConfig {
   }
 
   @Bean
-  public Docket agentDocket(CodekvastDashboardSettings settings) {
+  public Docket agentDocket(CodekvastCommonSettings settings) {
     return new Docket(DocumentationType.SWAGGER_2)
         .apiInfo(getApiInfo(settings, "Endpoints used by the Java agent"))
         .groupName("Java agent endpoints")
@@ -66,7 +67,7 @@ public class SwaggerConfig {
   }
 
   @Bean
-  public Docket dashboardDocket(CodekvastDashboardSettings settings) {
+  public Docket dashboardDocket(CodekvastCommonSettings settings) {
     return new Docket(DocumentationType.SWAGGER_2)
         .apiInfo(getApiInfo(settings, "Endpoints used by the dashboard web app"))
         .groupName("Dashboard endpoints")
@@ -75,7 +76,7 @@ public class SwaggerConfig {
         .build();
   }
 
-  private ApiInfo getApiInfo(CodekvastDashboardSettings settings, String description) {
+  private ApiInfo getApiInfo(CodekvastCommonSettings settings, String description) {
     return new ApiInfo(
         settings.getApplicationName(),
         description,

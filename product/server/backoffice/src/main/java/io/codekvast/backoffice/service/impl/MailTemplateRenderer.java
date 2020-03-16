@@ -22,8 +22,8 @@
 package io.codekvast.backoffice.service.impl;
 
 import com.samskivert.mustache.Mustache;
-import io.codekvast.backoffice.bootstrap.CodekvastBackofficeSettings;
 import io.codekvast.backoffice.service.MailSender;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import java.time.Instant;
@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 public class MailTemplateRenderer {
   private final Mustache.Compiler compiler;
   private final CustomerService customerService;
-  private final CodekvastBackofficeSettings settings;
+  private final CodekvastCommonSettings commonSettings;
 
   String renderTemplate(MailSender.Template template, Object... args) {
     Map<String, Object> data = collectCommonData();
@@ -63,10 +63,10 @@ public class MailTemplateRenderer {
 
   private Map<String, Object> collectCommonData() {
     Map<String, Object> data = new HashMap<>();
-    data.put("codekvastDisplayVersion", settings.getDisplayVersion());
-    data.put("homepageUrl", settings.getHomepageBaseUrl());
-    data.put("loginUrl", settings.getLoginBaseUrl());
-    data.put("supportEmail", settings.getSupportEmail());
+    data.put("codekvastDisplayVersion", commonSettings.getDisplayVersion());
+    data.put("homepageUrl", commonSettings.getHomepageBaseUrl());
+    data.put("loginUrl", commonSettings.getLoginBaseUrl());
+    data.put("supportEmail", commonSettings.getSupportEmail());
     return data;
   }
 

@@ -14,6 +14,8 @@ spring:
       retry:
         enabled:          true
         initial-interval: 2s
+  flyway:
+    validate-on-migrate: false
 management:
   metrics:
     export:
@@ -25,4 +27,6 @@ logging:
   level:
     io.codekvast: INFO
 
-stressTestRateMillis: 50
+codekvast:
+  stress-tester:
+    eventRateMillis: 50

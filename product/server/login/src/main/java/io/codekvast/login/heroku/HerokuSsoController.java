@@ -24,6 +24,7 @@ package io.codekvast.login.heroku;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import javax.servlet.http.HttpServletResponse;
@@ -48,7 +49,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class HerokuSsoController {
 
-  private final CodekvastLoginSettings settings;
+  private final CodekvastCommonSettings commonSettings;
+  private final CodekvastLoginSettings loginSettings;
   private final SecurityService securityService;
 
   @ExceptionHandler
@@ -74,12 +76,12 @@ public class HerokuSsoController {
 
     String code =
         securityService.doHerokuSingleSignOn(
-            token, externalId, email, timestampSeconds, settings.getHerokuApiSsoSalt());
+            token, externalId, email, timestampSeconds, loginSettings.getHerokuApiSsoSalt());
 
     response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
     response.setHeader(
         HttpHeaders.LOCATION,
         String.format(
-            "%s/dashboard/heroku/sso/%s/%s", settings.getDashboardBaseUrl(), code, navData));
+            "%s/dashboard/heroku/sso/%s/%s", commonSettings.getDashboardBaseUrl(), code, navData));
   }
 }

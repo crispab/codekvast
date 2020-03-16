@@ -23,13 +23,13 @@ package io.codekvast.login.service.impl;
 
 import static org.springframework.util.StringUtils.capitalize;
 
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.UserAuthenticatedEvent;
 import io.codekvast.common.security.SecurityService;
 import io.codekvast.common.security.WebappCredentials;
-import io.codekvast.login.bootstrap.CodekvastLoginSettings;
 import io.codekvast.login.model.User;
 import io.codekvast.login.service.LoginService;
 import java.net.URI;
@@ -48,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
 
-  private final CodekvastLoginSettings settings;
+  private final CodekvastCommonSettings commonSettings;
   private final CustomerService customerService;
   private final SecurityService securityService;
   private final EventService eventService;
@@ -63,7 +63,7 @@ public class LoginServiceImpl implements LoginService {
           CustomerService.LoginRequest.builder()
               .customerId(customerId)
               .email(user.getEmail())
-              .source(settings.getApplicationName())
+              .source(commonSettings.getApplicationName())
               .build());
       CustomerData cd = customerService.getCustomerDataByCustomerId(customerId);
 
@@ -76,7 +76,7 @@ public class LoginServiceImpl implements LoginService {
                   .source(cd.getSource())
                   .build());
       return URI.create(
-          String.format("%s/dashboard/launch/%s", settings.getDashboardBaseUrl(), code));
+          String.format("%s/dashboard/launch/%s", commonSettings.getDashboardBaseUrl(), code));
     }
     return null;
   }

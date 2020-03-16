@@ -1,21 +1,21 @@
 package io.codekvast.common.security.impl;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
-import io.codekvast.common.bootstrap.CodekvastCommonSettingsForTestImpl;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.customer.PricePlanDefaults;
 import java.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,7 +27,8 @@ import org.springframework.security.web.authentication.www.NonceExpiredException
 /** @author olle.hallin@crisp.se */
 public class SecurityServiceImplTest {
 
-  private CodekvastCommonSettings settings = new CodekvastCommonSettingsForTestImpl();
+  private final CodekvastCommonSettings settings =
+      CodekvastCommonSettings.builder().jwtSecret("jwtSecret").build();
 
   @Mock private CustomerService customerService;
 
@@ -35,7 +36,7 @@ public class SecurityServiceImplTest {
 
   private SecurityServiceImpl securityService;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
     MockitoAnnotations.initMocks(this);
     securityService = new SecurityServiceImpl(settings, customerService, jdbcTemplate);
@@ -62,7 +63,7 @@ public class SecurityServiceImplTest {
   @Test
   public void should_do_Heroku_SSO_when_valid_token_and_timestamp() {
     // given
-    Long timestampSeconds = Instant.now().getEpochSecond();
+    long timestampSeconds = Instant.now().getEpochSecond();
     String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
     CustomerData customerData =
@@ -93,46 +94,46 @@ public class SecurityServiceImplTest {
                 .build());
   }
 
-  @Test(expected = BadCredentialsException.class)
+  @Test
   public void should_reject_Heroku_SSO_when_invalid_token() {
     // given
     long timestampSeconds = Instant.now().getEpochSecond();
     String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
-    // when
-    securityService.doHerokuSingleSignOn(
-        token + "X", "externalId", "someEmail", timestampSeconds, "salt");
-
-    // then
-    // Kaboom!
+    // when, then
+    assertThrows(
+        BadCredentialsException.class,
+        () ->
+            securityService.doHerokuSingleSignOn(
+                token + "X", "externalId", "someEmail", timestampSeconds, "salt"));
   }
 
-  @Test(expected = NonceExpiredException.class)
+  @Test
   public void should_reject_Heroku_SSO_when_valid_token_too_old_timestamp() {
     // given
     long timestampSeconds = Instant.now().getEpochSecond();
     String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
-    // when
-    securityService.doHerokuSingleSignOn(
-        token, "externalId", "someEmail", timestampSeconds - 5 * 60 - 1, "salt");
-
-    // then
-    // Kaboom!
+    // when, then
+    assertThrows(
+        NonceExpiredException.class,
+        () ->
+            securityService.doHerokuSingleSignOn(
+                token, "externalId", "someEmail", timestampSeconds - 5 * 60 - 1, "salt"));
   }
 
-  @Test(expected = NonceExpiredException.class)
+  @Test
   public void should_reject_Heroku_SSO_when_valid_token_too_new_timestamp() {
     // given
     long timestampSeconds = Instant.now().getEpochSecond();
     String token = securityService.makeHerokuSsoToken("externalId", timestampSeconds, "salt");
 
-    // when
-    securityService.doHerokuSingleSignOn(
-        token, "externalId", "someEmail", timestampSeconds + 60 + 2, "salt");
-
-    // then
-    // Kaboom!
+    // when, then
+    assertThrows(
+        NonceExpiredException.class,
+        () ->
+            securityService.doHerokuSingleSignOn(
+                token, "externalId", "someEmail", timestampSeconds + 60 + 2, "salt"));
   }
 
   @Test

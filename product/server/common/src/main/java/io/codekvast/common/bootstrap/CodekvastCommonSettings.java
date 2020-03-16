@@ -21,24 +21,76 @@
  */
 package io.codekvast.common.bootstrap;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Builder.Default;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
 /** @author olle.hallin@crisp.se */
-public interface CodekvastCommonSettings {
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods", "OverlyComplexClass"})
+@Component
+@ConfigurationProperties(prefix = "codekvast")
+@Validated
+@Data
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString(exclude = {"jwtSecret", "slackWebHookToken"})
+@Slf4j
+public class CodekvastCommonSettings {
 
-  String getApplicationName();
+  private String applicationName;
+  private String displayVersion;
+  private String dnsCname;
 
-  String getDisplayVersion();
+  @Default private String environment = "dev";
 
-  String getDnsCname();
+  private String jwtSecret;
 
-  String getSlackWebHookToken();
+  @Default private Long jwtExpirationHours = 7 * 24L;
 
-  default String getSlackWebHookUrl() {
-    return "https://hooks.slack.com/services";
+  private String slackWebHookToken;
+
+  @Default private String slackWebHookUrl = "https://hooks.slack.com/services";
+
+  /** The name of the person doing the last commit, injected from the build system. */
+  private String committer;
+
+  /** The date of the last commit, injected from the build system. */
+  private String commitDate;
+
+  /** The last commit message, injected from the build system. */
+  private String commitMessage;
+
+  /** What is the login base url? */
+  @Default private String loginBaseUrl = "https://login.codekvast.io";
+
+  /** What is the base URL of the Codekvast dashboard? */
+  @Default private String dashboardBaseUrl = "https://dashboard.codekvast.io";
+
+  /** What is the homepage base url? */
+  @Default private String homepageBaseUrl = "https://www.codekvast.io";
+
+  /** What is the support email? */
+  @Default private String supportEmail = "support@codekvast.io";
+
+  @PostConstruct
+  public void logStartup() {
+    logger.info("{} started", this);
   }
 
-  String getJwtSecret();
-
-  Long getJwtExpirationHours();
-
-  String getEnvironment();
+  @PreDestroy
+  public void logShutdown() {
+    //noinspection UseOfSystemOutOrSystemErr
+    System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, commitDate);
+    logger.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
+  }
 }

@@ -34,5 +34,4 @@ public class SlackServiceDummy implements SlackService {
   public void sendNotification(String text, Channel channel) {
     // NO-OP
   }
-
 }

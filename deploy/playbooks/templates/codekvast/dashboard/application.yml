@@ -1,52 +1,53 @@
 # {{ ansible_managed }}
 
 codekvast:
-    dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
-    dnsCname: "{{ tags.CNAME2 }}"
-    environment: "{{ tags.Env }}"
+  dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
+  dnsCname: "{{ tags.CNAME2 }}"
+  environment: "{{ tags.Env }}"
+  jwtExpirationHours: "{{ codekvast_jwtExpirationHours }}"
+  jwtSecret: "{{ codekvast_jwtSecret }}"
+  loginBaseUrl: "https://{{ tags.LBCNAME1 }}"
+  slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
+  dashboard:
     fileImportQueuePath: "{{ fileImportQueuePath }}"
-    jwtExpirationHours: "{{ codekvast_jwtExpirationHours }}"
-    jwtSecret: "{{ codekvast_jwtSecret }}"
-    loginBaseUrl: "https://{{ tags.LBCNAME1 }}"
-    slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
 
 logging:
-    file:
-        name: "/var/log/codekvast/{{ service_name }}/application.log"
-        max-size: '10MB'
-        max-history: 10
-    level:
-        io.codekvast: "{{ 'DEBUG' if tags.Env == 'staging' else 'INFO' }}"
-        io.micrometer.datadog.DatadogMeterRegistry: OFF
+  file:
+    name: "/var/log/codekvast/{{ service_name }}/application.log"
+    max-size: '10MB'
+    max-history: 10
+  level:
+    io.codekvast: "{{ 'DEBUG' if tags.Env == 'staging' else 'INFO' }}"
+    io.micrometer.datadog.DatadogMeterRegistry: OFF
 
 management:
-    server.port: "{{ management_port }}"
-    endpoint:
-        beans.enabled: false
-        conditions.enabled: false
-        mappings.enabled: false
-    metrics:
-        tags:
-            service: "codekvast-{{ service_name }}"
-            env: "{{ tags.Env }}"
-            host: "{{ tags.CNAME2 }}"
-        export.datadog:
-            api-key: "{{ datadog_api_key }}"
-            enabled: true
-            step: PT60S
+  server.port: "{{ management_port }}"
+  endpoint:
+    beans.enabled: false
+    conditions.enabled: false
+    mappings.enabled: false
+  metrics:
+    tags:
+      service: "codekvast-{{ service_name }}"
+      env: "{{ tags.Env }}"
+      host: "{{ tags.CNAME2 }}"
+    export.datadog:
+      api-key: "{{ datadog_api_key }}"
+      enabled: true
+      step: PT60S
 
 server:
-    port: "{{ service_port }}"
-    undertow.accesslog:
-        dir: /var/log/codekvast/{{ service_name }}/
-        prefix: access.
+  port: "{{ service_port }}"
+  undertow.accesslog:
+    dir: /var/log/codekvast/{{ service_name }}/
+    prefix: access.
 spring:
-    datasource:
-        password: "{{ mysql_application_password }}"
-        url: "jdbc:mariadb://{{ database_dns_names[0] }}/codekvast"
-    rabbitmq:
-        addresses: "amqp://codekvast:{{ rabbitmq_application_password }}@{{ database_dns_names[0] }}:5672"
-        template:
-            retry:
-                enabled: true
-                initial-interval: 2s
+  datasource:
+    password: "{{ mysql_application_password }}"
+    url: "jdbc:mariadb://{{ database_dns_names[0] }}/codekvast"
+  rabbitmq:
+    addresses: "amqp://codekvast:{{ rabbitmq_application_password }}@{{ database_dns_names[0] }}:5672"
+    template:
+      retry:
+        enabled: true
+        initial-interval: 2s

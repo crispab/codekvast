@@ -42,7 +42,7 @@ class StressTester(private val eventService: EventService) {
   var firstTime = true
   var startedAt = Instant.now()
 
-  @Scheduled(fixedRateString = "\${stressTestRateMillis}")
+  @Scheduled(fixedRateString = "\${codekvast.stress-tester.eventRateMillis}")
   fun sendSampleAgentPolledEvent() {
     val oldName = Thread.currentThread().name
     try {

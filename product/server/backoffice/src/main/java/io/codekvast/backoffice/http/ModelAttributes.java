@@ -21,7 +21,7 @@
  */
 package io.codekvast.backoffice.http;
 
-import io.codekvast.backoffice.bootstrap.CodekvastBackofficeSettings;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
@@ -37,10 +37,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @RequiredArgsConstructor
 @Slf4j
 public class ModelAttributes {
-  private final CodekvastBackofficeSettings settings;
+  private final CodekvastCommonSettings settings;
 
   @ModelAttribute("settings")
-  public CodekvastBackofficeSettings getCodekvastSettings() {
+  public CodekvastCommonSettings getCodekvastSettings() {
     return settings;
   }
 

@@ -2,16 +2,18 @@
 # This file contains all properties that are NOT injected by Gradle. These go into application.properties, since Gradle's expand()
 # does not play well with YAML.
 #
-# Spring Boot reads both application.properties and application.yml.
+# Spring Boot reads and merges both application.properties and application.yml.
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 codekvast:
+  dashboardBaseUrl:   http://localhost:8081
+  jwtExpirationHours: 168
+  jwtSecret:          secret
+  dnsCname:           localhost
+  environment:        dev
+  slackWebHookToken:
+  login:
     cipherSecret:                someCipherSecret
-    dashboardBaseUrl:            http://localhost:8081
-    jwtExpirationHours: 168
-    jwtSecret:          secret
-    dnsCname:                    localhost
-    environment:                 dev
     herokuOAuthBaseUrl:          https://id.heroku.com
     herokuApiBaseUrl:            https://api.heroku.com
     herokuApiPassword:           herokuApiPassword
@@ -19,7 +21,6 @@ codekvast:
     herokuCodekvastUrl:          http://localhost:8080
     herokuOAuthClientId:         herokuOAuthClientId
     herokuOAuthClientSecret:     herokuOAuthClientSecret
-    slackWebHookToken:
 
 logging:
     file:
