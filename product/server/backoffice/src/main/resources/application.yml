@@ -29,7 +29,9 @@ management:
   endpoint:
     health:
       show-details:       "ALWAYS"
-      cache.time-to-live: 1s
+      cache.time-to-live: 10s
+  health:
+    mail.enabled: false # There is a memory leak in JceSecurity. see https://bugs:openjdk:java:net/browse/JDK-8168469:
   server:
     port: 9082
   metrics:

@@ -42,7 +42,6 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.drools.core.base.MapGlobalResolver;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -140,11 +139,6 @@ public class RuleEngineImpl implements RuleEngine {
 
     // Fire the rules...
     session.fireAllRules();
-
-    // Work-around a memory leak
-    MapGlobalResolver globals = (MapGlobalResolver) session.getGlobals();
-    globals.clear();
-    // End work-around
 
     // Cleanup...
     session.dispose();
