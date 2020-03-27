@@ -98,3 +98,5 @@ spring:
   cache:
     caffeine:
       spec: 'expireAfterAccess=10m'
+  profiles:
+    include: flyway-placeholders # from module db-migration

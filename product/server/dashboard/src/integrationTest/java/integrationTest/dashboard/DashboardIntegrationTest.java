@@ -1152,6 +1152,7 @@ public class DashboardIntegrationTest {
 
   @RequiredArgsConstructor
   public static class LockContentionTestHelper {
+
     private final LockManager lockManager;
 
     @Transactional

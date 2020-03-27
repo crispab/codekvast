@@ -26,13 +26,13 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- Make signature column case-sensitive
 ALTER TABLE methods
-    MODIFY signature VARCHAR(2000) COLLATE utf8_bin NOT NULL;
+    MODIFY signature VARCHAR(${maxSignatureLength}) COLLATE utf8_bin NOT NULL;
 
 -- Prepare for removing duplicates
 ALTER TABLE methods
     ADD INDEX ix_method_customerId(customerId),
     DROP INDEX ix_method_identity,
-    ADD INDEX ix_method_signature(signature(1000));
+    ADD INDEX ix_method_signature(signature(${maxSignatureIndexLength}));
 
 -- Remove duplicate methods (keep the oldest)
 DELETE m1 FROM methods m1 INNER JOIN methods m2
@@ -50,4 +50,4 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 ALTER TABLE methods
     DROP INDEX ix_method_signature,
-    ADD UNIQUE INDEX ix_method_identity(customerId, signature(1000));
+    ADD UNIQUE INDEX ix_method_identity(customerId, signature(${maxSignatureIndexLength}));

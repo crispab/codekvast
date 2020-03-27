@@ -3,6 +3,13 @@
     <module name="codekvast.product.server.stress-tester.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.stress_tester.StressTesterApplication" />
     <option name="ALTERNATIVE_JRE_PATH" />
+    <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="stressTestRateMillis" />
+        <option name="value" value="25" />
+      </param>
+    </additionalParameters>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

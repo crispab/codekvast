@@ -28,8 +28,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Change column type from TEXT to VARCHAR
 ALTER TABLE methods
     DROP INDEX IF EXISTS ix_method_signature,
-    MODIFY signature VARCHAR(2000) NOT NULL,
-    ADD INDEX ix_method_signature(signature(1000));
+    MODIFY signature VARCHAR(${maxSignatureLength}) NOT NULL,
+    ADD INDEX ix_method_signature(signature(${maxSignatureIndexLength}));
 
 -- Remove duplicate methods (keep the oldest)
 DELETE m1 FROM methods m1 INNER JOIN methods m2
@@ -47,4 +47,4 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 ALTER TABLE methods
     DROP INDEX ix_method_signature,
-    ADD UNIQUE INDEX ix_method_identity(customerId, signature(1000));
+    ADD UNIQUE INDEX ix_method_identity(customerId, signature(${maxSignatureIndexLength}));

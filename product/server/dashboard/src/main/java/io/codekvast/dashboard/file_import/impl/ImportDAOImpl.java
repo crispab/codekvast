@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -65,6 +66,9 @@ public class ImportDAOImpl implements ImportDAO {
   private static final String DEFAULT_ENVIRONMENT_NAME = "<default>";
   private final JdbcTemplate jdbcTemplate;
   private final CustomerService customerService;
+
+  @Value("${spring.flyway.placeholders.maxSignatureLength}")
+  private Integer maxSignatureLength;
 
   @Override
   public long importApplication(CommonPublicationData2 data) {
@@ -398,6 +402,16 @@ public class ImportDAOImpl implements ImportDAO {
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
       String signature = entry.getSignature();
+      if (signature.length() > maxSignatureLength) {
+        logger.warn(
+            "Too long signature {}:'{}' ({} characters), longer than {} characters, ignored.",
+            customerId,
+            signature,
+            signature.length(),
+            maxSignatureLength);
+        continue;
+      }
+
       if (!existingMethods.containsKey(signature)) {
         existingMethods.put(
             signature,
@@ -555,6 +569,7 @@ public class ImportDAOImpl implements ImportDAO {
 
   @RequiredArgsConstructor
   private static class InsertCompleteMethodStatement implements PreparedStatementCreator {
+
     private final long customerId;
     private final long publishedAtMillis;
     private final MethodSignature3 method;
@@ -592,6 +607,7 @@ public class ImportDAOImpl implements ImportDAO {
 
   @RequiredArgsConstructor
   private static class UpdateIncompleteMethodStatement implements PreparedStatementCreator {
+
     private final long customerId;
     private final long publishedAtMillis;
     private final CodeBaseEntry3 entry;
@@ -627,6 +643,7 @@ public class ImportDAOImpl implements ImportDAO {
 
   @RequiredArgsConstructor
   private static class UpsertInvocationStatement implements PreparedStatementCreator {
+
     private final long customerId;
     private final long appId;
     private final long environmentId;
@@ -667,6 +684,7 @@ public class ImportDAOImpl implements ImportDAO {
 
   @RequiredArgsConstructor
   private static class InsertMethodLocationStatement implements PreparedStatementCreator {
+
     private final long customerId;
     private final long methodId;
     private final String location;
@@ -686,6 +704,7 @@ public class ImportDAOImpl implements ImportDAO {
 
   @RequiredArgsConstructor
   private static class InsertIncompleteMethodStatement implements PreparedStatementCreator {
+
     private final long customerId;
     private final String signature;
     private final long invokedAtMillis;

@@ -25,7 +25,7 @@
 -- -------------------------------------------------------------------------------------------------------
 -- It does not work with a unique index on methods.signature, since MariaDB has a restriction on
 -- an index key to be max 3032 bytes.
--- A VARCHAR(2000) in URF-8 could be up to 6000 bytes, so the index needs to be shorter.
+-- A VARCHAR(2000) in URT-8 could be up to 6000 bytes, so the index needs to be shorter.
 -- This means that even if the two signatures are different, they could collide in the index.
 --
 -- We have to rely on the application to not insert duplicate values.

@@ -95,5 +95,7 @@ spring:
   cache:
     caffeine:
       spec: 'expireAfterAccess=10m, recordStats'
+  profiles:
+    include: flyway-placeholders # from module db-migration
 
 springfox.documentation.swagger.v2.path: /api-docs
