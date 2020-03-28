@@ -188,22 +188,7 @@
     rules:
     - proto: tcp
       ports:
-      - "{{ ports.ssh }}"
-      - "{{ ports.mysql }}"
-      - "{{ ports.rabbitmq.api }}"
-      - "{{ ports.rabbitmq.console }}"
-      - "{{ ports.login.service }}"
-      - "{{ ports.login.management }}"
-      - "{{ ports.login.jvm_debugger }}"
-      - "{{ ports.login.jmx }}"
-      - "{{ ports.dashboard.service }}"
-      - "{{ ports.dashboard.management }}"
-      - "{{ ports.dashboard.jvm_debugger }}"
-      - "{{ ports.dashboard.jmx }}"
-      - "{{ ports.backoffice.service }}"
-      - "{{ ports.backoffice.management }}"
-      - "{{ ports.backoffice.jvm_debugger }}"
-      - "{{ ports.backoffice.jmx }}"
+      - "{{ ports.ssh }}-65535"
       cidr_ip: "{{ my_ip.content }}/32"
   tags: infra
 

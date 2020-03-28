@@ -19,8 +19,11 @@
 
   tasks:
 
+  - name: Create backup directory
+    file: path="{{ mysql_backup_dir }}" state=directory
+
   - name: "Fetching {{ s3_bucket }}/{{ sqldump }} to {{ tags.CNAME }}:{{ mysql_backup_dir }}/{{ sqldump }}"
-    shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ sqldump }} {{ mysql_backup_dir }}"
+    shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ sqldump }} {{ mysql_backup_dir }}/{{ sqldump }}"
 
   - name: "Restoring {{ mysql_backup_dir }}/{{ sqldump }} in {{ tags.CNAME }}"
     shell: "/root/mysqldump-restore {{ mysql_backup_dir }}/{{ sqldump }} --yes"

@@ -1,5 +1,5 @@
 spring:
   flyway:
     placeholders:
-      maxSignatureLength: 2000
+      maxSignatureLength: 2300
       maxSignatureIndexLength: 1000

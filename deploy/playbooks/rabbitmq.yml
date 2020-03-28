@@ -19,6 +19,11 @@
     - Datadog.datadog
 
     post_tasks:
+    -   name: Define RABBITMQ_NODENAME
+        lineinfile:
+          line: RABBITMQ_NODENAME=rabbit@localhost
+          path: /etc/environment
+
     -   name: Install RabbitMQ APT signing key
         apt_key:
             id:        '0x6B73A36E6026DFCA'

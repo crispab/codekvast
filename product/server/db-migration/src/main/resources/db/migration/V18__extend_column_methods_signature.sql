@@ -20,34 +20,5 @@
 -- THE SOFTWARE.
 --
 
--- SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
-
-SET FOREIGN_KEY_CHECKS = 0;
-
--- Make signature column case-sensitive
 ALTER TABLE methods
-    MODIFY signature VARCHAR(2000) COLLATE utf8_bin NOT NULL;
-
--- Prepare for removing duplicates
-ALTER TABLE methods
-    ADD INDEX ix_method_customerId(customerId),
-    DROP INDEX ix_method_identity,
-    ADD INDEX ix_method_signature(signature(1000));
-
--- Remove duplicate methods (keep the oldest)
-DELETE m1 FROM methods m1 INNER JOIN methods m2
-          WHERE m1.signature = m2.signature AND m1.id > m2.id;
-
--- Remove orphan method_locations
-DELETE ml1 FROM method_locations ml1 LEFT JOIN methods m1 ON ml1.methodId = m1.id
-           WHERE m1.id IS NULL;
-
--- Remove orphan invocations
-DELETE i1 FROM invocations i1 LEFT JOIN methods m1 ON i1.methodId = m1.id
-          WHERE m1.id IS NULL;
-
-SET FOREIGN_KEY_CHECKS = 1;
-
-ALTER TABLE methods
-    DROP INDEX ix_method_signature,
-    ADD UNIQUE INDEX ix_method_identity(customerId, signature(1000));
+  MODIFY signature VARCHAR(${maxSignatureLength}) NOT NULL;
