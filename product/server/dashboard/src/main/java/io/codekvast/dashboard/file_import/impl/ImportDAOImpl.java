@@ -328,7 +328,8 @@ public class ImportDAOImpl implements ImportDAO {
       long invokedAtMillis,
       Set<String> invokedSignatures,
       Map<String, Long> existingMethods) {
-    for (String signature : invokedSignatures) {
+    for (String sig : invokedSignatures) {
+      String signature = DatabaseLimits.normalizeSignature(sig);
       Long methodId = existingMethods.get(signature);
       if (methodId == null) {
         logger.trace("Inserting incomplete method {}:{}", methodId, signature);
