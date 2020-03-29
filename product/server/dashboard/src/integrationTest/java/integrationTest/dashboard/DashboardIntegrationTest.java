@@ -110,13 +110,12 @@ public class DashboardIntegrationTest {
   private static final String PASSWORD = "codekvast";
 
   @ClassRule
-  public static MariaDBContainer mariaDB =
-      (MariaDBContainer)
-          new MariaDBContainer("mariadb:10.4")
-              .withDatabaseName(DATABASE)
-              .withUsername(USERNAME)
-              .withPassword(PASSWORD)
-              .withEnv("MYSQL_INITDB_SKIP_TZINFO", "true");
+  public static MariaDBContainer<?> mariaDB =
+    new MariaDBContainer<>("mariadb:10.4")
+        .withDatabaseName(DATABASE)
+        .withUsername(USERNAME)
+        .withPassword(PASSWORD)
+        .withEnv("MYSQL_INITDB_SKIP_TZINFO", "true");
 
   @ClassRule
   public static RabbitMQContainer rabbitMQ =
