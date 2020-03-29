@@ -29,6 +29,7 @@ import static java.sql.Types.BOOLEAN;
 import static java.util.Optional.ofNullable;
 
 import io.codekvast.common.customer.CustomerService;
+import io.codekvast.database.DatabaseLimits;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
@@ -46,7 +47,6 @@ import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -66,9 +66,6 @@ public class ImportDAOImpl implements ImportDAO {
   private static final String DEFAULT_ENVIRONMENT_NAME = "<default>";
   private final JdbcTemplate jdbcTemplate;
   private final CustomerService customerService;
-
-  @Value("${spring.flyway.placeholders.maxSignatureLength}")
-  private Integer maxSignatureLength;
 
   @Override
   public long importApplication(CommonPublicationData2 data) {
@@ -402,14 +399,14 @@ public class ImportDAOImpl implements ImportDAO {
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
       String signature = entry.getSignature();
-      if (signature.length() > maxSignatureLength) {
+      if (signature.length() > DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH) {
         logger.warn(
-            "Too long signature {}:'{}' ({} characters), longer than {} characters, ignored.",
+            "Too long signature {}:'{}' ({} characters), longer than {} characters, will be truncated.",
             customerId,
             signature,
             signature.length(),
-            maxSignatureLength);
-        continue;
+            DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH);
+        signature = DatabaseLimits.normalizeSignature(signature);
       }
 
       if (!existingMethods.containsKey(signature)) {
@@ -438,9 +435,10 @@ public class ImportDAOImpl implements ImportDAO {
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
       String location = entry.getMethodSignature().getLocation();
-      long methodId = existingMethods.get(entry.getSignature());
+      String signature = DatabaseLimits.normalizeSignature(entry.getSignature());
+      long methodId = existingMethods.get(signature);
       if (location != null && !existingMethodLocations.contains(methodId)) {
-        logger.debug("Inserting {} ({})", entry.getSignature(), location);
+        logger.debug("Inserting {} ({})", signature, location);
         count +=
             jdbcTemplate.update(new InsertMethodLocationStatement(customerId, methodId, location));
         existingMethodLocations.add(methodId);
@@ -462,10 +460,10 @@ public class ImportDAOImpl implements ImportDAO {
     long startedAtMillis = System.currentTimeMillis();
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
-      long methodId = existingMethods.get(entry.getSignature());
-      if (incompleteMethods.contains(entry.getSignature())
-          || incompleteInvocations.contains(methodId)) {
-        logger.debug("Updating {}", entry.getSignature());
+      String signature = DatabaseLimits.normalizeSignature(entry.getSignature());
+      long methodId = existingMethods.get(signature);
+      if (incompleteMethods.contains(signature) || incompleteInvocations.contains(methodId)) {
+        logger.debug("Updating {}", signature);
         jdbcTemplate.update(
             new UpdateIncompleteMethodStatement(customerId, publishedAtMillis, entry));
         count += 1;
@@ -488,7 +486,8 @@ public class ImportDAOImpl implements ImportDAO {
     int importCount = 0;
 
     for (CodeBaseEntry3 entry : entries) {
-      long methodId = existingMethods.get(entry.getSignature());
+      String signature = DatabaseLimits.normalizeSignature(entry.getSignature());
+      long methodId = existingMethods.get(signature);
       SignatureStatus2 initialStatus = calculateInitialStatus(data, entry);
       int updated =
           jdbcTemplate.update(
@@ -636,7 +635,7 @@ public class ImportDAOImpl implements ImportDAO {
       ps.setString(++column, method.getParameterTypes());
       ps.setString(++column, method.getReturnType());
       ps.setLong(++column, customerId);
-      ps.setString(++column, entry.getSignature());
+      ps.setString(++column, DatabaseLimits.normalizeSignature(entry.getSignature()));
       return ps;
     }
   }

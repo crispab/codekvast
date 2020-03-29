@@ -40,7 +40,7 @@ server:
 
 spring:
   datasource:
-    password: "{{ mysql_application_password }}"
+    password: "{{ mariadb_application_password }}"
     url: "jdbc:mariadb://{{ database_dns_names[0] }}/codekvast"
 
   rabbitmq:

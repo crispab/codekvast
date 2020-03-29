@@ -10,7 +10,7 @@ declare bucket={{ s3_database_backup_bucket }}
 
 set -e
 
-mysqldump --user=root --password={{ mysql_root_password }} --single-transaction codekvast | gzip > ${dumpfile}.new
+mysqldump --user=root --password={{ mariadb_root_password }} --single-transaction codekvast | gzip > ${dumpfile}.new
 mv --force ${dumpfile}.new ${dumpfile}
 
 s3cmd --config=/root/s3cfg --progress --force put ${dumpfile} s3://${bucket}

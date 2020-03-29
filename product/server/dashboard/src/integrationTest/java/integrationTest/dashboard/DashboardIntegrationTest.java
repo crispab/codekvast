@@ -41,6 +41,7 @@ import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
 import io.codekvast.dashboard.weeding.WeedingTask;
+import io.codekvast.database.DatabaseLimits;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
@@ -67,6 +68,7 @@ import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.flywaydb.core.Flyway;
 import org.junit.After;
 import org.junit.Before;
@@ -552,6 +554,79 @@ public class DashboardIntegrationTest {
         is(1));
     assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
     assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(1));
+  }
+
+  @Test
+  public void should_import_codeBasePublication3_with_too_long_signature_entry() {
+    // given
+    assertThat(countRowsInTable("applications"), is(0));
+    assertThat(countRowsInTable("environments"), is(0));
+    assertThat(countRowsInTable("jvms"), is(0));
+    assertThat(countRowsInTable("packages"), is(0));
+    assertThat(countRowsInTable("types"), is(0));
+    assertThat(countRowsInTable("methods"), is(0));
+    assertThat(countRowsInTable("invocations"), is(0));
+
+    CodeBaseEntry3 entry1 = CodeBaseEntry3.sampleCodeBaseEntry();
+    CodeBaseEntry3 entry2 =
+        entry1
+            .toBuilder()
+            .signature(
+                "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
+            .build();
+    int signatureLength = DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH + 1;
+    int indexLength = DatabaseLimits.MAX_METHOD_SIGNATURE_INDEX_LENGTH;
+    CodeBaseEntry3 entry3 =
+        entry1
+            .toBuilder()
+            .signature(RandomStringUtils.randomAlphanumeric(signatureLength - 2) + "()")
+            .build();
+
+    CodeBasePublication3 publication =
+        CodeBasePublication3.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .entries(asList(entry1, entry2, entry3))
+            .build();
+
+    // when
+    codeBaseImporter.importPublication(publication);
+
+    // then
+    assertThat(
+        countRowsInTable("applications WHERE name = ?", publication.getCommonData().getAppName()),
+        is(1));
+    assertThat(
+        countRowsInTable(
+            "environments WHERE name = ?", publication.getCommonData().getEnvironment()),
+        is(1));
+    assertThat(
+        countRowsInTable("jvms WHERE uuid = ?", publication.getCommonData().getJvmUuid()), is(1));
+    assertThat(
+        countRowsInTable("packages WHERE name = ?", entry1.getMethodSignature().getPackageName()),
+        is(1));
+    assertThat(
+        countRowsInTable("types WHERE name = ?", entry1.getMethodSignature().getDeclaringType()),
+        is(1));
+    assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
+    assertThat(countRowsInTable("methods WHERE signature = ?", entry2.getSignature()), is(0));
+    assertThat(countRowsInTable("methods WHERE signature = ?", entry3.getSignature()), is(0));
+    assertThat(
+        countRowsInTable(
+            "methods WHERE signature LIKE ?",
+            entry3.getSignature().substring(0, signatureLength - 3) + "...%"),
+        is(0));
+    assertThat(
+        countRowsInTable(
+            "methods WHERE signature LIKE ?",
+            entry3.getSignature().substring(0, indexLength) + "%"),
+        is(1));
+
+    assertThat(
+        countRowsInTable(
+            "method_locations WHERE location = ?", entry1.getMethodSignature().getLocation()),
+        is(2));
+    assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(2));
+    assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(2));
   }
 
   @Test
