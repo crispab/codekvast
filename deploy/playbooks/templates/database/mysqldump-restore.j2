@@ -31,10 +31,19 @@ fi
 
 echo "Here we go..."
 
-cat << EOF
-DROP DATABASE IF EXISTS codekvast;
-CREATE DATABASE codekvast;
-GRANT ALL ON codekvast.* to 'codekvast'@'%' IDENTIFIED BY '{{ mariadb_application_password }}';
-EOF | mysql --user=root --password={{ mariadb_root_password }}
+set -e
 
+echo "DROP DATABASE IF EXISTS codekvast"
+mysql --user=root --password={{ mariadb_root_password }} -e "DROP DATABASE IF EXISTS codekvast"
+
+echo "rm -fr {{ mysql_datadir }}/codekvast"
+rm -fr {{ mysql_datadir }}/codekvast
+
+echo "CREATE DATABASE codekvast"
+mysql --user=root --password={{ mariadb_root_password }} -e "CREATE DATABASE codekvast"
+
+echo "GRANT ALL ON codekvast.* to 'codekvast'@'%' IDENTIFIED BY 'XXX'"
+mysql --user=root --password={{ mariadb_root_password }} -e "GRANT ALL ON codekvast.* to 'codekvast'@'%' IDENTIFIED BY '{{ mariadb_application_password }}'"
+
+echo "Restoring ${backupFile} ..."
 zcat ${backupFile} | mysql --user=codekvast --password={{ mariadb_application_password }} --database=codekvast

@@ -115,12 +115,6 @@
     command: mv {{ standard_datadir }} {{ mysql_datadir }} creates={{ mysql_datadir }} removes={{ standard_datadir }}
     when: st1.stat.isdir is defined and st1.stat.isdir and not st2.stat.isdir is defined
 
-  roles:
-  - {role: Datadog.datadog, tags: [metrics,monitoring,datadog] }
-  - {role: codekvast.datadog, tags: [metrics,monitoring,datadog] }
-  - {role: geerlingguy.mysql, tags: [database, mariadb] }
-
-  post_tasks:
   - set_fact:
       customer: "{{ tags.Customer }}"
       env: "{{ tags.Env }}"
@@ -132,20 +126,26 @@
   - name: Install s3cmd and gzip
     package: name={{ item }} state=present
     with_items:
-        - s3cmd
-        - gzip
+      - s3cmd
+      - gzip
 
   - name: Install backup scripts
     template: src=database/{{ item }}.j2 dest=/root/{{ item }} mode=755
     with_items:
-    - mysqldump-backup
-    - mysqldump-restore
-    - s3cfg
+      - mysqldump-backup
+      - mysqldump-restore
+      - s3cfg
 
   - name: Check S3 access credentials
     shell: s3cmd --config=/root/s3cfg ls s3://{{ s3_database_backup_bucket }}
     changed_when: False
 
+  roles:
+  - {role: Datadog.datadog, tags: [metrics,monitoring,datadog] }
+  - {role: codekvast.datadog, tags: [metrics,monitoring,datadog] }
+  - {role: geerlingguy.mysql, tags: [database, mariadb] }
+
+  post_tasks:
   - name: Link backup scripts to /etc/cron.daily
     file: src=/root/{{ item }} dest=/etc/cron.daily/{{ item }} state=link
     with_items:
