@@ -6,7 +6,7 @@ ext {
     mariadbVersion = '10.4'
     rabbitmqVersion = '3.8-management-alpine' // Same as in the Ansible playbook rabbitmq.yml
     seleniumVersion = '3.141.59'
-    springBootVersion = '2.2.5.RELEASE'
+    springBootVersion = '2.2.6.RELEASE'
     springfoxVersion = '2.9.2'
     wiremockVersion = '2.26.3'
 
