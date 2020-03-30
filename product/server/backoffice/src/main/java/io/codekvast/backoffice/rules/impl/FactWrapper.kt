@@ -22,11 +22,9 @@
 package io.codekvast.backoffice.rules.impl
 
 import io.codekvast.backoffice.facts.PersistentFact
-import lombok.Data
-import lombok.RequiredArgsConstructor
 
 /**
- * A wrapper for a persistent fact that pairs it with its database primary key.
+ * A wrapper for a persistent fact that pairs it with it's database surrogate key.
  *
  * @author olle.hallin@crisp.se
  */

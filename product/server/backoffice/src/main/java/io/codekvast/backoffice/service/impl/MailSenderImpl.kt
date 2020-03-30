@@ -23,15 +23,11 @@ package io.codekvast.backoffice.service.impl
 
 import io.codekvast.backoffice.service.MailSender
 import io.codekvast.common.util.LoggerDelegate
-import lombok.RequiredArgsConstructor
-import lombok.SneakyThrows
-import lombok.extern.slf4j.Slf4j
 import org.springframework.context.annotation.Profile
 import org.springframework.mail.MailSendException
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
-import javax.mail.MessagingException
 
 /** @author olle.hallin@crisp.se
  */

@@ -59,13 +59,15 @@ class RuleEngineImpl(
   private val droolsLogger = LoggerFactory.getLogger(this::class.java.packageName + ".Drools")
   private lateinit var kieContainer: KieContainer
 
+  private val rulesPath = "rules/"
+
   @PostConstruct
   fun configureDrools(): RuleEngine {
     val startedAt = clock.instant()
     val kieServices = KieServices.Factory.get()
     val kieFileSystem = kieServices.newKieFileSystem()
     for (file in getRuleFiles()) {
-      val resource = ResourceFactory.newClassPathResource(RULES_PATH + file.filename, "UTF-8")
+      val resource = ResourceFactory.newClassPathResource(rulesPath + file.filename, "UTF-8")
       logger.debug("Loading rule resource {}", resource)
       kieFileSystem.write(resource)
     }
@@ -80,7 +82,7 @@ class RuleEngineImpl(
 
   private fun getRuleFiles(): Array<out org.springframework.core.io.Resource> {
     val resourcePatternResolver: ResourcePatternResolver = PathMatchingResourcePatternResolver()
-    return resourcePatternResolver.getResources("classpath*:$RULES_PATH**/*.*")
+    return resourcePatternResolver.getResources("classpath*:$rulesPath**/*.*")
   }
 
   @Transactional
@@ -160,9 +162,5 @@ class RuleEngineImpl(
         logger.debug("Deleted fact {}:{}:{}", customerId, factId, obj)
       }
     }
-  }
-
-  companion object {
-    private const val RULES_PATH = "rules/"
   }
 }
