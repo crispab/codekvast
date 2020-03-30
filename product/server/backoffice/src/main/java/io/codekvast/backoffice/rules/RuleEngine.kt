@@ -19,24 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.rules.impl;
+package io.codekvast.backoffice.rules
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-import java.time.Instant;
+import io.codekvast.common.messaging.model.CodekvastEvent
 
-/** @author olle.hallin@crisp.se */
-public class InstantTypeAdapter extends TypeAdapter<Instant> {
+/**
+ * A wrapper for Drools.
+ *
+ * @author olle.hallin@crisp.se
+ */
+interface RuleEngine {
 
-  @Override
-  public void write(JsonWriter out, Instant instant) throws IOException {
-    out.value(instant == null ? null : instant.toString());
-  }
-
-  @Override
-  public Instant read(JsonReader in) throws IOException {
-    return Instant.parse(in.nextString());
-  }
+  /**
+   * Handle an event
+   *
+   * @param event The event to handle.
+   */
+  fun handle(event: CodekvastEvent)
 }

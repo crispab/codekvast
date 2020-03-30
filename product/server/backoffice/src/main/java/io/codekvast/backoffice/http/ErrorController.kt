@@ -19,26 +19,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.http;
+package io.codekvast.backoffice.http
 
-import javax.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController
+import org.springframework.boot.web.servlet.error.ErrorAttributes
+import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.GetMapping
+import javax.servlet.http.HttpServletRequest
 
-/** @author olle.hallin@crisp.se */
+/** @author olle.hallin@crisp.se
+ */
 @Controller
-@RequiredArgsConstructor
-@Slf4j
-public class BackofficeController {
+class ErrorController(errorAttributes: ErrorAttributes?) : AbstractErrorController(errorAttributes) {
+  override fun getErrorPath() = "/error"
 
-  @GetMapping({"/", "/index", "/home"})
-  public String index(HttpServletRequest request, Authentication authentication, Model model) {
-    logger.debug("index(): Request.contextPath={}", request.getContextPath());
-    model.addAttribute("title", "");
-    return "index";
+  @GetMapping("/error")
+  fun handleError(request: HttpServletRequest, model: Model): String {
+    model.addAttribute("title", "Error")
+    model.addAttribute("status", getStatus(request))
+    return "error"
   }
 }

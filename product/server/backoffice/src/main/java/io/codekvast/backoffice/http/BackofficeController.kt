@@ -19,22 +19,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.rules.impl;
+package io.codekvast.backoffice.http
 
-import io.codekvast.backoffice.facts.PersistentFact;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.security.core.Authentication
+import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.GetMapping
+import javax.servlet.http.HttpServletRequest
 
-/**
- * A wrapper for a persistent fact that pairs it with its database primary key.
- *
- * @author olle.hallin@crisp.se
+/** @author olle.hallin@crisp.se
  */
-@Data
-@RequiredArgsConstructor
-public class FactWrapper {
-  @NonNull final Long id;
+@Controller
+class BackofficeController {
+  val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
-  @NonNull final PersistentFact fact;
+  @GetMapping("/", "/index", "/home")
+  fun index(request: HttpServletRequest, authentication: Authentication?, model: Model): String {
+    logger.debug("index(): Request.contextPath={}", request.contextPath)
+    model.addAttribute("title", "")
+    return "index"
+  }
 }

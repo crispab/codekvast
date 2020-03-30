@@ -19,37 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.event;
+package io.codekvast.backoffice.rules.impl
 
-import io.codekvast.backoffice.rules.RuleEngine;
-import io.codekvast.common.messaging.AbstractCodekvastEventListener;
-import io.codekvast.common.messaging.impl.MessageIdRepository;
-import io.codekvast.common.messaging.model.CodekvastEvent;
-import io.codekvast.common.metrics.CommonMetricsService;
-import java.time.Clock;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import com.google.gson.TypeAdapter
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
+import java.time.Instant
 
-/** @author olle.hallin@crisp.se */
-@Component
-@Slf4j
-public class CodekvastEventListener extends AbstractCodekvastEventListener {
-
-  private final RuleEngine ruleEngine;
-
-  public CodekvastEventListener(
-      MessageIdRepository messageIdRepository,
-      CommonMetricsService metricsService,
-      RuleEngine ruleEngine,
-      Clock clock) {
-    super("codekvast-backoffice", messageIdRepository, metricsService, clock);
-    this.ruleEngine = ruleEngine;
+/** @author olle.hallin@crisp.se
+ */
+class InstantTypeAdapter : TypeAdapter<Instant>() {
+  override fun write(out: JsonWriter, instant: Instant?) {
+    out.value(instant?.toString())
   }
 
-  @Override
-  public void onCodekvastEvent(CodekvastEvent event) {
-    logger.debug("Handling {}", event);
-
-    ruleEngine.handle(event);
+  override fun read(jsonReader: JsonReader): Instant {
+    return Instant.parse(jsonReader.nextString())
   }
 }

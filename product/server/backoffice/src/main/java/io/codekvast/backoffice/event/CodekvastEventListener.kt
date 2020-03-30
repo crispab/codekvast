@@ -19,34 +19,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.http;
+package io.codekvast.backoffice.event
 
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import io.codekvast.backoffice.rules.RuleEngine
+import io.codekvast.common.messaging.AbstractCodekvastEventListener
+import io.codekvast.common.messaging.impl.MessageIdRepository
+import io.codekvast.common.messaging.model.CodekvastEvent
+import io.codekvast.common.metrics.CommonMetricsService
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
+import java.time.Clock
 
-/** @author olle.hallin@crisp.se */
-@Controller
-public class ErrorController extends AbstractErrorController {
+/** @author olle.hallin@crisp.se
+ */
+@Component
+class CodekvastEventListener(
+  messageIdRepository: MessageIdRepository,
+  metricsService: CommonMetricsService,
+  private val ruleEngine: RuleEngine,
+  clock: Clock)
+  : AbstractCodekvastEventListener("codekvast-backoffice", messageIdRepository, metricsService, clock) {
 
-  public ErrorController(ErrorAttributes errorAttributes) {
-    super(errorAttributes);
+  val logger: Logger = LoggerFactory.getLogger(this::class.java)
+
+  override fun onCodekvastEvent(event: CodekvastEvent) {
+    logger.debug("Handling {}", event)
+    ruleEngine.handle(event)
   }
 
-  @Override
-  public String getErrorPath() {
-    return "/error";
-  }
-
-  @GetMapping("/error")
-  public String handleError(HttpServletRequest request, Model model) {
-    HttpStatus status = getStatus(request);
-    model.addAttribute("title", "Error");
-    model.addAttribute("status", status);
-    return "error";
-  }
 }

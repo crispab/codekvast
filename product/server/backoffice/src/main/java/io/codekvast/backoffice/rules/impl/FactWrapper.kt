@@ -19,21 +19,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.rules;
+package io.codekvast.backoffice.rules.impl
 
-import io.codekvast.common.messaging.model.CodekvastEvent;
+import io.codekvast.backoffice.facts.PersistentFact
+import lombok.Data
+import lombok.RequiredArgsConstructor
 
 /**
- * A wrapper for Drools.
+ * A wrapper for a persistent fact that pairs it with its database primary key.
  *
  * @author olle.hallin@crisp.se
  */
-public interface RuleEngine {
-
-  /**
-   * Handle an event
-   *
-   * @param event The event to handle. Is never null.
-   */
-  void handle(CodekvastEvent event);
-}
+data class FactWrapper(val id: Long, val fact: PersistentFact)
