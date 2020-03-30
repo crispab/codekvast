@@ -490,7 +490,7 @@ public class CustomerServiceImpl implements CustomerService {
     logger.debug("Deleted {} {}", count, table);
   }
 
-  private CustomerData getCustomerData(String where_clause, java.io.Serializable... identifiers) {
+  private CustomerData getCustomerData(String where_clause, Object... identifiers) {
     Map<String, Object> result =
         jdbcTemplate.queryForMap(
             "SELECT "

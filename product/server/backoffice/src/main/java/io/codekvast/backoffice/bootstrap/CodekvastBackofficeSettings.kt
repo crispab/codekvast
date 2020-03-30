@@ -19,23 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.bootstrap;
+package io.codekvast.backoffice.bootstrap
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.validation.annotation.Validated
 
 /**
  * Wrapper for environment properties codekvast.backoffice.*
  *
  * @author olle.hallin@crisp.se
  */
-@Component
 @ConfigurationProperties(prefix = "codekvast.backoffice")
+@ConstructorBinding
 @Validated
-@Data
-public class CodekvastBackofficeSettings {
-
-  // TO BE COMPLETED
-}
+data class CodekvastBackofficeSettings(
+  val dummyPropertyToKeepKotlinHappy: Boolean = false
+)

@@ -56,7 +56,7 @@ class FactDAO(private val jdbcTemplate: JdbcTemplate) {
       val data = rs.getString("data")
 
       try {
-        val fact = gson.fromJson(data, Class.forName(type))
+        val fact = parseJson(data, type)
         FactWrapper(id, fact as PersistentFact)
       } catch (e: ClassCastException) {
         throw SQLDataException("Cannot load fact of type '$type'", e)
@@ -88,8 +88,6 @@ class FactDAO(private val jdbcTemplate: JdbcTemplate) {
     return factId
   }
 
-  private fun getType(fact: PersistentFact) = fact.javaClass.name
-
   @Transactional(propagation = Propagation.MANDATORY)
   fun updateFact(customerId: Long, factId: Long, fact: PersistentFact) {
     val updated = jdbcTemplate.update(
@@ -108,6 +106,10 @@ class FactDAO(private val jdbcTemplate: JdbcTemplate) {
       logger.error("Failed to delete fact {}:{}", customerId, factId)
     }
   }
+
+  private fun getType(fact: PersistentFact) = fact.javaClass.name
+
+  fun parseJson(data: String, type: String) = gson.fromJson(data, Class.forName(type))
 
   private class AddFactStatementCreator(private val customerId: Long,
                                         private val type: String,

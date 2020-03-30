@@ -19,21 +19,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.service
+package io.codekvast.common.util
 
-/** @author olle.hallin@crisp.se
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.companionObject
+
+/**
+ * @author olle.hallin@crisp.se
  */
-interface MailSender {
-  /**
-   * Sends an email using a named template to a given email address.
-   *
-   * @param template The template to use.
-   * @param emailAddress The email address to send to.
-   * @param args The arguments to the template.
-   */
-  fun sendMail(template: Template, emailAddress: String, vararg args: Any)
+class LoggerDelegate<in R : Any> : ReadOnlyProperty<R, Logger> {
+  override fun getValue(thisRef: R, property: KProperty<*>): Logger =
+    cache.getOrPut(thisRef.javaClass) { getLoggerFor(thisRef.javaClass) }
 
-  enum class Template(val subject: String) {
-    WELCOME_TO_CODEKVAST("Welcome to Codekvast!");
+  companion object {
+    private val cache = ConcurrentHashMap<Class<*>, Logger>()
+
+    private fun <T : Any> getLoggerFor(javaClass: Class<T>): Logger {
+      val clazz = javaClass.enclosingClass?.takeIf { it.kotlin.companionObject?.java == javaClass }
+        ?: javaClass
+      // Strip off $$EnhancerByCGLIB$$nnnnnn
+      return LoggerFactory.getLogger(clazz.name.replace(Regex("\\$\\$.*$"), ""))
+    }
   }
 }
+

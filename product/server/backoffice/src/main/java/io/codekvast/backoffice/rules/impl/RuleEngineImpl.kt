@@ -125,8 +125,8 @@ class RuleEngineImpl(
   private fun getTransientFacts(customerId: Long): List<TransientFact> {
     val result: MutableList<TransientFact> = ArrayList()
     customerService.getCustomerDataByCustomerId(customerId).contactEmail
-      ?.takeIf { it.isNotBlank() && !it.startsWith("!") }
-      ?.let { ContactDetails.builder().contactEmail(it).build() }?.apply { result.add(this) }
+      ?.takeIf { it.isNotBlank() && !it.trim().startsWith("!") }
+      ?.apply { result.add(ContactDetails(contactEmail = this)) }
     return result
   }
 

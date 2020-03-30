@@ -19,11 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice;
+package io.codekvast.backoffice
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
+import org.springframework.boot.runApplication
+import org.springframework.context.annotation.ComponentScan
 
 /**
  * The Spring Boot main for codekvast-backoffice,
@@ -31,10 +32,10 @@ import org.springframework.context.annotation.ComponentScan;
  * @author olle.hallin@crisp.se
  */
 @SpringBootApplication
-@ComponentScan(basePackages = "io.codekvast")
-public class CodekvastBackofficeApplication {
+@ConfigurationPropertiesScan
+@ComponentScan(basePackages = ["io.codekvast"])
+class CodekvastBackofficeApplication
 
-  public static void main(String[] args) {
-    new SpringApplication(CodekvastBackofficeApplication.class).run(args);
-  }
+fun main(args: Array<String>) {
+  runApplication<CodekvastBackofficeApplication>(*args)
 }

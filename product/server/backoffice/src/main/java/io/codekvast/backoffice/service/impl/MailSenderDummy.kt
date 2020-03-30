@@ -19,27 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.service.impl;
+package io.codekvast.backoffice.service.impl
 
-import io.codekvast.backoffice.service.MailSender;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import io.codekvast.backoffice.service.MailSender
+import io.codekvast.common.util.LoggerDelegate
+import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Service
 
-/** @author olle.hallin@crisp.se */
+/** @author olle.hallin@crisp.se
+ */
 @Service
-@Slf4j
 @Profile("no-mail-sender")
-@RequiredArgsConstructor
-public class MailSenderDummy implements MailSender {
-  private final MailTemplateRenderer mailTemplateRenderer;
+class MailSenderDummy(private val mailTemplateRenderer: MailTemplateRenderer) : MailSender {
+  val logger by LoggerDelegate()
 
-  @Override
-  public void sendMail(Template template, String emailAddress, Object... args) {
-    logger.info(
-        "Would have sent '{}' to {}",
-        mailTemplateRenderer.renderTemplate(template, args),
-        emailAddress);
+  override fun sendMail(template: MailSender.Template, emailAddress: String, vararg args: Any) {
+    logger.info("Would have sent '{}' to {}",
+      mailTemplateRenderer.renderTemplate(template, *args),
+      emailAddress)
   }
 }

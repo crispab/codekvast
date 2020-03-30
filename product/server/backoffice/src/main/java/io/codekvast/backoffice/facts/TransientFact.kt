@@ -19,17 +19,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.facts;
-
-import io.codekvast.backoffice.rules.RuleEngine;
-import io.codekvast.common.messaging.model.CodekvastEvent;
+package io.codekvast.backoffice.facts
 
 /**
- * Marker interface for facts that are *NOT* persisted in the database.
- *
- * <p>They are instead constructed by querying CustomerService in {@link
- * RuleEngine#handle(CodekvastEvent)}*
+ * Marker interface for facts that are *NOT* persisted in the database. They are instead constructed by querying CustomerService
  *
  * @author olle.hallin@crisp.se
  */
-public interface TransientFact {}
+interface TransientFact

@@ -26,6 +26,7 @@ import io.codekvast.common.messaging.AbstractCodekvastEventListener
 import io.codekvast.common.messaging.impl.MessageIdRepository
 import io.codekvast.common.messaging.model.CodekvastEvent
 import io.codekvast.common.metrics.CommonMetricsService
+import io.codekvast.common.util.LoggerDelegate
 import lombok.extern.slf4j.Slf4j
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,7 +43,7 @@ class CodekvastEventListener(
   clock: Clock)
   : AbstractCodekvastEventListener("codekvast-backoffice", messageIdRepository, metricsService, clock) {
 
-  val logger: Logger = LoggerFactory.getLogger(this::class.java)
+  val logger by LoggerDelegate()
 
   override fun onCodekvastEvent(event: CodekvastEvent) {
     logger.debug("Handling {}", event)

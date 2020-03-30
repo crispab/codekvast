@@ -19,30 +19,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.facts;
+package io.codekvast.backoffice.facts
 
-import io.codekvast.common.messaging.model.AgentPolledEvent;
-import io.codekvast.common.messaging.model.CollectionStartedEvent;
-import java.time.Instant;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
+import io.codekvast.common.messaging.model.AgentPolledEvent
+import io.codekvast.common.messaging.model.CollectionStartedEvent
+import java.time.Instant
 
-/** @author olle.hallin@crisp.se */
-@Data
-@AllArgsConstructor
-public class CollectionStarted implements PersistentFact {
-  @NonNull final Instant collectionStartedAt;
-  final Instant trialPeriodEndsAt;
-  String welcomeMailSentTo;
-  Instant welcomeMailSentAt;
+/** @author olle.hallin@crisp.se
+ */
+data class CollectionStarted(val collectionStartedAt: Instant,
+                             val trialPeriodEndsAt: Instant?,
+                             var welcomeMailSentTo: String? = null,
+                             var welcomeMailSentAt: Instant? = null) : PersistentFact {
 
-  public static CollectionStarted of(CollectionStartedEvent event) {
-    return new CollectionStarted(
-        event.getCollectionStartedAt(), event.getTrialPeriodEndsAt(), null, null);
-  }
+  companion object {
 
-  public static CollectionStarted of(AgentPolledEvent event) {
-    return new CollectionStarted(event.getPolledAt(), event.getTrialPeriodEndsAt(), null, null);
+    @JvmStatic
+    fun of(event: CollectionStartedEvent): CollectionStarted {
+      return CollectionStarted(event.collectionStartedAt, event.trialPeriodEndsAt)
+    }
+
+    @JvmStatic
+    fun of(event: AgentPolledEvent): CollectionStarted {
+      return CollectionStarted(event.polledAt, event.trialPeriodEndsAt)
+    }
   }
 }

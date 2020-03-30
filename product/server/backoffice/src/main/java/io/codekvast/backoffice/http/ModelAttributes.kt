@@ -19,52 +19,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.http;
+package io.codekvast.backoffice.http
 
-import io.codekvast.common.bootstrap.CodekvastCommonSettings;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestHeader;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings
+import io.codekvast.common.util.LoggerDelegate
+import lombok.RequiredArgsConstructor
+import lombok.extern.slf4j.Slf4j
+import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.bind.annotation.CookieValue
+import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.RequestHeader
+import java.net.InetAddress
+import java.net.UnknownHostException
 
-/** @author olle.hallin@crisp.se */
+/** @author olle.hallin@crisp.se
+ */
 @ControllerAdvice
 @RequiredArgsConstructor
 @Slf4j
-public class ModelAttributes {
-  private final CodekvastCommonSettings settings;
+class ModelAttributes(val commonSettings: CodekvastCommonSettings) {
+
+  val logger by LoggerDelegate()
 
   @ModelAttribute("settings")
-  public CodekvastCommonSettings getCodekvastSettings() {
-    return settings;
-  }
+  fun getSettings() = commonSettings
 
   @ModelAttribute("cookieConsent")
-  public Boolean getCookieConsent(
-      @CookieValue(name = "cookieConsent", defaultValue = "FALSE") Boolean cookieConsent) {
-    logger.trace("cookieConsent={}", cookieConsent);
-    return Optional.ofNullable(cookieConsent).orElse(Boolean.FALSE);
+  fun getCookieConsent(
+    @CookieValue(name = "cookieConsent", defaultValue = "FALSE") cookieConsent: Boolean?): Boolean {
+    logger.trace("cookieConsent={}", cookieConsent)
+    return cookieConsent ?: false
   }
 
   @ModelAttribute("cookieDomain")
-  public String cookieDomain(@RequestHeader("Host") String requestHost) {
-    logger.trace("requestHost={}", requestHost);
-    return requestHost.startsWith("localhost") ? "localhost" : ".codekvast.io";
+  fun cookieDomain(@RequestHeader("Host") requestHost: String): String {
+    logger.trace("requestHost={}", requestHost)
+    return if (requestHost.startsWith("localhost")) "localhost" else ".codekvast.io"
   }
 
   @ModelAttribute("serverHostName")
-  public String serverHostName() {
-    try {
-      String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-      logger.trace("hostName={}", hostName);
-      return hostName;
-    } catch (UnknownHostException e) {
-      return "<unknown>";
+  fun serverHostName(): String {
+    return try {
+      val hostName = InetAddress.getLocalHost().canonicalHostName
+      logger.trace("hostName={}", hostName)
+      hostName
+    } catch (e: UnknownHostException) {
+      "<unknown>"
     }
   }
 }

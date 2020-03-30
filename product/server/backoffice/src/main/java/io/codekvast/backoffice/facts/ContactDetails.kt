@@ -19,19 +19,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.facts;
-
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+package io.codekvast.backoffice.facts
 
 /**
  * A fact about a customer's contact details.
  *
  * @author olle.hallin@crisp.se
  */
-@Value
-@Builder
-public class ContactDetails implements TransientFact {
-  @NonNull private String contactEmail;
-}
+data class ContactDetails(val contactEmail: String) : TransientFact

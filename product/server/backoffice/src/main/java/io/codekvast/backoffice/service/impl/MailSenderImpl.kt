@@ -19,57 +19,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.service.impl;
+package io.codekvast.backoffice.service.impl
 
-import io.codekvast.backoffice.service.MailSender;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.mail.MailSendException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
+import io.codekvast.backoffice.service.MailSender
+import io.codekvast.common.util.LoggerDelegate
+import lombok.RequiredArgsConstructor
+import lombok.SneakyThrows
+import lombok.extern.slf4j.Slf4j
+import org.springframework.context.annotation.Profile
+import org.springframework.mail.MailSendException
+import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.MimeMessageHelper
+import org.springframework.stereotype.Service
+import javax.mail.MessagingException
 
-/** @author olle.hallin@crisp.se */
+/** @author olle.hallin@crisp.se
+ */
 @Service
-@Slf4j
-@RequiredArgsConstructor
 @Profile("!no-mail-sender")
-public class MailSenderImpl implements MailSender {
+class MailSenderImpl(
+  private val javaMailSender: JavaMailSender,
+  private val mailTemplateRenderer: MailTemplateRenderer) : MailSender {
 
-  private final JavaMailSender javaMailSender;
-  private final MailTemplateRenderer mailTemplateRenderer;
+  val logger by LoggerDelegate()
 
-  @Override
-  @SneakyThrows(MessagingException.class)
-  public void sendMail(Template template, String emailAddress, Object... args) {
-    MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-    mimeMessage.setHeader("Return-Path", "postmaster@codekvast.io");
+  override fun sendMail(template: MailSender.Template, emailAddress: String, vararg args: Any) {
+    val body = mailTemplateRenderer.renderTemplate(template, *args)
 
-    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
-    helper.setSubject(template.getSubject());
-    helper.setFrom("no-reply@codekvast.io");
-    helper.setTo(emailAddress);
-    String body = mailTemplateRenderer.renderTemplate(template, args);
-    helper.setText(body, true);
+    val mimeMessage = javaMailSender.createMimeMessage().apply {
+      setHeader("Return-Path", "postmaster@codekvast.io")
+    }
+
+    MimeMessageHelper(mimeMessage, "UTF-8").apply {
+      setSubject(template.subject)
+      setFrom("no-reply@codekvast.io")
+      setTo(emailAddress)
+      setText(body, true)
+    }
 
     try {
-      javaMailSender.send(mimeMessage);
-      logger.info(
-          "Sent mail with subject='{}' and body='{}' to {}",
-          template.getSubject(),
-          body,
-          emailAddress);
-    } catch (MailSendException e) {
+      javaMailSender.send(mimeMessage)
+      logger.info("Sent mail with subject='{}' and body='{}' to {}", template.subject, body, emailAddress)
+    } catch (e: MailSendException) {
       logger.warn(
-          "Failed to send mail with subject='{}' and body='{}' to {}: {}",
-          template.getSubject(),
-          body,
-          emailAddress,
-          e.toString());
+        "Failed to send mail with subject='{}' and body='{}' to {}: {}",
+        template.subject, body, emailAddress, e.toString())
       // Do not rethrow. Avoid spamming the log with stack traces.
     }
   }

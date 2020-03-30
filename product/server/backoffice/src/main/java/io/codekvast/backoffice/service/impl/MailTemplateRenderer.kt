@@ -19,91 +19,71 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.service.impl;
+package io.codekvast.backoffice.service.impl
 
-import com.samskivert.mustache.Mustache;
-import io.codekvast.backoffice.service.MailSender;
-import io.codekvast.common.bootstrap.CodekvastCommonSettings;
-import io.codekvast.common.customer.CustomerData;
-import io.codekvast.common.customer.CustomerService;
-import java.time.Instant;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import com.samskivert.mustache.Mustache
+import io.codekvast.backoffice.service.MailSender
+import io.codekvast.backoffice.service.MailSender.Template.WELCOME_TO_CODEKVAST
+import io.codekvast.common.bootstrap.CodekvastCommonSettings
+import io.codekvast.common.customer.CustomerService
+import org.springframework.stereotype.Component
+import java.time.Instant
+import java.util.*
 
-/** @author olle.hallin@crisp.se */
+/** @author olle.hallin@crisp.se
+ */
 @Component
-@RequiredArgsConstructor
-public class MailTemplateRenderer {
-  private final Mustache.Compiler compiler;
-  private final CustomerService customerService;
-  private final CodekvastCommonSettings commonSettings;
+class MailTemplateRenderer(
+  private val compiler: Mustache.Compiler,
+  private val customerService: CustomerService,
+  private val commonSettings: CodekvastCommonSettings) {
 
-  String renderTemplate(MailSender.Template template, Object... args) {
-    Map<String, Object> data = collectCommonData();
+  fun renderTemplate(template: MailSender.Template, vararg args: Any): String {
+    val templateSpecificData: Map<String, Any>
 
-    //noinspection SwitchStatementWithTooFewBranches
-    switch (template) {
-      case WELCOME_TO_CODEKVAST:
-        Long customerId = (Long) args[0];
-        collectWelcomeToCodekvastData(customerId, data);
-        break;
-      default:
-        throw new IllegalArgumentException("Don't know how to render " + template);
+    when (template) {
+      WELCOME_TO_CODEKVAST -> templateSpecificData = collectWelcomeToCodekvastData(args[0] as Long)
     }
 
     return compiler
-        .withFormatter(new CodekvastFormatter())
-        .loadTemplate(getTemplateName(template))
-        .execute(data);
+      .withFormatter(CodekvastFormatter())
+      .loadTemplate(getTemplateName(template))
+      .execute(collectCommonData() + templateSpecificData)
   }
 
-  private Map<String, Object> collectCommonData() {
-    Map<String, Object> data = new HashMap<>();
-    data.put("codekvastDisplayVersion", commonSettings.getDisplayVersion());
-    data.put("homepageUrl", commonSettings.getHomepageBaseUrl());
-    data.put("loginUrl", commonSettings.getLoginBaseUrl());
-    data.put("supportEmail", commonSettings.getSupportEmail());
-    return data;
+  private fun collectCommonData() = mutableMapOf(
+    "codekvastDisplayVersion" to commonSettings.displayVersion,
+    "homepageUrl" to commonSettings.homepageBaseUrl,
+    "loginUrl" to commonSettings.loginBaseUrl,
+    "supportEmail" to commonSettings.supportEmail)
+
+  private fun collectWelcomeToCodekvastData(customerId: Long): Map<String, Any> {
+    val customerData = customerService.getCustomerDataByCustomerId(customerId)
+    return mapOf(
+      "customerName" to customerData.displayName,
+      "pricePlan" to customerData.pricePlan,
+      "inTrialPeriod" to (customerData.collectionStartedAt != null && customerData.trialPeriodEndsAt != null),
+      "hasTrialPeriodDays" to (customerData.pricePlan.trialPeriodDays > 0),
+      "trialPeriodEndsAt" to customerData.trialPeriodEndsAt,
+      "trialPeriodStartedAt" to customerData.collectionStartedAt
+    )
   }
 
-  private void collectWelcomeToCodekvastData(Long customerId, Map<String, Object> data) {
-    CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
-    data.put("customerName", customerData.getDisplayName());
-    data.put("pricePlan", customerData.getPricePlan());
-    data.put(
-        "inTrialPeriod",
-        customerData.getCollectionStartedAt() != null
-            && customerData.getTrialPeriodEndsAt() != null);
-    data.put("hasTrialPeriodDays", customerData.getPricePlan().getTrialPeriodDays() > 0);
-    data.put("trialPeriodEndsAt", customerData.getTrialPeriodEndsAt());
-    data.put("trialPeriodStartedAt", customerData.getCollectionStartedAt());
+  private fun getTemplateName(template: MailSender.Template): String {
+    return String.format("mail/%s", template.name.toLowerCase())
   }
 
-  private String getTemplateName(MailSender.Template template) {
-    return String.format("mail/%s", template.name().toLowerCase());
-  }
+  class CodekvastFormatter : Mustache.Formatter {
 
-  static class CodekvastFormatter implements Mustache.Formatter {
-    @SuppressWarnings("ChainOfInstanceofChecks")
-    @Override
-    public String format(Object value) {
-      if (value instanceof Instant) {
-        return value
-            .toString()
-            .replace("T", " ") // the 'T' between date and time
-            .replaceAll("\\.[0-9]+Z$", " UTC"); // the milliseconds and timezone part
-      }
-      if (value instanceof Integer) {
-        return new Formatter(Locale.ENGLISH).format("%,d", value).toString();
-      }
-      if (value instanceof Long) {
-        return new Formatter(Locale.ENGLISH).format("%,d", value).toString();
-      }
-      return String.valueOf(value);
+    override fun format(value: Any) = when (value) {
+      is Instant -> value.toString()
+        .replace("T", " ") // the 'T' between date and time
+        .replace("\\.[0-9]+Z$".toRegex(), " UTC")
+
+      is Int, is Long -> Formatter(Locale.ENGLISH).format("%,d", value).toString()
+
+      else -> value.toString()
     }
   }
+
 }

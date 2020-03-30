@@ -19,38 +19,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.bootstrap;
+package io.codekvast.backoffice.bootstrap
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 
 /** @author olle.hallin@crisp.se */
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-
+  override fun configure(http: HttpSecurity) {
     http.csrf()
-        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        .ignoringAntMatchers("/management/**")
-        .and()
-        .authorizeRequests()
-        .antMatchers(
-            "/",
-            "/home",
-            "/index",
-            "/favicon.ico",
-            "/robots.txt",
-            "/management/**",
-            "/assets/**",
-            "/error")
-        .permitAll()
-        .anyRequest()
-        .authenticated();
+      .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+      .ignoringAntMatchers("/management/**")
+      .and()
+      .authorizeRequests()
+      .antMatchers(
+        "/",
+        "/home",
+        "/index",
+        "/favicon.ico",
+        "/robots.txt",
+        "/management/**",
+        "/assets/**",
+        "/error")
+      .permitAll()
+      .anyRequest()
+      .authenticated()
   }
 }

@@ -19,11 +19,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.backoffice.facts;
+package io.codekvast.backoffice.facts
 
 /**
  * Marker interface for facts that should be persisted in the database.
  *
  * @author olle.hallin@crisp.se
  */
-public interface PersistentFact {}
+interface PersistentFact 

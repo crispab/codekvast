@@ -21,8 +21,7 @@
  */
 package io.codekvast.backoffice.http
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import io.codekvast.common.util.LoggerDelegate
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -33,7 +32,7 @@ import javax.servlet.http.HttpServletRequest
  */
 @Controller
 class BackofficeController {
-  val logger: Logger = LoggerFactory.getLogger(this::class.java)
+  val logger by LoggerDelegate()
 
   @GetMapping("/", "/index", "/home")
   fun index(request: HttpServletRequest, authentication: Authentication?, model: Model): String {

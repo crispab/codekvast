@@ -20,6 +20,7 @@ ext {
         'org.hamcrest:hamcrest-core:2.2',
         'org.hamcrest:hamcrest-library:2.2',
         'org.mockito:mockito-core:3.3.1',
-        "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+        "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
+        'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     ]
 }
