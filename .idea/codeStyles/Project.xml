@@ -489,6 +489,9 @@
     <XML>
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
+    <editorconfig>
+      <option name="ENABLED" value="false" />
+    </editorconfig>
     <yaml>
       <option name="ALIGN_VALUES_PROPERTIES" value="1" />
       <option name="INDENT_SEQUENCE_VALUE" value="false" />
