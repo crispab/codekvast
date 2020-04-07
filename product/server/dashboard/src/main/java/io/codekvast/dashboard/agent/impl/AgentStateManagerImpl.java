@@ -57,8 +57,13 @@ public class AgentStateManagerImpl implements AgentStateManager {
         Lock.forCustomer(customerData.getCustomerId()),
         () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
         () -> {
-          logger.error("Failed to acquire lock, treating agent as disabled.");
-          return false;
+          logger.warn(
+              "Failed to acquire lock, treating agent {}:{}:{}:{} as enabled.",
+              customerData.getCustomerId(),
+              environment,
+              appName,
+              jvmUuid);
+          return true;
         });
   }
 

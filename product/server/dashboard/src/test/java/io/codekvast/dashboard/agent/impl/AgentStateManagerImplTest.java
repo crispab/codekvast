@@ -100,7 +100,7 @@ public class AgentStateManagerImplTest {
 
     verify(lockManager, never()).releaseLock(any());
 
-    assertThat(response, is(false));
+    assertThat(response, is(true));
   }
 
   @Test
