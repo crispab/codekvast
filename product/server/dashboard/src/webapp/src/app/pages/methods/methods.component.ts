@@ -61,4 +61,5 @@ export class MethodsComponent implements OnInit {
     getProbablyGoneDays() {
         return MethodsComponent.PROBABLY_GONE_DAYS;
     }
+
 }

@@ -1,279 +1,307 @@
 <div class="wrapper d-flex flex-column h-100 mx-2">
-    <div id="search-form" class="ml-4 mt-1">
-        <div class="d-flex flex-row">
-            <div class="w-80">
-                <h4>Search Method</h4>
-                <form (ngSubmit)="state.search()" #searchForm="ngForm">
-                    <div class="form-inline">
-                        <label for="signature" class="col-form-label">Signature:</label>
-                        <div class="col-10 input-group">
-                            <input class="form-control"
-                                   id="signature"
-                                   name="signature"
-                                   [(ngModel)]="state.req.signature"
-                                   type="text"
-                                   placeholder="Search method signature">
-                            <div class="input-group-append">
+  <div id="search-form" class="ml-4 mt-1">
+    <div class="d-flex flex-row">
+      <div class="w-80">
+        <h4>Search Method</h4>
+        <form (ngSubmit)="state.search()" #searchForm="ngForm">
+          <div class="form-inline">
+            <label for="signature" class="col-form-label">Signature:</label>
+            <div class="col-10 input-group">
+              <input class="form-control"
+                     id="signature"
+                     name="signature"
+                     [(ngModel)]="state.req.signature"
+                     type="text"
+                     placeholder="Search method signature">
+              <div class="input-group-append">
                                 <span class="input-group-text font-italic"
                                       container="body"
                                       [ngbPopover]="wildcardsHints"
                                       popoverTitle="Wildcards"
                                       triggers="mouseenter:mouseleave"
                                       placement="right">Wildcards</span>
-                            </div>
+              </div>
 
-                            <ng-template #wildcardsHints>
-                                <p><code>*</code> means <em>any string of characters</em>.</p>
-                                <p><code>?</code> means <em>any single character</em>.</p>
-                                <p><code>*</code> is automatically appended to the signature field.</p>
-                                <p>The SQL LIKE wildcards <code>%</code> and <code>_</code> are also supported.</p>
-                            </ng-template>
+              <ng-template #wildcardsHints>
+                <p><code>*</code> means <em>any string of characters</em>.</p>
+                <p><code>?</code> means <em>any single character</em>.</p>
+                <p><code>*</code> is automatically appended to the signature field.</p>
+                <p>The SQL LIKE wildcards <code>%</code> and <code>_</code> are also supported.</p>
+              </ng-template>
 
-                            <div class="input-group-append">
+              <div class="input-group-append">
                                 <span class="input-group-text font-italic"
                                       container="body"
                                       [ngbPopover]="ideHints"
                                       popoverTitle="IDE hints"
                                       triggers="mouseenter:mouseleave"
                                       placement="right">IDE hints</span>
-                            </div>
+              </div>
 
-                            <ng-template #ideHints>
-                                <p><b>IDEA:</b> Edit-&gt;Copy Reference</p>
-                                <p><b>Eclipse:</b> Edit-&gt;Copy Qualified Name</p>
-                                <p>on a signature and paste it into the signature field.</p>
-                            </ng-template>
-                        </div>
-                    </div>
-
-                    <div class="form-inline mt-1">
-                        <label class="col-form-label">In applications:</label>
-                        <input class="form-control ml-3" size="20" type="text" name="applications" [(ngModel)]="state.searchState.applications"
-                               placeholder="Filter by application">
-                        <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredApplications().join(', ') }}</span>
-                    </div>
-
-                    <div class="form-inline mt-1">
-                        <label class="col-form-label">In environments:</label>
-                        <input class="form-control ml-3" size="20" type="text" name="environments" [(ngModel)]="state.searchState.environments"
-                               placeholder="Filter by environment">
-                        <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredEnvironments().join(', ') }}</span>
-                    </div>
-
-                    <div class="form-inline mt-1">
-                        <label class="col-form-label">In locations:</label>
-                        <input class="form-control ml-3" size="20" type="text" name="locations" [(ngModel)]="state.searchState.locations"
-                               placeholder="Filter by location">
-                        <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredLocationsNoVersions() }}</span>
-                    </div>
-
-                    <div *ngIf="settings.advancedControls" class="form-inline">
-                        <label class="col-form-label">Include:</label>
-                        <div class="form-check ml-3">
-                            <label for="includeOnlyNeverInvokedMethods" class="form-check-label"
-                                   [ngbPopover]="onlyNeverInvokedPopover"
-                                   popoverTitle="Only never invoked methods"
-                                   triggers="mouseenter:mouseleave"
-                                   placement="right"
-                                   container="body">
-                                <input class="form-check-input"
-                                       id="includeOnlyNeverInvokedMethods"
-                                       name="includeOnlyNeverInvokedMethods"
-                                       type="checkbox"
-                                       [(ngModel)]="state.searchState.includeOnlyNeverInvokedMethods">
-                                Only never invoked methods
-                            </label>
-                        </div>
-
-                        <ng-template #onlyNeverInvokedPopover>
-                            <p>Don't include methods that have been invoked at some time.</p>
-                            <p>Checking 'Only never invoked methods' disables 'Invoked Before'.</p>
-                        </ng-template>
-
-                        <div class="form-check ml-3">
-                            <label for="includeUntrackedMethods" class="form-check-label"
-                                   [ngbPopover]="untrackedPopover"
-                                   popoverTitle="Untracked methods"
-                                   triggers="mouseenter:mouseleave"
-                                   placement="right"
-                                   container="body">
-                                <input class="form-check-input"
-                                       id="includeUntrackedMethods"
-                                       name="includeUntrackedMethods"
-                                       [(ngModel)]="state.searchState.includeUntrackedMethods"
-                                       type="checkbox">Untracked methods</label>
-                        </div>
-                        <ng-template #untrackedPopover>
-                            <p>Also include methods that are <em>not</em> tracked by Codekvast, such as</p>
-                            <ul>
-                                <li>Trivial methods like <code>equals()</code>, <code>hashCode()</code> and <code>toString().</code></li>
-                                <li>Methods belonging to excluded packages.</li>
-                                <li>Methods with a visibility lower than what the agent has been configured to track.</li>
-                            </ul>
-                        </ng-template>
-                    </div>
-
-                    <div class="form-inline mt-1">
-                        <label for="collectedDays" class="col-form-label">Tracked For:</label>
-                        <div class="input-group ml-3"
-                             [ngbPopover]="collectedDaysPopover"
-                             popoverTitle="Tracked For Days"
-                             triggers="mouseenter:mouseleave"
-                             placement="right">
-
-                            <input class="form-control col-auto"
-                                   id="collectedDays"
-                                   name="collectedDays"
-                                   [(ngModel)]="state.searchState.includeIfCollectedForAtLeastDays"
-                                   required
-                                   min="0"
-                                   max="{{ state.minCollectedDaysMax() }}"
-                                   type="number"
-                                   style="width: 4em">
-                            <div class="input-group-append">
-                                <span class="input-group-text font-italic">days</span>
-                            </div>
-
-                            <ng-template #collectedDaysPopover>
-                                <p>Only include methods in the search results that have been tracked by Codekvast for
-                                    <b>at least {{ state.searchState.includeIfCollectedForAtLeastDays }} days</b>.
-                                </p>
-                                <p *ngIf="state.retentionPeriodDays > 0">Codekvast applies a data retention period
-                                    of {{ state.retentionPeriodDays }} days, so setting this value to something higher is useless.</p>
-                            </ng-template>
-                        </div>
-
-                        <label for="includeIfNotInvokedInDays" class="ml-1 col-auto"
-                               [class.text-secondary]="state.searchState.includeOnlyNeverInvokedMethods">
-                            Invoked before:</label>
-                        <div class="input-group"
-                             [ngbPopover]="invokedBeforePopover"
-                             popoverTitle="Invoked Before"
-                             triggers="mouseenter:mouseleave"
-                             placement="right">
-
-                            <input class="form-control col-auto"
-                                   id="includeIfNotInvokedInDays"
-                                   name="includeIfNotInvokedInDays"
-                                   [(ngModel)]="state.searchState.includeIfNotInvokedInDays"
-                                   required
-                                   min="0"
-                                   max="3650"
-                                   type="number"
-                                   style="width: 5em"
-                                   [disabled]="state.searchState.includeOnlyNeverInvokedMethods">
-                            <div class="input-group-append">
-                                <span class="input-group-text font-italic" [class.text-secondary]="state.searchState.includeOnlyNeverInvokedMethods">days ago</span>
-                            </div>
-
-                        </div>
-
-                        <ng-template #invokedBeforePopover>
-                            <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
-                                have been invoked before {{ state.getInvokedBefore() | date:'short'}}</b>.
-                            </p>
-                            <p>'Invoked Before' has no effect if 'Only never invoked methods' is checked.</p>
-                        </ng-template>
-
-                        <label for="maxResults" class="col-auto">Max&nbsp;Results:</label>
-                        <div class="col-auto"
-                             [ngbPopover]="maxResultsPopover"
-                             popoverTitle="Max Results"
-                             triggers="mouseenter:mouseleave"
-                             placement="right">
-                            <input class="form-control"
-                                   id="maxResults"
-                                   name="maxResults"
-                                   [(ngModel)]="state.searchState.maxResults"
-                                   type="number"
-                                   required
-                                   min="1"
-                                   max="10000"
-                                   style="width: 5em">
-                        </div>
-
-                        <ng-template #maxResultsPopover>
-                            Limit the search results to {{ state.searchState.maxResults }} methods.
-                        </ng-template>
-
-                        <button *ngIf="!state.searching" type="submit" class="btn btn-primary btn-sm"
-                                [disabled]="!searchForm.form.valid || state.getFilteredApplications().length == 0 || state.getFilteredEnvironments().length == 0 || state.getFilteredLocations().length == 0 || state.searching">
-                            Search
-                        </button>
-
-                        <small *ngIf="state.searching" class="ml-2 form-text text-muted">
-                            <ngb-progressbar type="info" [value]="100" height="2em" [striped]="true" [animated]="true">&nbsp;Searching...&nbsp;</ngb-progressbar>
-                        </small>
-
-                        <small *ngIf="state.data" class="ml-2 form-text text-muted">
-                            {{ state.data.timestamp | ckAge:settings.dateFormat }}:
-                            Found {{ state.data.numMethods }} methods in {{ state.data.queryTimeMillis }} ms
-                        </small>
-                        <div *ngIf="state.errorMessage" class="ml-2 alert alert-danger" role="alert">
-                            {{ communicationFailure() }}
-                        </div>
-
-                    </div>
-
-                </form>
+              <ng-template #ideHints>
+                <p><b>IDEA:</b> Edit-&gt;Copy Reference</p>
+                <p><b>Eclipse:</b> Edit-&gt;Copy Qualified Name</p>
+                <p>on a signature and paste it into the signature field.</p>
+              </ng-template>
             </div>
-            <app-settings-editor class="w-20"></app-settings-editor>
-        </div>
-    </div>
+          </div>
 
-    <div *ngIf="state.data" class="d-flex flex-row h-100 content mx-4 mt-3">
-        <div id="methods-table">
-            <h5 class="text-center">Search Results</h5>
-            <table class="table table-striped table-bordered table-hover table-sm">
-                <thead>
-                <tr>
-                    <th (click)="state.sortBySignature()" class="signature-column">
-                        Signature <i [ngClass]="state.headerIconClassesSignature()" aria-hidden="true"></i>
-                    </th>
-                    <th (click)="state.sortByCollectedDays()" class="collected-days-column">
-                        Tracked Days <i [ngClass]="state.headerIconClassesCollectedDays()" aria-hidden="true"></i>
-                    </th>
-                    <th (click)="state.sortByAge()" class="age-column">
-                        Last Invoked <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i>
-                    </th>
-                    <td class="row-icon-column"><i class="fas fa-question-circle invisible" aria-hidden="true"></i></td>
-                    <td class="row-icon-column"><i class="fas fa-ellipsis-h invisible" aria-hidden="true"></i></td>
-                </tr>
-                </thead>
+          <div class="form-inline mt-1">
+            <label class="col-form-label">In applications:</label>
+            <input class="form-control ml-3" size="20" type="text" name="applications"
+                   [(ngModel)]="state.searchState.applications"
+                   placeholder="Filter by application">
+            <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredApplications().join(', ') }}</span>
+          </div>
 
-                <tbody>
-                <tr *ngFor="let method of state.sortedMethods()"
-                    (mouseenter)="state.selectMethod(method)"
-                    (click)="gotoMethodDetail(method.id)"
-                    [class.table-active]="state.isSelectedMethod(method)">
-                    <td class="signature-column wrap-word" [ngClass]="signatureClasses(method)">
-                        {{ method.signature }}
-                    </td>
-                    <td class="collected-days-column text-right">
-                        {{ method.collectedDays }}
-                    </td>
-                    <td class="age-column wrap-word">
-                        {{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}
-                    </td>
-                    <td class="row-icon-column">
-                        <span *ngIf="isProbablyGone(method)"
-                              [ngbPopover]="probablyGonePopover"
-                              triggers="mouseenter:mouseleave"
-                              placement="left"
-                              class="text-success">
-                            <i class="fas fa-question" aria-hidden="true"></i>
-                        </span>
-                    </td>
+          <div class="form-inline mt-1">
+            <label class="col-form-label">In environments:</label>
+            <input class="form-control ml-3" size="20" type="text" name="environments"
+                   [(ngModel)]="state.searchState.environments"
+                   placeholder="Filter by environment">
+            <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredEnvironments().join(', ') }}</span>
+          </div>
 
-                    <td class="row-icon-column">
-                        <i [ngClass]="state.rowIconClasses(method.id)" aria-hidden="true"></i>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <ng-template #probablyGonePopover>
-                This method is probably gone from the codebase. It has not been reported by any application in any environment in {{ getProbablyGoneDays() }} days.
+          <div class="form-inline mt-1">
+            <label class="col-form-label">In locations:</label>
+            <input class="form-control ml-3" size="20" type="text" name="locations"
+                   [(ngModel)]="state.searchState.locations"
+                   placeholder="Filter by location">
+            <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredLocationsNoVersions() }}</span>
+          </div>
+
+          <div *ngIf="settings.advancedControls" class="form-inline">
+            <label class="col-form-label">Include:</label>
+            <div class="form-check ml-3">
+              <label for="includeOnlyNeverInvokedMethods" class="form-check-label"
+                     [ngbPopover]="onlyNeverInvokedPopover"
+                     popoverTitle="Only never invoked methods"
+                     triggers="mouseenter:mouseleave"
+                     placement="right"
+                     container="body">
+                <input class="form-check-input"
+                       id="includeOnlyNeverInvokedMethods"
+                       name="includeOnlyNeverInvokedMethods"
+                       type="checkbox"
+                       [(ngModel)]="state.searchState.includeOnlyNeverInvokedMethods">
+                Only never invoked methods
+              </label>
+            </div>
+
+            <ng-template #onlyNeverInvokedPopover>
+              <p>Don't include methods that have been invoked at some time.</p>
+              <p>Checking 'Only never invoked methods' disables 'Invoked Before'.</p>
             </ng-template>
-        </div>
+
+            <div class="form-check ml-3">
+              <label for="includeUntrackedMethods" class="form-check-label"
+                     [ngbPopover]="untrackedPopover"
+                     popoverTitle="Untracked methods"
+                     triggers="mouseenter:mouseleave"
+                     placement="right"
+                     container="body">
+                <input class="form-check-input"
+                       id="includeUntrackedMethods"
+                       name="includeUntrackedMethods"
+                       [(ngModel)]="state.searchState.includeUntrackedMethods"
+                       type="checkbox">Untracked methods</label>
+            </div>
+            <ng-template #untrackedPopover>
+              <p>Also include methods that are <em>not</em> tracked by Codekvast, such as</p>
+              <ul>
+                <li>Trivial methods like <code>equals()</code>, <code>hashCode()</code> and <code>toString().</code>
+                </li>
+                <li>Methods belonging to excluded packages.</li>
+                <li>Methods with a visibility lower than what the agent has been configured to
+                  track.
+                </li>
+              </ul>
+            </ng-template>
+          </div>
+
+          <div class="form-inline mt-1">
+            <label for="collectedDays" class="col-form-label">Tracked For:</label>
+            <div class="input-group ml-3"
+                 [ngbPopover]="collectedDaysPopover"
+                 popoverTitle="Tracked For Days"
+                 triggers="mouseenter:mouseleave"
+                 placement="right">
+
+              <input class="form-control col-auto"
+                     id="collectedDays"
+                     name="collectedDays"
+                     [(ngModel)]="state.searchState.includeIfCollectedForAtLeastDays"
+                     required
+                     min="0"
+                     max="{{ state.minCollectedDaysMax() }}"
+                     type="number"
+                     style="width: 4em">
+              <div class="input-group-append">
+                <span class="input-group-text font-italic">days</span>
+              </div>
+
+              <ng-template #collectedDaysPopover>
+                <p>Only include methods in the search results that have been tracked by Codekvast
+                  for
+                  <b>at least {{ state.searchState.includeIfCollectedForAtLeastDays }} days</b>.
+                </p>
+                <p *ngIf="state.retentionPeriodDays > 0">Codekvast applies a data retention period
+                  of {{ state.retentionPeriodDays }} days, so setting this value to something higher
+                  is useless.</p>
+              </ng-template>
+            </div>
+
+            <label for="includeIfNotInvokedInDays" class="ml-1 col-auto"
+                   [class.text-secondary]="state.searchState.includeOnlyNeverInvokedMethods">
+              Invoked before:</label>
+            <div class="input-group"
+                 [ngbPopover]="invokedBeforePopover"
+                 popoverTitle="Invoked Before"
+                 triggers="mouseenter:mouseleave"
+                 placement="right">
+
+              <input class="form-control col-auto"
+                     id="includeIfNotInvokedInDays"
+                     name="includeIfNotInvokedInDays"
+                     [(ngModel)]="state.searchState.includeIfNotInvokedInDays"
+                     required
+                     min="0"
+                     max="3650"
+                     type="number"
+                     style="width: 5em"
+                     [disabled]="state.searchState.includeOnlyNeverInvokedMethods">
+              <div class="input-group-append">
+                <span class="input-group-text font-italic"
+                      [class.text-secondary]="state.searchState.includeOnlyNeverInvokedMethods">days ago</span>
+              </div>
+
+            </div>
+
+            <ng-template #invokedBeforePopover>
+              <p>Only include methods in the search results that have <b>not been invoked at all</b>
+                or <b>only
+                  have been invoked before {{ state.getInvokedBefore() | date:'short'}}</b>.
+              </p>
+              <p>'Invoked Before' has no effect if 'Only never invoked methods' is checked.</p>
+            </ng-template>
+
+            <label for="maxResults" class="col-auto">Max&nbsp;Results:</label>
+            <div class="col-auto"
+                 [ngbPopover]="maxResultsPopover"
+                 popoverTitle="Max Results"
+                 triggers="mouseenter:mouseleave"
+                 placement="right">
+              <input class="form-control"
+                     id="maxResults"
+                     name="maxResults"
+                     [(ngModel)]="state.searchState.maxResults"
+                     type="number"
+                     required
+                     min="1"
+                     max="10000"
+                     style="width: 5em">
+            </div>
+
+            <ng-template #maxResultsPopover>
+              Limit the search results to {{ state.searchState.maxResults }} methods.
+            </ng-template>
+
+            <button *ngIf="!state.searching" type="submit" class="btn btn-primary btn-sm"
+                    [disabled]="!searchForm.form.valid || state.getFilteredApplications().length == 0 || state.getFilteredEnvironments().length == 0 || state.getFilteredLocations().length == 0 || state.searching">
+              Search
+            </button>
+
+            <small *ngIf="state.searching" class="ml-2 form-text text-muted">
+              <ngb-progressbar type="info" [value]="100" height="2em" [striped]="true"
+                               [animated]="true">&nbsp;Searching...&nbsp;
+              </ngb-progressbar>
+            </small>
+
+            <small *ngIf="state.data" class="ml-2 form-text text-muted">
+              {{ state.data.timestamp | ckAge:settings.dateFormat }}:
+              Found {{ state.data.numMethods }} methods in {{ state.data.queryTimeMillis }} ms
+            </small>
+            <div *ngIf="state.errorMessage" class="ml-2 alert alert-danger" role="alert">
+              {{ communicationFailure() }}
+            </div>
+
+          </div>
+
+        </form>
+      </div>
+      <app-settings-editor class="w-20"></app-settings-editor>
     </div>
+  </div>
+
+  <div *ngIf="state.data" class="d-flex flex-row h-100 content mx-4 mt-3">
+    <div>
+      <table class="table table-striped table-bordered table-hover table-sm">
+        <caption class="text-center">Search Results</caption>
+        <thead>
+        <tr>
+          <th (click)="state.sortBySignature()" class="signature-column">
+            Signature <i [ngClass]="state.headerIconClassesSignature()" aria-hidden="true"></i>
+          </th>
+          <th (click)="state.sortByCollectedDays()" class="collected-days-column">
+            Tracked Days <i [ngClass]="state.headerIconClassesCollectedDays()"
+                            aria-hidden="true"></i>
+          </th>
+          <th (click)="state.sortByAge()" class="age-column">
+            Last Invoked <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i>
+          </th>
+          <td class="row-icon-column"><i class="fas fa-ellipsis-h invisible" aria-hidden="true"></i>
+          </td>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr *ngIf="state.annotatedMethodExist()" #unannotatedMethodsHeaderRow
+            (click)="annotatedMethodsHeaderRow.scrollIntoView()">
+          <th colspan="4">Unannotated methods (click to go to annotated methods)</th>
+        </tr>
+        <tr *ngFor="let method of state.sortedMethods()"
+            (mouseenter)="state.selectMethod(method)"
+            (click)="gotoMethodDetail(method.id)"
+            [class.table-active]="state.isSelectedMethod(method)">
+          <td class="signature-column wrap-word" [ngClass]="signatureClasses(method)">
+            {{ method.signature }}
+          </td>
+          <td class="collected-days-column text-right">
+            {{ method.collectedDays }}
+          </td>
+          <td class="age-column wrap-word">
+            {{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}
+          </td>
+          <td class="row-icon-column">
+            <i [ngClass]="state.rowIconClasses(method.id)" aria-hidden="true"></i>
+          </td>
+        </tr>
+        </tbody>
+
+        <tbody *ngIf="state.annotatedMethodExist()">
+        <tr #annotatedMethodsHeaderRow (click)="unannotatedMethodsHeaderRow.scrollIntoView()">
+          <th colspan="4">Annotated methods (click to go to unannotated methods)</th>
+        </tr>
+        <tr *ngFor="let method of state.sortedAnnotatedMethods()"
+            (mouseenter)="state.selectMethod(method)"
+            (click)="gotoMethodDetail(method.id)"
+            [class.table-active]="state.isSelectedMethod(method)">
+          <td class="signature-column wrap-word" [ngClass]="signatureClasses(method)">
+            {{ method.signature }}
+          </td>
+          <td class="collected-days-column text-right">
+            {{ method.collectedDays }}
+          </td>
+          <td class="age-column wrap-word">
+            {{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}
+          </td>
+          <td class="row-icon-column">
+            <i [ngClass]="state.rowIconClasses(method.id)" aria-hidden="true"></i>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
 </div>

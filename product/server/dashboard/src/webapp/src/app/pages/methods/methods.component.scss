@@ -55,3 +55,9 @@ span.filtered-result {
   overflow: auto;
   width: 60%;
 }
+
+table > caption {
+  font-size: larger;
+  font-weight: bolder;
+  caption-side: top;
+}

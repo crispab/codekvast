@@ -95,26 +95,42 @@ export class MethodsComponentState {
     this.sortBy(MethodsComponentState.COLLECTED_DAYS_COLUMN);
   }
 
+  methodComparator(m1: Method, m2: Method): number {
+    let cmp = 0;
+    if (this.sortColumn === MethodsComponentState.SIGNATURE_COLUMN) {
+      cmp = m1.signature.localeCompare(m2.signature);
+    } else if (this.sortColumn === MethodsComponentState.AGE_COLUMN) {
+      cmp = m1.lastInvokedAtMillis - m2.lastInvokedAtMillis;
+    } else if (this.sortColumn === MethodsComponentState.COLLECTED_DAYS_COLUMN) {
+      cmp = m1.collectedDays - m2.collectedDays;
+    }
+    if (cmp === 0) {
+      // Make sure the sorting is stable
+      cmp = m1.id - m2.id;
+    }
+    return this.sortAscending ? cmp : -cmp;
+  }
+
   sortedMethods(): Method[] {
     if (!this.data || !this.data.methods) {
       return null;
     }
 
-    return this.data.methods.sort((m1: Method, m2: Method) => {
-      let cmp = 0;
-      if (this.sortColumn === MethodsComponentState.SIGNATURE_COLUMN) {
-        cmp = m1.signature.localeCompare(m2.signature);
-      } else if (this.sortColumn === MethodsComponentState.AGE_COLUMN) {
-        cmp = m1.lastInvokedAtMillis - m2.lastInvokedAtMillis;
-      } else if (this.sortColumn === MethodsComponentState.COLLECTED_DAYS_COLUMN) {
-        cmp = m1.collectedDays - m2.collectedDays;
-      }
-      if (cmp === 0) {
-        // Make sure the sorting is stable
-        cmp = m1.id - m2.id;
-      }
-      return this.sortAscending ? cmp : -cmp;
-    });
+    return this.data.methods.filter((m: Method) => !Method.hasAnnotation(m)).sort(this.methodComparator.bind(this));
+  }
+
+  sortedAnnotatedMethods(): Method[] {
+    if (!this.data || !this.data.methods) {
+      return null;
+    }
+    return this.data.methods.filter((m: Method) => Method.hasAnnotation(m)).sort(this.methodComparator.bind(this));
+  }
+
+  annotatedMethodExist(): boolean {
+    if (!this.data || !this.data.methods) {
+      return false;
+    }
+    return this.data.methods.find((m: Method) => Method.hasAnnotation(m)) !== undefined
   }
 
   getInvokedBefore(): Date {
