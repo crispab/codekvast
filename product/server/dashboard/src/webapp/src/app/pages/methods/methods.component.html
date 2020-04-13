@@ -64,7 +64,7 @@
                         <label class="col-form-label">In locations:</label>
                         <input class="form-control ml-3" size="20" type="text" name="locations" [(ngModel)]="state.searchState.locations"
                                placeholder="Filter by location">
-                        <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredLocations().join(', ') }}</span>
+                        <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredLocationsNoVersions() }}</span>
                     </div>
 
                     <div class="form-inline">
@@ -195,7 +195,7 @@
                         </ng-template>
 
                         <button *ngIf="!state.searching" type="submit" class="btn btn-primary btn-sm"
-                                [disabled]="!searchForm.form.valid || state.getFilteredApplications().length == 0 || state.getFilteredEnvironments().length == 0 || state.searching">
+                                [disabled]="!searchForm.form.valid || state.getFilteredApplications().length == 0 || state.getFilteredEnvironments().length == 0 || state.getFilteredLocations().length == 0 || state.searching">
                             Search
                         </button>
 

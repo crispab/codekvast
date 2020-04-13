@@ -132,6 +132,22 @@ export class MethodsComponentState {
         return this.locations.filter(a => a.toLowerCase().indexOf(this.searchState.locations.trim().toLowerCase()) >= 0);
     }
 
+    getFilteredLocationsNoVersions(): string {
+        const distinct = (value: string, index: number, self: string[]) => {
+            return self.indexOf(value) === index;
+        };
+
+        const regexp = /(^[\w/-]+)([_-]\d.*)(\.\w+$)/; // (base)(version)(extension)
+
+        return this.getFilteredLocations()
+        .map((loc) => {
+            let match = regexp.exec(loc);
+            return match == null ? loc : match[1]+match[3]
+        })
+        .filter(distinct)
+        .join(', ');
+    }
+
     search() {
         this.searching = true;
         this.req.suppressUntrackedMethods = !this.searchState.includeUntrackedMethods;
