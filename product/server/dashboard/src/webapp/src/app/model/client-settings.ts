@@ -9,6 +9,7 @@ export class ClientSettings {
     static KEY = 'settings';
     readonly sampleTimestamp = new Date().getTime() - 37 * oneDayInMillis - 13 * oneHourInMillis;
 
-    dateFormat = 'short';
+    dateFormat = 'age';
+    advancedControls = false;
 }
 

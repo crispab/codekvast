@@ -4,6 +4,7 @@ export class SearchState {
     applications = '';
     locations = '';
     hostnames = '';
+    maxResults = 100;
     includeIfCollectedForAtLeastDays = 30;
     includeIfNotInvokedInDays = 30;
     includeUntrackedMethods = false;
