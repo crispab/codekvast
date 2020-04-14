@@ -238,9 +238,11 @@
       <table class="table table-striped table-bordered table-hover table-sm">
         <caption class="text-center">Search Results</caption>
         <thead>
-        <tr>
+        <tr #headerRow>
           <th (click)="state.sortBySignature()" class="signature-column">
             Signature <i [ngClass]="state.headerIconClassesSignature()" aria-hidden="true"></i>
+            <a *ngIf="state.annotatedMethodExist()" class="ml-4 small text-muted"
+               (click)="annotatedMethodsHeaderRow.scrollIntoView()"> <i class="fas fa-arrow-down mr-1"></i>Jump to excluded results</a>
           </th>
           <th (click)="state.sortByCollectedDays()" class="collected-days-column">
             Tracked Days <i [ngClass]="state.headerIconClassesCollectedDays()"
@@ -255,10 +257,6 @@
         </thead>
 
         <tbody>
-        <tr *ngIf="state.annotatedMethodExist()" #unannotatedMethodsHeaderRow
-            (click)="annotatedMethodsHeaderRow.scrollIntoView()">
-          <th colspan="4">Unannotated methods (click to go to annotated methods)</th>
-        </tr>
         <tr *ngFor="let method of state.sortedMethods()"
             (mouseenter)="state.selectMethod(method)"
             (click)="gotoMethodDetail(method.id)"
@@ -278,9 +276,12 @@
         </tr>
         </tbody>
 
-        <tbody *ngIf="state.annotatedMethodExist()">
-        <tr #annotatedMethodsHeaderRow (click)="unannotatedMethodsHeaderRow.scrollIntoView()">
-          <th colspan="4">Annotated methods (click to go to unannotated methods)</th>
+        <tbody [class.invisible]="!state.annotatedMethodExist()">
+        <tr #annotatedMethodsHeaderRow>
+          <th colspan="4">Excluded results
+            <a class="ml-4 small text-muted"
+               (click)="headerRow.scrollIntoView()"><i class="fas fa-arrow-up mr-1"></i>Jump to search results</a>
+          </th>
         </tr>
         <tr *ngFor="let method of state.sortedAnnotatedMethods()"
             (mouseenter)="state.selectMethod(method)"
