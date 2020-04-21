@@ -7,7 +7,7 @@ import {GetMethodsRequest} from '../../model/methods/get-methods-request';
 import {DashboardApiService} from '../../services/dashboard-api.service';
 import {StateService} from '../../services/state.service';
 import {SearchState} from '../../model/search-state';
-import {ClientSettings} from "../../model/client-settings";
+import {ClientSettings} from '../../model/client-settings';
 
 export class CheckboxState {
   constructor(public name: string, public selected: boolean) {
@@ -156,7 +156,8 @@ export class MethodsComponentState {
       return self.indexOf(value) === index;
     };
 
-    const regexp = /(^[\w/-]+)([_-]\d.*)(\.\w+$)/; // (base)(version)(extension)
+    // NOTE: This regexp MUST match the definition of the computed database column method_locations.locationNoVersion
+    const regexp = /(^[\w/-]+)(-\d.*)(\.\w+$)/; // (base)(version)(extension)
 
     return this.getFilteredLocations()
     .map((loc) => {
@@ -165,6 +166,13 @@ export class MethodsComponentState {
     })
     .filter(distinct)
     .join(', ');
+  }
+
+  isSearchDisabled(): Boolean {
+    return this.searching
+        || this.getFilteredApplications().length == 0
+        || this.getFilteredEnvironments().length == 0
+        || (this.locations.length > 0 && this.getFilteredLocations().length == 0);
   }
 
   search() {

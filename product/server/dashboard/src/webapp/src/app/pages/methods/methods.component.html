@@ -207,7 +207,7 @@
             </ng-template>
 
             <button *ngIf="!state.searching" type="submit" class="btn btn-primary btn-sm"
-                    [disabled]="!searchForm.form.valid || state.getFilteredApplications().length == 0 || state.getFilteredEnvironments().length == 0 || state.getFilteredLocations().length == 0 || state.searching">
+                    [disabled]="!searchForm.form.valid || state.isSearchDisabled()">
               Search
             </button>
 

@@ -27,7 +27,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import lombok.experimental.UtilityClass;
-import lombok.val;
 
 /** @author olle.hallin@crisp.se */
 @UtilityClass
@@ -50,9 +49,9 @@ public class LoggingUtils {
   }
 
   public static String humanReadableDuration(Duration duration) {
-    boolean roundToSeconds = duration.getSeconds() > 1;
-    val truncateTo = roundToSeconds ? ChronoUnit.SECONDS : ChronoUnit.MILLIS;
-    val plusMillis = roundToSeconds ? 500L : 0L;
+    boolean roundToSeconds = duration.getSeconds() > 2;
+    ChronoUnit truncateTo = roundToSeconds ? ChronoUnit.SECONDS : ChronoUnit.MILLIS;
+    long plusMillis = roundToSeconds ? 500L : 0L;
     return duration
         .plusMillis(plusMillis)
         .truncatedTo(truncateTo)
