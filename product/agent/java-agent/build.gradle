@@ -155,7 +155,8 @@ integrationTest {
         ${sdkmanJavaVersion_10},
         ${sdkmanJavaVersion_11},
         ${sdkmanJavaVersion_12},
-        ${sdkmanJavaVersion_13}
+        ${sdkmanJavaVersion_13},
+        ${sdkmanJavaVersion_14}
         """
 }
 
