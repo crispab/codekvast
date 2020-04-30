@@ -1,10 +1,12 @@
 - name: Install AWS CLI and Boto
   package: name={{ item }} state=present
   with_items:
-  - awscli
+  - amazon-ecr-credential-helper
   - aws-shell
-  - python-boto
-  - python-boto3
+  - awscli
+  - python3-boto
+  - python3-boto3
+  - python3-botocore
   - s3cmd
 
 - name: Create AWS config directory

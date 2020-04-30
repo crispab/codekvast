@@ -23,6 +23,8 @@ jar {
             "Implementation-Version": codekvastDisplayVersion
         )
     }
+    preserveFileTimestamps false
+    reproducibleFileOrder true
 }
 
 lombok {

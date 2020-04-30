@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameters",
+        "secretsmanager:GetSecretValue",
+        "kms:Decrypt"
+      ],
+      "Resource": [
+        "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/*",
+        "arn:aws:secretsmanager:{{ aws_region }}:{{ aws_account }}:secret:*",
+        "arn:aws:kms:{{ aws_region }}:{{ aws_account }}:key/*"
+      ]
+    }
+  ]
+}

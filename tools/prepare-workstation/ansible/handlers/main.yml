@@ -1,6 +1,6 @@
 ---
 - name: Test AWS CLI
-  shell: aws --profile {{ item }} ec2 describe-availability-zones
+  shell: env HOME=/home/{{ actual_username }} aws --profile {{ item }} ec2 describe-availability-zones
   with_items:
   - codekvast
 

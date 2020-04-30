@@ -2,16 +2,23 @@
 
 set -e
 
-if [[ "$(which ansible)" == "/usr/local/bin/ansible" ]]; then
-    echo "Removing pip-installed ansible:"
-    sudo pip uninstall ansible
+if [[ "$(command -v ansible)" == "/usr/bin/ansible" ]]; then
+    echo "Removing apt-installed ansible:"
+    sudo apt remove ansible
+fi
+if [[ "$(command -v pip3)" == "" ]]; then
+    echo "Installing python3-pip:"
+    sudo apt install python3-pip
 fi
 
-if [[ "$(grep ppa.launchpad.net/ansible/ansible /etc/apt/sources.list.d/ansible*.list)" == "" ||  "$(which ohai)" == "" ]]; then
-    echo "Adding APT key for ppa:ansible/ansible:"
-    sudo apt-add-repository -y ppa:ansible/ansible
-    sudo apt update
-    sudo apt install -y software-properties-common ansible ohai libssl-dev
+if [[ "$(command -v ansible)" == "" ]]; then
+    echo "Installing Ansible with pip3:"
+    sudo pip3 install ansible
+fi
+
+if [[ "$(command -v ohai)" == "" ]]; then
+    echo "Installing ohai"
+    sudo apt install -y software-properties-common ohai libssl-dev
 fi
 
 cd $(dirname $0)/ansible

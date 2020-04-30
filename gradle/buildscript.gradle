@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
+    classpath 'com.google.cloud.tools:jib-gradle-plugin:2.2.0'
     classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     classpath 'com.ofg:uptodate-gradle-plugin:1.6.3'
     classpath 'gradle.plugin.com.energizedwork.webdriver-binaries:webdriver-binaries-gradle-plugin:1.4'
