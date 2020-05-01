@@ -14,6 +14,9 @@ aws_common_tags:
   Env: "{{ stack.env }}"
   Owner: Codekvast
 
+aws_rds_tags:
+  RDS: "true"
+
 ec2_instance_profile_name: "Codekvast-CloudWatch"
 
 s3_database_backup_bucket: "io.codekvast.{{ stack.customer|lower }}.{{ stack.env|lower }}.backup"

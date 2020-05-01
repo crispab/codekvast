@@ -2,7 +2,6 @@
 - name: "Building {{ stack.env }} stack for customer '{{ stack.customer }}'"
   debug: var=stack
   when: _debug is defined and _debug
-  tags: infra
 
 - name: Create VPC
   local_action:
@@ -14,14 +13,11 @@
     cidr_block: "{{ stack.cidr_base }}.0.0/16"
     tags: "{{ aws_common_tags }}"
   register: net
-  tags: infra
 
 - debug: var=net
   when: _debug is defined and _debug
-  tags: infra
 
 - set_fact: vpc_id="{{ net.vpc.id }}"
-  tags: infra
 
 - name: Create VPC internet gateway
   local_action:
@@ -32,11 +28,9 @@
     vpc_id: "{{ vpc_id }}"
     tags: "{{ aws_common_tags }}"
   register: igw
-  tags: infra
 
 - debug: var=igw
   when: _debug is defined and _debug
-  tags: infra
 
 - name: Create VPC subnet A
   local_action:
@@ -49,14 +43,11 @@
     cidr: "{{ stack.cidr_base }}.1.0/24"
     resource_tags: "{{ aws_common_tags }}"
   register: subnet
-  tags: infra
 
 - debug: var=subnet
   when: _debug is defined and _debug
-  tags: infra
 
 - set_fact: subnet_id_a="{{ subnet.subnet.id }}"
-  tags: infra
 
 - name: Create VPC subnet B
   local_action:
@@ -69,14 +60,11 @@
     cidr: "{{ stack.cidr_base }}.2.0/24"
     tags: "{{ aws_common_tags }}"
   register: subnet
-  tags: infra
 
 - debug: var=subnet
   when: _debug is defined and _debug
-  tags: infra
 
 - set_fact: subnet_id_b="{{ subnet.subnet.id }}"
-  tags: infra
 
 - name: Create subnet route table
   local_action:
@@ -92,11 +80,9 @@
       - dest: 0.0.0.0/0
         gateway_id: "{{ igw.gateway_id }}"
   register: route_table
-  tags: infra
 
 - debug: var=route_table
   when: _debug is defined and _debug
-  tags: infra
 
 - name: Create frontend security group
   local_action:
@@ -112,7 +98,7 @@
       ports:
       - 443
       cidr_ip: 0.0.0.0/0
-  tags: infra
+    tags: "{{ aws_common_tags }}"
 
 - name: Create backend security group
   local_action:
@@ -143,7 +129,7 @@
       - "{{ ports.backoffice.management }}"
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
       group_desc: "Codekvast management access"
-  tags: infra
+    tags: "{{ aws_common_tags }}"
 
 - name: Create database security group
   local_action:
@@ -161,7 +147,7 @@
       - "{{ ports.rabbitmq.api }}"
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
       group_desc: "Codekvast backend access"
-  tags: infra
+    tags: "{{ aws_common_tags | combine(aws_rds_tags) }}"
 
 - name: curl http://whatismyip.akamai.com/
   uri:
@@ -169,11 +155,9 @@
     return_content: yes
   register: my_ip
   changed_when: false
-  tags: infra
 
 - debug: var=my_ip
   when: _debug is defined and _debug
-  tags: infra
 
 - name: Create management security group
   local_action:
@@ -190,7 +174,7 @@
       ports:
       - "{{ ports.ssh }}-65535"
       cidr_ip: "{{ my_ip.content }}/32"
-  tags: infra
+    tags: "{{ aws_common_tags | combine(aws_rds_tags) }}"
 
 - set_fact:
     role_tag_database:
@@ -205,7 +189,6 @@
       Customer: "{{ stack.customer }}"
       Env: "{{ stack.env }}"
       Owner: Codekvast
-  tags: infra
 
 - name: Create EC2 database instance
   local_action:
@@ -228,18 +211,14 @@
     termination_protection: "{{ ('no', 'yes')[stack.env == 'prod'] }}"
     wait: yes
   register: ec2database
-  tags: infra
 
 - debug: var=ec2database
   when: _debug is defined and _debug
-  tags: infra
 
 - set_fact: database_instance_id="{{ ec2database.tagged_instances[0].id }}"
-  tags: infra
 
 - debug: var=database_instance_id
   when: _debug is defined and _debug
-  tags: infra
 
 - name: Create an EBS data volume for the database
   local_action:
@@ -254,11 +233,9 @@
     instance: "{{ database_instance_id }}"
   register: database_data_volume
   when: not ec2database.tagged_instances[0].block_device_mapping['/dev/sdf'] is defined
-  tags: infra
 
 - debug: var=database_data_volume
   when: _debug is defined and _debug
-  tags: infra
 
 - name: Create an EBS backup volume for the database
   local_action:
@@ -273,11 +250,9 @@
     instance: "{{ database_instance_id }}"
   register: database_backup_volume
   when: not ec2database.tagged_instances[0].block_device_mapping['/dev/sdg'] is defined
-  tags: infra
 
 - debug: var=database_backup_volume
   when: _debug is defined and _debug
-  tags: infra
 
 #----------------------------------
 - name: "Create EC2 backend instances in {{ aws_region }}a"
@@ -301,7 +276,6 @@
     termination_protection: "{{ ('no', 'yes')[stack.env == 'prod'] }}"
     wait: yes
   register: ec2backends_a
-  tags: infra
 
 #-----------------------------------
 - name: "Create EC2 backend instances in {{ aws_region }}b"
@@ -325,37 +299,29 @@
     termination_protection: "{{ ('no', 'yes')[stack.env == 'prod'] }}"
     wait: yes
   register: ec2backends_b
-  tags: infra
 
 - debug: var=ec2backends_a
   when: _debug is defined and _debug
-  tags: infra
 
 - debug: var=ec2backends_b
   when: _debug is defined and _debug
-  tags: infra
 
 - set_fact:
     ec2backends: "{{ ec2backends_a.tagged_instances }} + {{ ec2backends_b.tagged_instances }}"
-  tags: infra
 
 - debug: var=ec2backends
   when: _debug is defined and _debug
-  tags: infra
 
 # Clear from the previous stack (which is in another VPC)
 - set_fact:
     backend_ids: []
-  tags: infra
 
 - set_fact:
     backend_ids: "{{ backend_ids + [{'Id': item }] }}"
   with_items: "{{ ec2backends_a.tagged_instances|map(attribute='id') | list }} + {{ ec2backends_b.tagged_instances|map(attribute='id') | list }}"
-  tags: infra
 
 - debug: var=backend_ids
   when: _debug is defined and _debug
-  tags: infra
 
 #-----------------------------------
 #- name: Refresh external EC2 cache
@@ -388,7 +354,6 @@
     tags: "{{ aws_common_tags }}"
     target_type: instance
     targets: "{{ backend_ids }}"
-  tags: infra
 
 - name: "Create ALB target group for login"
   local_action:
@@ -413,7 +378,6 @@
     tags: "{{ aws_common_tags }}"
     target_type: instance
     targets: "{{ backend_ids }}"
-  tags: infra
 
 - name: "Create ALB target group for backoffice"
   local_action:
@@ -438,16 +402,6 @@
     tags: "{{ aws_common_tags }}"
     target_type: instance
     targets: "{{ backend_ids }}"
-  tags: infra
-
-- name: Destroy Elastic Load Balancer
-  local_action:
-    module: ec2_elb_lb
-    region: "{{ aws_region }}"
-    profile: codekvast
-    name: "{{ aws_stack_name }}"
-    state: absent
-  tags: infra
 
 - name: Create Application Load Balancer
   local_action:
@@ -500,14 +454,11 @@
             TargetGroupName: "{{ aws_target_group_backoffice }}"
     wait: yes
   register: alb
-  tags: infra
 
 - debug: var=alb
   when: _debug is defined and _debug
-  tags: infra
 
 - set_fact: alb_dns_name="{{ alb.dns_name }}"
-  tags: infra
 
 - name: Define load balancer's CNAMEs
   local_action:
@@ -521,7 +472,6 @@
     type: CNAME
     zone: codekvast.io
   with_items: "{{ stack.app_cnames }}"
-  tags: infra
 
 - name: Define database instance's CNAMEs
   local_action:
@@ -537,7 +487,6 @@
   with_indexed_items: "{{ ec2database.tagged_instances }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
-  tags: infra
 
 - name: Tag database instances with their CNAMEs
   local_action:
@@ -550,7 +499,6 @@
   with_indexed_items: "{{ ec2database.tagged_instances }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
-  tags: infra
 
 - name: Define api CNAMEs
   local_action:
@@ -566,7 +514,6 @@
   with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
-  tags: infra
 
 - name: Define login CNAMEs
   local_action:
@@ -582,7 +529,6 @@
   with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
-  tags: infra
 
 - name: Define dashboard CNAMEs
   local_action:
@@ -598,7 +544,6 @@
   with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
-  tags: infra
 
 - name: Define backoffice CNAMEs
   local_action:
@@ -614,7 +559,6 @@
   with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
-  tags: infra
 
 - name: Tag application instances with their CNAMEs
   local_action:
@@ -636,7 +580,6 @@
   with_indexed_items: "{{ ec2backends }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
-  tags: infra
 
 - name: Create S3 bucket for database backups
   local_action:
@@ -645,7 +588,6 @@
     profile: codekvast
     name: "{{ s3_database_backup_bucket }}"
     tags: "{{ aws_common_tags }}"
-  tags: infra
 
 - name: Wait for OpenSSH on EC2 instances
   local_action:
@@ -656,4 +598,3 @@
   with_items:
   - "{{ ec2database.tagged_instances|map(attribute='public_ip') | list }}"
   - "{{ ec2backends|map(attribute='public_ip') | list }}"
-  tags: infra
