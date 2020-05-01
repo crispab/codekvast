@@ -5,4 +5,4 @@
 #------------------------------------------------------------------
 
 apt update
-apt install -y openssh-server python-minimal python-apt ntp aptitude
+apt install -y openssh-server python3-minimal python3-apt ntp aptitude

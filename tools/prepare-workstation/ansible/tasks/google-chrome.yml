@@ -5,7 +5,7 @@
 - name: Make sure Google Chrome APT source is defined
   apt_repository:
     filename: google-chrome
-    repo: "deb http://dl.google.com/linux/chrome/deb/ stable main"
+    repo: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
     state: present
 
 - name: Install Google Chrome

@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Provisions AWS resources for the stacks that are defined by vars/common.yml
+# Provisions AWS RDS servers
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/provision-infrastructure.yml $*
-
+ansible-playbook playbooks/provision-aws-rds.yml $*

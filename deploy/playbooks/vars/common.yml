@@ -4,20 +4,20 @@ aws_account: "186662504461"
 aws_region: "eu-central-1"
 
 aws_stacks:
--   env:                   staging
-    customer:              default
-    cidr_base:             "10.1"
-    state:                 present
-    app_cnames:
-    - 'api-staging'
-    - 'login-staging'
-    - 'dashboard-staging'
-    - 'backoffice-staging'
-    db_cname:              'db-staging'
-    backend_count_a:       1
-    backend_count_b:       1
-    backend_instance_type: 't3a.small'
-    db_instance_type:      't2.micro'
+#-   env:                   staging
+#    customer:              default
+#    cidr_base:             "10.1"
+#    state:                 present
+#    app_cnames:
+#    - 'api-staging'
+#    - 'login-staging'
+#    - 'dashboard-staging'
+#    - 'backoffice-staging'
+#    db_cname:              'db-staging'
+#    backend_count_a:       1
+#    backend_count_b:       1
+#    backend_instance_type: 't3a.small'
+#    db_instance_type:      't2.micro'
 -   env:                   prod
     customer:              default
     cidr_base:             "10.0"
@@ -89,9 +89,9 @@ sdkman_group: codekvast
 sdkman_auto_answer: true
 sdkman_update: true
 sdkman_install_packages:
-- { candidate: java, version: 11.0.5-zulu }
+- { candidate: java, version: 11.0.7-zulu }
 sdkman_defaults:
-    java: 11.0.5-zulu
+    java: 11.0.7-zulu
 sdkman_update_alternatives:
 -   candidate: java
     name:      java

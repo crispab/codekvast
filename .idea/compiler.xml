@@ -15,20 +15,20 @@
         <module name="codekvast.product.agent.agent-model.main" />
         <module name="codekvast.product.agent.java-agent.main" />
         <module name="codekvast.product.server.dashboard.integrationTest" />
-        <module name="codekvast.product.server.dashboard.test" />
+        <module name="codekvast.product.system-test.main" />
         <module name="codekvast.sample.swing-app.test" />
-        <module name="codekvast.sample.sample-gradle-application.main" />
         <module name="codekvast.product.server.common.integrationTest" />
         <module name="codekvast.product.server.backoffice.integrationTest" />
         <module name="codekvast.product.server.login.test" />
         <module name="codekvast.product.server.common.test" />
         <module name="codekvast.product.server.db-migration.main" />
-        <module name="codekvast.product.system-test.main" />
+        <module name="codekvast.sample.sample-gradle-application.main" />
         <module name="codekvast.product.server.backoffice.test" />
         <module name="codekvast.sample.sample-lib.main" />
         <module name="codekvast.product.agent.java-agent.test" />
         <module name="codekvast.product.server.stress-tester.test" />
         <module name="codekvast.product.agent.agent-model.test" />
+        <module name="codekvast.product.server.dashboard.test" />
         <module name="codekvast.product.agent.java-agent.integrationTest" />
         <module name="codekvast.sample.swing-app.main" />
         <module name="codekvast.sample.sample-lib.test" />
@@ -46,10 +46,10 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.2.6.RELEASE/51c9bff7a5dc15403529a77f5861be643082ecea/spring-boot-configuration-processor-2.2.6.RELEASE.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.10/625fc0055674dff70dbc76efa36d0f2c89b04a24/lombok-1.18.10.jar" />
         </processorPath>
-        <module name="codekvast.product.server.backoffice.main" />
-        <module name="codekvast.product.server.login.main" />
-        <module name="codekvast.product.server.stress-tester.main" />
         <module name="codekvast.product.server.dashboard.main" />
+        <module name="codekvast.product.server.backoffice.main" />
+        <module name="codekvast.product.server.stress-tester.main" />
+        <module name="codekvast.product.server.login.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11" />

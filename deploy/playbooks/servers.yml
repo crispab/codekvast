@@ -1,7 +1,7 @@
 ---
 #---------------------------------------------------------------------------
 # Configures all servers once the infrastructure has been provisioned.
-# See also infrastructure.yml
+# See also provision-infrastructure.yml
 #---------------------------------------------------------------------------
 - {import_playbook: database.yml, tags: [server, database]}
 - {import_playbook: rabbitmq.yml, tags: [server, rabbitmq]}

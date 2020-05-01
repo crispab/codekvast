@@ -5,5 +5,5 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/aws-fargate.yml $*
+ansible-playbook playbooks/provision-aws-fargate.yml $*
 
