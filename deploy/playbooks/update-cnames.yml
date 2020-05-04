@@ -13,7 +13,7 @@
   tasks:
   - name: "Find running backend instances owned by Codekvast"
     local_action:
-      module: ec2_instance_facts
+      module: ec2_instance_info
       profile: codekvast
       region: "{{ aws_region }}"
       filters:
@@ -27,7 +27,7 @@
 
   - name: "Find running database instances owned by Codekvast"
     local_action:
-      module: ec2_instance_facts
+      module: ec2_instance_info
       profile: codekvast
       region: "{{ aws_region }}"
       filters:

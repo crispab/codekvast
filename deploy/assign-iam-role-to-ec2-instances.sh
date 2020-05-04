@@ -5,7 +5,7 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-declare region=$(grep aws_region playbooks/vars/common.yml | cut -d: -f2)
+declare region=$(grep aws_region playbooks/vars/common.yml | cut -d: -f2 | tr -d '"')
 declare AWS_EC2="aws --profile codekvast --region ${region} ec2"
 declare IAM_ROLE="${1:-Codekvast-CloudWatch}"
 

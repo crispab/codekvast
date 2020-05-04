@@ -5,5 +5,5 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/services.yml --limit tag_Env_prod $*
+ansible-playbook playbooks/services.yml -e rds_endpoint_address=$(get-rds-endpoint prod) --limit tag_Env_prod $*
 

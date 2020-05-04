@@ -15,25 +15,29 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="codekvast@db00.codekvast.io" read-only="true" uuid="d31abc57-7e7d-41b1-8517-d46701e39f8b">
+    <data-source source="LOCAL" name="codekvast@staging" uuid="14b18f70-8dc6-4aa7-a9f1-4e4eed2f67f2">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://db00.codekvast.io:3306/codekvast</jdbc-url>
+      <jdbc-url>jdbc:mysql://codekvast-staging.cahjor9xtqud.eu-central-1.rds.amazonaws.com:3306/codekvast</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="codekvast@db-staging00.codekvast.io" uuid="14b18f70-8dc6-4aa7-a9f1-4e4eed2f67f2">
+    <data-source source="LOCAL" name="codekvast@prod" uuid="954eda93-2b95-4c3c-be3a-c1e662fe311c">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://codekvast-prod.cahjor9xtqud.eu-central-1.rds.amazonaws.com:3306/codekvast</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="codekvast@staging (root)" uuid="77fc0c19-bb81-474d-a026-0d0553c2dcd9">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://db-staging00.codekvast.io:3306/codekvast</jdbc-url>
-      <driver-properties>
-        <property name="autoReconnect" value="true" />
-        <property name="zeroDateTimeBehavior" value="convertToNull" />
-        <property name="tinyInt1isBit" value="false" />
-        <property name="characterEncoding" value="utf8" />
-        <property name="characterSetResults" value="utf8" />
-        <property name="yearIsDateType" value="false" />
-      </driver-properties>
+      <jdbc-url>jdbc:mysql://codekvast-staging.cahjor9xtqud.eu-central-1.rds.amazonaws.com:3306/codekvast</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="codekvast@prod (root)" uuid="361fe1a8-d8fd-4dcb-9333-45505b8e643e">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://codekvast-prod.cahjor9xtqud.eu-central-1.rds.amazonaws.com:3306/codekvast</jdbc-url>
     </data-source>
   </component>
 </project>

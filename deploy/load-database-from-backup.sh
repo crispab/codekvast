@@ -7,9 +7,9 @@ source $(dirname $0)/.check-requirements.sh
 
 declare weekday=${1:-$(env LANG=en_US date -d "today 13:00" --utc +%A | tr [A-Z] [a-z])}
 declare srcEnv=${2:-prod}
-declare targetHost=${3:-localhost} # codekvast-prod.cahjor9xtqud.eu-central-1.rds.amazonaws.com
-declare username=${4:-codekvast}
-declare password=${5:-codekvast}
+declare targetHost=${3:-codekvast-prod.cahjor9xtqud.eu-central-1.rds.amazonaws.com}
+declare username=${4:-root}
+declare password=${5:-$(grep mariadb_root_password vars/secrets.yml | cut -d: -f2 | xargs)}
 
 case ${weekday} in
   monday|tuesday|wednesday|thursday|friday|saturday|sunday|extra);;

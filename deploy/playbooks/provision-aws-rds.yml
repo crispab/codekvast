@@ -16,7 +16,7 @@
 
   tasks:
     - name:     "Find EC2 {{ env }} subnets owned by Codekvast"
-      ec2_vpc_subnet_facts:
+      ec2_vpc_subnet_info:
         profile:     codekvast
         region:      "{{ aws_region }}"
         filters:
@@ -41,7 +41,7 @@
       when:  _debug is defined and _debug
 
     - name:     Find EC2 security groups
-      ec2_group_facts:
+      ec2_group_info:
         profile:             codekvast
         region:              "{{ aws_region }}"
         filters:
@@ -96,10 +96,10 @@
 
     - name: "Create Codekvast application user in MariaDB server at {{ rds.endpoint.address }}"
       mysql_user:
-        login_host:     "{{ rds.endpoint.address }}"
-        login_user:     root
-        login_password: "{{ mariadb_root_password }}"
-        name:           codekvast
-        host:           "%"
-        password:       "{{ mariadb_application_password }}"
-        priv:           "codekvast.*:CREATE,ALTER,DROP,SELECT,INSERT,UPDATE,DELETE"
+        login_host:          "{{ rds.endpoint.address }}"
+        login_user:          root
+        login_password:      "{{ mariadb_root_password }}"
+        name:                codekvast
+        host:                "%"
+        password:            "{{ mariadb_application_password }}"
+        priv:                "codekvast.*:CREATE,ALTER,DROP,SELECT,INSERT,UPDATE,DELETE"

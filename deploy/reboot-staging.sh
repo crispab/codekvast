@@ -11,7 +11,7 @@ case "$answer" in
     "y"|"Y") echo "Ok, here we go...";;
 esac
 
-declare region=$(grep aws_region playbooks/vars/common.yml | cut -d: -f2)
+declare region=$(grep aws_region playbooks/vars/common.yml | cut -d: -f2 | xargs)
 declare AWS_EC2="aws --profile codekvast --region ${region} ec2"
 
 ${AWS_EC2} describe-instances --filter "Name=tag:Env,Values=staging" \

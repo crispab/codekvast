@@ -41,7 +41,7 @@ server:
 spring:
   datasource:
     password: "{{ mariadb_application_password }}"
-    url: "jdbc:mariadb://{{ database_dns_names[0] }}/codekvast"
+    url: "jdbc:mariadb://{{ rds_endpoint_address }}/codekvast"
 
   rabbitmq:
     addresses: "amqp://codekvast:{{ rabbitmq_application_password }}@{{ database_dns_names[0] }}:5672"
