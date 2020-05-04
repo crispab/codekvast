@@ -4,7 +4,7 @@ ext {
     gsonVersion = '2.8.6'
     jacocoVersion = '0.8.5'
     mariadbVersion = '10.4'
-    rabbitmqVersion = '3.8-management-alpine' // Same as in the Ansible playbook rabbitmq.yml
+    rabbitmqVersion = '3.8-management-alpine'
     seleniumVersion = '3.141.59'
     springBootVersion = '2.2.6.RELEASE'
     springfoxVersion = '2.9.2'

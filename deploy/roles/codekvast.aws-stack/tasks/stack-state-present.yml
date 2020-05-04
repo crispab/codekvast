@@ -144,7 +144,6 @@
     - proto: tcp
       ports:
       - "{{ ports.mysql }}"
-      - "{{ ports.rabbitmq.api }}"
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
       group_desc: "Codekvast backend access"
     tags: "{{ aws_common_tags | combine(aws_rds_tags) }}"
@@ -177,82 +176,12 @@
     tags: "{{ aws_common_tags | combine(aws_rds_tags) }}"
 
 - set_fact:
-    role_tag_database:
-      Name: "Codekvast-{{ stack.customer }}-{{ stack.env }}-database"
-      role: "database"
-      Customer: "{{ stack.customer }}"
-      Env: "{{ stack.env }}"
-      Owner: Codekvast
     role_tag_backend:
       Name: "Codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
       role: "backend"
       Customer: "{{ stack.customer }}"
       Env: "{{ stack.env }}"
       Owner: Codekvast
-
-- name: Create EC2 database instance
-  local_action:
-    module: ec2
-    region: "{{ aws_region }}"
-    profile: codekvast # in ~/.boto
-    key_name: codekvast
-    assign_public_ip: yes
-    vpc_subnet_id: "{{ subnet_id_a }}"
-    groups:
-    - "codekvast-{{ stack.customer }}-{{ stack.env }}-database"
-    - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
-    image: "{{ aws_ami_id }}"
-    instance_type: "{{ stack.db_instance_type }}"
-    instance_profile_name: "{{ ec2_instance_profile_name }}"
-    user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
-    exact_count: 1
-    count_tag: "{{ role_tag_database }}"
-    instance_tags: "{{ role_tag_database }}"
-    termination_protection: "{{ ('no', 'yes')[stack.env == 'prod'] }}"
-    wait: yes
-  register: ec2database
-
-- debug: var=ec2database
-  when: _debug is defined and _debug
-
-- set_fact: database_instance_id="{{ ec2database.tagged_instances[0].id }}"
-
-- debug: var=database_instance_id
-  when: _debug is defined and _debug
-
-- name: Create an EBS data volume for the database
-  local_action:
-    module: ec2_vol
-    region: "{{ aws_region }}"
-    profile: codekvast # in ~/.boto
-    device_name: /dev/sdf
-    volume_size: 10
-    volume_type: gp2
-    state: present
-    tags: "{{ aws_common_tags }}"
-    instance: "{{ database_instance_id }}"
-  register: database_data_volume
-  when: not ec2database.tagged_instances[0].block_device_mapping['/dev/sdf'] is defined
-
-- debug: var=database_data_volume
-  when: _debug is defined and _debug
-
-- name: Create an EBS backup volume for the database
-  local_action:
-    module: ec2_vol
-    region: "{{ aws_region }}"
-    profile: codekvast # in ~/.boto
-    device_name: /dev/sdg
-    volume_size: 10
-    volume_type: gp2
-    state: present
-    tags: "{{ aws_common_tags }}"
-    instance: "{{ database_instance_id }}"
-  register: database_backup_volume
-  when: not ec2database.tagged_instances[0].block_device_mapping['/dev/sdg'] is defined
-
-- debug: var=database_backup_volume
-  when: _debug is defined and _debug
 
 #----------------------------------
 - name: "Create EC2 backend instances in {{ aws_region }}a"
@@ -326,11 +255,11 @@
 #-----------------------------------
 #- name: Refresh external EC2 cache
 #  command: "{{ inventory_dir }}/ec2.py --refresh-cache"
-#  when: ec2database.changed or ec2backends.changed
+#  when: ec2backends.changed
 
 #- name: Refresh in-memory EC2 cache
 #  meta: refresh_inventory
-#  when: ec2database.changed or ec2backends.changed
+#  when: ec2backends.changed
 
 - name: "Create ALB target group for dashboard"
   local_action:
@@ -473,33 +402,6 @@
     zone: codekvast.io
   with_items: "{{ stack.app_cnames }}"
 
-- name: Define database instance's CNAMEs
-  local_action:
-    module: route53
-    profile: codekvast # in ~/.boto
-    command: create
-    overwrite: yes
-    record: "{{ stack.db_cname }}{{ '%02d'|format(item.0) }}.codekvast.io"
-    value: "{{ item.1.public_dns_name }}"
-    ttl: 600
-    type: CNAME
-    zone: codekvast.io
-  with_indexed_items: "{{ ec2database.tagged_instances }}"
-  loop_control:
-    label: "{{ item.1.public_dns_name }}"
-
-- name: Tag database instances with their CNAMEs
-  local_action:
-    module: ec2_tag
-    region: "{{ aws_region }}"
-    profile: codekvast # in ~/.boto
-    resource: "{{ item.1.id }}"
-    tags:
-      CNAME: "{{ stack.db_cname }}{{ '%02d'|format(item.0) }}.codekvast.io"
-  with_indexed_items: "{{ ec2database.tagged_instances }}"
-  loop_control:
-    label: "{{ item.1.public_dns_name }}"
-
 - name: Define api CNAMEs
   local_action:
     module: route53
@@ -581,14 +483,6 @@
   loop_control:
     label: "{{ item.1.public_dns_name }}"
 
-- name: Create S3 bucket for database backups
-  local_action:
-    module: s3_bucket
-    region: "{{ aws_region }}"
-    profile: codekvast
-    name: "{{ s3_database_backup_bucket }}"
-    tags: "{{ aws_common_tags }}"
-
 - name: Wait for OpenSSH on EC2 instances
   local_action:
     module: wait_for
@@ -596,5 +490,4 @@
     port: 22
     search_regex: OpenSSH
   with_items:
-  - "{{ ec2database.tagged_instances|map(attribute='public_ip') | list }}"
   - "{{ ec2backends|map(attribute='public_ip') | list }}"
