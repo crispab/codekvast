@@ -184,7 +184,7 @@ export class MethodsComponentState {
     this.req.onlyInvokedBeforeMillis = this.getCutoffTimeMillis();
     this.req.applications = this.getFilteredApplications();
     this.req.environments = this.getFilteredEnvironments();
-    this.req.locations = this.getFilteredLocations();
+    this.req.locations = this.searchState.locations.trim().length === 0 ? null : this.getFilteredLocations();
 
     this.api
     .getMethods(this.req)
