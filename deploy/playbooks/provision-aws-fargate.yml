@@ -75,7 +75,7 @@
               - name: "SPRING_DATASOURCE_PASSWORD"
                 valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mariadb_application_password"
             environment:
-              - {name: SPRING_DATASOURCE_URL, value: "{{ rds_endpoint_address }}" }
+              - {name: SPRING_DATASOURCE_URL, value: "db-{{ env }}.codekvast.io" }
               - {name: SPRING_RABBITMQ_ADDRESSES, value: "{{ rabbitmq[env].url }}" }
             ports:
               - "8080"

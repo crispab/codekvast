@@ -19,6 +19,4 @@ aws_rds_tags:
 
 ec2_instance_profile_name: "Codekvast-CloudWatch"
 
-s3_database_backup_bucket: "io.codekvast.{{ stack.customer|lower }}.{{ stack.env|lower }}.backup"
-
 s3_downloads_bucket: "io.codekvast.downloads"

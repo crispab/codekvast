@@ -22,9 +22,3 @@ for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
 done
 
 cd $(dirname $0)
-
-get-rds-endpoint() {
-  declare environment=$1
-  declare region=$(grep aws_region playbooks/vars/common.yml | cut -d: -f2 | xargs)
-  aws --profile codekvast --region ${region} rds describe-db-instances --db-instance-identifier="codekvast-$environment"|jq .DBInstances[0].Endpoint.Address|xargs
-}

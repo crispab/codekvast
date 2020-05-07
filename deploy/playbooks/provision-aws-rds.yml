@@ -85,6 +85,7 @@
       register:   rds
 
     - debug: var=rds.endpoint
+      when:  _debug is defined and _debug
 
     - name: "Create Codekvast database in MariaDB server at {{ rds.endpoint.address }}"
       mysql_db:
@@ -103,3 +104,18 @@
         host:                "%"
         password:            "{{ mariadb_application_password }}"
         priv:                "codekvast.*:CREATE,ALTER,DROP,SELECT,INSERT,UPDATE,DELETE"
+
+    - name: "Create CNAME db-{{ env}}.codekvast.io -> {{ rds.endpoint.address }}"
+      route53:
+        profile: codekvast # in ~/.boto
+        zone: codekvast.io
+        command: create
+        overwrite: yes
+        record: "db-{{ env }}.codekvast.io"
+        ttl: 86400
+        type: CNAME
+        value: "{{ rds.endpoint.address }}"
+      register: dns
+
+    - debug: var=dns
+      when:  _debug is defined and _debug

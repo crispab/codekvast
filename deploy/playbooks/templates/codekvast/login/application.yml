@@ -49,7 +49,7 @@ server:
 spring:
   datasource:
     password: "{{ mariadb_application_password }}"
-    url: "jdbc:mariadb://{{ rds_endpoint_address }}/codekvast"
+    url: "jdbc:mariadb://db-{{ tags.Env }}.codekvast.io/codekvast"
 
   rabbitmq:
     addresses: "{{ rabbitmq[tags.Env].url }}"

@@ -12,8 +12,7 @@
 
   tasks:
   - name: "Find running backend instances owned by Codekvast"
-    local_action:
-      module: ec2_instance_info
+    ec2_instance_info:
       profile: codekvast
       region: "{{ aws_region }}"
       filters:
@@ -25,38 +24,8 @@
   - debug: var=backend
     when: _debug is defined and _debug
 
-  - name: "Find running database instances owned by Codekvast"
-    local_action:
-      module: ec2_instance_info
-      profile: codekvast
-      region: "{{ aws_region }}"
-      filters:
-        "tag:Owner": Codekvast
-        "tag:role": database
-        "instance-state-name": running
-    register: database
-
-  - debug: var=database
-    when: _debug is defined and _debug
-
-  - name: "Define the database instances' CNAMEs"
-    local_action:
-      module: route53
-      profile: codekvast # in ~/.boto
-      command: create
-      overwrite: yes
-      record: "{{ item.0.tags[item.1] }}"
-      value: "{{ item.0.public_dns_name }}"
-      ttl: 600
-      type: CNAME
-      zone: codekvast.io
-    loop: "{{ database.instances|product(['CNAME'])|list }}"
-    loop_control:
-      label: "{{item.0.tags[item.1] + ' => ' + item.0.public_dns_name }}"
-
   - name: "Define the backend instances' CNAMEs"
-    local_action:
-      module: route53
+    route53:
       profile: codekvast # in ~/.boto
       command: create
       overwrite: yes
@@ -68,3 +37,28 @@
     loop: "{{ backend.instances|product(['CNAME0', 'CNAME1', 'CNAME2', 'CNAME3'])|list }}"
     loop_control:
       label: "{{item.0.tags[item.1] + ' => ' + item.0.public_dns_name }}"
+
+  - name: "Find running RDS instances owned by Codekvast"
+    rds_instance_info:
+      profile: codekvast
+      region: "{{ aws_region }}"
+      filters:
+    register: rds
+
+  - debug: var=rds
+    when: _debug is defined and _debug
+
+  - name: "Define the RDS instances' CNAMEs"
+    route53:
+      profile: codekvast # in ~/.boto
+      command: create
+      overwrite: yes
+      record: "{{ item.db_instance_identifier | replace('codekvast-', 'db-') }}.codekvast.io"
+      value: "{{ item.endpoint.address }}"
+      ttl: 86400
+      type: CNAME
+      zone: codekvast.io
+    loop: "{{ rds.instances }}"
+    loop_control:
+      label: "{{ item.db_instance_identifier | replace('codekvast-', 'db-') + '.codekvast.io => ' + item.endpoint.address }}"
+

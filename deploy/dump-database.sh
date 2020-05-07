@@ -27,8 +27,7 @@ if [[ ! -d ${targetDirectory} ]]; then
   exit 1
 fi
 
-declare host=codekvast-${srcEnv}.cahjor9xtqud.eu-central-1.rds.amazonaws.com
-
+declare host=db-${srcEnv}.codekvast.io
 declare startedAtSecond=$(date +"%s")
 declare targetFile=${targetDirectory}/${dumpFile}
 echo "mysqldump --host=${host} --user=${username} --password=XXX --single-transaction --databases codekvast > $targetFile"
