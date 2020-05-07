@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Upgrades MariaDB to the production environment
+# Provisions AWS Fargate resources
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/upgrade-mariadb.yml --limit tag_Env_prod $*
+ansible-playbook playbooks/provision-aws-fargate.yml -e rds_endpoint_address=$(get-rds-endpoint staging) -e env=staging $*
+

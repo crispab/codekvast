@@ -12,24 +12,24 @@
     - vars/secrets.yml
 
   vars:
-    environments:
-      - staging
-    #      - prod
-
-    volumes:
-      - database
-  #      - rabbitmq
+    env: staging
+    services:
+      - backoffice
+      - dashboard
+      - login
 
   tasks:
-    - name: "Store MariaDB root password"
-      aws_ssm_parameter_store:
+    - name: "Find EC2 subnets for {{ env }}"
+      ec2_vpc_subnet_info:
         profile: codekvast
         region: "{{ aws_region }}"
-        description: "Codekvast database root password"
-        name: "mariadb_root_password"
-        value: "{{ mariadb_root_password }}"
-        string_type: "SecureString"
-        overwrite_value: "always"
+        filters:
+          "tag:Owner": "Codekvast"
+          "tag:Env": "{{ env }}"
+      register: subnet_info
+
+    - debug: var=subnet_info
+      when: _debug is defined and _debug
 
     - name: "Store MariaDB application password"
       aws_ssm_parameter_store:
@@ -41,117 +41,91 @@
         string_type: "SecureString"
         overwrite_value: "always"
 
-    - name: "Store MariaDB datadog password"
-      aws_ssm_parameter_store:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        description: "Codekvast database Datadog password"
-        name: "mariadb_datadog_password"
-        value: "{{ mariadb_datadog_password }}"
-        string_type: "SecureString"
-        overwrite_value: "always"
-
-    - name: Define ECS task execution policy
-      iam_role:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        name: codekvast-service
-        assume_role_policy_document: "{{ lookup('template', 'aws/iam-ecs-task-execution-role.json.j2') }}"
-        state: present
-      register: task_execution_role
-
-    - debug: var=task_execution_role
-
-    #    - name: "Define EFS volumes"
-    #      efs:
-    #        name: "codekvast-{{ item[0] }}-{{ item[1] }}"
-    #        profile: codekvast
-    #        region: "{{ aws_region }}"
-    #        state: present
-    #        tags:
-    #          Name: "codekvast-{{ item[0] }}-{{ item[1] }}"
-    #          Env: "{{ item[0] }}"
-    #          Owner: Codekvast
-    #      with_nested:
-    #        - "{{ environments }}"
-    #        - "{{ volumes }}"
-
-    - name: "Define ECS clusters"
-      ecs_cluster:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        name: "codekvast-{{ item }}"
-        state: present
-      with_items: "{{ environments }}"
-
-    - name: "Define the MariaDB ECS task"
-      ecs_taskdefinition:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        cpu: "256"
-        memory: "512"
-        family: "codekvast-database"
-        launch_type: FARGATE
-        network_mode: awsvpc
-        state: present
-        execution_role_arn: "{{ task_execution_role.iam_role.arn }}"
-        volumes:
-          - name: "{{ item }}-data"
-            dockerVolumeConfiguration:
-              scope: task
-              autoprovision: true
-        #            efsVolumeConfiguration:
-        #              fileSystemId: "codekvast-{{ item }}-database"
-        containers:
-          - name: mariadb
-            image: mariadb:10.4
-            essential: true
-            mountPoints:
-              - containerPath: /var/lib/mysql
-                sourceVolume: "{{ item }}-data"
-            secrets:
-              - name: "MYSQL_ROOT_PASSWORD"
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mariadb_root_password"
-              - name: "MYSQL_PASSWORD"
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mariadb_application_password"
-            environment:
-              - {name: MYSQL_DATABASE, value: codekvast}
-              - {name: MYSQL_USER, value: codekvast}
-              - {name: MYSQL_INITDB_SKIP_TZINFO, value: true}
-              - {name: TERM, value: "xterm-256color"}
-            portMappings:
-              - containerPort: 3306
-                hostPort: 3306
-            command: ["--character-set-server=utf8"]
-      with_items: "{{ environments }}"
-
     - name: "Create ECR registries"
       ecs_ecr:
         name: "codekvast/{{ item }}"
         profile: codekvast
         region: "{{ aws_region }}"
         state: present
-      with_items:
-        - backoffice
-        - dashboard
-        - login
+      loop: "{{ services }}"
 
-    - name: Start ECS tasks
-      ecs_task:
+    - name: "Define ECS cluster"
+      ecs_cluster:
         profile: codekvast
         region: "{{ aws_region }}"
-        cluster: "codekvast-{{ item[0] }}"
+        name: "codekvast-{{ env }}"
+        state: present
+
+    - name: "Define the ECS tasks"
+      ecs_taskdefinition:
+        profile: codekvast
+        region: "{{ aws_region }}"
+        cpu: "256"
+        memory: "512"
+        family: "codekvast-{{ item }}"
         launch_type: FARGATE
-        operation: run
-        count: "{{ item[1].count }}"
-        task_definition: "{{ item[1].task }}"
-        started_by: "{{ lookup('env', 'USER')}}"
+        network_mode: awsvpc
+        state: present
+        execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS"
+        containers:
+          - name: "{{ item }}"
+            image: "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item }}:latest"
+            essential: true
+            secrets:
+              - name: "SPRING_DATASOURCE_PASSWORD"
+                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mariadb_application_password"
+            environment:
+              - {name: SPRING_DATASOURCE_URL, value: "{{ rds_endpoint_address }}" }
+              - {name: SPRING_RABBITMQ_ADDRESSES, value: "{{ rabbitmq[env].url }}" }
+            ports:
+              - "8080"
+              - "9080"
+      loop: "{{ services }}"
+      register: ecs_taskdefs
+
+    - debug: var=ecs_taskdefs
+      when: _debug is defined and _debug
+
+    - name: "Find application load balancer"
+      elb_application_lb_info:
+        profile: codekvast
+        region: "{{ aws_region }}"
+        names: "Codekvast-default-{{ env }}"
+      register: lb_info
+
+    - debug: var=lb_info
+      when: _debug is defined and _debug
+
+    - name: "Find target groups"
+      elb_target_group_info:
+        profile: codekvast
+        region: "{{ aws_region }}"
+        load_balancer_arn: "{{ lb_info.load_balancers[0].load_balancer_arn }}"
+      register: tg_info
+
+    - debug: var=tg_info
+      when: _debug is defined and _debug
+
+    - name: Define ECS services
+      ecs_service:
+        profile: codekvast
+        region: "{{ aws_region }}"
+        cluster: "codekvast-{{ env }}"
+        desired_count: 2
+        launch_type: FARGATE
+        load_balancers:
+          - loadBalancerName: "Codekvast-default-{{ env }}"
+            targetGroupArn: ""
+            containerName: "{{ item }}"
+            containerPort: 8080
+        name: "{{ item }}"
+        task_definition: "{{ item }}"
         network_configuration:
-          subnets:
-            - "{{ item[1].subnet_id }}"
+          assign_public_ip: yes
+          subnets: "{{ subnet_info.subnets|map(attribute='id')|list }}"
           security_groups:
-            - "codekvast-default-{{ item[0] }}-{{ item[1].security_group }}"
-            - "codekvast-default-{{ item[0] }}-management"
-      with_nested:
-        - "{{ environments }}"
-        - [{task: "codekvast-database", count: 1, security_group: "database", subnet_id: "subnet-3a4b6b52"}]
+            - "codekvast-default-{{ env }}-backend"
+            - "codekvast-default-{{ env }}-management"
+        state: present
+      loop: "{{ services }}"
+
