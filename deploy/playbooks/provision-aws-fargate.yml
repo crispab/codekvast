@@ -3,7 +3,7 @@
 # Playbook which provisions the AWS Fargate infrastructure
 #---------------------------------------------------------------
 - name: AWS Fargate
-  hosts: all[0]
+  hosts: localhost
   connection: local
   gather_facts: no
 
@@ -17,8 +17,25 @@
       - backoffice
       - dashboard
       - login
+    aws_common_tags:
+      Owner: Codekvast
+      Env: "{{ env }}"
 
   tasks:
+    - name: "Find VPC id"
+      ec2_vpc_net_info:
+        region: "{{ aws_region }}"
+        profile: codekvast
+        filters:
+          "tag:Owner": "Codekvast"
+          "tag:Env": "{{ env }}"
+      register: vpc_info
+
+    - set_fact: vpc_id="{{ vpc_info.vpcs[0].vpc_id }}"
+
+    - debug: var=vpc_id
+      when: _debug is defined and _debug
+
     - name: "Find EC2 subnets for {{ env }}"
       ec2_vpc_subnet_info:
         profile: codekvast
@@ -28,18 +45,99 @@
           "tag:Env": "{{ env }}"
       register: subnet_info
 
-    - debug: var=subnet_info
-      when: _debug is defined and _debug
-
-    - name: "Store MariaDB application password"
-      aws_ssm_parameter_store:
+    - name: "Create ALB target groups"
+      elb_target_group:
         profile: codekvast
         region: "{{ aws_region }}"
-        description: "Codekvast database application password"
-        name: "mariadb_application_password"
-        value: "{{ mariadb_application_password }}"
-        string_type: "SecureString"
-        overwrite_value: "always"
+        vpc_id: "{{ vpc_id }}"
+        name: "codekvast-{{ env }}-{{ item }}"
+        protocol: http
+        port: "8080"
+        health_check_protocol: http
+        health_check_port: "9080"
+        health_check_path: /management/health
+        health_check_interval: 10
+        health_check_timeout: 2
+        healthy_threshold_count: 2
+        unhealthy_threshold_count: 3
+        state: present
+        stickiness_enabled: "{{ ('no', 'yes')[item == 'login'] }}"
+        stickiness_lb_cookie_duration: 60
+        stickiness_type: lb_cookie
+        tags: "{{ aws_common_tags }}"
+        target_type: ip
+      loop: "{{ services }}"
+      register: target_groups
+
+    - debug: var=target_groups
+      when: _debug is defined and _debug
+
+    - name: Create Application Load Balancer
+      elb_application_lb:
+        region: "{{ aws_region }}"
+        profile: codekvast
+        name: "codekvast-{{ env }}2"
+        state: present
+        deletion_protection: "{{ ('no', 'yes')[env == 'prod'] }}"
+        scheme: internet-facing
+        security_groups:
+          - "codekvast-default-{{ env }}-frontend"
+        subnets: "{{ subnet_info.subnets|map(attribute='id')|list }}"
+        tags: "{{ aws_common_tags }}"
+        listeners:
+          - Protocol: HTTPS
+            Port: 443
+            Certificates:
+              - CertificateArn: "{{ ssl_certificates[aws_region] }}"
+            SslPolicy: ELBSecurityPolicy-2015-05
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "codekvast-{{ env }}-login"
+            Rules:
+              - Conditions:
+                  - Field: host-header
+                    Values:
+                      - "api-{{ env }}2.codekvast.io"
+                Priority: '1'
+                Actions:
+                  - Type: forward
+                    TargetGroupName: "codekvast-{{ env }}-dashboard"
+              - Conditions:
+                  - Field: host-header
+                    Values:
+                      - "dashboard-{{ env }}2.codekvast.io"
+                Priority: '2'
+                Actions:
+                  - Type: forward
+                    TargetGroupName: "codekvast-{{ env }}-dashboard"
+              - Conditions:
+                  - Field: host-header
+                    Values:
+                      - "backoffice-{{ env }}2.codekvast.io"
+                Priority: '3'
+                Actions:
+                  - Type: forward
+                    TargetGroupName: "codekvast-{{ env }}-backoffice"
+        wait: yes
+      register: alb
+
+    - debug: var=alb
+      when: _debug is defined and _debug
+
+    - set_fact: alb_dns_name="{{ alb.dns_name }}"
+
+    - name: Define load balancer's CNAMEs
+      local_action:
+        module: route53
+        profile: codekvast # in ~/.boto
+        command: create
+        overwrite: yes
+        record: "{{ item }}-{{ env }}2.codekvast.io"
+        value: "{{ alb_dns_name }}"
+        ttl: 600
+        type: CNAME
+        zone: codekvast.io
+      loop: "{{ services }}"
 
     - name: "Create ECR registries"
       ecs_ecr:
@@ -68,7 +166,7 @@
         state: present
         execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS"
         containers:
-          - name: "{{ item }}"
+          - name: "codekvast-{{ item }}"
             image: "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item }}:latest"
             essential: true
             secrets:
@@ -77,33 +175,15 @@
             environment:
               - {name: SPRING_DATASOURCE_URL, value: "db-{{ env }}.codekvast.io" }
               - {name: SPRING_RABBITMQ_ADDRESSES, value: "{{ rabbitmq[env].url }}" }
-            ports:
-              - "8080"
-              - "9080"
+            portMappings:
+              - containerPort: 8080
+                hostPort: 8080
+              - containerPort: 9080
+                hostPort: 9080
       loop: "{{ services }}"
       register: ecs_taskdefs
 
     - debug: var=ecs_taskdefs
-      when: _debug is defined and _debug
-
-    - name: "Find application load balancer"
-      elb_application_lb_info:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        names: "Codekvast-default-{{ env }}"
-      register: lb_info
-
-    - debug: var=lb_info
-      when: _debug is defined and _debug
-
-    - name: "Find target groups"
-      elb_target_group_info:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        load_balancer_arn: "{{ lb_info.load_balancers[0].load_balancer_arn }}"
-      register: tg_info
-
-    - debug: var=tg_info
       when: _debug is defined and _debug
 
     - name: Define ECS services
@@ -113,13 +193,12 @@
         cluster: "codekvast-{{ env }}"
         desired_count: 2
         launch_type: FARGATE
+        task_definition: "codekvast-{{ item }}"
         load_balancers:
-          - loadBalancerName: "Codekvast-default-{{ env }}"
-            targetGroupArn: ""
-            containerName: "{{ item }}"
+          - targetGroupArn: "{{ target_groups.results | json_query(target_group_arn_query) | join('') }}"
+            containerName: "codekvast-{{ item }}"
             containerPort: 8080
         name: "{{ item }}"
-        task_definition: "{{ item }}"
         network_configuration:
           assign_public_ip: yes
           subnets: "{{ subnet_info.subnets|map(attribute='id')|list }}"
@@ -127,5 +206,7 @@
             - "codekvast-default-{{ env }}-backend"
             - "codekvast-default-{{ env }}-management"
         state: present
+      vars:
+        target_group_arn_query: "[?item == '{{ item }}'].target_group_arn"
       loop: "{{ services }}"
 

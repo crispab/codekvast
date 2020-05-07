@@ -105,6 +105,16 @@
         password:            "{{ mariadb_application_password }}"
         priv:                "codekvast.*:CREATE,ALTER,DROP,SELECT,INSERT,UPDATE,DELETE"
 
+    - name: "Store MariaDB application password as a secret"
+      aws_ssm_parameter_store:
+        profile: codekvast
+        region: "{{ aws_region }}"
+        description: "Codekvast database application password"
+        name: "mariadb_application_password"
+        value: "{{ mariadb_application_password }}"
+        string_type: "SecureString"
+        overwrite_value: "always"
+
     - name: "Create CNAME db-{{ env}}.codekvast.io -> {{ rds.endpoint.address }}"
       route53:
         profile: codekvast # in ~/.boto
