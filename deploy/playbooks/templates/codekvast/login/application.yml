@@ -1,12 +1,13 @@
 # {{ ansible_managed }}
 
 codekvast:
-  dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
-  jwtExpirationHours: "{{ codekvast_jwtExpirationHours }}"
-  jwtSecret: "{{ codekvast_jwtSecret }}"
-  dnsCname: "{{ tags.CNAME1 }}"
-  environment: "{{ tags.Env }}"
-  slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
+  common:
+    dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
+    jwtExpirationHours: "{{ codekvast_jwtExpirationHours }}"
+    jwtSecret: "{{ codekvast_jwtSecret }}"
+    dnsCname: "{{ tags.CNAME1 }}"
+    environment: "{{ tags.Env }}"
+    slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
   login:
     cipherSecret: "{{ codekvast_cipherSecret }}"
     herokuApiPassword: "{{ codekvast_herokuApiPassword }}"

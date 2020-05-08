@@ -6,13 +6,6 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 codekvast:
-  dashboardBaseUrl:                         http://localhost:8081
-  dnsCname:                                 localhost
-  environment:                              dev
-  jwtExpirationHours:                       168
-  jwtSecret:                                secret
-  loginBaseUrl:                             http://localhost:8080
-  slackWebHookToken:
   dashboard:
     deleteImportedFiles:                      true
     fileImportIntervalSeconds:                60
@@ -95,5 +88,7 @@ spring:
   cache:
     caffeine:
       spec: 'expireAfterAccess=10m, recordStats'
+  profiles:
+    include: common
 
 springfox.documentation.swagger.v2.path: /api-docs

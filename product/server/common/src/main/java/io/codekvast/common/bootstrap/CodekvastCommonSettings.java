@@ -37,7 +37,7 @@ import org.springframework.validation.annotation.Validated;
 /** @author olle.hallin@crisp.se */
 @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods", "OverlyComplexClass"})
 @Component
-@ConfigurationProperties(prefix = "codekvast")
+@ConfigurationProperties(prefix = "codekvast.common")
 @Validated
 @Data
 @Builder(toBuilder = true)

@@ -1,0 +1,29 @@
+# This profile is activated when deployed to AWS ECS.
+
+logging:
+  file:
+    name:
+  level:
+    io.codekvast:                               INFO
+    io.micrometer.datadog.DatadogMeterRegistry: OFF
+
+management:
+  server.port:         9080
+  endpoint:
+    beans.enabled:      false
+    conditions.enabled: false
+    mappings.enabled:   false
+  metrics:
+    export.datadog:
+      enabled: true
+      step:    PT60S
+
+server:
+  port:                    8080
+  undertow:
+    accesslog:
+      enabled: false
+
+spring:
+  main:
+    banner-mode:        off

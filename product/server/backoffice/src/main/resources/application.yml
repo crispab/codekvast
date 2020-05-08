@@ -5,38 +5,10 @@
 # Spring Boot reads both application.properties and application.yml.
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
-codekvast:
-  dnsCname:                    localhost
-  jwtExpirationHours:          168
-  jwtSecret:                   secret
-  environment:                 dev
-  slackWebHookToken:
-
-logging:
-  file:
-    name: build/log/backoffice.log
-  level:
-    io.codekvast: DEBUG
-
 management:
-  endpoints:
-    enabled-by-default: true
-    jmx:
-      domain: CodekvastBackoffice
-    web:
-      base-path:        /management
-      exposure.include: '*'
-  endpoint:
-    health:
-      show-details:       "ALWAYS"
-      cache.time-to-live: 10s
-#  health:
-#    mail.enabled: false # There is a memory leak in JceSecurity. see https://bugs.openjdk.java.net/browse/JDK-8168469
   server:
     port: 9082
   metrics:
-    web.server.request.autotime.enabled: true
-    export.datadog.enabled:              false
     tags:
       service: "codekvast-backoffice"
       env:     dev
@@ -44,57 +16,8 @@ management:
 
 server:
   port:                     8082
-  servlet:
-    context-path: /
-    session:
-      cookie:
-        max-age: 10m
-      persistent: false
-  undertow:
-    accesslog:
-      dir:     build/log
-      enabled: true
-      pattern: combined
-      prefix:  access.
-  forward-headers-strategy: framework
-  error:
-    whitelabel:
-      enabled: false
 
 spring:
   application.name:    Codekvast Backoffice
-  datasource:
-    hikari:
-      connection-test-query: SELECT 1 FROM DUAL
-    password: codekvast
-    url:      jdbc:mariadb://localhost/codekvast
-    username: codekvast
-  rabbitmq:
-    addresses: "amqp://admin:secret@localhost:5672"
-    template:
-      retry:
-        enabled:          true
-        initial-interval: 2s
-    listener:
-      simple:
-        default-requeue-rejected: false
-
-  flyway:
-    validate-on-migrate: false
-  http:
-    converters.preferred-json-mapper: gson
-    log-request-details:              true
-  output.ansi.enabled: detect
-  mail:
-    host: email-smtp.eu-central-1.amazonaws.com
-    port: 587
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enabled:  true
-            required: true
-  cache:
-    caffeine:
-      spec: 'expireAfterAccess=10m'
+  profiles:
+    include: common

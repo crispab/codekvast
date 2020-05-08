@@ -16,6 +16,13 @@ uptodate {
     addExcludedVersionPatterns '.*-android$'
 }
 
+dependencies {
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
+}
+
+// Let spring-boot-configuration-processor do it's job before compiling...
+compileJava.dependsOn processResources
+
 jar {
     manifest {
         attributes(

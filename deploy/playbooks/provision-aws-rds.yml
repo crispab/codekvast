@@ -110,10 +110,11 @@
         profile: codekvast
         region: "{{ aws_region }}"
         description: "Codekvast database application password"
-        name: "mariadb_application_password"
+        name: "/codekvast/{{ env }}/mariadb_application_password"
         value: "{{ mariadb_application_password }}"
         string_type: "SecureString"
         overwrite_value: "always"
+      tags: secrets
 
     - name: "Create CNAME db-{{ env}}.codekvast.io -> {{ rds.endpoint.address }}"
       route53:

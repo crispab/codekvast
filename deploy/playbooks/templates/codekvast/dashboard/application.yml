@@ -1,13 +1,14 @@
 # {{ ansible_managed }}
 
 codekvast:
-  dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
-  dnsCname: "{{ tags.CNAME2 }}"
-  environment: "{{ tags.Env }}"
-  jwtExpirationHours: "{{ codekvast_jwtExpirationHours }}"
-  jwtSecret: "{{ codekvast_jwtSecret }}"
-  loginBaseUrl: "https://{{ tags.LBCNAME1 }}"
-  slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
+  common:
+    dashboardBaseUrl: "https://{{ tags.LBCNAME2 }}"
+    dnsCname: "{{ tags.CNAME2 }}"
+    environment: "{{ tags.Env }}"
+    jwtExpirationHours: "{{ codekvast_jwtExpirationHours }}"
+    jwtSecret: "{{ codekvast_jwtSecret }}"
+    loginBaseUrl: "https://{{ tags.LBCNAME1 }}"
+    slackWebHookToken: "{{ codekvast_slackWebhookToken }}"
   dashboard:
     fileImportQueuePath: "{{ fileImportQueuePath }}"
 

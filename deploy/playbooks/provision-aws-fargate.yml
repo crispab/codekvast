@@ -44,6 +44,7 @@
           "tag:Owner": "Codekvast"
           "tag:Env": "{{ env }}"
       register: subnet_info
+      tags: [once, service]
 
     - name: "Create ALB target groups"
       elb_target_group:
@@ -67,10 +68,18 @@
         tags: "{{ aws_common_tags }}"
         target_type: ip
       loop: "{{ services }}"
-      register: target_groups
+      tags: once
 
-    - debug: var=target_groups
+    - name: "Lookup target groups"
+      elb_target_group_info:
+        profile: codekvast
+        region: "{{ aws_region }}"
+      register: target_group_info
+      tags: service
+
+    - debug: var=target_group_info
       when: _debug is defined and _debug
+      tags: service
 
     - name: Create Application Load Balancer
       elb_application_lb:
@@ -120,11 +129,14 @@
                     TargetGroupName: "codekvast-{{ env }}-backoffice"
         wait: yes
       register: alb
+      tags: once
 
     - debug: var=alb
       when: _debug is defined and _debug
+      tags: once
 
     - set_fact: alb_dns_name="{{ alb.dns_name }}"
+      tags: once
 
     - name: Define load balancer's CNAMEs
       local_action:
@@ -138,6 +150,7 @@
         type: CNAME
         zone: codekvast.io
       loop: "{{ services }}"
+      tags: once
 
     - name: "Create ECR registries"
       ecs_ecr:
@@ -146,6 +159,7 @@
         region: "{{ aws_region }}"
         state: present
       loop: "{{ services }}"
+      tags: once
 
     - name: "Define ECS cluster"
       ecs_cluster:
@@ -153,6 +167,40 @@
         region: "{{ aws_region }}"
         name: "codekvast-{{ env }}"
         state: present
+      tags: once
+
+    - name: "Create CloudWatch log group"
+      cloudwatchlogs_log_group:
+        profile: codekvast
+        region: "{{ aws_region }}"
+        log_group_name: "Codekvast"
+        retention: 3
+        tags: "{{ aws_common_tags }}"
+      tags: once
+
+    - name: "Upload secrets to AWS SSM"
+      aws_ssm_parameter_store:
+        profile: codekvast
+        region: "{{ aws_region }}"
+        name: "{{ item.name }}"
+        description: "{{ item.description }}"
+        value: "{{ item.value }}"
+        string_type: "SecureString"
+        overwrite_value: "always"
+      with_items:
+        - name: "/codekvast/{{ env }}/mariadb_application_password"
+          description: "Codekvast database application password"
+          value: "{{ mariadb_application_password }}"
+        - name: "/codekvast/{{ env }}/jwt_secret"
+          description: "The JWT secret"
+          value: "{{ codekvast_jwtSecret }}"
+        - name: "/codekvast/slackWebhookToken"
+          description: "The Slack webhook token"
+          value: "{{ codekvast_slackWebhookToken }}"
+        - name: "/codekvast/datadogApiKey"
+          description: "The Datadog API key"
+          value: "{{ datadog_api_key }}"
+      tags: once
 
     - name: "Define the ECS tasks"
       ecs_taskdefinition:
@@ -164,15 +212,22 @@
         launch_type: FARGATE
         network_mode: awsvpc
         state: present
-        execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS"
+        execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/Codekvast-ECS-task"
         containers:
           - name: "codekvast-{{ item }}"
             image: "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item }}:latest"
             essential: true
             secrets:
               - name: "SPRING_DATASOURCE_PASSWORD"
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mariadb_application_password"
+                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb_application_password"
+              - name: "CODEKVAST_JWT_SECRET"
+                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/jwt_secret"
+              - name: "CODEKVAST_SLACK_WEBHOOK_TOKEN"
+                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/slackWebhookToken"
+              - name: "MANAGEMENT_METRICS_EXPORT_DATADOG_API_KEY"
+                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
             environment:
+              - {name: CODEKVAST_ENVIRONMENT', value: "{{ env }}"}
               - {name: SPRING_DATASOURCE_URL, value: "db-{{ env }}.codekvast.io" }
               - {name: SPRING_RABBITMQ_ADDRESSES, value: "{{ rabbitmq[env].url }}" }
             portMappings:
@@ -180,10 +235,18 @@
                 hostPort: 8080
               - containerPort: 9080
                 hostPort: 9080
+            logConfiguration:
+              logDriver: awslogs
+              options:
+                awslogs-region: "{{ aws_region }}"
+                awslogs-group: "Codekvast"
+                awslogs-stream-prefix: "{{ env }}"
       loop: "{{ services }}"
       register: ecs_taskdefs
+      tags: service
 
     - debug: var=ecs_taskdefs
+      tags: service
       when: _debug is defined and _debug
 
     - name: Define ECS services
@@ -195,10 +258,11 @@
         launch_type: FARGATE
         task_definition: "codekvast-{{ item }}"
         load_balancers:
-          - targetGroupArn: "{{ target_groups.results | json_query(target_group_arn_query) | join('') }}"
+          - targetGroupArn: "{{ target_group_info.target_groups | json_query(target_group_arn_query) | join('') }}"
             containerName: "codekvast-{{ item }}"
             containerPort: 8080
         name: "{{ item }}"
+        health_check_grace_period_seconds: 15
         network_configuration:
           assign_public_ip: yes
           subnets: "{{ subnet_info.subnets|map(attribute='id')|list }}"
@@ -207,6 +271,7 @@
             - "codekvast-default-{{ env }}-management"
         state: present
       vars:
-        target_group_arn_query: "[?item == '{{ item }}'].target_group_arn"
+        target_group_arn_query: "[?target_group_name == 'codekvast-{{ env }}-{{ item }}'].target_group_arn"
       loop: "{{ services }}"
+      tags: service
 
