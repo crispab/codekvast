@@ -2,9 +2,9 @@
 #---------------------------------------------------------------
 # Playbook which provisions the AWS Fargate infrastructure
 #---------------------------------------------------------------
-- name: AWS Fargate
-  hosts: localhost
-  connection: local
+- name:         AWS Fargate
+  hosts:        localhost
+  connection:   local
   gather_facts: no
 
   vars_files:
@@ -19,88 +19,134 @@
       - login
     aws_common_tags:
       Owner: Codekvast
-      Env: "{{ env }}"
+      Env:   "{{ env }}"
+    secrets:
+      common:
+        - name:      SPRING_DATASOURCE_PASSWORD
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb_application_password"
+        - name:       SPRING_RABBITMQ_ADDRESSES
+          valueFrom:  "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/rabbitmq_url"
+        - name:      CODEKVAST_JWT_SECRET
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/jwt_secret"
+        - name:      CODEKVAST_SLACK_WEBHOOK_TOKEN
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/slackWebhookToken"
+        - name:      MANAGEMENT_METRICS_EXPORT_DATADOG_API_KEY
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
+      backoffice:
+        - name:      SPRING_MAIL_USERNAME
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/username"
+        - name:      SPRING_MAIL_PASSWORD
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/password"
+      dashboard: []
+      login:
+        - name:      CODEKVAST_LOGIN_CIPHER_SECRET
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/cipherSecret"
+        - name:      CODEKVAST_LOGIN_HEROKU_API_PASSWORD
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/apiPassword"
+        - name:      CODEKVAST_LOGIN_HEROKU_API_SSO_SALT
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/ssoSalt"
+        - name:      CODEKVAST_LOGIN_HEROKU_O_AUTH_CLIENT_ID
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/oauth/clientId"
+        - name:      CODEKVAST_LOGIN_HEROKU_O_AUTH_CLIENT_SECRET
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/oauth/clientSecret"
+    envvars:
+      common:
+        - name:  CODEKVAST_ENVIRONMENT
+          value: "{{ env }}"
+        - name:  CODEKVAST_COMMON_DASHBOARD_BASE_URL
+          value: "https://dashboard-{{ env }}2.codekvast.io"
+        - name:  CODEKVAST_COMMON_LOGIN_BASE_URL
+          value: "https://login-{{ env }}2.codekvast.io"
+        - name:  SPRING_DATASOURCE_URL
+          value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
+        - name:  MANAGEMENT_METRICS_TAGS_ENV
+          value: "{{ env }}"
+      backoffice: []
+      dashboard: []
+      login:
+        - name: "CODEKVAST_LOGIN_HEROKU_CODEKVAST_URL"
+          value: "https://api-{{ env }}2.codekvast.io"
 
   tasks:
-    - name: "Find VPC id"
+    - name:     "Find VPC id"
       ec2_vpc_net_info:
-        region: "{{ aws_region }}"
+        region:  "{{ aws_region }}"
         profile: codekvast
         filters:
           "tag:Owner": "Codekvast"
-          "tag:Env": "{{ env }}"
+          "tag:Env":   "{{ env }}"
       register: vpc_info
 
     - set_fact: vpc_id="{{ vpc_info.vpcs[0].vpc_id }}"
 
     - debug: var=vpc_id
-      when: _debug is defined and _debug
+      when:  _debug is defined and _debug
 
-    - name: "Find EC2 subnets for {{ env }}"
+    - name:     "Find EC2 subnets for {{ env }}"
       ec2_vpc_subnet_info:
         profile: codekvast
-        region: "{{ aws_region }}"
+        region:  "{{ aws_region }}"
         filters:
           "tag:Owner": "Codekvast"
-          "tag:Env": "{{ env }}"
+          "tag:Env":   "{{ env }}"
       register: subnet_info
       tags: [once, service]
 
     - name: "Create ALB target groups"
       elb_target_group:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        vpc_id: "{{ vpc_id }}"
-        name: "codekvast-{{ env }}-{{ item }}"
-        protocol: http
-        port: "8080"
-        health_check_protocol: http
-        health_check_port: "9080"
-        health_check_path: /management/health
-        health_check_interval: 10
-        health_check_timeout: 2
-        healthy_threshold_count: 2
-        unhealthy_threshold_count: 3
-        state: present
-        stickiness_enabled: "{{ ('no', 'yes')[item == 'login'] }}"
+        profile:                       codekvast
+        region:                        "{{ aws_region }}"
+        vpc_id:                        "{{ vpc_id }}"
+        name:                          "codekvast-{{ env }}-{{ item }}"
+        protocol:                      http
+        port:                          "8080"
+        health_check_protocol:         http
+        health_check_port:             "9080"
+        health_check_path:             /management/health
+        health_check_interval:         10
+        health_check_timeout:          2
+        healthy_threshold_count:       2
+        unhealthy_threshold_count:     3
+        state:                         present
+        stickiness_enabled:            "{{ ('no', 'yes')[item == 'login'] }}"
         stickiness_lb_cookie_duration: 60
-        stickiness_type: lb_cookie
-        tags: "{{ aws_common_tags }}"
-        target_type: ip
+        stickiness_type:               lb_cookie
+        tags:                          "{{ aws_common_tags }}"
+        target_type:                   ip
       loop: "{{ services }}"
       tags: once
 
-    - name: "Lookup target groups"
+    - name:     "Lookup target groups"
       elb_target_group_info:
         profile: codekvast
-        region: "{{ aws_region }}"
+        region:  "{{ aws_region }}"
       register: target_group_info
-      tags: service
+      tags:     service
 
     - debug: var=target_group_info
-      when: _debug is defined and _debug
-      tags: service
+      when:  _debug is defined and _debug
+      tags:  service
 
-    - name: Create Application Load Balancer
+    - name:     Create Application Load Balancer
       elb_application_lb:
-        region: "{{ aws_region }}"
-        profile: codekvast
-        name: "codekvast-{{ env }}2"
-        state: present
+        region:              "{{ aws_region }}"
+        profile:             codekvast
+        name:                "codekvast-{{ env }}2"
+        state:               present
         deletion_protection: "{{ ('no', 'yes')[env == 'prod'] }}"
-        scheme: internet-facing
+        scheme:              internet-facing
         security_groups:
           - "codekvast-default-{{ env }}-frontend"
-        subnets: "{{ subnet_info.subnets|map(attribute='id')|list }}"
-        tags: "{{ aws_common_tags }}"
+        subnets:             "{{ subnet_info.subnets|map(attribute='id')|list }}"
+        tags:                "{{ aws_common_tags }}"
         listeners:
-          - Protocol: HTTPS
-            Port: 443
+          - Protocol:  HTTPS
+            Port:      443
             Certificates:
               - CertificateArn: "{{ ssl_certificates[aws_region] }}"
             SslPolicy: ELBSecurityPolicy-2015-05
             DefaultActions:
-              - Type: forward
+              - Type:            forward
                 TargetGroupName: "codekvast-{{ env }}-login"
             Rules:
               - Conditions:
@@ -109,7 +155,7 @@
                       - "api-{{ env }}2.codekvast.io"
                 Priority: '1'
                 Actions:
-                  - Type: forward
+                  - Type:            forward
                     TargetGroupName: "codekvast-{{ env }}-dashboard"
               - Conditions:
                   - Field: host-header
@@ -117,7 +163,7 @@
                       - "dashboard-{{ env }}2.codekvast.io"
                 Priority: '2'
                 Actions:
-                  - Type: forward
+                  - Type:            forward
                     TargetGroupName: "codekvast-{{ env }}-dashboard"
               - Conditions:
                   - Field: host-header
@@ -125,153 +171,130 @@
                       - "backoffice-{{ env }}2.codekvast.io"
                 Priority: '3'
                 Actions:
-                  - Type: forward
+                  - Type:            forward
                     TargetGroupName: "codekvast-{{ env }}-backoffice"
-        wait: yes
+        wait:                yes
       register: alb
-      tags: once
+      tags:     once
 
     - debug: var=alb
-      when: _debug is defined and _debug
-      tags: once
+      when:  _debug is defined and _debug
+      tags:  once
 
     - set_fact: alb_dns_name="{{ alb.dns_name }}"
-      tags: once
+      tags:     once
 
     - name: Define load balancer's CNAMEs
       local_action:
-        module: route53
-        profile: codekvast # in ~/.boto
-        command: create
+        module:    route53
+        profile:   codekvast # in ~/.boto
+        command:   create
         overwrite: yes
-        record: "{{ item }}-{{ env }}2.codekvast.io"
-        value: "{{ alb_dns_name }}"
-        ttl: 600
-        type: CNAME
-        zone: codekvast.io
+        record:    "{{ item }}-{{ env }}2.codekvast.io"
+        value:     "{{ alb_dns_name }}"
+        ttl:       600
+        type:      CNAME
+        zone:      codekvast.io
       loop: "{{ services }}"
       tags: once
 
     - name: "Create ECR registries"
       ecs_ecr:
-        name: "codekvast/{{ item }}"
+        name:    "codekvast/{{ item }}"
         profile: codekvast
-        region: "{{ aws_region }}"
-        state: present
+        region:  "{{ aws_region }}"
+        state:   present
       loop: "{{ services }}"
       tags: once
 
     - name: "Define ECS cluster"
       ecs_cluster:
         profile: codekvast
-        region: "{{ aws_region }}"
-        name: "codekvast-{{ env }}"
-        state: present
+        region:  "{{ aws_region }}"
+        name:    "codekvast-{{ env }}"
+        state:   present
       tags: once
 
     - name: "Create CloudWatch log group"
       cloudwatchlogs_log_group:
-        profile: codekvast
-        region: "{{ aws_region }}"
+        profile:        codekvast
+        region:         "{{ aws_region }}"
         log_group_name: "Codekvast"
-        retention: 3
-        tags: "{{ aws_common_tags }}"
+        retention:      3
+        tags:           "{{ aws_common_tags }}"
       tags: once
 
-    - name: "Upload secrets to AWS SSM"
-      aws_ssm_parameter_store:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        name: "{{ item.name }}"
-        description: "{{ item.description }}"
-        value: "{{ item.value }}"
-        string_type: "SecureString"
-        overwrite_value: "always"
-      with_items:
-        - name: "/codekvast/{{ env }}/mariadb_application_password"
-          description: "Codekvast database application password"
-          value: "{{ mariadb_application_password }}"
-        - name: "/codekvast/{{ env }}/jwt_secret"
-          description: "The JWT secret"
-          value: "{{ codekvast_jwtSecret }}"
-        - name: "/codekvast/slackWebhookToken"
-          description: "The Slack webhook token"
-          value: "{{ codekvast_slackWebhookToken }}"
-        - name: "/codekvast/datadogApiKey"
-          description: "The Datadog API key"
-          value: "{{ datadog_api_key }}"
-      tags: once
-
-    - name: "Define the ECS tasks"
+    - name:     "Define the ECS tasks"
       ecs_taskdefinition:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        cpu: "256"
-        memory: "512"
-        family: "codekvast-{{ item }}"
-        launch_type: FARGATE
-        network_mode: awsvpc
-        state: present
+        profile:            codekvast
+        region:             "{{ aws_region }}"
+        cpu:                "256"
+        memory:             "512"
+        family:             "codekvast-{{ item }}"
+        launch_type:        FARGATE
+        network_mode:       awsvpc
+        state:              present
         execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/Codekvast-ECS-task"
         containers:
-          - name: "codekvast-{{ item }}"
-            image: "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item }}:latest"
-            essential: true
-            secrets:
-              - name: "SPRING_DATASOURCE_PASSWORD"
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb_application_password"
-              - name: "CODEKVAST_JWT_SECRET"
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/jwt_secret"
-              - name: "CODEKVAST_SLACK_WEBHOOK_TOKEN"
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/slackWebhookToken"
-              - name: "MANAGEMENT_METRICS_EXPORT_DATADOG_API_KEY"
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
-            environment:
-              - {name: CODEKVAST_ENVIRONMENT', value: "{{ env }}"}
-              - {name: SPRING_DATASOURCE_URL, value: "db-{{ env }}.codekvast.io" }
-              - {name: SPRING_RABBITMQ_ADDRESSES, value: "{{ rabbitmq[env].url }}" }
+          - name:        "codekvast-{{ item }}"
+            image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item }}:latest"
+            essential:   true
+            secrets:     "{{ secrets['common'] + secrets[item] }}"
+            environment: "{{ myenv + envvars['common'] + envvars[item] }}"
             portMappings:
               - containerPort: 8080
-                hostPort: 8080
+                hostPort:      8080
               - containerPort: 9080
-                hostPort: 9080
+                hostPort:      9080
             logConfiguration:
               logDriver: awslogs
               options:
-                awslogs-region: "{{ aws_region }}"
-                awslogs-group: "Codekvast"
+                awslogs-region:        "{{ aws_region }}"
+                awslogs-group:         "Codekvast"
                 awslogs-stream-prefix: "{{ env }}"
-      loop: "{{ services }}"
+      loop:     "{{ services }}"
+      vars:
+        myenv:
+          - name:  SPRING_PROFILES_ACTIVE
+            value: "{{ item }}-ecs"
+          - name:  CODEKVAST_COMMON_DNS_CNAME
+            value: "{{ item }}-{{ env }}2.codekvast.io"
+          - name:  MANAGEMENT_METRICS_TAGS_SERVICE
+            value: "codekvast-{{ item }}"
       register: ecs_taskdefs
-      tags: service
+      tags:     service
 
     - debug: var=ecs_taskdefs
-      tags: service
-      when: _debug is defined and _debug
+      tags:  service
+      when:  _debug is defined and _debug
 
-    - name: Define ECS services
+    - name:     "Define ECS services"
       ecs_service:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        cluster: "codekvast-{{ env }}"
-        desired_count: 2
-        launch_type: FARGATE
-        task_definition: "codekvast-{{ item }}"
+        profile:                           codekvast
+        region:                            "{{ aws_region }}"
+        cluster:                           "codekvast-{{ env }}"
+        desired_count:                     2
+        launch_type:                       FARGATE
+        task_definition:                   "codekvast-{{ item }}"
         load_balancers:
           - targetGroupArn: "{{ target_group_info.target_groups | json_query(target_group_arn_query) | join('') }}"
-            containerName: "codekvast-{{ item }}"
-            containerPort: 8080
-        name: "{{ item }}"
-        health_check_grace_period_seconds: 15
+            containerName:  "codekvast-{{ item }}"
+            containerPort:  8080
+        name:                              "{{ item }}"
+        health_check_grace_period_seconds: 60
         network_configuration:
           assign_public_ip: yes
-          subnets: "{{ subnet_info.subnets|map(attribute='id')|list }}"
+          subnets:          "{{ subnet_info.subnets|map(attribute='id')|list }}"
           security_groups:
             - "codekvast-default-{{ env }}-backend"
             - "codekvast-default-{{ env }}-management"
-        state: present
+        state:                             present
       vars:
         target_group_arn_query: "[?target_group_name == 'codekvast-{{ env }}-{{ item }}'].target_group_arn"
-      loop: "{{ services }}"
-      tags: service
+      loop:     "{{ services }}"
+      register: service_info
+      tags:     service
 
+    - debug: var=service_info
+      tags:  service
+      when:  _debug is defined and _debug

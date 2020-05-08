@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <appender name="ColorConsole" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%clr(%d){faint} %clr(%-5p) %clr([%t]){faint} %clr(%c){blue} - %m%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="JsonConsole" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <level>severity</level>
+                <logger>class</logger>
+                <thread>thread</thread>
+                <stackTrace>exception</stackTrace>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+            </fieldNames>
+        </encoder>
+    </appender>
+
+    <springProfile name="!json-logging">
+        <root level="INFO">
+            <appender-ref ref="ColorConsole"/>
+        </root>
+        <logger name="io.codekvast" level="DEBUG"/>
+    </springProfile>
+
+    <springProfile name="json-logging">
+        <logger name="JSON_VALIDATOR" level="OFF"/>
+        <root level="INFO">
+            <appender-ref ref="JsonConsole"/>
+        </root>
+    </springProfile>
+</configuration>

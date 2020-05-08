@@ -1,7 +1,7 @@
 # This profile is activated when deploying to AWS ECS
 codekvast:
   dashboard:
-    fileImportQueuePath: /codekvast/intake
+    fileImportQueuePath: /codekvast/queue
 spring:
   profiles:
     include: common-ecs

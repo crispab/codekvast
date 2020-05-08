@@ -1,0 +1,13 @@
+apply plugin: 'com.google.cloud.tools.jib'
+
+jib {
+    to {
+        image = "186662504461.dkr.ecr.eu-central-1.amazonaws.com/codekvast/${archivesBaseName}"
+        credHelper = 'ecr-login'
+        tags = [codekvastDisplayVersion, 'latest']
+    }
+    container {
+        jvmFlags = ["-Xmx100m"]
+        ports = ["8080", "9080"]
+    }
+}

@@ -27,3 +27,7 @@ server:
 spring:
   main:
     banner-mode:        off
+  profiles:
+    include: json-logging
+  devtools:
+    add-properties: false

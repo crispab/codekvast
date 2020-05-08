@@ -7,7 +7,6 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 apply plugin: 'org.unbroken-dome.test-sets'
-apply plugin: 'com.google.cloud.tools.jib'
 
 configurations {
     developmentOnly
@@ -44,21 +43,9 @@ bootJar {
 
     manifest {
         attributes(
-            "Implementation-Title": archivesBaseName,
-            "Implementation-Version": codekvastDisplayVersion
+                "Implementation-Title": archivesBaseName,
+                "Implementation-Version": codekvastDisplayVersion
         )
-    }
-}
-
-jib {
-  to {
-      image = "186662504461.dkr.ecr.eu-central-1.amazonaws.com/codekvast/${archivesBaseName}"
-      credHelper = 'ecr-login'
-      tags = [codekvastDisplayVersion, 'latest']
-  }
-    container {
-        jvmFlags = ["-Xmx100m"]
-        ports = ["8080"]
     }
 }
 

@@ -89,4 +89,12 @@ spring:
       spec: 'expireAfterAccess=10m'
   profiles:
     include: common
+  security.oauth2.client:
+    registration:
+      facebook:
+        client-scope:  email
+      github:
+        client-scope:  email
+      google:
+        client-scope:  email
 
