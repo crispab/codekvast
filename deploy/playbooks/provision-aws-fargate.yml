@@ -215,15 +215,6 @@
         state:   present
       tags: once
 
-    - name: "Create CloudWatch log group"
-      cloudwatchlogs_log_group:
-        profile:        codekvast
-        region:         "{{ aws_region }}"
-        log_group_name: "Codekvast"
-        retention:      3
-        tags:           "{{ aws_common_tags }}"
-      tags: once
-
     - name:     "Define the ECS tasks"
       ecs_taskdefinition:
         profile:            codekvast
@@ -236,6 +227,15 @@
         state:              present
         execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/Codekvast-ECS-task"
         containers:
+          - name: log-router
+            image: 906394416424.dkr.ecr.{{ aws_region }}.amazonaws.com/aws-for-fluent-bit:latest
+            essential: true
+            firelensConfiguration:
+              type: fluentbit
+              options:
+                enable-ecs-log-metadata: "true"
+                config-file-type: file
+                config-file-value: /fluent-bit/configs/parse-json.conf
           - name:        "codekvast-{{ item }}"
             image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item }}:latest"
             essential:   true
@@ -247,11 +247,28 @@
               - containerPort: 9080
                 hostPort:      9080
             logConfiguration:
-              logDriver: awslogs
+              logDriver: awsfirelens
               options:
-                awslogs-region:        "{{ aws_region }}"
-                awslogs-group:         "Codekvast"
-                awslogs-stream-prefix: "{{ env }}"
+                Name: datadog
+                Host: http-intake.logs.datadoghq.com
+                dd_service: "codekvast-{{ item }}"
+                dd_source: java
+                dd_message_key: message
+                dd_tags: "Env:{{ env }}"
+                TLS: "on"
+                provider: ecs
+              secretOptions:
+                - name: apikey
+                  valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
+          - name: "datadog-agent"
+            image: "datadog/agent:latest"
+            secrets:
+              - name: DD_API_KEY
+                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
+            environment:
+              - name: ECS_FARGATE
+                value: true
+
       loop:     "{{ services }}"
       vars:
         myenv:
