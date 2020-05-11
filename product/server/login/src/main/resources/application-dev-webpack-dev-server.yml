@@ -2,4 +2,5 @@
 # Profile to use when starting the Dashboard with 'npm start' i.e., in Webpack devServer
 #-----------------------------------------------------------------------------------------------------------------
 codekvast:
+  common:
     dashboardBaseUrl: http://localhost:8089

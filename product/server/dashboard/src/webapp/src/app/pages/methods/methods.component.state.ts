@@ -157,12 +157,12 @@ export class MethodsComponentState {
     };
 
     // NOTE: This regexp MUST match the definition of the computed database column method_locations.locationNoVersion
-    const regexp = /(^[\w/-]+)(-\d.*)(\.\w+$)/; // (base)(version)(extension)
+    const regexp = /(^[\w/-]+)(-(\d.*|DEV-SNAPSHOT-fat|SNAPSHOT))(\.\w+$)/; // (base)(version)(extension)
 
     return this.getFilteredLocations()
     .map((loc) => {
       let match = regexp.exec(loc);
-      return match == null ? loc : match[1] + match[3]
+      return match == null ? loc : match[1] + match[4]
     })
     .filter(distinct)
     .join(', ');
