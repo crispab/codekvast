@@ -1,0 +1,38 @@
+codekvast:
+  common:
+    dashboardBaseUrl:                         http://localhost:8081
+    dnsCname:                                 localhost
+    environment:                              dev
+    jwtSecret:                                secret
+    loginBaseUrl:                             http://localhost:8080
+    slackWebHookToken:
+
+logging:
+  file:
+    name: build/log/application.log
+  level:
+    io.codekvast: DEBUG
+
+spring:
+  profiles:
+    include: color-logging,json-logging-file
+  datasource:
+    username: codekvast
+    password: codekvast
+    url:      jdbc:mariadb://localhost/codekvast
+  rabbitmq:
+    addresses: "amqp://admin:secret@localhost:5672"
+
+server:
+  undertow:
+    accesslog:
+      dir:     build/log
+      prefix:  access.
+
+management:
+  metrics:
+    tags:
+      env:     dev
+      host:    localhost
+    web.server.request.autotime.enabled: true
+    export.datadog.enabled:              false

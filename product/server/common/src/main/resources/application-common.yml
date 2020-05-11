@@ -1,19 +1,7 @@
 # Default values for CodekvastCommonProperties
 codekvast:
   common:
-    dashboardBaseUrl:                         http://localhost:8081
-    dnsCname:                                 localhost
-    environment:                              dev
     jwtExpirationHours:                       168
-    jwtSecret:                                secret
-    loginBaseUrl:                             http://localhost:8080
-    slackWebHookToken:
-
-logging:
-  file:
-    name: build/log/application.log
-  level:
-    io.codekvast: DEBUG
 
 management:
   endpoints:
@@ -33,6 +21,9 @@ management:
     tags:
       env:     dev
       host:    localhost
+  health:
+    mail:
+      enabled: false
 
 server:
   servlet:
@@ -43,10 +34,8 @@ server:
       persistent: false
   undertow:
     accesslog:
-      dir:     build/log
       enabled: true
       pattern: combined
-      prefix:  access.
   forward-headers-strategy: framework
   error:
     whitelabel:
@@ -56,11 +45,7 @@ spring:
   datasource:
     hikari:
       connection-test-query: SELECT 1 FROM DUAL
-    password: codekvast
-    url:      jdbc:mariadb://localhost/codekvast
-    username: codekvast
   rabbitmq:
-    addresses: "amqp://admin:secret@localhost:5672"
     template:
       retry:
         enabled:          true

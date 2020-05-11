@@ -8,11 +8,9 @@
 management:
   server:
     port: 9082
-  metrics:
-    tags:
-      service: "codekvast-backoffice"
-      env:     dev
-      host:    localhost
+  health:
+    mail:
+      enabled: true
 
 server:
   port:                     8082

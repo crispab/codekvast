@@ -31,19 +31,12 @@ dependencies {
 
 run {
   dependsOn startDockerContainers
-
-  jvmArgs = [
-    '-enableassertions',
-  ]
-
-  args = [
-    "--logging.file.name=$buildDir/log/${applicationName}.log"
-  ]
+  jvmArgs = ['-enableassertions',]
+  args = ['--spring.profiles.active=dev']
 }
 
 bootRun {
   dependsOn startDockerContainers
-
   jvmArgs = run.jvmArgs
   args = run.args
 }
@@ -110,5 +103,5 @@ task launchBackofficeWithCodekvastAgentAttached(type: Exec, dependsOn: [bootJar,
   args "--logging.level.io.codekvast=INFO"
   args "--logging.file.name=$buildDir/log/${applicationName}.log"
 
-  args "--spring.profiles.active=stress-test"
+  args "--spring.profiles.active=dev,stress-test"
 }

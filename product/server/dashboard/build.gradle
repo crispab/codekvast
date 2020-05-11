@@ -55,7 +55,7 @@ run {
     // "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
   ]
 
-  args = ["--logging.file.name=$buildDir/log/${applicationName}.log",
+  args = ['--spring.profiles.active=dev',
           '--codekvast.dashboard.fileImportIntervalSeconds=10',
           '--codekvast.jwtExpirationHours=-5'
   ]

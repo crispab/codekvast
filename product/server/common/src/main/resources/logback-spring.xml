@@ -2,11 +2,29 @@
 
 <configuration>
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+
     <appender name="ColorConsole" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%clr(%d){faint} %clr(%-5p) %clr([%t]){faint} %clr(%c){blue} - %m%n</pattern>
         </encoder>
     </appender>
+
+    <appender name="JsonFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <maxFileSize>${LOG_FILE_MAX_SIZE:-10MB}</maxFileSize>
+            <maxHistory>${LOG_FILE_MAX_HISTORY:-0}</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timeZone>UTC</timeZone>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <version>version</version>
+            </fieldNames>
+        </encoder>
+    </appender>
+
     <appender name="JsonConsole" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <fieldNames>
@@ -20,17 +38,24 @@
         </encoder>
     </appender>
 
-    <springProfile name="!json-logging">
+    <springProfile name="color-logging">
         <root level="INFO">
             <appender-ref ref="ColorConsole"/>
         </root>
         <logger name="io.codekvast" level="DEBUG"/>
     </springProfile>
 
-    <springProfile name="json-logging">
+    <springProfile name="json-logging-console">
         <logger name="JSON_VALIDATOR" level="OFF"/>
         <root level="INFO">
             <appender-ref ref="JsonConsole"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="json-logging-file">
+        <logger name="JSON_VALIDATOR" level="OFF"/>
+        <root level="INFO">
+            <appender-ref ref="JsonFile"/>
         </root>
     </springProfile>
 </configuration>

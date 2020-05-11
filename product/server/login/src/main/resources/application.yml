@@ -26,14 +26,8 @@ logging:
 management:
   endpoints:
     enabled-by-default: true
-    jmx:
-      domain: CodekvastLogin
-    web:
-      base-path:        /management
-      exposure.include: '*'
   endpoint:
     health:
-      show-details:       "ALWAYS"
       cache.time-to-live: 1s
   server:
     port: 9080

@@ -19,56 +19,20 @@ logging:
     springfox:    WARN
 
 management:
-  endpoint:
-    health:
-      show-details: "ALWAYS"
-  endpoints:
-    jmx.domain: CodekvastDashboard
-    web:
-      base-path:        /management
-      exposure.include: '*'
   server:
     port: 9081
-  metrics:
-    web.server.request.autotime.enabled: true
-    export.datadog.enabled:              false
-    tags:
-      service: "codekvast-dashboard"
-      env:     dev
-      host:    localhost
 
 server:
   compression:
     enabled:    true
     mime-types: application/json,application/javascript,text/html,text/xml,text/plain,text/css
   port:                     8081
-  undertow:
-    accesslog:
-      dir:     build/log
-      enabled: true
-      pattern: combined
-      prefix:  access.
   forward-headers-strategy: framework
 
 spring:
   application.name:    Codekvast Dashboard
-  datasource:
-    hikari:
-      connection-test-query: SELECT 1 FROM DUAL
-    password: codekvast
-    url:      jdbc:mariadb://localhost/codekvast
-    username: codekvast
-  rabbitmq:
-    addresses: "amqp://admin:secret@localhost:5672"
-    template:
-      retry:
-        enabled:          true
-        initial-interval: 2s
-    listener:
-      simple:
-        default-requeue-rejected: false
-  flyway:
-    validate-on-migrate: false
+  profiles:
+    include: common
   http:
     converters.preferred-json-mapper: gson
     log-request-details:              true
@@ -88,7 +52,5 @@ spring:
   cache:
     caffeine:
       spec: 'expireAfterAccess=10m, recordStats'
-  profiles:
-    include: common
 
 springfox.documentation.swagger.v2.path: /api-docs

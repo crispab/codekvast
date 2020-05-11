@@ -8,22 +8,22 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.10/625fc0055674dff70dbc76efa36d0f2c89b04a24/lombok-1.18.10.jar" />
         </processorPath>
-        <module name="codekvast.sample.swing-app.test" />
-        <module name="codekvast.product.server.backoffice.integrationTest" />
         <module name="codekvast.product.agent.java-agent.integrationTest" />
+        <module name="codekvast.sample.swing-app.test" />
+        <module name="codekvast.product.server.dashboard.test" />
+        <module name="codekvast.product.server.backoffice.integrationTest" />
+        <module name="codekvast.product.server.backoffice.test" />
         <module name="codekvast.sample.sample-lib.test" />
-        <module name="codekvast.product.agent.agent-model.test" />
+        <module name="codekvast.product.server.common.integrationTest" />
         <module name="codekvast.product.agent.java-agent.test" />
         <module name="codekvast.product.server.dashboard.integrationTest" />
-        <module name="codekvast.product.server.common.integrationTest" />
-        <module name="codekvast.product.system-test.test" />
-        <module name="codekvast.sample.sample-gradle-application.test" />
-        <module name="codekvast.product.server.dashboard.test" />
+        <module name="codekvast.product.server.common.test" />
+        <module name="codekvast.product.server.stress-tester.test" />
+        <module name="codekvast.product.agent.agent-model.test" />
         <module name="codekvast.product.server.login.test" />
         <module name="codekvast.product.server.db-migration.test" />
-        <module name="codekvast.product.server.stress-tester.test" />
-        <module name="codekvast.product.server.common.test" />
-        <module name="codekvast.product.server.backoffice.test" />
+        <module name="codekvast.product.system-test.test" />
+        <module name="codekvast.sample.sample-gradle-application.test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />

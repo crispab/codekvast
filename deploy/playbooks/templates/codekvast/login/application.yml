@@ -48,16 +48,14 @@ server:
     prefix: access.
 
 spring:
+  profiles:
+    include: json-logging-file
   datasource:
-    password: "{{ mariadb_application_password }}"
     url: "jdbc:mariadb://db-{{ tags.Env }}.codekvast.io/codekvast"
-
+    username: codekvast
+    password: "{{ mariadb_application_password }}"
   rabbitmq:
     addresses: "{{ rabbitmq[tags.Env].url }}"
-    template:
-      retry:
-        enabled: true
-        initial-interval: 2s
 
   security.oauth2.client:
     registration:

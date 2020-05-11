@@ -28,6 +28,6 @@ spring:
   main:
     banner-mode:        off
   profiles:
-    include: json-logging
+    include: json-logging-console
   devtools:
     add-properties: false

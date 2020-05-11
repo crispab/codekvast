@@ -17,19 +17,12 @@ dependencies {
 
 run {
     dependsOn startDockerContainers
-
-    jvmArgs = [
-            '-enableassertions',
-    ]
-
-    args = [
-            "--logging.file.name=$buildDir/log/${applicationName}.log"
-    ]
+    jvmArgs = ['-enableassertions',]
+    args = ['--spring.profiles.active=dev']
 }
 
 bootRun {
     dependsOn startDockerContainers
-
     jvmArgs = run.jvmArgs
     args = run.args
 }
