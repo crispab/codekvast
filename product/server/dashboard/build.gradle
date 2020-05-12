@@ -47,6 +47,17 @@ bootJar {
   }
 }
 
+task syncWebapp(type: Sync, dependsOn: frontendBuild) {
+  from 'src/webapp/dist/dashboard'
+  into 'build/jib/static'
+}
+
+  jib {
+  extraDirectories.paths = ['build/jib']
+}
+
+tasks.getByPath(':product:server:dashboard:jib').dependsOn syncWebapp
+
 run {
   dependsOn startDockerContainers, ":product:server:dashboard:frontendBuild"
 

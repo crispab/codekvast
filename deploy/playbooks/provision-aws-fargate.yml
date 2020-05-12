@@ -84,6 +84,8 @@
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
         - name:  SPRING_DATASOURCE_USERNAME
           value: "codekvast"
+        - name:  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+          value: 5
         - name:  SPRING_DEVTOOLS_RESTART_ENABLED
           value: "false"
     rds:
@@ -100,12 +102,15 @@
         filters:
           "tag:Owner": "Codekvast"
           "tag:Env":   "{{ env }}"
+      tags: [once, service]
       register: vpc_info
 
     - set_fact: vpc_id="{{ vpc_info.vpcs[0].vpc_id }}"
+      tags: [once, service]
 
     - debug: var=vpc_id
       when:  _debug is defined and _debug
+      tags: [once, service]
 
     - name:     "Find EC2 subnets for {{ env }}"
       ec2_vpc_subnet_info:
@@ -132,6 +137,7 @@
         health_check_timeout:          2
         healthy_threshold_count:       2
         unhealthy_threshold_count:     3
+        deregistration_delay_timeout:  60
         state:                         present
         stickiness_enabled:            "{{ item.stickiness_enabled }}"
         stickiness_lb_cookie_duration: 60
@@ -212,8 +218,7 @@
       tags:     once
 
     - name: Define load balancer's CNAMEs
-      local_action:
-        module:    route53
+      route53:
         profile:   codekvast # in ~/.boto
         command:   create
         overwrite: yes
@@ -298,6 +303,8 @@
                 valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
             environment:
               - name:  ECS_FARGATE
+                value: true
+              - name:  DD_DOGSTATSD_NON_LOCAL_TRAFFIC
                 value: true
       vars:
         computed:
