@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    include: common-dev
+server:
+  port: 8082
+management:
+  server:
+    port: 9082
+  health:
+    mail:
+      enabled: false

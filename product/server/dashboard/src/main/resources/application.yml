@@ -12,21 +12,14 @@ codekvast:
     fileImportQueuePath:                      /tmp/codekvast
 
 logging:
-  file:
-    name: build/log/dashboard.log
   level:
     io.codekvast: DEBUG
     springfox:    WARN
-
-management:
-  server:
-    port: 9081
 
 server:
   compression:
     enabled:    true
     mime-types: application/json,application/javascript,text/html,text/xml,text/plain,text/css
-  port:                     8081
   forward-headers-strategy: framework
 
 spring:

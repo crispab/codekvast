@@ -18,12 +18,6 @@ management:
   metrics:
     web.server.request.autotime.enabled: true
     export.datadog.enabled:              false
-    tags:
-      env:     dev
-      host:    localhost
-  health:
-    mail:
-      enabled: false
 
 server:
   servlet:

@@ -14,14 +14,55 @@
   vars:
     env: staging
     services:
-      - backoffice
-      - dashboard
-      - login
-    aws_common_tags:
-      Owner: Codekvast
-      Env:   "{{ env }}"
-    secrets:
-      common:
+      - name:               backoffice
+        count:              1
+        stickiness_enabled: false
+        secrets:
+          - name:      SPRING_MAIL_USERNAME
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/username"
+          - name:      SPRING_MAIL_PASSWORD
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/password"
+        envvars: []
+      - name:               dashboard
+        count:              2
+        stickiness_enabled: false
+        secrets: []
+        envvars: []
+      - name:               login
+        count:              2
+        stickiness_enabled: true
+        secrets:
+          - name:      CODEKVAST_LOGIN_CIPHER_SECRET
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/cipherSecret"
+          - name:      CODEKVAST_LOGIN_HEROKU_API_PASSWORD
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/apiPassword"
+          - name:      CODEKVAST_LOGIN_HEROKU_API_SSO_SALT
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/ssoSalt"
+          - name:      CODEKVAST_LOGIN_HEROKU_O_AUTH_CLIENT_ID
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/oauth/clientId"
+          - name:      CODEKVAST_LOGIN_HEROKU_O_AUTH_CLIENT_SECRET
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/oauth/clientSecret"
+          - name:      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_ID
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/oauth2/{{ env }}/facebook/client-id"
+          - name:      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_SECRET
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/oauth2/{{ env }}/facebook/client-secret"
+          - name:      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_ID
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/oauth2/{{ env }}/github/client-id"
+          - name:      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_SECRET
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/oauth2/{{ env }}/github/client-secret"
+          - name:      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/oauth2/{{ env }}/google/client-id"
+          - name:      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/oauth2/{{ env }}/google/client-secret"
+        envvars:
+          - name:  "CODEKVAST_LOGIN_HEROKU_CODEKVAST_URL"
+            value: "https://api-{{ env }}2.codekvast.io"
+
+    common:
+      tags:
+        Owner: Codekvast
+        Env:   "{{ env }}"
+      secrets:
         - name:      SPRING_DATASOURCE_PASSWORD
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb_application_password"
         - name:       SPRING_RABBITMQ_ADDRESSES
@@ -32,25 +73,7 @@
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/slackWebhookToken"
         - name:      MANAGEMENT_METRICS_EXPORT_DATADOG_API_KEY
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
-      backoffice:
-        - name:      SPRING_MAIL_USERNAME
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/username"
-        - name:      SPRING_MAIL_PASSWORD
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/password"
-      dashboard: []
-      login:
-        - name:      CODEKVAST_LOGIN_CIPHER_SECRET
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/cipherSecret"
-        - name:      CODEKVAST_LOGIN_HEROKU_API_PASSWORD
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/apiPassword"
-        - name:      CODEKVAST_LOGIN_HEROKU_API_SSO_SALT
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/ssoSalt"
-        - name:      CODEKVAST_LOGIN_HEROKU_O_AUTH_CLIENT_ID
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/oauth/clientId"
-        - name:      CODEKVAST_LOGIN_HEROKU_O_AUTH_CLIENT_SECRET
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/oauth/clientSecret"
-    envvars:
-      common:
+      envvars:
         - name:  CODEKVAST_ENVIRONMENT
           value: "{{ env }}"
         - name:  CODEKVAST_COMMON_DASHBOARD_BASE_URL
@@ -61,11 +84,6 @@
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
         - name:  MANAGEMENT_METRICS_TAGS_ENV
           value: "{{ env }}"
-      backoffice: []
-      dashboard: []
-      login:
-        - name: "CODEKVAST_LOGIN_HEROKU_CODEKVAST_URL"
-          value: "https://api-{{ env }}2.codekvast.io"
 
   tasks:
     - name:     "Find VPC id"
@@ -97,7 +115,7 @@
         profile:                       codekvast
         region:                        "{{ aws_region }}"
         vpc_id:                        "{{ vpc_id }}"
-        name:                          "codekvast-{{ env }}-{{ item }}"
+        name:                          "codekvast-{{ env }}-{{ item.name }}"
         protocol:                      http
         port:                          "8080"
         health_check_protocol:         http
@@ -108,12 +126,14 @@
         healthy_threshold_count:       2
         unhealthy_threshold_count:     3
         state:                         present
-        stickiness_enabled:            "{{ ('no', 'yes')[item == 'login'] }}"
+        stickiness_enabled:            "{{ item.stickiness_enabled }}"
         stickiness_lb_cookie_duration: 60
         stickiness_type:               lb_cookie
-        tags:                          "{{ aws_common_tags }}"
+        tags:                          "{{ common.tags }}"
         target_type:                   ip
       loop: "{{ services }}"
+      loop_control:
+        label: "{{ item.name }}"
       tags: once
 
     - name:     "Lookup target groups"
@@ -138,7 +158,7 @@
         security_groups:
           - "codekvast-default-{{ env }}-frontend"
         subnets:             "{{ subnet_info.subnets|map(attribute='id')|list }}"
-        tags:                "{{ aws_common_tags }}"
+        tags:                "{{ common.tags }}"
         listeners:
           - Protocol:  HTTPS
             Port:      443
@@ -190,21 +210,25 @@
         profile:   codekvast # in ~/.boto
         command:   create
         overwrite: yes
-        record:    "{{ item }}-{{ env }}2.codekvast.io"
+        record:    "{{ item.name }}-{{ env }}2.codekvast.io"
         value:     "{{ alb_dns_name }}"
         ttl:       600
         type:      CNAME
         zone:      codekvast.io
       loop: "{{ services }}"
+      loop_control:
+        label: "{{ item.name }}"
       tags: once
 
     - name: "Create ECR registries"
       ecs_ecr:
-        name:    "codekvast/{{ item }}"
+        name:    "codekvast/{{ item.name }}"
         profile: codekvast
         region:  "{{ aws_region }}"
         state:   present
       loop: "{{ services }}"
+      loop_control:
+        label: "{{ item.name }}"
       tags: once
 
     - name: "Define ECS cluster"
@@ -221,26 +245,26 @@
         region:             "{{ aws_region }}"
         cpu:                "256"
         memory:             "512"
-        family:             "codekvast-{{ item }}"
+        family:             "codekvast-{{ item.name }}"
         launch_type:        FARGATE
         network_mode:       awsvpc
         state:              present
         execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/Codekvast-ECS-task"
         containers:
-          - name: log-router
-            image: 906394416424.dkr.ecr.{{ aws_region }}.amazonaws.com/aws-for-fluent-bit:latest
+          - name:      log-router
+            image:     906394416424.dkr.ecr.{{ aws_region }}.amazonaws.com/aws-for-fluent-bit:latest
             essential: true
             firelensConfiguration:
               type: fluentbit
               options:
                 enable-ecs-log-metadata: "true"
-                config-file-type: file
-                config-file-value: /fluent-bit/configs/parse-json.conf
-          - name:        "codekvast-{{ item }}"
-            image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item }}:latest"
+                config-file-type:        file
+                config-file-value:       /fluent-bit/configs/parse-json.conf
+          - name:        "codekvast-{{ item.name }}"
+            image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item.name }}:latest"
             essential:   true
-            secrets:     "{{ secrets['common'] + secrets[item] }}"
-            environment: "{{ myenv + envvars['common'] + envvars[item] }}"
+            secrets:     "{{ common.secrets + item.secrets }}"
+            environment: "{{ common.envvars + item.envvars + myenv}}"
             portMappings:
               - containerPort: 8080
                 hostPort:      8080
@@ -249,35 +273,40 @@
             logConfiguration:
               logDriver: awsfirelens
               options:
-                Name: datadog
-                Host: http-intake.logs.datadoghq.com
-                dd_service: "codekvast-{{ item }}"
-                dd_source: java
+                Name:           datadog
+                Host:           http-intake.logs.datadoghq.com
+                dd_service:     "codekvast-{{ item.name }}"
+                dd_source:      java
                 dd_message_key: message
-                dd_tags: "Env:{{ env }}"
-                TLS: "on"
-                provider: ecs
+                dd_tags:        "Env:{{ env }}"
+                TLS:            "on"
+                provider:       ecs
               secretOptions:
-                - name: apikey
+                - name:      apikey
                   valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
-          - name: "datadog-agent"
+          - name:  "datadog-agent"
             image: "datadog/agent:latest"
             secrets:
-              - name: DD_API_KEY
+              - name:      DD_API_KEY
                 valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
             environment:
-              - name: ECS_FARGATE
+              - name:  ECS_FARGATE
                 value: true
-
-      loop:     "{{ services }}"
       vars:
         myenv:
           - name:  SPRING_PROFILES_ACTIVE
-            value: "{{ item }}-ecs"
+            value: "{{ item.name }}-ecs"
           - name:  CODEKVAST_COMMON_DNS_CNAME
-            value: "{{ item }}-{{ env }}2.codekvast.io"
+            value: "{{ item.name }}-{{ env }}2.codekvast.io"
           - name:  MANAGEMENT_METRICS_TAGS_SERVICE
-            value: "codekvast-{{ item }}"
+            value: "codekvast-{{ item.name }}"
+          - name: MANAGEMENT_METRICS_TAGS
+            value:
+              env: "{{ env }}"
+              service: "codekvast-{{ item.name }}"
+      loop:     "{{ services }}"
+      loop_control:
+        label: "codekvast-{{ item.name }}"
       register: ecs_taskdefs
       tags:     service
 
@@ -290,15 +319,15 @@
         profile:                           codekvast
         region:                            "{{ aws_region }}"
         cluster:                           "codekvast-{{ env }}"
-        desired_count:                     2
+        desired_count:                     "{{ item.count }}"
         launch_type:                       FARGATE
-        task_definition:                   "codekvast-{{ item }}"
+        task_definition:                   "codekvast-{{ item.name }}"
         load_balancers:
           - targetGroupArn: "{{ target_group_info.target_groups | json_query(target_group_arn_query) | join('') }}"
-            containerName:  "codekvast-{{ item }}"
+            containerName:  "codekvast-{{ item.name }}"
             containerPort:  8080
-        name:                              "{{ item }}"
-        health_check_grace_period_seconds: 60
+        name:                              "{{ item.name }}"
+        health_check_grace_period_seconds: 180
         network_configuration:
           assign_public_ip: yes
           subnets:          "{{ subnet_info.subnets|map(attribute='id')|list }}"
@@ -307,8 +336,10 @@
             - "codekvast-default-{{ env }}-management"
         state:                             present
       vars:
-        target_group_arn_query: "[?target_group_name == 'codekvast-{{ env }}-{{ item }}'].target_group_arn"
+        target_group_arn_query: "[?target_group_name == 'codekvast-{{ env }}-{{ item.name }}'].target_group_arn"
       loop:     "{{ services }}"
+      loop_control:
+        label: "codekvast-{{ item.name }}"
       register: service_info
       tags:     service
 

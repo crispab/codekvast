@@ -11,6 +11,7 @@
     <option name="ACTIVE_PROFILES" value="dev,dev-secrets,no-mail-sender" />
     <option name="VM_PARAMETERS" value="-Xms10m -Xmx40m -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=&quot;/tmp/codekvast-backoffice.hprof&quot;" />
     <option name="ALTERNATIVE_JRE_PATH" />
+    <RunnerSettings />
     <method v="2">
       <option name="Gradle.BeforeRunTask" enabled="true" tasks="startDockerContainers" externalProjectPath="$PROJECT_DIR$/product/server/backoffice" vmOptions="" scriptParameters="" />
       <option name="Make" enabled="true" />

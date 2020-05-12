@@ -32,7 +32,7 @@ server:
 management:
   metrics:
     tags:
-      env:     dev
       host:    localhost
+      env:     dev
     web.server.request.autotime.enabled: true
     export.datadog.enabled:              false

@@ -5,79 +5,26 @@
 # Spring Boot reads and merges both application.properties and application.yml.
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
-codekvast:
-  login:
-    cipherSecret:                someCipherSecret
-    herokuOAuthBaseUrl:          https://id.heroku.com
-    herokuApiBaseUrl:            https://api.heroku.com
-    herokuApiPassword:           herokuApiPassword
-    herokuApiSsoSalt:            herokuApiSsoSalt
-    herokuCodekvastUrl:          http://localhost:8080
-    herokuOAuthClientId:         herokuOAuthClientId
-    herokuOAuthClientSecret:     herokuOAuthClientSecret
-
-logging:
-  file:
-    name: build/log/login.log
-  level:
-    io.codekvast: DEBUG
-  group.web: debug
-
 management:
-  endpoints:
-    enabled-by-default: true
   endpoint:
     health:
       cache.time-to-live: 1s
-  server:
-    port: 9080
   metrics:
-    web.server.request.autotime.enabled: true
-    export.datadog.enabled:              false
     tags:
       service: "codekvast-login"
-      env:     dev
-      host:    localhost
 
 server:
-  port:                     8080
   servlet:
     context-path: /
     session:
       cookie:
         max-age: 10m
       persistent: false
-  undertow:
-    accesslog:
-      dir:     build/log
-      enabled: true
-      pattern: combined
-      prefix:  access.
-  forward-headers-strategy: framework
-  error:
-    whitelabel:
-      enabled: false
-
 spring:
   application.name:    Codekvast Login
-  datasource:
-    hikari:
-      connection-test-query: SELECT 1 FROM DUAL
-    password: codekvast
-    url:      jdbc:mariadb://localhost/codekvast
-    username: codekvast
-  rabbitmq:
-    addresses: "amqp://admin:secret@localhost:5672"
-    template:
-      retry:
-        enabled:          true
-        initial-interval: 2s
-  flyway:
-    validate-on-migrate: false
   http:
     converters.preferred-json-mapper: gson
     log-request-details:              true
-  output.ansi.enabled: detect
   cache:
     caffeine:
       spec: 'expireAfterAccess=10m'
@@ -91,4 +38,3 @@ spring:
         client-scope:  email
       google:
         client-scope:  email
-

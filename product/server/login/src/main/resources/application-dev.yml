@@ -1,0 +1,15 @@
+codekvast:
+  login:
+    cipherSecret:                someCipherSecret
+    herokuApiBaseUrl:            https://api.heroku.com
+    herokuApiPassword:           herokuApiPassword
+    herokuApiSsoSalt:            herokuApiSsoSalt
+    herokuCodekvastUrl:          http://localhost:8080
+    herokuOAuthBaseUrl:          https://id.heroku.com
+    herokuOAuthClientId:         herokuOAuthClientId
+    herokuOAuthClientSecret:     herokuOAuthClientSecret
+spring:
+  profiles:
+    include: common-dev
+server:
+  port:                     8080

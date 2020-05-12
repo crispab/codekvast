@@ -11,6 +11,7 @@
         <option name="value" value="25" />
       </param>
     </additionalParameters>
+    <RunnerSettings />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

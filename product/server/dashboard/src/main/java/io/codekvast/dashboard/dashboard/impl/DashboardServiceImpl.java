@@ -212,7 +212,7 @@ public class DashboardServiceImpl implements DashboardService {
       final String tableName, String columnName, Collection<String> names) {
     MapSqlParameterSource params = new MapSqlParameterSource();
     params.addValue("customerId", customerIdProvider.getCustomerId());
-    params.addValue("names", names);
+    params.addValue("names", new TreeSet<>(names));
 
     List<Long> ids =
         namedParameterJdbcTemplate.queryForList(

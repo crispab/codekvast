@@ -1,0 +1,9 @@
+server:
+  port:                     8081
+management:
+  server:
+    port: 9081
+spring:
+  profiles:
+    include: common-dev
+
