@@ -4,6 +4,10 @@
 #
 # Spring Boot reads and merges both application.properties and application.yml.
 #-------------------------------------------------------------------------------------------------------------------------------------------
+codekvast:
+  login:
+    herokuApiBaseUrl:            https://api.heroku.com
+    herokuOAuthBaseUrl:          https://id.heroku.com
 
 management:
   endpoint:

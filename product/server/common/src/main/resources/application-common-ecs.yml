@@ -29,5 +29,6 @@ spring:
     banner-mode:        off
   profiles:
     include: json-logging-console
-  devtools:
-    add-properties: false
+  datasource:
+    hikari:
+      maximum-pool-size: 5

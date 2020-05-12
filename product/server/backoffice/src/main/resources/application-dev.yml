@@ -6,6 +6,3 @@ server:
 management:
   server:
     port: 9082
-  health:
-    mail:
-      enabled: false

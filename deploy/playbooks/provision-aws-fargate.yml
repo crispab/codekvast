@@ -82,13 +82,15 @@
           value: "https://login-{{ env }}2.codekvast.io"
         - name:  SPRING_DATASOURCE_URL
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
-        - name:  MANAGEMENT_METRICS_TAGS_ENV
-          value: "{{ env }}"
+        - name:  SPRING_DATASOURCE_USERNAME
+          value: "codekvast"
+        - name:  SPRING_DEVTOOLS_RESTART_ENABLED
+          value: "false"
     rds:
       tags:
         Owner: Codekvast
         Env:   "{{ env }}"
-        RDS: "true"
+        RDS:   "true"
 
   tasks:
     - name:     "Find VPC id"
@@ -304,12 +306,6 @@
               value: "{{ item.name }}-ecs"
             - name:  CODEKVAST_COMMON_DNS_CNAME
               value: "{{ item.name }}-{{ env }}2.codekvast.io"
-            - name:  MANAGEMENT_METRICS_TAGS_SERVICE
-              value: "codekvast-{{ item.name }}"
-            - name: MANAGEMENT_METRICS_TAGS
-              value:
-                env: "{{ env }}"
-                service: "codekvast-{{ item.name }}"
       loop:     "{{ services }}"
       loop_control:
         label: "codekvast-{{ item.name }}"

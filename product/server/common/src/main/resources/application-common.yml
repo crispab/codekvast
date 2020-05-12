@@ -18,6 +18,9 @@ management:
   metrics:
     web.server.request.autotime.enabled: true
     export.datadog.enabled:              false
+  health:
+    mail:
+      enabled: false
 
 server:
   servlet:
