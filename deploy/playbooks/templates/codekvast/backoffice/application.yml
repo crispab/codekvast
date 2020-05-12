@@ -49,5 +49,5 @@ spring:
   rabbitmq:
     addresses: "{{ rabbitmq[tags.Env].url}}"
   mail:
-    username: "{{ aws.credentials.ses.username }}"
-    password: "{{ aws.credentials.ses.password }}"
+    username: "{{ aws.ses.username }}"
+    password: "{{ aws.ses.password }}"

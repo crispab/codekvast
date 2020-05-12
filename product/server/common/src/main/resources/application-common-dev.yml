@@ -17,7 +17,6 @@ spring:
   profiles:
     include: color-logging,json-logging-file
   datasource:
-    username: codekvast
     password: codekvast
     url:      jdbc:mariadb://localhost/codekvast
   rabbitmq:

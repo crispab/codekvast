@@ -13,8 +13,12 @@
 
   vars:
     env: staging
+    dns_suffix: "{{ ('-staging', '')[env == 'prod'] }}.codekvast.io"
+
     services:
       - name:               backoffice
+        cnames:
+          - backoffice
         count:              1
         stickiness_enabled: false
         secrets:
@@ -24,11 +28,16 @@
             valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/password"
         envvars: []
       - name:               dashboard
+        cnames:
+          - api
+          - dashboard
         count:              2
         stickiness_enabled: false
         secrets: []
         envvars: []
       - name:               login
+        cnames:
+          - login
         count:              2
         stickiness_enabled: true
         secrets:
@@ -56,7 +65,7 @@
             valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/oauth2/{{ env }}/google/client-secret"
         envvars:
           - name:  "CODEKVAST_LOGIN_HEROKU_CODEKVAST_URL"
-            value: "https://api-{{ env }}2.codekvast.io"
+            value: "https://api{{ dns_suffix }}"
 
     common:
       tags:
@@ -67,9 +76,9 @@
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb_application_password"
         - name:       SPRING_RABBITMQ_ADDRESSES
           valueFrom:  "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/rabbitmq_url"
-        - name:      CODEKVAST_JWT_SECRET
+        - name:      CODEKVAST_COMMON_JWT_SECRET
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/jwt_secret"
-        - name:      CODEKVAST_SLACK_WEBHOOK_TOKEN
+        - name:      CODEKVAST_COMMON_SLACK_WEBHOOK_TOKEN
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/slackWebhookToken"
         - name:      MANAGEMENT_METRICS_EXPORT_DATADOG_API_KEY
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
@@ -77,13 +86,11 @@
         - name:  CODEKVAST_ENVIRONMENT
           value: "{{ env }}"
         - name:  CODEKVAST_COMMON_DASHBOARD_BASE_URL
-          value: "https://dashboard-{{ env }}2.codekvast.io"
+          value: "https://dashboard{{ dns_suffix }}"
         - name:  CODEKVAST_COMMON_LOGIN_BASE_URL
-          value: "https://login-{{ env }}2.codekvast.io"
+          value: "https://login{{ dns_suffix }}"
         - name:  SPRING_DATASOURCE_URL
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
-        - name:  SPRING_DATASOURCE_USERNAME
-          value: "codekvast"
         - name:  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
           value: 5
         - name:  SPRING_DEVTOOLS_RESTART_ENABLED
@@ -164,7 +171,7 @@
       elb_application_lb:
         region:              "{{ aws_region }}"
         profile:             codekvast
-        name:                "codekvast-{{ env }}2"
+        name:                "codekvast-{{ env }}"
         state:               present
         deletion_protection: "{{ ('no', 'yes')[env == 'prod'] }}"
         scheme:              internet-facing
@@ -185,7 +192,7 @@
               - Conditions:
                   - Field: host-header
                     Values:
-                      - "api-{{ env }}2.codekvast.io"
+                      - "api{{ dns_suffix }}"
                 Priority: '1'
                 Actions:
                   - Type:            forward
@@ -193,7 +200,7 @@
               - Conditions:
                   - Field: host-header
                     Values:
-                      - "dashboard-{{ env }}2.codekvast.io"
+                      - "dashboard{{ dns_suffix }}"
                 Priority: '2'
                 Actions:
                   - Type:            forward
@@ -201,7 +208,7 @@
               - Conditions:
                   - Field: host-header
                     Values:
-                      - "backoffice-{{ env }}2.codekvast.io"
+                      - "backoffice{{ dns_suffix }}"
                 Priority: '3'
                 Actions:
                   - Type:            forward
@@ -222,14 +229,16 @@
         profile:   codekvast # in ~/.boto
         command:   create
         overwrite: yes
-        record:    "{{ item.name }}-{{ env }}2.codekvast.io"
+        record:    "{{ item.1 }}{{ dns_suffix }}"
         value:     "{{ alb_dns_name }}"
         ttl:       600
         type:      CNAME
         zone:      codekvast.io
-      loop: "{{ services }}"
+      with_subelements:
+        - "{{ services }}"
+        - cnames
       loop_control:
-        label: "{{ item.name }}"
+        label: "{{ item.1 }}{{ dns_suffix }}"
       tags: once
 
     - name: "Create ECR registries"
@@ -310,9 +319,9 @@
         computed:
           envvars:
             - name:  SPRING_PROFILES_ACTIVE
-              value: "{{ item.name }}-ecs"
+              value: "{{ item.name }}-fargate"
             - name:  CODEKVAST_COMMON_DNS_CNAME
-              value: "{{ item.name }}-{{ env }}2.codekvast.io"
+              value: "{{ item.name }}{{ dns_suffix }}"
       loop:     "{{ services }}"
       loop_control:
         label: "codekvast-{{ item.name }}"

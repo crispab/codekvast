@@ -1,0 +1,8 @@
+# This profile is activated when deploying to AWS Fargate
+spring:
+  profiles:
+    include: common-fargate
+management:
+  health:
+    mail:
+      enabled: true

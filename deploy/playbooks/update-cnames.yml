@@ -42,7 +42,6 @@
     rds_instance_info:
       profile: codekvast
       region: "{{ aws_region }}"
-      filters:
     register: rds
 
   - debug: var=rds

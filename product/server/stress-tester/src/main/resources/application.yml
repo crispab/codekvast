@@ -1,11 +1,9 @@
 spring:
   application.name:    Codekvast Stress Tester
   datasource:
-    hikari:
-      connection-test-query: SELECT 1 FROM DUAL
-    password: codekvast
     url:      jdbc:mariadb://localhost/codekvast
     username: codekvast
+    password: codekvast
   profiles:
     include: no-slack-integration
   rabbitmq:

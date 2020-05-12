@@ -1,8 +1,0 @@
-# This profile is activated when deploying to AWS ECS
-spring:
-  profiles:
-    include: common-ecs
-management:
-  health:
-    mail:
-      enabled: true

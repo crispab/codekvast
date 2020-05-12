@@ -38,10 +38,11 @@ server:
     whitelabel:
       enabled: false
 spring:
-  application.name:    Codekvast Backoffice
   datasource:
     hikari:
+      maximum-pool-size: 5
       connection-test-query: SELECT 1 FROM DUAL
+    username: codekvast
   rabbitmq:
     template:
       retry:

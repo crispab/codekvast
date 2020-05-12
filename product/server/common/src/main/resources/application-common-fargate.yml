@@ -1,4 +1,4 @@
-# This profile is activated when deployed to AWS ECS.
+# This profile is activated when deployed to AWS ECS Fargate.
 
 logging:
   file:
@@ -29,6 +29,3 @@ spring:
     banner-mode:        off
   profiles:
     include: json-logging-console
-  datasource:
-    hikari:
-      maximum-pool-size: 5

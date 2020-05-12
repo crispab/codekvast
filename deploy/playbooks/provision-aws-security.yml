@@ -1,6 +1,6 @@
 ---
 #---------------------------------------------------------------
-# Playbook that provisions the AWS security groups used by RDS and ECS
+# Playbook that provisions the AWS security groups used by RDS and ECS Fargate
 #---------------------------------------------------------------
 - name:         AWS RDS clusters
   hosts:        localhost
@@ -12,7 +12,7 @@
 
   vars:
     env: staging
-    tags:
+    common_tags:
       Owner:      Codekvast
       Env:        "{{ env }}"
       LaunchType: Fargate
@@ -53,7 +53,7 @@
               - 8080
               - 9080
             cidr_ip:   10.0.0.0/8
-        tags:                      "{{ tags }}"
+        tags:                      "{{ common_tags }}"
       register: sg_frontend
 
     - debug: var=sg_frontend
@@ -89,7 +89,7 @@
             from_port: 22
             to_port:   65535
             cidr_ip:   "{{ my_ip.content }}/32"
-        tags:        "{{ tags }}"
+        tags:        "{{ common_tags }}"
       register: sg_backend
 
     - debug: var=sg_backend
@@ -114,7 +114,7 @@
             from_port: 22
             to_port:   65535
             cidr_ip:   "{{ my_ip.content }}/32"
-        tags:               "{{ tags }}"
+        tags:               "{{ common_tags }}"
       register: sg_database
 
     - debug: var=sg_database
