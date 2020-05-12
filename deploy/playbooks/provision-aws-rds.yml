@@ -8,13 +8,27 @@
   gather_facts: no
 
   vars_files:
-    - vars/common.yml
-    - vars/secrets.yml
+   - vars/common.yml
+   - vars/secrets.yml
 
   vars:
     env: staging
 
   tasks:
+    - name:     "Find VPC id"
+      ec2_vpc_net_info:
+        region:  "{{ aws_region }}"
+        profile: codekvast
+        filters:
+          "tag:Owner": "Codekvast"
+          "tag:Env":   "{{ env }}"
+      register: vpc_info
+
+    - set_fact: vpc_id="{{ vpc_info.vpcs[0].vpc_id }}"
+
+    - debug: var=vpc_id
+      when:  _debug is defined and _debug
+
     - name:     "Find EC2 {{ env }} subnets owned by Codekvast"
       ec2_vpc_subnet_info:
         profile:     codekvast
@@ -40,17 +54,16 @@
     - debug: var=subnet_group
       when:  _debug is defined and _debug
 
-    - name:     Find EC2 security groups
+    - name: Find database security groups
       ec2_group_info:
         profile:             codekvast
         region:              "{{ aws_region }}"
         filters:
-          "tag:Owner": "Codekvast"
-          "tag:Env":   "{{ env }}"
-          "tag:RDS":   "true"
-      register: security_group
+          vpc-id: "{{ vpc_id }}"
+          group-name: "codekvast-{{ env }}-database"
+      register: security_group_info
 
-    - debug: var=security_group
+    - debug: var=security_group_info
       when:  _debug is defined and _debug
 
     - name:       Create MariaDB RDS instances
@@ -80,7 +93,8 @@
           Env:      "{{ env }}"
           Name:     Codekvast
           Owner:    Codekvast
-        vpc_security_group_ids:                          "{{ security_group.security_groups|map(attribute='group_id') | list }}"
+        vpc_security_group_ids:
+          - "{{ security_group_info.security_groups[0].group_id }}"
         wait:                                            yes
       register:   rds
 
@@ -107,25 +121,25 @@
 
     - name: "Store MariaDB application password as a secret"
       aws_ssm_parameter_store:
-        profile: codekvast
-        region: "{{ aws_region }}"
-        description: "Codekvast database application password"
-        name: "/codekvast/{{ env }}/mariadb_application_password"
-        value: "{{ mariadb_application_password }}"
-        string_type: "SecureString"
+        profile:         codekvast
+        region:          "{{ aws_region }}"
+        description:     "Codekvast database application password"
+        name:            "/codekvast/{{ env }}/mariadb_application_password"
+        value:           "{{ mariadb_application_password }}"
+        string_type:     "SecureString"
         overwrite_value: "always"
       tags: secrets
 
-    - name: "Create CNAME db-{{ env}}.codekvast.io -> {{ rds.endpoint.address }}"
+    - name:     "Create CNAME db-{{ env}}.codekvast.io -> {{ rds.endpoint.address }}"
       route53:
-        profile: codekvast # in ~/.boto
-        zone: codekvast.io
-        command: create
+        profile:   codekvast # in ~/.boto
+        zone:      codekvast.io
+        command:   create
         overwrite: yes
-        record: "db-{{ env }}.codekvast.io"
-        ttl: 86400
-        type: CNAME
-        value: "{{ rds.endpoint.address }}"
+        record:    "db-{{ env }}.codekvast.io"
+        ttl:       86400
+        type:      CNAME
+        value:     "{{ rds.endpoint.address }}"
       register: dns
 
     - debug: var=dns

@@ -5,4 +5,5 @@
 
 source $(dirname $0)/.check-requirements.sh
 
+ansible-playbook playbooks/provision-aws-security.yml -e env=prod $*
 ansible-playbook playbooks/provision-aws-rds.yml -e env=prod $*

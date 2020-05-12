@@ -84,6 +84,11 @@
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
         - name:  MANAGEMENT_METRICS_TAGS_ENV
           value: "{{ env }}"
+    rds:
+      tags:
+        Owner: Codekvast
+        Env:   "{{ env }}"
+        RDS: "true"
 
   tasks:
     - name:     "Find VPC id"
@@ -156,7 +161,7 @@
         deletion_protection: "{{ ('no', 'yes')[env == 'prod'] }}"
         scheme:              internet-facing
         security_groups:
-          - "codekvast-default-{{ env }}-frontend"
+          - "codekvast-{{ env }}-frontend"
         subnets:             "{{ subnet_info.subnets|map(attribute='id')|list }}"
         tags:                "{{ common.tags }}"
         listeners:
@@ -264,7 +269,7 @@
             image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item.name }}:latest"
             essential:   true
             secrets:     "{{ common.secrets + item.secrets }}"
-            environment: "{{ common.envvars + item.envvars + myenv}}"
+            environment: "{{ common.envvars + item.envvars + computed.envvars}}"
             portMappings:
               - containerPort: 8080
                 hostPort:      8080
@@ -293,17 +298,18 @@
               - name:  ECS_FARGATE
                 value: true
       vars:
-        myenv:
-          - name:  SPRING_PROFILES_ACTIVE
-            value: "{{ item.name }}-ecs"
-          - name:  CODEKVAST_COMMON_DNS_CNAME
-            value: "{{ item.name }}-{{ env }}2.codekvast.io"
-          - name:  MANAGEMENT_METRICS_TAGS_SERVICE
-            value: "codekvast-{{ item.name }}"
-          - name: MANAGEMENT_METRICS_TAGS
-            value:
-              env: "{{ env }}"
-              service: "codekvast-{{ item.name }}"
+        computed:
+          envvars:
+            - name:  SPRING_PROFILES_ACTIVE
+              value: "{{ item.name }}-ecs"
+            - name:  CODEKVAST_COMMON_DNS_CNAME
+              value: "{{ item.name }}-{{ env }}2.codekvast.io"
+            - name:  MANAGEMENT_METRICS_TAGS_SERVICE
+              value: "codekvast-{{ item.name }}"
+            - name: MANAGEMENT_METRICS_TAGS
+              value:
+                env: "{{ env }}"
+                service: "codekvast-{{ item.name }}"
       loop:     "{{ services }}"
       loop_control:
         label: "codekvast-{{ item.name }}"
@@ -332,8 +338,7 @@
           assign_public_ip: yes
           subnets:          "{{ subnet_info.subnets|map(attribute='id')|list }}"
           security_groups:
-            - "codekvast-default-{{ env }}-backend"
-            - "codekvast-default-{{ env }}-management"
+            - "codekvast-{{ env }}-backend"
         state:                             present
       vars:
         target_group_arn_query: "[?target_group_name == 'codekvast-{{ env }}-{{ item.name }}'].target_group_arn"

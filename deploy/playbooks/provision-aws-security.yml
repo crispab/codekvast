@@ -1,0 +1,121 @@
+---
+#---------------------------------------------------------------
+# Playbook that provisions the AWS security groups used by RDS and ECS
+#---------------------------------------------------------------
+- name:         AWS RDS clusters
+  hosts:        localhost
+  connection:   local
+  gather_facts: no
+
+  vars_files:
+    - vars/common.yml
+
+  vars:
+    env: staging
+    tags:
+      Owner:      Codekvast
+      Env:        "{{ env }}"
+      LaunchType: Fargate
+
+  tasks:
+    - name:     "Find VPC id"
+      ec2_vpc_net_info:
+        region:  "{{ aws_region }}"
+        profile: codekvast
+        filters:
+          "tag:Owner": "Codekvast"
+          "tag:Env":   "{{ env }}"
+      register: vpc_info
+
+    - set_fact: vpc_id="{{ vpc_info.vpcs[0].vpc_id }}"
+
+    - debug: var=vpc_id
+      when:  _debug is defined and _debug
+
+    - name:     Create frontend security group
+      ec2_group:
+        region:                    "{{ aws_region }}"
+        profile:                   codekvast
+        vpc_id:                    "{{ vpc_id }}"
+        state:                     present
+        name:                      "codekvast-{{ env }}-frontend"
+        description:               "Codekvast internet-facing security group"
+        purge_rules:               true
+        rules:
+          - proto:   tcp
+            ports:
+              - 443
+            cidr_ip: 0.0.0.0/0
+        purge_rules_egress:        true
+        rules_egress:
+          - proto:     tcp
+            ports:
+              - 8080
+              - 9080
+            cidr_ip:   10.0.0.0/8
+        tags:                      "{{ tags }}"
+      register: sg_frontend
+
+    - debug: var=sg_frontend
+      when:  _debug is defined and _debug
+
+    - name:         curl http://whatismyip.akamai.com/
+      uri:
+        url:            http://whatismyip.akamai.com/
+        return_content: yes
+      register:     my_ip
+      changed_when: false
+
+    - debug: var=my_ip
+      when:  _debug is defined and _debug
+
+    - name:     Create backend security group
+      ec2_group:
+        region:      "{{ aws_region }}"
+        profile:     codekvast
+        vpc_id:      "{{ vpc_id }}"
+        state:       present
+        name:        "codekvast-{{ env }}-backend"
+        description: "Codekvast backend access"
+        purge_rules: true
+        rules:
+          - proto:      tcp
+            ports:
+              - 8080
+              - 9080
+            group_id:
+              - "{{ aws_account }}/{{ sg_frontend.group_id }}/codekvast-{{ env }}-frontend"
+          - proto:     tcp
+            from_port: 22
+            to_port:   65535
+            cidr_ip:   "{{ my_ip.content }}/32"
+        tags:        "{{ tags }}"
+      register: sg_backend
+
+    - debug: var=sg_backend
+      when:  _debug is defined and _debug
+
+    - name:     Create database security group
+      ec2_group:
+        region:             "{{ aws_region }}"
+        profile:            codekvast
+        vpc_id:             "{{ vpc_id }}"
+        state:              present
+        name:               "codekvast-{{ env }}-database"
+        description:        "Codekvast database access"
+        purge_rules:        true
+        rules:
+          - proto:      tcp
+            ports:
+              - 3306
+            group_id:
+              - "{{ aws_account }}/{{ sg_backend.group_id }}/codekvast-{{ env }}-backend"
+          - proto:     tcp
+            from_port: 22
+            to_port:   65535
+            cidr_ip:   "{{ my_ip.content }}/32"
+        tags:               "{{ tags }}"
+      register: sg_database
+
+    - debug: var=sg_database
+      when:  _debug is defined and _debug
