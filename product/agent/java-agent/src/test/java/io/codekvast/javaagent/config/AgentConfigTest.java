@@ -4,14 +4,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import io.codekvast.javaagent.util.Constants;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,16 +18,15 @@ import java.util.UUID;
 import lombok.SneakyThrows;
 import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
 
 public class AgentConfigTest {
 
-  private File file = classpathResourceAsFile("/codekvast1.conf");
-  private AgentConfig config = AgentConfigFactory.parseAgentConfig(file, null);
+  private final File file = classpathResourceAsFile("/codekvast1.conf");
+  private final AgentConfig config = AgentConfigFactory.parseAgentConfig(file, null);
 
-  private Set<String> modifiedSystemProps = new HashSet<>();
+  private final Set<String> modifiedSystemProps = new HashSet<>();
 
   private void setSystemProperty(String key, String value) {
     System.setProperty(key, value);
@@ -70,8 +68,8 @@ public class AgentConfigTest {
   @Test
   public void should_override_file_values_with_individual_system_props() {
     // given
-    setSystemProperty("codekvast.enabled", "false");
     String appVersion = UUID.randomUUID().toString();
+    setSystemProperty("codekvast.enabled", "false");
     setSystemProperty("codekvast.appVersion", appVersion);
 
     // when
@@ -80,6 +78,54 @@ public class AgentConfigTest {
     // then
     assertThat(config2.isEnabled(), is(false));
     assertThat(config2.getAppVersion(), is(appVersion));
+  }
+
+  @Test
+  public void should_accept_missing_licenseKey() {
+    // given
+
+    // when
+    AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, null);
+
+    // then
+    assertThat(config2.getLicenseKey(), is(""));
+  }
+
+  @Test
+  public void should_accept_licenseKey_system_prop() {
+    // given
+    setSystemProperty("codekvast.licenseKey", "licenseKey");
+
+    // when
+    AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, null);
+
+    // then
+    assertThat(config2.getLicenseKey(), is("licenseKey"));
+  }
+
+  @Test
+  public void should_accept_apiKey_system_prop() {
+    // given
+    setSystemProperty("codekvast.apiKey", "licenseKey");
+
+    // when
+    AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, null);
+
+    // then
+    assertThat(config2.getLicenseKey(), is("licenseKey"));
+  }
+
+  @Test
+  public void should_prefer_licenseKey_over_apiKey_system_prop() {
+    // given
+    setSystemProperty("codekvast.licenseKey", "licenseKey");
+    setSystemProperty("codekvast.apiKey", "apiKey");
+
+    // when
+    AgentConfig config2 = AgentConfigFactory.parseAgentConfig(file, null);
+
+    // then
+    assertThat(config2.getLicenseKey(), is("licenseKey"));
   }
 
   @Test
@@ -145,7 +191,7 @@ public class AgentConfigTest {
     Proxy proxy = httpClient.proxy();
     assertThat(proxy, not(nullValue()));
     assertThat(proxy.type(), is(Proxy.Type.HTTP));
-    assertThat(proxy.address(), CoreMatchers.<SocketAddress>is(new InetSocketAddress("foo", 3128)));
+    assertThat(proxy.address(), is(new InetSocketAddress("foo", 3128)));
 
     Authenticator authenticator = httpClient.proxyAuthenticator();
     assertThat(authenticator, is(Authenticator.NONE));
@@ -165,7 +211,7 @@ public class AgentConfigTest {
     Proxy proxy = httpClient.proxy();
     assertThat(proxy, not(nullValue()));
     assertThat(proxy.type(), is(Proxy.Type.HTTP));
-    assertThat(proxy.address(), CoreMatchers.<SocketAddress>is(new InetSocketAddress("foo", 4711)));
+    assertThat(proxy.address(), is(new InetSocketAddress("foo", 4711)));
   }
 
   @Test

@@ -5,8 +5,9 @@
 1. Dashboard: handler for deadlock exceptions.
 2. Lock management: now uses the database functions GET_LOCK() and RELEASE_LOCK() instead of SELECT ... FOR UPDATE
 3. Dashboard: now refuses to import synthetic methods. WeederService removes already imported synthetic methods.
-4. Upgraded to Gradle 6.2.2, Spring Boot 2.2.5, Kotlin 1.3.70 plus some more
+4. Upgraded to Gradle 6.2.2, Spring Boot 2.2.7, Kotlin 1.3.72 plus some more
 5. Added Java 14 to the agent test suite.
+6. Accepts apiKey (aka CODEKVAST_API_KEY or -Dcodekvast.apiKey) as synonym to AgentConfig.licenseKey.
 
 ## 1.3.2
 

@@ -8,13 +8,14 @@ import static io.codekvast.javaagent.util.ConfigUtils.getIntValue;
 import static io.codekvast.javaagent.util.ConfigUtils.getNormalizedPackagePrefix;
 import static io.codekvast.javaagent.util.ConfigUtils.getNormalizedPackages;
 import static io.codekvast.javaagent.util.ConfigUtils.getStringValue;
+import static io.codekvast.javaagent.util.ConfigUtils.getStringValue2;
 import static io.codekvast.javaagent.util.ConfigUtils.getSystemPropertyName;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import io.codekvast.javaagent.publishing.impl.JulAwareOutputCapture;
 import java.io.File;
@@ -234,10 +235,34 @@ public class ConfigUtilsTest {
   }
 
   @Test
-  public void should_get_string_value() {
+  public void should_getStringValue() {
     Properties props = new Properties();
     props.setProperty("key", "value");
 
     assertThat(getStringValue(props, "key"), is(Optional.of("value")));
+  }
+
+  @Test
+  public void should_getStringValue2_key1() {
+    Properties props = new Properties();
+    props.setProperty("key", "value");
+
+    assertThat(getStringValue2(props, "alternateKey", "key", "defaultValue"), is("value"));
+  }
+
+  @Test
+  public void should_getStringValue2_key2() {
+    Properties props = new Properties();
+    props.setProperty("key", "value");
+
+    assertThat(getStringValue2(props, "key", "alternateKey", "defaultValue"), is("value"));
+  }
+
+  @Test
+  public void should_getStringValue2_default() {
+    Properties props = new Properties();
+    props.setProperty("somekey", "value");
+
+    assertThat(getStringValue2(props, "key", "alternateKey", "defaultValue"), is("defaultValue"));
   }
 }

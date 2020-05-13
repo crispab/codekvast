@@ -39,9 +39,9 @@ import lombok.extern.java.Log;
  */
 @UtilityClass
 @Log
-public final class ConfigUtils {
+public class ConfigUtils {
 
-  public static List<String> getNormalizedPackages(String packages) {
+  public List<String> getNormalizedPackages(String packages) {
     List<String> result = new ArrayList<>();
     if (packages != null) {
       String[] prefixes = packages.split("[:;,]");
@@ -56,7 +56,7 @@ public final class ConfigUtils {
     return result;
   }
 
-  static String getNormalizedPackagePrefix(String packagePrefix) {
+  String getNormalizedPackagePrefix(String packagePrefix) {
     int dot = packagePrefix.length() - 1;
     while (dot >= 0 && packagePrefix.charAt(dot) == '.') {
       dot -= 1;
@@ -64,23 +64,29 @@ public final class ConfigUtils {
     return packagePrefix.substring(0, dot + 1);
   }
 
-  public static String getStringValue(Properties props, String propertyName, String defaultValue) {
+  public String getStringValue(Properties props, String propertyName, String defaultValue) {
     return expandVariables(props, propertyName, null).orElse(defaultValue);
   }
 
-  public static Optional<String> getStringValue(Properties props, String propertyName) {
+  public String getStringValue2(
+      Properties props, String propertyName1, String propertyName2, String defaultValue) {
+    return expandVariables(props, propertyName1, null)
+        .orElseGet(() -> expandVariables(props, propertyName2, null).orElse(defaultValue));
+  }
+
+  public Optional<String> getStringValue(Properties props, String propertyName) {
     return expandVariables(props, propertyName, null);
   }
 
-  public static boolean getBooleanValue(Properties props, String key, boolean defaultValue) {
+  public boolean getBooleanValue(Properties props, String key, boolean defaultValue) {
     return Boolean.parseBoolean(getStringValue(props, key, Boolean.toString(defaultValue)));
   }
 
-  public static int getIntValue(Properties props, String key, int defaultValue) {
+  public int getIntValue(Properties props, String key, int defaultValue) {
     return Integer.parseInt(getStringValue(props, key, Integer.toString(defaultValue)));
   }
 
-  static Optional<String> expandVariables(Properties props, String key, String defaultValue) {
+  Optional<String> expandVariables(Properties props, String key, String defaultValue) {
     String value = System.getProperty(getSystemPropertyName(key));
     if (value == null) {
       value = System.getenv(getEnvVarName(key));
@@ -93,7 +99,7 @@ public final class ConfigUtils {
         : Optional.of(expandVariables(props, value));
   }
 
-  static String expandVariables(Properties props, String value) {
+  String expandVariables(Properties props, String value) {
     Pattern pattern = Pattern.compile("\\$(\\{([a-zA-Z0-9._-]+)}|([a-zA-Z0-9._-]+))");
     Matcher matcher = pattern.matcher(value);
     StringBuffer sb = new StringBuffer();
@@ -121,15 +127,15 @@ public final class ConfigUtils {
     return sb.toString();
   }
 
-  public static String getEnvVarName(String propertyName) {
+  public String getEnvVarName(String propertyName) {
     return "CODEKVAST_" + propertyName.replaceAll("([A-Z])", "_$1").toUpperCase();
   }
 
-  public static String getSystemPropertyName(String key) {
+  public String getSystemPropertyName(String key) {
     return "codekvast." + key;
   }
 
-  public static List<File> getCommaSeparatedFileValues(String uriValues) {
+  public List<File> getCommaSeparatedFileValues(String uriValues) {
     List<File> result = new ArrayList<>();
     String[] parts = uriValues.split("[;,]");
     for (String value : parts) {

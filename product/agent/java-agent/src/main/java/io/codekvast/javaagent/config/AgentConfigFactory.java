@@ -144,7 +144,7 @@ public class AgentConfigFactory {
             ConfigUtils.getIntValue(
                 props, "httpWriteTimeoutSeconds", DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS))
         .hostname(ConfigUtils.getStringValue(props, "hostname", Constants.HOST_NAME))
-        .licenseKey(ConfigUtils.getStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
+        .licenseKey(ConfigUtils.getStringValue2(props, "licenseKey", "apiKey", TRIAL_LICENSE_KEY))
         .methodVisibility(
             ConfigUtils.getStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
         .packages(packages.orElse(DEFAULT_PACKAGES))
