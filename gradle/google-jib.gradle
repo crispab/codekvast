@@ -1,8 +1,11 @@
 apply plugin: 'com.google.cloud.tools.jib'
 
 jib {
+    from {
+        image = "azul/zulu-openjdk-alpine:${getOpenJdkVersion()}"
+    }
     to {
-        image = "186662504461.dkr.ecr.eu-central-1.amazonaws.com/codekvast/${archivesBaseName}"
+        image = "${getAwsAccount()}.dkr.ecr.eu-central-1.amazonaws.com/codekvast/${archivesBaseName}"
         credHelper = 'ecr-login'
         tags = [codekvastDisplayVersion, 'latest']
     }
@@ -10,4 +13,18 @@ jib {
         jvmFlags = ["-Xmx100m"]
         ports = ["8080", "9080"]
     }
+}
+
+def getAwsAccount() {
+    def common_vars = file("$rootDir/deploy/playbooks/vars/common.yml").text
+    def matcher = common_vars =~ ~/(?m)^aws_account:\s+(["'])(.*)\1/
+    assert matcher.find()
+    return matcher.group(2)
+}
+
+def getOpenJdkVersion() {
+    def gradle_properties = file("$rootDir/gradle.properties").text
+    def matcher = gradle_properties =~ ~/(?m)^sdkmanJavaDefault\s*=\s*(.*)-zulu/
+    assert matcher.find()
+    return matcher.group(1)
 }

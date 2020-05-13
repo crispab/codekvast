@@ -83,7 +83,7 @@
         profile: codekvast
         region: "eu-west-1" # Codekvast's MX record points to eu-west-1
         name: "mail-forwarder"
-        role: "arn:aws:iam::186662504461:role/Mail-forwarder"
+        role: "arn:aws:iam::{{ aws_account }}:role/Mail-forwarder"
         handler: "index.handler"
         runtime: "nodejs12.x"
         zip_file: "/tmp/aws-ses-forwarder.zip"

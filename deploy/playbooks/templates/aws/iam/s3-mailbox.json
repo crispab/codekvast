@@ -11,7 +11,7 @@
             "Resource": "arn:aws:s3:::mailbox.codekvast.io/*",
             "Condition": {
                 "StringEquals": {
-                    "aws:Referer": "186662504461"
+                    "aws:Referer": "{{ aws_account }}"
                 }
             }
         }
