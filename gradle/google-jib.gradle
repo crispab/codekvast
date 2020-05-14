@@ -1,5 +1,38 @@
 apply plugin: 'com.google.cloud.tools.jib'
 
+ext.jibExtraDirectories = ['build/jib-extra']
+
+task jibCreateAgentProperties {
+    group "jib"
+    description "Creates a codekvast-agent.properties for use in Docker"
+
+    def configFile = file("build/jib-extra/app/codekvast-agent.properties")
+
+    inputs.property("codekvastVersion", codekvastDisplayVersion)
+    outputs.file configFile
+
+    doLast {
+        configFile.parentFile.mkdirs()
+        configFile.text = """
+appName = ${archivesBaseName} 
+appVersion = literal ${codekvastDisplayVersion}
+codeBase = /app/lib, /app/classes 
+# Exclude the packages that contain @Aspects, or else Spring AOP will not load them.
+excludePackages = io.codekvast.common.aspects
+hostname = \$HOSTNAME
+licenseKey = ${getCodekvastLicenseKey()}
+methodVisibility = all
+packages = io.codekvast
+serverUrl = https://api.codekvast.io
+"""
+    }
+}
+
+task jibFetchCodekvastJavaAgent(type: Sync) {
+    from tasks.getByPath(":product:agent:java-agent:shadowJar").outputs.files
+    into "build/jib-extra/app/agent"
+}
+
 jib {
     from {
         image = "azul/zulu-openjdk-alpine:${getOpenJdkVersion()}"
@@ -10,10 +43,21 @@ jib {
         tags = [codekvastDisplayVersion, 'latest']
     }
     container {
-        jvmFlags = ["-Xmx100m"]
+        jvmFlags = [
+                '-Dcodekvast.configuration=/app/codekvast-agent.properties',
+                "-javaagent:/app/agent/codekvast-javaagent-${codekvastVersion}.jar".toString()
+        ]
         ports = ["8080", "9080"]
     }
+    extraDirectories.paths = ['build/jib-extra']
 }
+
+task jibCollectExtra {
+    group 'jib'
+    description 'Placeholder for collecting stuff into build/jib-extra'
+}
+
+tasks.jib.dependsOn jibCreateAgentProperties, jibFetchCodekvastJavaAgent, jibCollectExtra
 
 def getAwsAccount() {
     def common_vars = file("$rootDir/deploy/playbooks/vars/common.yml").text
@@ -27,4 +71,11 @@ def getOpenJdkVersion() {
     def matcher = gradle_properties =~ ~/(?m)^sdkmanJavaDefault\s*=\s*(.*)-zulu/
     assert matcher.find()
     return matcher.group(1)
+}
+
+def getCodekvastLicenseKey() {
+    def secrets_vars = file("$rootDir/deploy/playbooks/vars/secrets.yml").text
+    def matcher = secrets_vars =~ ~/(?m)^codekvast.licenseKey:\s+(["'])(.*)\1/
+    assert matcher.find()
+    return matcher.group(2)
 }
