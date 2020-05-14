@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Deploys Codekvast Backoffice to the staging environment
+# Deploys the latest Docker image for Codekvast Backoffice to the staging environment
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/backoffice.yml --limit tag_Env_staging $*
+export AWS_PROFILE=codekvast
+aws ecs update-service --cluster=codekvast-staging --service=backoffice --force-new-deployment | jq .service.taskDefinition | xargs

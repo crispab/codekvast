@@ -93,8 +93,6 @@
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
         - name:  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
           value: 5
-        - name:  SPRING_DEVTOOLS_RESTART_ENABLED
-          value: "false"
     rds:
       tags:
         Owner: Codekvast

@@ -16,7 +16,7 @@ task jibCreateAgentProperties {
         configFile.text = """
 appName = ${archivesBaseName} 
 appVersion = literal ${codekvastDisplayVersion}
-codeBase = /app/lib, /app/classes 
+codeBase = /app/classes, /app/libs 
 # Exclude the packages that contain @Aspects, or else Spring AOP will not load them.
 excludePackages = io.codekvast.common.aspects
 hostname = \$HOSTNAME
@@ -45,7 +45,8 @@ jib {
     container {
         jvmFlags = [
                 '-Dcodekvast.configuration=/app/codekvast-agent.properties',
-                "-javaagent:/app/agent/codekvast-javaagent-${codekvastVersion}.jar".toString()
+                "-javaagent:/app/agent/codekvast-javaagent-${codekvastVersion}.jar".toString(),
+                '-Dspring.devtools.restart.enabled=false'
         ]
         ports = ["8080", "9080"]
     }
