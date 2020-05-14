@@ -12,8 +12,9 @@
     - vars/secrets.yml
 
   vars:
-    env: staging
+    env:        staging
     dns_suffix: "{{ ('-staging', '-prod2')[env == 'prod'] }}.codekvast.io"
+    server_url: "https://api{{ dns_suffix }}"
 
     services:
       - name:               backoffice
@@ -21,7 +22,7 @@
           - backoffice
         count:
           staging: 1
-          prod: 2
+          prod:    2
         stickiness_enabled: false
         secrets:
           - name:      SPRING_MAIL_USERNAME
@@ -29,22 +30,31 @@
           - name:      SPRING_MAIL_PASSWORD
             valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/password"
         envvars: []
+
       - name:               dashboard
         cnames:
           - api
           - dashboard
         count:
           staging: 1
-          prod: 2
+          prod:    2
         stickiness_enabled: false
+        volumes:
+          - name: intake
+        mountPoints:
+          - containerPath: /intake/queue
+            sourceVolume:  intake
         secrets: []
-        envvars: []
+        envvars:
+          - name: CODEKVAST_DASHBOARD_FILE_IMPORT_QUEUE_PATH
+            value: /intake/queue
+
       - name:               login
         cnames:
           - login
         count:
           staging: 1
-          prod: 2
+          prod:    2
         stickiness_enabled: true
         secrets:
           - name:      CODEKVAST_LOGIN_CIPHER_SECRET
@@ -70,13 +80,14 @@
           - name:      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET
             valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/oauth2/{{ env }}/google/client-secret"
         envvars:
-          - name:  "CODEKVAST_LOGIN_HEROKU_CODEKVAST_URL"
+          - name:  CODEKVAST_LOGIN_HEROKU_CODEKVAST_URL
             value: "https://api{{ dns_suffix }}"
 
     common:
       tags:
         Owner: Codekvast
         Env:   "{{ env }}"
+
       secrets:
         - name:      SPRING_DATASOURCE_PASSWORD
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb_application_password"
@@ -91,6 +102,8 @@
       envvars:
         - name:  CODEKVAST_ENVIRONMENT
           value: "{{ env }}"
+        - name:  CODEKVAST_SERVER_URL
+          value: "{{ server_url }}"
         - name:  CODEKVAST_COMMON_DASHBOARD_BASE_URL
           value: "https://dashboard{{ dns_suffix }}"
         - name:  CODEKVAST_COMMON_LOGIN_BASE_URL
@@ -106,7 +119,7 @@
         RDS:   "true"
 
   tasks:
-    - name:     "Find VPC id"
+    - name:     Find VPC id
       ec2_vpc_net_info:
         region:  "{{ aws_region }}"
         profile: codekvast
@@ -123,7 +136,7 @@
       when:  _debug is defined and _debug
       tags: [once, service]
 
-    - name:     "Find EC2 subnets for {{ env }}"
+    - name:     Find EC2 subnets
       ec2_vpc_subnet_info:
         profile: codekvast
         region:  "{{ aws_region }}"
@@ -133,7 +146,7 @@
       register: subnet_info
       tags: [once, service]
 
-    - name: "Create ALB target groups"
+    - name: Create ALB target groups
       elb_target_group:
         profile:                       codekvast
         region:                        "{{ aws_region }}"
@@ -160,7 +173,7 @@
         label: "{{ item.name }}"
       tags: once
 
-    - name:     "Lookup target groups"
+    - name:     Lookup target groups
       elb_target_group_info:
         profile: codekvast
         region:  "{{ aws_region }}"
@@ -245,7 +258,7 @@
         label: "{{ item.1 }}{{ dns_suffix }}"
       tags: once
 
-    - name: "Create ECR registries"
+    - name: Create ECR registries
       ecs_ecr:
         name:    "codekvast/{{ item.name }}"
         profile: codekvast
@@ -256,7 +269,7 @@
         label: "{{ item.name }}"
       tags: once
 
-    - name: "Define ECS cluster"
+    - name: Define ECS cluster
       ecs_cluster:
         profile: codekvast
         region:  "{{ aws_region }}"
@@ -264,7 +277,7 @@
         state:   present
       tags: once
 
-    - name:     "Define the ECS tasks"
+    - name:     Define the ECS tasks
       ecs_taskdefinition:
         profile:            codekvast
         region:             "{{ aws_region }}"
@@ -275,6 +288,7 @@
         network_mode:       awsvpc
         state:              present
         execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/Codekvast-ECS-task"
+        volumes:            "{{ item.volumes | default(omit)  }}"
         containers:
           - name:      log-router
             image:     906394416424.dkr.ecr.{{ aws_region }}.amazonaws.com/aws-for-fluent-bit:latest
@@ -290,6 +304,7 @@
             essential:   true
             secrets:     "{{ common.secrets + item.secrets }}"
             environment: "{{ common.envvars + item.envvars + computed.envvars}}"
+            mountPoints: "{{ item.mountPoints | default(omit) }}"
             portMappings:
               - containerPort: 8080
                 hostPort:      8080
@@ -336,7 +351,7 @@
       tags:  service
       when:  _debug is defined and _debug
 
-    - name:     "Define ECS services"
+    - name:     Define ECS services
       ecs_service:
         profile:                           codekvast
         region:                            "{{ aws_region }}"
