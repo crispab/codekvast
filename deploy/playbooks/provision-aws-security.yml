@@ -2,7 +2,7 @@
 #---------------------------------------------------------------
 # Playbook that provisions the AWS security groups used by RDS and ECS Fargate
 #---------------------------------------------------------------
-- name:         AWS RDS clusters
+- name:         Provision AWS ECS security groups
   hosts:        localhost
   connection:   local
   gather_facts: no

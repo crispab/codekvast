@@ -13,13 +13,15 @@
 
   vars:
     env: staging
-    dns_suffix: "{{ ('-staging', '')[env == 'prod'] }}.codekvast.io"
+    dns_suffix: "{{ ('-staging', '-prod2')[env == 'prod'] }}.codekvast.io"
 
     services:
       - name:               backoffice
         cnames:
           - backoffice
-        count:              1
+        count:
+          staging: 1
+          prod: 2
         stickiness_enabled: false
         secrets:
           - name:      SPRING_MAIL_USERNAME
@@ -31,14 +33,18 @@
         cnames:
           - api
           - dashboard
-        count:              2
+        count:
+          staging: 1
+          prod: 2
         stickiness_enabled: false
         secrets: []
         envvars: []
       - name:               login
         cnames:
           - login
-        count:              2
+        count:
+          staging: 1
+          prod: 2
         stickiness_enabled: true
         secrets:
           - name:      CODEKVAST_LOGIN_CIPHER_SECRET
@@ -335,7 +341,7 @@
         profile:                           codekvast
         region:                            "{{ aws_region }}"
         cluster:                           "codekvast-{{ env }}"
-        desired_count:                     "{{ item.count }}"
+        desired_count:                     "{{ item.count[env] }}"
         launch_type:                       FARGATE
         task_definition:                   "codekvast-{{ item.name }}"
         load_balancers:
