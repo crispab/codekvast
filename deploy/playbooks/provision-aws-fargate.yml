@@ -156,7 +156,7 @@
         port:                          "8080"
         health_check_protocol:         http
         health_check_port:             "9080"
-        health_check_path:             /management/health
+        health_check_path:             /management/health/loadBalancer
         health_check_interval:         10
         health_check_timeout:          2
         healthy_threshold_count:       2

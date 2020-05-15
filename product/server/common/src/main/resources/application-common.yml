@@ -15,6 +15,12 @@ management:
     health:
       show-details:       "ALWAYS"
       cache.time-to-live: 10s
+      group:
+        loadBalancer:
+          show-details:       "ALWAYS"
+          cache.time-to-live: 10s
+          include:            '*'
+          exclude:            rabbit
   metrics:
     web.server.request.autotime.enabled: true
     export.datadog.enabled:              false
@@ -40,7 +46,7 @@ server:
 spring:
   datasource:
     hikari:
-      maximum-pool-size: 5
+      maximum-pool-size:     5
       connection-test-query: SELECT 1 FROM DUAL
     username: codekvast
   rabbitmq:
