@@ -73,8 +73,8 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
             "%s %s in %s (%s) is stopping. Uptime = %s",
             settings.getApplicationName(),
             settings.getDisplayVersion(),
-            settings.getHostname(),
             settings.getEnvironment(),
+            settings.getHostname(),
             humanReadableDuration(startedAt, Instant.now())),
         Channel.ALARMS);
   }
@@ -85,7 +85,10 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     doSend(
         String.format(
             "%s %s in %s (%s) has started",
-            settings.getApplicationName(), settings.getDisplayVersion(), settings.getHostname(), settings.getEnvironment()),
+            settings.getApplicationName(),
+            settings.getDisplayVersion(),
+            settings.getEnvironment(),
+            settings.getHostname()),
         Channel.ALARMS);
   }
 

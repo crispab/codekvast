@@ -22,8 +22,6 @@
 package io.codekvast.login.http;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,16 +53,5 @@ public class ModelAttributes {
   public String cookieDomain(@RequestHeader("Host") String requestHost) {
     logger.trace("requestHost={}", requestHost);
     return requestHost.startsWith("localhost") ? "localhost" : ".codekvast.io";
-  }
-
-  @ModelAttribute("serverHostName")
-  public String serverHostName() {
-    try {
-      String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-      logger.trace("hostName={}", hostName);
-      return hostName;
-    } catch (UnknownHostException e) {
-      return "<unknown>";
-    }
   }
 }

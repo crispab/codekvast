@@ -138,9 +138,7 @@ public class PublicationImporterImpl implements PublicationImporter {
     return CodeBasePublication3.builder()
         .commonData(publication2.getCommonData())
         .entries(
-            publication2
-                .getEntries()
-                .stream()
+            publication2.getEntries().stream()
                 .map(CodeBaseEntry3::fromFormat2)
                 .collect(Collectors.toList()))
         .build();

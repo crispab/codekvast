@@ -66,8 +66,7 @@ public class SyntheticSignatureService {
       } else {
         logger.debug("Combining {} patterns retrieved from the database", validPatterns.size());
         String regexp =
-            validPatterns
-                .stream()
+            validPatterns.stream()
                 .map(SyntheticSignaturePattern::getPattern)
                 .collect(Collectors.joining("|", "(", ")"));
         compiledPatterns = Pattern.compile(regexp);

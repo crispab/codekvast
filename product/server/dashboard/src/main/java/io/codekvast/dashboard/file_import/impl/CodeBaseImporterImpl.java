@@ -67,9 +67,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
     CommonPublicationData2 data = publication.getCommonData();
 
     Collection<CodeBaseEntry3> entries =
-        publication
-            .getEntries()
-            .stream()
+        publication.getEntries().stream()
             .filter(e -> !syntheticSignatureService.isSyntheticMethod(e.getSignature()))
             .collect(Collectors.toList());
     int ignoredSyntheticSignatures = publication.getEntries().size() - entries.size();

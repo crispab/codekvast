@@ -39,7 +39,7 @@ public class SlackServiceIntegrationTest {
     Properties props = new Properties();
     props.load(getClass().getResourceAsStream("/secrets.properties"));
 
-    settings.setSlackWebHookToken(props.getProperty("codekvast.slackWebhookToken"));
+    settings.setSlackWebhookToken(props.getProperty("codekvast.slackWebhookToken"));
     slackService = new SlackServiceImpl(settings, mock(CommonMetricsService.class));
   }
 
@@ -47,8 +47,8 @@ public class SlackServiceIntegrationTest {
   public void should_have_wired_context_correctly() {
     assertThat(slackService, not(nullValue()));
     assertThat(settings, not(nullValue()));
-    assertThat(settings.getSlackWebHookUrl().isEmpty(), is(false));
-    assertThat(settings.getSlackWebHookToken().isEmpty(), is(false));
+    assertThat(settings.getSlackWebhookUrl().isEmpty(), is(false));
+    assertThat(settings.getSlackWebhookToken().isEmpty(), is(false));
   }
 
   @Test

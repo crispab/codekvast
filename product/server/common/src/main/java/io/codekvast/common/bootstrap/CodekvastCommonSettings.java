@@ -51,7 +51,8 @@ public class CodekvastCommonSettings {
 
   private String applicationName;
   private String displayVersion;
-  private String hostname = getLocalHostname();
+
+  private final String hostname = getLocalHostname();
 
   @Default private String environment = "dev";
 

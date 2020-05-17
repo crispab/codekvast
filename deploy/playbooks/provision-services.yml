@@ -105,6 +105,8 @@
           value: "{{ env }}"
         - name:  CODEKVAST_SERVER_URL
           value: "{{ server_url }}"
+        - name:  CODEKVAST_COMMON_ENVIRONMENT
+          value: "{{ env }}"
         - name:  CODEKVAST_COMMON_DASHBOARD_BASE_URL
           value: "https://dashboard{{ dns_suffix }}"
         - name:  CODEKVAST_COMMON_LOGIN_BASE_URL

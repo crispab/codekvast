@@ -21,6 +21,8 @@
  */
 package io.codekvast.login.http;
 
+import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
+
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.security.CipherException;
@@ -66,9 +68,7 @@ public class LoginController {
   public String userinfo(OAuth2AuthenticationToken authentication, Model model) {
     User user = loginService.getUserFromAuthentication(authentication);
     Set<String> roles =
-        authentication
-            .getAuthorities()
-            .stream()
+        authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .filter(a -> a.startsWith("ROLE_"))
             .collect(Collectors.toSet());
@@ -104,9 +104,7 @@ public class LoginController {
     model.addAttribute("email", user.getEmail());
     model.addAttribute(
         "customers",
-        customerService
-            .getCustomerData()
-            .stream()
+        customerService.getCustomerData().stream()
             .filter(customerData -> customerData.getSource().equals(CustomerService.Source.HEROKU))
             .collect(Collectors.toList()));
     logger.trace("Model={}", model);
@@ -129,7 +127,8 @@ public class LoginController {
     Instant expiresAt = herokuService.getAccessTokenExpiresAtFor(customerId);
     if (expiresAt != null) {
       model.addAttribute("expiresAt", expiresAt);
-      model.addAttribute("expiresIn", Duration.between(Instant.now(), expiresAt));
+      model.addAttribute(
+          "expiresIn", humanReadableDuration(Duration.between(Instant.now(), expiresAt)));
     }
     logger.trace("Model={}", model);
     return "herokuDetails";

@@ -86,15 +86,13 @@ public class MethodDescriptor1 {
    */
   public MethodDescriptor1 computeFields() {
     this.collectedSinceMillis =
-        occursInApplications
-            .stream()
+        occursInApplications.stream()
             .map(ApplicationDescriptor::getStartedAtMillis)
             .reduce(Math::min)
             .orElse(0L);
 
     this.collectedToMillis =
-        occursInApplications
-            .stream()
+        occursInApplications.stream()
             .map(ApplicationDescriptor::getPublishedAtMillis)
             .reduce(Math::max)
             .orElse(0L);
@@ -103,21 +101,18 @@ public class MethodDescriptor1 {
     this.collectedDays =
         Math.toIntExact((this.collectedToMillis - this.collectedSinceMillis) / dayInMillis);
     this.lastInvokedAtMillis =
-        occursInApplications
-            .stream()
+        occursInApplications.stream()
             .map(ApplicationDescriptor::getInvokedAtMillis)
             .reduce(Math::max)
             .orElse(0L);
     this.statuses =
-        occursInApplications
-            .stream()
+        occursInApplications.stream()
             .map(ApplicationDescriptor::getStatus)
             .collect(Collectors.toSet());
     this.tags = new TreeSet<>();
     collectedInEnvironments.stream().map(EnvironmentDescriptor::getTags).forEach(tags::addAll);
     long tracked =
-        occursInApplications
-            .stream()
+        occursInApplications.stream()
             .map(ApplicationDescriptor::getStatus)
             .filter(SignatureStatus2::isTracked)
             .count();

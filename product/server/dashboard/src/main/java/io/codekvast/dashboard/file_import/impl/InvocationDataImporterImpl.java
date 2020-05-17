@@ -67,9 +67,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
     CommonPublicationData2 data = publication.getCommonData();
 
     Set<String> invocations =
-        publication
-            .getInvocations()
-            .stream()
+        publication.getInvocations().stream()
             .filter(i -> !syntheticSignatureService.isSyntheticMethod(i))
             .collect(Collectors.toSet());
     int ignoredSyntheticSignatures = publication.getInvocations().size() - invocations.size();

@@ -29,8 +29,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.RequestHeader
-import java.net.InetAddress
-import java.net.UnknownHostException
 
 /** @author olle.hallin@crisp.se
  */
@@ -57,14 +55,4 @@ class ModelAttributes(val commonSettings: CodekvastCommonSettings) {
     return if (requestHost.startsWith("localhost")) "localhost" else ".codekvast.io"
   }
 
-  @ModelAttribute("serverHostName")
-  fun serverHostName(): String {
-    return try {
-      val hostName = InetAddress.getLocalHost().canonicalHostName
-      logger.trace("hostName={}", hostName)
-      hostName
-    } catch (e: UnknownHostException) {
-      "<unknown>"
-    }
-  }
 }
