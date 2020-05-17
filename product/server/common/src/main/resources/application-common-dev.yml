@@ -5,7 +5,7 @@ codekvast:
     environment:                              dev
     jwtSecret:                                secret
     loginBaseUrl:                             http://localhost:8080
-    slackWebHookToken:
+    slackWebhookToken:
 
 logging:
   file:

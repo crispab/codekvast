@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Deploys the latest Docker image for Codekvast Login to the prod environment
+# Provisions AWS Fargate resources
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
-export AWS_PROFILE=codekvast
 
-aws ecs update-service --cluster=codekvast-prod --service=login --force-new-deployment | jq .service.taskDefinition | xargs
+ansible-playbook playbooks/provision-secrets.yml -e env=staging $*
+ansible-playbook playbooks/provision-services.yml -e env=staging $*

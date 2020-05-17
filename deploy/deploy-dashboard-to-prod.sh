@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Deploys Codekvast Dashboard to the production environment
+# Deploys the latest Docker image for Codekvast Dashboard to the prod environment
 #---------------------------------------------------------------------------------------------------
-
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/dashboard.yml --limit tag_Env_prod $*
+export AWS_PROFILE=codekvast
+aws ecs update-service --cluster=codekvast-prod --service=dashboard --force-new-deployment | jq .service.taskDefinition | xargs

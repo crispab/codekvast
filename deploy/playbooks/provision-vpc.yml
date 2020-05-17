@@ -1,0 +1,98 @@
+---
+#---------------------------------------------------------------
+# Playbook which provisions the AWS VPC
+#---------------------------------------------------------------
+- name:         Provision AWS Virtual Private Cloud
+  hosts:        localhost
+  connection:   local
+  gather_facts: no
+
+  vars_files:
+    - vars/common.yml
+
+  vars:
+    env: staging
+    cidr_base:
+      prod:    "10.0"
+      staging: "10.1"
+    aws_common_tags:
+      Owner:    Codekvast
+      Env:      "{{ env }}"
+      Name:     "codekvast-{{ env }}"
+
+  tasks:
+    - name:     Create VPC
+      ec2_vpc_net:
+        region:     "{{ aws_region }}"
+        profile:    codekvast
+        state:      present
+        name:       "codekvast-{{ env }}"
+        cidr_block: "{{ cidr_base[env] }}.0.0/16"
+        tags:       "{{ aws_common_tags }}"
+      register: net
+
+    - debug: var=net
+      when:  _debug is defined and _debug
+
+    - set_fact: vpc_id="{{ net.vpc.id }}"
+
+    - name:     Create VPC internet gateway
+      ec2_vpc_igw:
+        region:  "{{ aws_region }}"
+        profile: codekvast
+        state:   present
+        vpc_id:  "{{ vpc_id }}"
+        tags:    "{{ aws_common_tags }}"
+      register: igw
+
+    - debug: var=igw
+      when:  _debug is defined and _debug
+
+    - name:     Create VPC subnet A
+      ec2_vpc_subnet:
+        region:        "{{ aws_region }}"
+        profile:       codekvast
+        vpc_id:        "{{ vpc_id }}"
+        state:         present
+        az:            "{{ aws_region }}a"
+        cidr:          "{{ cidr_base[env] }}.1.0/24"
+        resource_tags: "{{ aws_common_tags }}"
+      register: subnet
+
+    - debug: var=subnet
+      when:  _debug is defined and _debug
+
+    - set_fact: subnet_id_a="{{ subnet.subnet.id }}"
+
+    - name:     Create VPC subnet B
+      ec2_vpc_subnet:
+        region:  "{{ aws_region }}"
+        profile: codekvast
+        vpc_id:  "{{ vpc_id }}"
+        state:   present
+        az:      "{{ aws_region }}b"
+        cidr:    "{{ cidr_base[env] }}.2.0/24"
+        tags:    "{{ aws_common_tags }}"
+      register: subnet
+
+    - debug: var=subnet
+      when:  _debug is defined and _debug
+
+    - set_fact: subnet_id_b="{{ subnet.subnet.id }}"
+
+    - name:     Create subnet route table
+      ec2_vpc_route_table:
+        region:  "{{ aws_region }}"
+        profile: codekvast
+        vpc_id:  "{{ vpc_id }}"
+        tags:    "{{ aws_common_tags }}"
+        subnets:
+          - "{{ subnet_id_a }}"
+          - "{{ subnet_id_b }}"
+        routes:
+          - dest:       0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+      register: route_table
+
+    - debug: var=route_table
+      when:  _debug is defined and _debug

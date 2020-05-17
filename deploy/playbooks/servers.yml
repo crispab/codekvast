@@ -1,8 +1,0 @@
----
-#---------------------------------------------------------------------------
-# Configures all servers once the infrastructure has been provisioned.
-# See also provision-infrastructure.yml
-#---------------------------------------------------------------------------
-- {import_playbook: backoffice.yml, tags: [server, service, backoffice]}
-- {import_playbook: dashboard.yml, tags: [server, service, dashboard]}
-- {import_playbook: login.yml, tags: [server, service, login]}

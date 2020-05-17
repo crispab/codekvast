@@ -44,12 +44,12 @@ public class MetricsConfig {
             .commonTags(
                 "service", settings.getApplicationName(),
                 "env", settings.getEnvironment(),
-                "host", getHostAddress());
+                "host", getHostname());
   }
 
-  private String getHostAddress() {
+  private String getHostname() {
     try {
-      return InetAddress.getLocalHost().getHostAddress();
+      return InetAddress.getLocalHost().getHostName();
     } catch (UnknownHostException ignored) {
       return "<unknown>";
     }

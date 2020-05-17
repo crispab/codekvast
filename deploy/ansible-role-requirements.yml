@@ -4,6 +4,3 @@
 # Install with `ansible-galaxy install -r ansible-role-requirements.yml`
 # NOTE: the roles/ directory should be version controlled!
 #------------------------------------------------------------------------------------
-- {src: Datadog.datadog, version: 2.3.0}
-- {src: oefenweb.swapfile, version: v2.0.10}
-- {src: Comcast.sdkman, version: 1.6.2}

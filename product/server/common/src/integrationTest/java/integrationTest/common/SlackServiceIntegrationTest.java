@@ -39,7 +39,7 @@ public class SlackServiceIntegrationTest {
     Properties props = new Properties();
     props.load(getClass().getResourceAsStream("/secrets.properties"));
 
-    settings.setSlackWebHookToken(props.getProperty("codekvast.slackWebHookToken"));
+    settings.setSlackWebHookToken(props.getProperty("codekvast.slackWebhookToken"));
     slackService = new SlackServiceImpl(settings, mock(CommonMetricsService.class));
   }
 

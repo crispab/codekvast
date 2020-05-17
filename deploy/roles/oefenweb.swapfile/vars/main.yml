@@ -1,5 +1,0 @@
-# vars file for swapfile
----
-swapfile_dependencies:
-  - util-linux
-swapfile_file: /swap

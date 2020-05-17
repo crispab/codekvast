@@ -21,6 +21,7 @@
  */
 package io.codekvast.common.bootstrap;
 
+import java.net.InetAddress;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -43,13 +45,13 @@ import org.springframework.validation.annotation.Validated;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"jwtSecret", "slackWebHookToken"})
+@ToString(exclude = {"jwtSecret", "slackWebhookToken"})
 @Slf4j
 public class CodekvastCommonSettings {
 
   private String applicationName;
   private String displayVersion;
-  private String dnsCname;
+  private String hostname = getLocalHostname();
 
   @Default private String environment = "dev";
 
@@ -57,9 +59,9 @@ public class CodekvastCommonSettings {
 
   @Default private Long jwtExpirationHours = 7 * 24L;
 
-  private String slackWebHookToken;
+  private String slackWebhookToken;
 
-  @Default private String slackWebHookUrl = "https://hooks.slack.com/services";
+  @Default private String slackWebhookUrl = "https://hooks.slack.com/services";
 
   /** The name of the person doing the last commit, injected from the build system. */
   private String committer;
@@ -90,7 +92,12 @@ public class CodekvastCommonSettings {
   @PreDestroy
   public void logShutdown() {
     //noinspection UseOfSystemOutOrSystemErr
-    System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, commitDate);
-    logger.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
+    System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, environment);
+    logger.info("{} shuts down", this);
+  }
+
+  @SneakyThrows
+  private String getLocalHostname() {
+    return InetAddress.getLocalHost().getHostName();
   }
 }

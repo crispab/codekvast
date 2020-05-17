@@ -70,10 +70,11 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     metricsService.countApplicationShutdown();
     doSend(
         String.format(
-            "%s %s in %s is stopping. Uptime = %s",
+            "%s %s in %s (%s) is stopping. Uptime = %s",
             settings.getApplicationName(),
             settings.getDisplayVersion(),
-            settings.getDnsCname(),
+            settings.getHostname(),
+            settings.getEnvironment(),
             humanReadableDuration(startedAt, Instant.now())),
         Channel.ALARMS);
   }
@@ -83,8 +84,8 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     metricsService.countApplicationStarted();
     doSend(
         String.format(
-            "%s %s in %s has started",
-            settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
+            "%s %s in %s (%s) has started",
+            settings.getApplicationName(), settings.getDisplayVersion(), settings.getHostname(), settings.getEnvironment()),
         Channel.ALARMS);
   }
 
@@ -116,10 +117,10 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
   }
 
   private String getSlackWebhookUrl(CodekvastCommonSettings settings) {
-    String token = settings.getSlackWebHookToken();
+    String token = settings.getSlackWebhookToken();
     if (token == null || token.trim().isEmpty()) {
       return null;
     }
-    return String.format("%s/%s", settings.getSlackWebHookUrl(), token);
+    return String.format("%s/%s", settings.getSlackWebhookUrl(), token);
   }
 }

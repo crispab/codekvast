@@ -1,7 +1,0 @@
-logs:
-  - type: journald
-    exclude_units:
-    - 'agent*'
-    - 'trace-agent*'
-    - 'ansible*'
-    - 'sudo*'
