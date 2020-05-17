@@ -2,9 +2,9 @@
 #---------------------------------------------------------------
 # Playbook which provisions the AWS infrastructure
 #---------------------------------------------------------------
-- name: AWS infrastructure stack
-  hosts: all[0]
-  connection: local
+- name:         Provision AWS infrastructure stack
+  hosts:        localhost
+  connection:   local
   gather_facts: no
 
   vars_files:
@@ -12,9 +12,9 @@
     - vars/secrets.yml
 
   tasks:
-  - name: Create AWS stacks
-    include_role: name=codekvast.aws-stack
-    with_items: "{{ aws_stacks }}"
-    loop_control:
-      loop_var: stack
-    tags: infra
+    - name:         Create AWS stacks
+      include_role: name=codekvast.aws-stack
+      with_items:   "{{ aws_stacks }}"
+      loop_control:
+        loop_var: stack
+      tags:         infra

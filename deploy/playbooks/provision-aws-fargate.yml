@@ -2,7 +2,7 @@
 #---------------------------------------------------------------
 # Playbook which provisions the AWS Fargate infrastructure
 #---------------------------------------------------------------
-- name:         AWS Fargate
+- name:         Provision AWS Fargate
   hosts:        localhost
   connection:   local
   gather_facts: no
@@ -13,7 +13,7 @@
 
   vars:
     env:        staging
-    dns_suffix: "{{ ('-staging', '-prod2')[env == 'prod'] }}.codekvast.io"
+    dns_suffix: "{{ ('-staging', '')[env == 'prod'] }}.codekvast.io"
     server_url: "https://api{{ dns_suffix }}"
 
     services:
@@ -46,7 +46,7 @@
             sourceVolume:  intake
         secrets: []
         envvars:
-          - name: CODEKVAST_DASHBOARD_FILE_IMPORT_QUEUE_PATH
+          - name:  CODEKVAST_DASHBOARD_FILE_IMPORT_QUEUE_PATH
             value: /intake/queue
 
       - name:               login
@@ -87,6 +87,7 @@
       tags:
         Owner: Codekvast
         Env:   "{{ env }}"
+        LaunchType: Fargate
 
       secrets:
         - name:      SPRING_DATASOURCE_PASSWORD

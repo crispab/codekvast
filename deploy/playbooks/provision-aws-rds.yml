@@ -2,7 +2,7 @@
 #---------------------------------------------------------------
 # Playbook that provisions the AWS RDS clusters
 #---------------------------------------------------------------
-- name:         AWS RDS clusters
+- name:         Provision AWS RDS servers
   hosts:        all[0]
   connection:   local
   gather_facts: no
@@ -130,7 +130,7 @@
         overwrite_value: "always"
       tags: secrets
 
-    - name:     "Create CNAME db-{{ env}}.codekvast.io -> {{ rds.endpoint.address }}"
+    - name:     "Create CNAME db-{{ env }}.codekvast.io -> {{ rds.endpoint.address }}"
       route53:
         profile:   codekvast # in ~/.boto
         zone:      codekvast.io

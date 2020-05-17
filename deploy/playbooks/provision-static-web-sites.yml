@@ -2,9 +2,9 @@
 #---------------------------------------------------------------
 # Playbook which provisions the static web sites
 #---------------------------------------------------------------
-- name: Provision static web sites
-  hosts: all[0]
-  connection: local
+- name:         Provision static web sites
+  hosts:        localhost
+  connection:   local
   gather_facts: no
 
   vars_files:
@@ -16,90 +16,90 @@
       #    - name: 'test.codekvast.io'
       #      region: 'eu-central-1'
       #      env: 'staging'
-      - name: 'downloads.codekvast.io'
+      - name:   'downloads.codekvast.io'
         region: 'eu-central-1'
-      - name: 'www.codekvast.io'
+      - name:   'www.codekvast.io'
         region: 'eu-central-1'
-      - name: 'codekvast.io'
-        region: 'eu-central-1'
+      - name:                   'codekvast.io'
+        region:                 'eu-central-1'
         viewer_protocol_policy: 'allow-all'
-        redirect_to: 'https://www.codekvast.io'
+        redirect_to:            'https://www.codekvast.io'
 
     cloudfront_zone_id: 'Z2FDTNDATAQYW2'
 
     other_dns_records:
-      - name: '_d60ed2fdbf07f3f631a87cbe4b31da89.codekvast.io'
+      - name:  '_d60ed2fdbf07f3f631a87cbe4b31da89.codekvast.io'
         value: '_1f2bc564036706f4ddbb398053c86ab4.acm-validations.aws'
         owner: 'AWS Certificate Manager'
 
   tasks:
-    - name: Create S3 buckets for static websites
+    - name:       Create S3 buckets for static websites
       s3_bucket:
         profile: codekvast
-        region: "{{ item.region }}"
-        name: "{{ item.name }}"
-        policy: "{{ lookup('template', 'aws/iam/s3-public-web-site.json') }}"
+        region:  "{{ item.region }}"
+        name:    "{{ item.name }}"
+        policy:  "{{ lookup('template', 'aws/iam/s3-public-web-site.json') }}"
         tags:
           Owner: Codekvast
       with_items: "{{ static_web_sites }}"
       loop_control:
         label: "{{ item.name }}"
-      tags: static-web-sites
+      tags:       static-web-sites
 
-    - name: Enable S3 support for static websites
+    - name:       Enable S3 support for static websites
       s3_website:
-        profile: codekvast
-        region: "{{ item.region }}"
-        name: "{{ item.name }}"
+        profile:               codekvast
+        region:                "{{ item.region }}"
+        name:                  "{{ item.name }}"
         redirect_all_requests: "{{ item.redirect_to | default(omit) }}"
-        state: present
+        state:                 present
       with_items: "{{ static_web_sites }}"
       loop_control:
         label: "{{ item.name }}"
-      tags: static-web-sites
+      tags:       static-web-sites
 
-    - name: Configure CloudFront distributions for static websites
+    - name:       Configure CloudFront distributions for static websites
       cloudfront_distribution:
-        profile: codekvast
-        region: "{{ item.region }}"
-        alias: "{{ item.name }}"
+        profile:      codekvast
+        region:       "{{ item.region }}"
+        alias:        "{{ item.name }}"
         ipv6_enabled: yes
-        price_class: 'PriceClass_100'
+        price_class:  'PriceClass_100'
         origins:
-          - id: "S3-{{ item.name }}"
+          - id:          "S3-{{ item.name }}"
             domain_name: "{{ item.name }}.s3-website.{{ item.region }}.amazonaws.com"
             custom_origin_config:
               origin_protocol_policy: "http-only"
         viewer_certificate:
           cloud_front_default_certificate: False
-          acm_certificate_arn: "{{ ssl_certificates['us-east-1'] }}"
+          acm_certificate_arn:             "{{ ssl_certificates['us-east-1'] }}"
         default_cache_behavior:
           viewer_protocol_policy: 'redirect-to-https'
         tags:
           Owner: Codekvast
-          Env: "{{ item.env | default('prod') }}"
+          Env:   "{{ item.env | default('prod') }}"
       with_items: "{{ static_web_sites }}"
       loop_control:
         label: "{{ item.name }}"
-      register: cf
-      tags: static-web-sites
+      register:   cf
+      tags:       static-web-sites
 
     - debug: var=cf
-      tags: static-web-sites
-      when: _debug is defined and _debug
+      tags:  static-web-sites
+      when:  _debug is defined and _debug
 
     - name: Create DNS aliases for CloudFront distributions
       route53:
-        profile: codekvast # in ~/.boto
-        zone: codekvast.io
-        command: create
-        overwrite: yes
-        type: "{{ item[0] }}"
-        alias: True
+        profile:              codekvast # in ~/.boto
+        zone:                 codekvast.io
+        command:              create
+        overwrite:            yes
+        type:                 "{{ item[0] }}"
+        alias:                True
         alias_hosted_zone_id: "{{ cloudfront_zone_id }}"
-        record: "{{ item[1].item.name }}"
-        value: "{{ item[1].domain_name }}"
-        ttl: 7200
+        record:               "{{ item[1].item.name }}"
+        value:                "{{ item[1].domain_name }}"
+        ttl:                  7200
       with_nested:
         - [ "A", "AAAA"]
         - "{{ cf.results }}"
@@ -107,19 +107,19 @@
         label: "{{ item[0] }}: {{ item[1].item.name }} -> {{ item[1].domain_name }}"
       tags: static-web-sites
 
-    - name: Create other DNS records
+    - name:       Create other DNS records
       route53:
-        profile: codekvast # in ~/.boto
-        zone: codekvast.io
-        command: "{{ item.command | default('create') }}"
-        overwrite: yes
-        record: "{{ item.name }}"
-        ttl: 86400
-        type: "{{ item.type | default('CNAME') }}"
-        value: "{{ item.value }}"
-        alias: "{{ item.alias | default(False) }}"
+        profile:              codekvast # in ~/.boto
+        zone:                 codekvast.io
+        command:              "{{ item.command | default('create') }}"
+        overwrite:            yes
+        record:               "{{ item.name }}"
+        ttl:                  86400
+        type:                 "{{ item.type | default('CNAME') }}"
+        value:                "{{ item.value }}"
+        alias:                "{{ item.alias | default(False) }}"
         alias_hosted_zone_id: "{{ item.alias_zone_id | default(None) }}"
       with_items: "{{ other_dns_records }}"
       loop_control:
         label: "{{ item.type | default('CNAME') }} {{ item.name }} -> {{ item.value }}"
-      tags: dns
+      tags:       dns

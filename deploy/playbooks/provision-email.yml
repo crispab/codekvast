@@ -2,9 +2,9 @@
 #---------------------------------------------------------------
 # Playbook which provisions the email infrastructure
 #---------------------------------------------------------------
-- name: Email infrastructure
-  hosts: all[0]
-  connection: local
+- name:         Provision email infrastructure
+  hosts:        localhost
+  connection:   local
   gather_facts: no
 
   vars_files:
@@ -13,79 +13,79 @@
 
   vars:
     email_dns_records:
-    - name: '7gs2gnhqp5ao2xoef4gv3vpr54ckn3zq._domainkey.codekvast.io'
-      value: '7gs2gnhqp5ao2xoef4gv3vpr54ckn3zq.dkim.amazonses.com'
-      owner: 'AWS Simple Email Services'
-    - name: 'ayjc6qn6thqgrnu4bcjt5ugslxhkbrjb._domainkey.codekvast.io'
-      value: 'ayjc6qn6thqgrnu4bcjt5ugslxhkbrjb.dkim.amazonses.com'
-      owner: 'AWS Simple Email Services'
-    - name: 'gepcir4h22qqcmdpxogxyg3tuvteeedv._domainkey.codekvast.io'
-      value: 'gepcir4h22qqcmdpxogxyg3tuvteeedv.dkim.amazonses.com'
-      owner: 'AWS Simple Email Services'
-    - name: '_amazonses.codekvast.io'
-      type: TXT
-      value:
-        - '"eieDOHvpRK2mPPjSTt2A8FJC2U+/dBAsrLzoaxvAW6Y="' # Frankfurt
-        - '"ANhwmN6zcU+GrPdkurz7p3HwZiQBRlnqsH5k/23s/CY="' # Ireland
-      owner: 'AWS Simple Email Services'
-    - name: 'codekvast.io'
-      type: MX
-      value: '10 inbound-smtp.eu-west-1.amazonaws.com' # Frankfurt does not handle incoming mail
-      owner: 'AWS Simple Email Services'
+      - name:  '7gs2gnhqp5ao2xoef4gv3vpr54ckn3zq._domainkey.codekvast.io'
+        value: '7gs2gnhqp5ao2xoef4gv3vpr54ckn3zq.dkim.amazonses.com'
+        owner: 'AWS Simple Email Services'
+      - name:  'ayjc6qn6thqgrnu4bcjt5ugslxhkbrjb._domainkey.codekvast.io'
+        value: 'ayjc6qn6thqgrnu4bcjt5ugslxhkbrjb.dkim.amazonses.com'
+        owner: 'AWS Simple Email Services'
+      - name:  'gepcir4h22qqcmdpxogxyg3tuvteeedv._domainkey.codekvast.io'
+        value: 'gepcir4h22qqcmdpxogxyg3tuvteeedv.dkim.amazonses.com'
+        owner: 'AWS Simple Email Services'
+      - name:  '_amazonses.codekvast.io'
+        type:  TXT
+        value:
+          - '"eieDOHvpRK2mPPjSTt2A8FJC2U+/dBAsrLzoaxvAW6Y="' # Frankfurt
+          - '"ANhwmN6zcU+GrPdkurz7p3HwZiQBRlnqsH5k/23s/CY="' # Ireland
+        owner: 'AWS Simple Email Services'
+      - name:  'codekvast.io'
+        type:  MX
+        value: '10 inbound-smtp.eu-west-1.amazonaws.com' # Frankfurt does not handle incoming mail
+        owner: 'AWS Simple Email Services'
 
   tasks:
-  - name: Create email-related DNS records
-    route53:
-      profile: codekvast # in ~/.boto
-      zone: codekvast.io
-      command: "{{ item.command | default('create') }}"
-      overwrite: yes
-      record: "{{ item.name }}"
-      ttl: 86400
-      type: "{{ item.type | default('CNAME') }}"
-      value: "{{ item.value }}"
-      alias: "{{ item.alias | default(False) }}"
-      alias_hosted_zone_id: "{{ item.alias_zone_id | default(None) }}"
-    with_items: "{{ email_dns_records }}"
-    loop_control:
-      label: "{{ item.type | default('CNAME') }} {{ item.name }} -> {{ item.value }}"
+    - name:       Create email-related DNS records
+      route53:
+        profile:              codekvast # in ~/.boto
+        zone:                 codekvast.io
+        command:              "{{ item.command | default('create') }}"
+        overwrite:            yes
+        record:               "{{ item.name }}"
+        ttl:                  86400
+        type:                 "{{ item.type | default('CNAME') }}"
+        value:                "{{ item.value }}"
+        alias:                "{{ item.alias | default(False) }}"
+        alias_hosted_zone_id: "{{ item.alias_zone_id | default(None) }}"
+      with_items: "{{ email_dns_records }}"
+      loop_control:
+        label: "{{ item.type | default('CNAME') }} {{ item.name }} -> {{ item.value }}"
 
-  - name: Create an S3 bucket for incoming mail
-    s3_bucket:
+    - name: Create an S3 bucket for incoming mail
+      s3_bucket:
         profile: codekvast
-        region: "eu-central-1"
-        name: "mailbox.codekvast.io"
-        policy: "{{ lookup('template', 'aws/iam/s3-mailbox.json') }}"
+        region:  "eu-central-1"
+        name:    "mailbox.codekvast.io"
+        policy:  "{{ lookup('template', 'aws/iam/s3-mailbox.json') }}"
         tags:
-            Owner: Codekvast
+          Owner: Codekvast
 
-  - name: Set up a lifecycle rule for the mailbox bucket
-    s3_lifecycle:
-        profile: codekvast
-        region: "eu-central-1"
-        rule_id: "Expire old emails"
-        name: "mailbox.codekvast.io"
+    - name: Set up a lifecycle rule for the mailbox bucket
+      s3_lifecycle:
+        profile:         codekvast
+        region:          "eu-central-1"
+        rule_id:         "Expire old emails"
+        name:            "mailbox.codekvast.io"
         expiration_days: 30
-        status: enabled
-        state: present
+        status:          enabled
+        state:           present
 
-  - name: Run 'npm ci' for aws-ses-forwarder
-    shell: npm ci chdir="files/aws-ses-forwarder"
+    - name:  Run 'npm ci' for aws-ses-forwarder
+      shell: npm ci chdir="files/aws-ses-forwarder"
 
-  - name: Create aws-ses-forwarder.zip
-    archive:
-        path: "files/aws-ses-forwarder/"
-        dest: /tmp/aws-ses-forwarder.zip
+    - name: Create aws-ses-forwarder.zip
+      archive:
+        path:   "files/aws-ses-forwarder/"
+        dest:   /tmp/aws-ses-forwarder.zip
         format: zip
 
-  - name: Install email forwarder lambda
-    lambda:
-        profile: codekvast
-        region: "eu-west-1" # Codekvast's MX record points to eu-west-1
-        name: "mail-forwarder"
-        role: "arn:aws:iam::{{ aws_account }}:role/Mail-forwarder"
-        handler: "index.handler"
-        runtime: "nodejs12.x"
+    - name: Install email forwarder lambda
+      lambda:
+        profile:  codekvast
+        region:   "eu-west-1" # Codekvast's MX record points to eu-west-1
+        name:     "mail-forwarder"
+        role:     "arn:aws:iam::{{ aws_account }}:role/Mail-forwarder"
+        handler:  "index.handler"
+        runtime:  "nodejs12.x"
         zip_file: "/tmp/aws-ses-forwarder.zip"
         tags:
-            Owner: Codekvast
+          Owner: Codekvast
