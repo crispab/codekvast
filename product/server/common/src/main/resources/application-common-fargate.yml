@@ -22,8 +22,11 @@ server:
   port:                    8080
   undertow:
     accesslog:
-      enabled: false
-
+      enabled: true
+      dir: /dev
+      prefix: stdout
+      suffix: ''
+      rotate: false
 spring:
   main:
     banner-mode:        off

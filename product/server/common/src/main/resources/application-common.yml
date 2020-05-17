@@ -40,9 +40,6 @@ server:
       enabled: true
       pattern: combined
   forward-headers-strategy: framework
-  error:
-    whitelabel:
-      enabled: false
 spring:
   datasource:
     hikari:
