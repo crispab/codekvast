@@ -9,13 +9,9 @@
 
   vars_files:
     - vars/common.yml
-    - vars/secrets.yml
 
   vars:
     static_web_sites:
-      #    - name: 'test.codekvast.io'
-      #      region: 'eu-central-1'
-      #      env: 'staging'
       - name:   'downloads.codekvast.io'
         region: 'eu-central-1'
       - name:   'www.codekvast.io'

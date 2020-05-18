@@ -9,7 +9,6 @@
 
   vars_files:
     - vars/common.yml
-    - vars/secrets.yml
 
   vars:
     email_dns_records:

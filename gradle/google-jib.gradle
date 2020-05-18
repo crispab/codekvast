@@ -9,6 +9,8 @@ task jibCreateAgentProperties {
     def configFile = file("build/jib-extra/app/codekvast-agent.properties")
 
     inputs.property("codekvastVersion", codekvastDisplayVersion)
+    inputs.file file("$rootDir/deploy/playbooks/vars/secrets.yml")
+
     outputs.file configFile
 
     doLast {
@@ -75,8 +77,5 @@ def getOpenJdkVersion() {
 }
 
 def getCodekvastLicenseKey() {
-    def secrets_vars = file("$rootDir/deploy/playbooks/vars/secrets.yml").text
-    def matcher = secrets_vars =~ ~/(?m)^codekvast.licenseKey:\s+(["'])(.*)\1/
-    assert matcher.find()
-    return matcher.group(2)
+  return "yq read $rootDir/deploy/playbooks/vars/secrets.yml secrets.codekvast.agent.licenseKey".execute().in.text.trim()
 }

@@ -82,7 +82,7 @@
         db_name:                                         codekvast
         engine:                                          mariadb
         engine_version:                                  "10.4"
-        master_user_password:                            "{{ mariadb_root_password }}"
+        master_user_password:                            "{{ secrets.mariadb[env].root_password }}"
         master_username:                                 root
         port:                                            3306
         preferred_backup_window:                         "02:00-03:00"
@@ -105,7 +105,7 @@
       mysql_db:
         login_host:     "{{ rds.endpoint.address }}"
         login_user:     root
-        login_password: "{{ mariadb_root_password }}"
+        login_password: "{{ secrets.mariadb[env].root_password }}"
         name:           codekvast
         encoding:       utf8
 
@@ -113,10 +113,10 @@
       mysql_user:
         login_host:          "{{ rds.endpoint.address }}"
         login_user:          root
-        login_password:      "{{ mariadb_root_password }}"
+        login_password:      "{{ secrets.mariadb[env].root_password }}"
         name:                codekvast
         host:                "%"
-        password:            "{{ mariadb_application_password }}"
+        password:            "{{ secrets.mariadb.application_password }}"
         priv:                "codekvast.*:CREATE,ALTER,DROP,SELECT,INSERT,UPDATE,DELETE"
 
     - name: "Store MariaDB application password as a secret"
@@ -124,8 +124,8 @@
         profile:         codekvast
         region:          "{{ aws_region }}"
         description:     "Codekvast database application password"
-        name:            "/codekvast/{{ env }}/mariadb_application_password"
-        value:           "{{ mariadb_application_password }}"
+        name:            "/codekvast/{{ env }}/mariadb/application_password"
+        value:           "{{ secrets.mariadb.application_password }}"
         string_type:     "SecureString"
         overwrite_value: "always"
       tags: secrets

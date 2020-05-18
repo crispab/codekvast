@@ -9,7 +9,6 @@
 
   vars_files:
     - vars/common.yml
-    - vars/secrets.yml
 
   vars:
     env:        staging
@@ -58,11 +57,11 @@
         stickiness_enabled: true
         secrets:
           - name:      CODEKVAST_LOGIN_CIPHER_SECRET
-            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/cipherSecret"
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/login/cipherSecret"
           - name:      CODEKVAST_LOGIN_HEROKU_API_PASSWORD
-            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/apiPassword"
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/api/password"
           - name:      CODEKVAST_LOGIN_HEROKU_API_SSO_SALT
-            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/ssoSalt"
+            valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/api/ssoSalt"
           - name:      CODEKVAST_LOGIN_HEROKU_O_AUTH_CLIENT_ID
             valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/heroku/oauth/clientId"
           - name:      CODEKVAST_LOGIN_HEROKU_O_AUTH_CLIENT_SECRET
@@ -91,15 +90,17 @@
 
       secrets:
         - name:      SPRING_DATASOURCE_PASSWORD
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb_application_password"
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb/application_password"
         - name:       SPRING_RABBITMQ_ADDRESSES
-          valueFrom:  "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/rabbitmq_url"
+          valueFrom:  "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/rabbitmq/url"
         - name:      CODEKVAST_COMMON_JWT_SECRET
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/jwt_secret"
         - name:      CODEKVAST_COMMON_SLACK_WEBHOOK_TOKEN
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/slackWebhookToken"
         - name:      MANAGEMENT_METRICS_EXPORT_DATADOG_API_KEY
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/apiKey"
+        - name:      MANAGEMENT_METRICS_EXPORT_DATADOG_APPLICATION_KEY
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/applicationKey"
       envvars:
         - name:  CODEKVAST_ENVIRONMENT
           value: "{{ env }}"
@@ -326,12 +327,12 @@
                 provider:       ecs
               secretOptions:
                 - name:      apikey
-                  valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
+                  valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/apiKey"
           - name:  "datadog-agent"
             image: "datadog/agent:latest"
             secrets:
               - name:      DD_API_KEY
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadogApiKey"
+                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/apiKey"
             environment:
               - name:  ECS_FARGATE
                 value: true

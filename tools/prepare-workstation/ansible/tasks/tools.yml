@@ -1,12 +1,4 @@
 ---
-- name: Install git and curl
-  package: name={{ item }} state=present
-  with_items:
-  - git
-  - git-crypt
-  - curl
-  - xtrabackup
-
 - name: Uninstall nodejs-legacy
   package: name=nodejs-legacy state=absent
 
@@ -15,43 +7,38 @@
   args:
     creates: /etc/apt/sources.list.d/nodesource.list
 
-- name: Install NodeJS
-  package: name={{ item }} state=latest
-  with_items:
-  - nodejs
-  - build-essential
-  - node-rimraf
-  -
-- name: Install gradlew finder
-  template: src=gradlew-finder.sh dest=/usr/local/bin/gradlew mode=a=rx
-
 - name: Install Yarn APT key
   apt_key: url=https://dl.yarnpkg.com/debian/pubkey.gpg state=present
 
-- name: Make sure Yarn APT source is defined
+- name: Define Yarn APT source
   apt_repository:
     filename: yarn
     repo: "deb https://dl.yarnpkg.com/debian/ stable main"
     state: present
 
-- name: Install Yarn
-  package: name=yarn state=present
+- name: Install APT packages
+  package: name={{ item }} state=present
+  loop:
+  - build-essential
+  - curl
+  - git
+  - git-crypt
+  - node-rimraf
+  - nodejs
+  - ruby # For Kensa
+  - ruby-dev
+  - yarn
 
-- name: Install wait-on globally
+- name: Install snaps
+  snap: name={{ item }} state=present
+  loop:
+    - yq
+
+- name: Install gradlew finder
+  template: src=gradlew-finder.sh dest=/usr/local/bin/gradlew mode=a=rx
+
+- name: Install Yarn package wait-on globally
   shell: yarn global add wait-on
 
-- name: Install Ruby (for Kensa)
-  package: name={{ item }} state=present
-  with_items:
-  - ruby
-  - ruby-dev
-
-- name: Install Kensa
+- name: Install Kensa gem
   shell: gem install kensa
-
-- name: Install datadogpy
-  shell: pip3 install {{ item }}
-  with_items:
-  - datadog
-  - pyyaml
-

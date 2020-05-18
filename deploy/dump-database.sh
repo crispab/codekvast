@@ -9,7 +9,6 @@ declare srcEnv=${1:-prod}
 declare targetDirectory=${2:-$HOME/Dropbox/Codekvast/db-dumps}
 declare dumpFile=codekvast-${srcEnv}-$(date --utc +"%Y%m%d-%H%M%S").sql
 declare username=root
-declare password=$(grep mariadb_root_password playbooks/vars/secrets.yml | cut -d: -f2 | xargs)
 
 case ${srcEnv} in
   staging|prod) ;;
@@ -28,6 +27,7 @@ if [[ ! -d ${targetDirectory} ]]; then
 fi
 
 declare host=db-${srcEnv}.codekvast.io
+declare password=$(yq read playbooks/vars/secrets.yml secrets.mariadb.${srcEnv}.root_password)
 declare startedAtSecond=$(date +"%s")
 declare targetFile=${targetDirectory}/${dumpFile}
 echo "mysqldump --host=${host} --user=${username} --password=XXX --single-transaction --databases codekvast > $targetFile"
