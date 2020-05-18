@@ -22,6 +22,7 @@
         count:
           staging: 1
           prod:    2
+        db_connections: 2
         stickiness_enabled: false
         secrets:
           - name:      SPRING_MAIL_USERNAME
@@ -37,6 +38,7 @@
         count:
           staging: 1
           prod:    2
+        db_connections: 10
         stickiness_enabled: false
         volumes:
           - name: intake
@@ -54,6 +56,7 @@
         count:
           staging: 1
           prod:    2
+        db_connections: 5
         stickiness_enabled: true
         secrets:
           - name:      CODEKVAST_LOGIN_CIPHER_SECRET
@@ -114,8 +117,6 @@
           value: "https://login{{ dns_suffix }}"
         - name:  SPRING_DATASOURCE_URL
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
-        - name:  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
-          value: 5
     rds:
       tags:
         Owner: Codekvast
@@ -345,6 +346,8 @@
               value: "{{ item.name }}-fargate"
             - name:  CODEKVAST_COMMON_DNS_CNAME
               value: "{{ item.name }}{{ dns_suffix }}"
+            - name:  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+              value: "{{ item.db_connections }}"
       loop:     "{{ services }}"
       loop_control:
         label: "codekvast-{{ item.name }}"
