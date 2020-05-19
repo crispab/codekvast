@@ -14,10 +14,13 @@ management:
     conditions.enabled: false
     mappings.enabled:   false
   metrics:
-    export.datadog:
-      enabled: true
-      step:    PT60S
-
+    export:
+      datadog:
+        enabled:  true
+        step:     1m
+        host-tag: host
+      jmx:
+        enabled: false
 server:
   port:                    8080
   undertow:
