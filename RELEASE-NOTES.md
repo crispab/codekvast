@@ -8,6 +8,7 @@
 4. Upgraded to Gradle 6.2.2, Spring Boot 2.2.7, Kotlin 1.3.72 plus some more
 5. Added Java 14 to the agent test suite.
 6. Accepts apiKey (aka CODEKVAST_API_KEY or -Dcodekvast.apiKey) as synonym to AgentConfig.licenseKey.
+7. Converted deployment model from EC2 "pets" to ECS "cattle".
 
 ## 1.3.2
 

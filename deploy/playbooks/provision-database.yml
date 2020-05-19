@@ -2,8 +2,8 @@
 #---------------------------------------------------------------
 # Playbook that provisions the AWS RDS clusters
 #---------------------------------------------------------------
-- name:         Provision AWS RDS servers
-  hosts:        all[0]
+- name:         "Provision AWS RDS servers in {{ env }}"
+  hosts:        localhost
   connection:   local
   gather_facts: no
 

@@ -19,16 +19,16 @@ if [[ ! -f ${secrets} ]]; then
     exit 1
 fi
 
-declare herokuApiPassword=$(grep herokuApiPassword ${secrets} | cut -d: -f2 | xargs)
-declare herokuApiSsoSalt=$(grep herokuApiSsoSalt ${secrets} | cut -d: -f2 | xargs)
+declare herokuApiPassword=$(yq read ${secrets} secrets.codekvast.heroku.provision.api.password)
+declare herokuApiSsoSalt=$(yq read ${secrets} secrets.codekvast.heroku.provision.api.ssoSalt)
 
 if [[ -z "$herokuApiPassword" ]]; then
-    echo "No such line in $secrets: herokuApiPassword" 1>&2
+    echo "Cannot find secrets.codekvast.heroku.provision.api.password in ${secrets}" 1>&2
     exit 1
 fi
 
 if [[ -z "$herokuApiSsoSalt" ]]; then
-    echo "No such line in $secrets: herokuApiSsoSalt" 1>&2
+    echo "Cannot find secrets.codekvast.heroku.provision.api.ssoSalt in ${secrets}" 1>&2
     exit 1
 fi
 

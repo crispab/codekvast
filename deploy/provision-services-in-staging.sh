@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Provisions AWS Fargate resources
+# Provisions AWS ECS resources in staging
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/provision-secrets.yml -e env=staging $*
-ansible-playbook playbooks/provision-services.yml -e env=staging $*
+env ENVIRONMENTS=staging ./provision-services.sh $*

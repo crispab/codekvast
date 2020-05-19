@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Provisions the complete AWS stack in staging
+# Provisions AWS networking
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
 
-env ENVIRONMENTS=staging ./provision-all.sh $*
+for env in ${ENVIRONMENTS:-staging prod}; do
+  ansible-playbook playbooks/provision-vpc.yml -e env=${env} $*
+  ansible-playbook playbooks/provision-security-groups.yml -e env=${env} $*
+done

@@ -5,4 +5,4 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/provision-security-groups.yml -e env=staging $*
+env ENVIRONMENTS=staging ./provision-security-groups.sh $*

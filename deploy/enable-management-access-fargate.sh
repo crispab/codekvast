@@ -4,8 +4,7 @@
 #---------------------------------------------------------------------------------------------------------
 source $(dirname $0)/.check-requirements.sh
 
-declare region=$(grep aws_region playbooks/vars/common.yml | cut -d: -f2 | xargs)
-declare AWS_EC2="aws --profile codekvast --region ${region} ec2"
+declare region=$(yq read playbooks/vars/common.yml aws_region)
 
 declare environment=${1:-staging}
 declare description=${2:-$(hostname)}
@@ -17,7 +16,7 @@ declare myIp=$(curl -s https://api.ipify.org)
 
 for groupName in ${groupNames}; do
   # Find the GroupId of the security group
-  declare groupId=$($AWS_EC2 describe-security-groups --filters Name=group-name,Values=${groupName}|jq .SecurityGroups[0].GroupId|xargs)
+  declare groupId=$(aws --profile codekvast ec2 describe-security-groups --filters Name=group-name,Values=${groupName}|jq .SecurityGroups[0].GroupId|xargs)
 
   case "$groupId" in
       null)
@@ -29,7 +28,7 @@ for groupName in ${groupNames}; do
 
   echo -n "Will modify the security group $groupName to enable all ICMP access and TCP access on ports $fromPort-$toPort from $myIp with the description \"$description\". Ok? [y/N]: "
   read answer
-  case $answer in
+  case ${answer} in
       ""|n|N) exit 0;;
       y|Y) ;;
   esac

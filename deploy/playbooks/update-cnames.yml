@@ -11,33 +11,6 @@
     - vars/common.yml
 
   tasks:
-  - name: "Find running backend instances owned by Codekvast"
-    ec2_instance_info:
-      profile: codekvast
-      region: "{{ aws_region }}"
-      filters:
-        "tag:Owner": Codekvast
-        "tag:role": backend
-        "instance-state-name": running
-    register: backend
-
-  - debug: var=backend
-    when: _debug is defined and _debug
-
-  - name: "Define the backend instances' CNAMEs"
-    route53:
-      profile: codekvast # in ~/.boto
-      command: create
-      overwrite: yes
-      record: "{{ item.0.tags[item.1] }}"
-      value: "{{ item.0.public_dns_name }}"
-      ttl: 600
-      type: CNAME
-      zone: codekvast.io
-    loop: "{{ backend.instances|product(['CNAME0', 'CNAME1', 'CNAME2', 'CNAME3'])|list }}"
-    loop_control:
-      label: "{{item.0.tags[item.1] + ' => ' + item.0.public_dns_name }}"
-
   - name: "Find running RDS instances owned by Codekvast"
     rds_instance_info:
       profile: codekvast

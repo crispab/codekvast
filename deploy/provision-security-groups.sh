@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Refreshes the Ansible inventory cache
+# Provisions AWS EC2 security groups
 #---------------------------------------------------------------------------------------------------
 
-rm -fr ~/.cache/ansible-inventory/ ~/.cache/ansible-facts/
+source $(dirname $0)/.check-requirements.sh
 
-cd $(dirname $0)
-ansible-inventory --graph
+for env in ${ENVIRONMENTS:-staging prod}; do
+  ansible-playbook playbooks/provision-security-groups.yml -e env=${env} $*
+done

@@ -5,4 +5,4 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-ansible-playbook playbooks/provision-security-groups.yml -e env=prod $*
+env ENVIRONMENTS=prod ./provision-security-groups.sh $*
