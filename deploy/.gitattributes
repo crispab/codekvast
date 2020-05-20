@@ -1,3 +1,3 @@
-*secret* filter=git-crypt diff=git-crypt
-datadog_callback.yml filter=git-crypt diff=git-crypt
+secrets.yml filter=git-crypt diff=git-crypt
+provision-secrets* !filter !diff
 .gitattributes !filter !diff
