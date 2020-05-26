@@ -116,7 +116,7 @@ public class DashboardServiceImpl implements DashboardService {
     if (request.getLocations() != null && !request.getLocations().isEmpty()) {
       params.addValue(
           "locationIds",
-          translateNamesToIds("method_locations", "location", request.getLocations()));
+          translateNamesToIds("method_locations", "locationNoVersion", request.getLocations()));
       whereClause += " AND ml.id IN (:locationIds)";
     }
 
@@ -391,7 +391,7 @@ public class DashboardServiceImpl implements DashboardService {
             customerId);
     List<String> locations =
         jdbcTemplate.queryForList(
-            "SELECT DISTINCT location FROM method_locations WHERE customerId = ? ",
+            "SELECT DISTINCT locationNoVersion FROM method_locations WHERE customerId = ? ",
             String.class,
             customerId);
     return GetMethodsFormData.builder()

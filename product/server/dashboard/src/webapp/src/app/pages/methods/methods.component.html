@@ -67,7 +67,7 @@
             <input class="form-control ml-3" size="20" type="text" name="locations"
                    [(ngModel)]="state.searchState.locations"
                    placeholder="Filter by location">
-            <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredLocationsNoVersions() }}</span>
+            <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredLocations() }}</span>
           </div>
 
           <div *ngIf="settings.advancedControls" class="form-inline">

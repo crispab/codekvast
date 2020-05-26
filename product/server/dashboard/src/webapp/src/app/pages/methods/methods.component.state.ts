@@ -151,23 +151,6 @@ export class MethodsComponentState {
     return this.locations.filter(a => a.toLowerCase().indexOf(this.searchState.locations.trim().toLowerCase()) >= 0);
   }
 
-  getFilteredLocationsNoVersions(): string {
-    const distinct = (value: string, index: number, self: string[]) => {
-      return self.indexOf(value) === index;
-    };
-
-    // NOTE: This regexp MUST match the definition of the computed database column method_locations.locationNoVersion
-    const regexp = /(^[\w/-]+)(-(\d.*|DEV-SNAPSHOT-fat|SNAPSHOT))(\.\w+$)/; // (base)(version)(extension)
-
-    return this.getFilteredLocations()
-    .map((loc) => {
-      let match = regexp.exec(loc);
-      return match == null ? loc : match[1] + match[4]
-    })
-    .filter(distinct)
-    .join(', ');
-  }
-
   isSearchDisabled(): Boolean {
     return this.searching
         || this.getFilteredApplications().length == 0
