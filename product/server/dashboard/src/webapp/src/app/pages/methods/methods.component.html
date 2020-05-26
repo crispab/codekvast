@@ -46,28 +46,62 @@
             </div>
           </div>
 
+          <ng-template #regexpHints>
+            <p>The field accepts a regular expression</p>
+          </ng-template>
+
           <div class="form-inline mt-1">
             <label class="col-form-label">In applications:</label>
-            <input class="form-control ml-3" size="20" type="text" name="applications"
-                   [(ngModel)]="state.searchState.applications"
-                   placeholder="Filter by application">
-            <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredApplications().join(', ') }}</span>
+            <div class="col-10 input-group">
+              <input class="form-control col-2" type="text" name="applications"
+                     [(ngModel)]="state.searchState.applications"
+                     placeholder="Filter by application">
+              <div class="input-group-append">
+                                <span class="input-group-text font-italic"
+                                      container="body"
+                                      [ngbPopover]="regexpHints"
+                                      popoverTitle="Regular Expression"
+                                      triggers="mouseenter:mouseleave"
+                                      placement="right">RE</span>
+              </div>
+              <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredApplications().join(', ') }}</span>
+            </div>
           </div>
 
           <div class="form-inline mt-1">
             <label class="col-form-label">In environments:</label>
-            <input class="form-control ml-3" size="20" type="text" name="environments"
-                   [(ngModel)]="state.searchState.environments"
-                   placeholder="Filter by environment">
-            <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredEnvironments().join(', ') }}</span>
+            <div class="col-10 input-group">
+              <input class="form-control col-2" type=" text" name="environments"
+                     [(ngModel)]="state.searchState.environments"
+                     placeholder="Filter by environment">
+              <div class="input-group-append">
+                                <span class="input-group-text font-italic"
+                                      container="body"
+                                      [ngbPopover]="regexpHints"
+                                      popoverTitle="Regular Expression"
+                                      triggers="mouseenter:mouseleave"
+                                      placement="right">RE</span>
+              </div>
+              <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredEnvironments().join(', ') }}</span>
+            </div>
           </div>
 
           <div class="form-inline mt-1">
             <label class="col-form-label">In locations:</label>
-            <input class="form-control ml-3" size="20" type="text" name="locations"
-                   [(ngModel)]="state.searchState.locations"
-                   placeholder="Filter by location">
-            <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredLocations() }}</span>
+            <div class="col-10 input-group">
+              <input class="form-control col-2" type="text" name="locations"
+                     [(ngModel)]="state.searchState.locations"
+                     placeholder="Filter by location">
+              <div class="input-group-append">
+                                <span class="input-group-text font-italic"
+                                      container="body"
+                                      [ngbPopover]="regexpHints"
+                                      popoverTitle="Regular Expression"
+                                      triggers="mouseenter:mouseleave"
+                                      placement="right">RE</span>
+              </div>
+              <span class="ml-2 small form-text text-muted filtered-result">{{ state.getFilteredLocations() }}</span>
+            </div>
           </div>
 
           <div *ngIf="settings.advancedControls" class="form-inline">
@@ -146,7 +180,8 @@
                   <b>at least {{ state.searchState.includeIfCollectedForAtLeastDays }} days</b>.
                 </p>
                 <p *ngIf="state.retentionPeriodDays > 0">Codekvast applies a data retention period
-                  of {{ state.retentionPeriodDays }} days, so setting this value to something higher
+                  of {{ state.retentionPeriodDays }} days, so setting this value to something
+                  higher
                   is useless.</p>
               </ng-template>
             </div>
@@ -178,7 +213,8 @@
             </div>
 
             <ng-template #invokedBeforePopover>
-              <p>Only include methods in the search results that have <b>not been invoked at all</b>
+              <p>Only include methods in the search results that have <b>not been invoked at
+                all</b>
                 or <b>only
                   have been invoked before {{ state.getInvokedBefore() | date:'short'}}</b>.
               </p>
@@ -242,7 +278,8 @@
           <th (click)="state.sortBySignature()" class="signature-column">
             Signature <i [ngClass]="state.headerIconClassesSignature()" aria-hidden="true"></i>
             <a *ngIf="state.annotatedMethodExist()" class="ml-4 small text-muted"
-               (click)="annotatedMethodsHeaderRow.scrollIntoView()"> <i class="fas fa-arrow-down mr-1"></i>Jump to excluded results</a>
+               (click)="annotatedMethodsHeaderRow.scrollIntoView()"> <i
+                class="fas fa-arrow-down mr-1"></i>Jump to excluded results</a>
           </th>
           <th (click)="state.sortByCollectedDays()" class="collected-days-column">
             Tracked Days <i [ngClass]="state.headerIconClassesCollectedDays()"
@@ -280,7 +317,8 @@
         <tr #annotatedMethodsHeaderRow>
           <th colspan="4">Excluded results
             <a class="ml-4 small text-muted"
-               (click)="headerRow.scrollIntoView()"><i class="fas fa-arrow-up mr-1"></i>Jump to search results</a>
+               (click)="headerRow.scrollIntoView()"><i class="fas fa-arrow-up mr-1"></i>Jump to
+              search results</a>
           </th>
         </tr>
         <tr *ngFor="let method of state.sortedAnnotatedMethods()"

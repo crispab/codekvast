@@ -140,15 +140,18 @@ export class MethodsComponentState {
   }
 
   getFilteredApplications() {
-    return this.applications.filter(a => a.toLowerCase().indexOf(this.searchState.applications.trim().toLowerCase()) >= 0);
+    let regExp = new RegExp(this.searchState.applications, 'i');
+    return this.applications.filter(a => regExp.test(a));
   }
 
   getFilteredEnvironments() {
-    return this.environments.filter(a => a.toLowerCase().indexOf(this.searchState.environments.trim().toLowerCase()) >= 0);
+    let regExp = new RegExp(this.searchState.environments, 'i');
+    return this.environments.filter(e => regExp.test(e));
   }
 
   getFilteredLocations() {
-    return this.locations.filter(a => a.toLowerCase().indexOf(this.searchState.locations.trim().toLowerCase()) >= 0);
+    let regExp = new RegExp(this.searchState.locations, 'i');
+    return this.locations.filter(l => regExp.test(l));
   }
 
   isSearchDisabled(): Boolean {
