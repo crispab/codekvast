@@ -76,19 +76,21 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
         Lock.forCustomer(data.getCustomerId()),
         () -> {
           CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
-          importDAO.importMethods(data, importContext, entries);
-        });
+          Instant trialPeriodEndsAt = importDAO.importMethods(data, importContext, entries);
 
-    eventService.send(
-        CodeBaseReceivedEvent.builder()
-            .customerId(data.getCustomerId())
-            .appName(data.getAppName())
-            .appVersion(data.getAppVersion())
-            .agentVersion(data.getAgentVersion())
-            .environment(data.getEnvironment())
-            .hostname(data.getHostname())
-            .size(entries.size())
-            .build());
+          eventService.send(
+              CodeBaseReceivedEvent.builder()
+                  .customerId(data.getCustomerId())
+                  .appName(data.getAppName())
+                  .appVersion(data.getAppVersion())
+                  .agentVersion(data.getAgentVersion())
+                  .environment(data.getEnvironment())
+                  .hostname(data.getHostname())
+                  .size(entries.size())
+                  .receivedAt(Instant.ofEpochMilli(data.getPublishedAtMillis()))
+                  .trialPeriodEndsAt(trialPeriodEndsAt)
+                  .build());
+        });
 
     Duration duration = Duration.between(startedAt, clock.instant());
     logger.info(

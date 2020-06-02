@@ -21,6 +21,7 @@
  */
 package io.codekvast.common.messaging.model;
 
+import java.time.Instant;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -40,6 +41,8 @@ public class InvocationDataReceivedEvent implements CodekvastEvent {
   @NonNull String environment;
   @NonNull String hostname;
   @NonNull Integer size;
+  @NonNull Instant receivedAt;
+  Instant trialPeriodEndsAt;
 
   public static InvocationDataReceivedEvent sample() {
     return InvocationDataReceivedEvent.builder()
@@ -50,6 +53,8 @@ public class InvocationDataReceivedEvent implements CodekvastEvent {
         .environment("environment")
         .hostname("hostname")
         .size(17)
+        .receivedAt(Instant.now())
+        .trialPeriodEndsAt(null)
         .build();
   }
 }

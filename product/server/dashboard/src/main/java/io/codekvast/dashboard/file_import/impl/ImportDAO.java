@@ -24,6 +24,7 @@ package io.codekvast.dashboard.file_import.impl;
 import io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Set;
 
@@ -68,8 +69,9 @@ public interface ImportDAO {
    * @param importContext The import importContext returned by {@link
    *     CommonImporter#importCommonData(CommonPublicationData2)}
    * @param entries The collection of code base entries to store.
+   * @return The instant the trial period ends, or null if not in a trial period.
    */
-  void importMethods(
+  Instant importMethods(
       CommonPublicationData2 data, ImportContext importContext, Collection<CodeBaseEntry3> entries);
 
   /**
@@ -80,7 +82,8 @@ public interface ImportDAO {
    *     CommonImporter#importCommonData(CommonPublicationData2)}
    * @param recordingIntervalStartedAtMillis When was the invocation of these invocations recorded?
    * @param invocations The set of signatures that were invoked in this recording interval.
+   * @return The instant the trial period ends, or null if not in a trial period.
    */
-  void importInvocations(
+  Instant importInvocations(
       ImportContext importContext, long recordingIntervalStartedAtMillis, Set<String> invocations);
 }

@@ -202,7 +202,7 @@ public class ImportDAOImpl implements ImportDAO {
   }
 
   @Override
-  public void importMethods(
+  public Instant importMethods(
       CommonPublicationData2 data,
       ImportContext importContext,
       Collection<CodeBaseEntry3> entries) {
@@ -232,6 +232,7 @@ public class ImportDAOImpl implements ImportDAO {
     ensureInitialInvocations(data, customerId, appId, environmentId, entries, existingMethods);
 
     customerService.assertDatabaseSize(customerId);
+    return customerService.getCustomerDataByCustomerId(customerId).getTrialPeriodEndsAt();
   }
 
   private void importNewPackages(
@@ -303,7 +304,7 @@ public class ImportDAOImpl implements ImportDAO {
   }
 
   @Override
-  public void importInvocations(
+  public Instant importInvocations(
       ImportContext importContext, long recordingIntervalStartedAtMillis, Set<String> invocations) {
     long customerId = importContext.getCustomerId();
     long appId = importContext.getAppId();
@@ -319,6 +320,7 @@ public class ImportDAOImpl implements ImportDAO {
         existingMethods);
 
     customerService.assertDatabaseSize(customerId);
+    return customerService.getCustomerDataByCustomerId(customerId).getTrialPeriodEndsAt();
   }
 
   private void doImportInvocations(

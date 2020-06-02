@@ -21,8 +21,7 @@
  */
 package io.codekvast.backoffice.facts
 
-import io.codekvast.common.messaging.model.AgentPolledEvent
-import io.codekvast.common.messaging.model.CollectionStartedEvent
+import io.codekvast.common.messaging.model.CodeBaseReceivedEvent
 import java.time.Instant
 
 /** @author olle.hallin@crisp.se
@@ -35,13 +34,8 @@ data class CollectionStarted(val collectionStartedAt: Instant,
   companion object {
 
     @JvmStatic
-    fun of(event: CollectionStartedEvent): CollectionStarted {
-      return CollectionStarted(event.collectionStartedAt, event.trialPeriodEndsAt)
-    }
-
-    @JvmStatic
-    fun of(event: AgentPolledEvent): CollectionStarted {
-      return CollectionStarted(event.polledAt, event.trialPeriodEndsAt)
+    fun of(event: CodeBaseReceivedEvent): CollectionStarted {
+      return CollectionStarted(event.receivedAt, event.trialPeriodEndsAt)
     }
   }
 }
