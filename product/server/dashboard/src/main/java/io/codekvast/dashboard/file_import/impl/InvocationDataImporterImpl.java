@@ -76,20 +76,22 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
         Lock.forCustomer(data.getCustomerId()),
         () -> {
           ImportContext importContext = commonImporter.importCommonData(data);
-          importDAO.importInvocations(
-              importContext, publication.getRecordingIntervalStartedAtMillis(), invocations);
+          Instant trialPeriodEndsAt =
+              importDAO.importInvocations(
+                  importContext, publication.getRecordingIntervalStartedAtMillis(), invocations);
+          eventService.send(
+              InvocationDataReceivedEvent.builder()
+                  .customerId(data.getCustomerId())
+                  .appName(data.getAppName())
+                  .appVersion(data.getAppVersion())
+                  .agentVersion(data.getAgentVersion())
+                  .environment(data.getEnvironment())
+                  .hostname(data.getHostname())
+                  .size(invocations.size())
+                  .receivedAt(Instant.ofEpochMilli(data.getPublishedAtMillis()))
+                  .trialPeriodEndsAt(trialPeriodEndsAt)
+                  .build());
         });
-
-    eventService.send(
-        InvocationDataReceivedEvent.builder()
-            .customerId(data.getCustomerId())
-            .appName(data.getAppName())
-            .appVersion(data.getAppVersion())
-            .agentVersion(data.getAgentVersion())
-            .environment(data.getEnvironment())
-            .hostname(data.getHostname())
-            .size(invocations.size())
-            .build());
 
     Duration duration = Duration.between(startedAt, clock.instant());
     logger.info(

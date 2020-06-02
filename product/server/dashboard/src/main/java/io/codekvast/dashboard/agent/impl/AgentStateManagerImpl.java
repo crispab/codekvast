@@ -100,7 +100,9 @@ public class AgentStateManagerImpl implements AgentStateManager {
             .build();
 
     logger.debug("Agent {} is {}", jvmUuid, event.isAgentEnabled() ? "enabled" : "disabled");
-    eventService.send(event);
+    // TODO: Send AgentPolledEvent again when running on a CloudAMQP plan that allows more than
+    //   1_000_000 events per month
+    //   eventService.send(event);
     agentDAO.updateAgentEnabledState(customerId, jvmUuid, event.isAgentEnabled());
     return event.isAgentEnabled();
   }

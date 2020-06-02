@@ -1,7 +1,7 @@
 import io.codekvast.backoffice.facts.CollectionStarted
 import io.codekvast.backoffice.facts.ContactDetails
 import io.codekvast.backoffice.service.MailSender
-import io.codekvast.common.messaging.model.AgentPolledEvent
+import io.codekvast.common.messaging.model.CodeBaseReceivedEvent
 import io.codekvast.common.messaging.model.CodekvastEvent
 
 global java.time.Clock clock
@@ -9,9 +9,9 @@ global Long customerId
 global io.codekvast.backoffice.service.MailSender mailSender
 global org.slf4j.Logger logger
 
-rule "Register that agent has polled"
+rule "Register that a codebase has been received"
 when
-  event: AgentPolledEvent()
+  event: CodeBaseReceivedEvent()
   not(CollectionStarted())
 then
    insert(CollectionStarted.of(event));

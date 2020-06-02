@@ -15,9 +15,8 @@ import io.codekvast.backoffice.rules.RuleEngine;
 import io.codekvast.backoffice.service.MailSender;
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
-import io.codekvast.common.messaging.model.AgentPolledEvent;
+import io.codekvast.common.messaging.model.CodeBaseReceivedEvent;
 import io.codekvast.common.messaging.model.CodekvastEvent;
-import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -45,16 +44,16 @@ public class RuleEngineImplTest {
   private RuleEngine ruleEngine;
 
   @Before
-  public void beforeTest() throws IOException {
+  public void beforeTest() {
     MockitoAnnotations.initMocks(this);
 
     ruleEngine = new RuleEngineImpl(factDAO, mailSender, customerService, clock).configureDrools();
   }
 
   @Test
-  public void should_send_welcome_email_when_agent_polls_and_contact_email_is_defined() {
+  public void should_send_welcome_email_when_codebase_is_received_and_contact_email_is_defined() {
     // given
-    val event = AgentPolledEvent.sample();
+    val event = CodeBaseReceivedEvent.sample();
     Long customerId = event.getCustomerId();
     Long factId = 4711L;
     when(factDAO.getFacts(customerId)).thenReturn(emptyList());
@@ -68,14 +67,15 @@ public class RuleEngineImplTest {
     verify(mailSender).sendMail(WELCOME_TO_CODEKVAST, "some-email-address", customerId);
     PersistentFact collectionStarted =
         new CollectionStarted(
-            event.getPolledAt(), event.getTrialPeriodEndsAt(), "some-email-address", NOW);
+            event.getReceivedAt(), event.getTrialPeriodEndsAt(), "some-email-address", NOW);
     verify(factDAO).updateFact(eq(customerId), eq(factId), eq(collectionStarted));
   }
 
   @Test
-  public void should_not_send_welcome_email_when_agent_polls_and_contact_email_is_undefined() {
+  public void
+      should_not_send_welcome_email_when_codebase_is_received_and_contact_email_is_undefined() {
     // given
-    val event = AgentPolledEvent.sample();
+    val event = CodeBaseReceivedEvent.sample();
     Long customerId = event.getCustomerId();
     Long factId = 4711L;
     when(factDAO.getFacts(customerId)).thenReturn(emptyList());
@@ -90,9 +90,10 @@ public class RuleEngineImplTest {
   }
 
   @Test
-  public void should_not_send_welcome_email_when_agent_polls_and_contact_email_starts_with_bang() {
+  public void
+      should_not_send_welcome_email_when_codebase_is_received_and_contact_email_starts_with_bang() {
     // given
-    val event = AgentPolledEvent.sample();
+    val event = CodeBaseReceivedEvent.sample();
     Long customerId = event.getCustomerId();
     Long factId = 4711L;
     when(factDAO.getFacts(customerId)).thenReturn(emptyList());
@@ -110,7 +111,7 @@ public class RuleEngineImplTest {
   @Test
   public void should_not_send_welcome_email_twice_to_same_contactEmail() {
     // given
-    val event = AgentPolledEvent.sample();
+    val event = CodeBaseReceivedEvent.sample();
     Long customerId = event.getCustomerId();
     Long factId = 4711L;
     when(factDAO.getFacts(customerId))
@@ -119,7 +120,7 @@ public class RuleEngineImplTest {
                 new FactWrapper(
                     factId,
                     new CollectionStarted(
-                        event.getPolledAt(),
+                        event.getReceivedAt(),
                         event.getTrialPeriodEndsAt(),
                         "some-email-address",
                         NOW))));
@@ -138,7 +139,7 @@ public class RuleEngineImplTest {
       should_send_welcome_email_on_any_event_after_collection_has_started_when_contact_email_becomes_defined() {
     // given
     long customerId = 1L;
-    Long factId = 4711L;
+    long factId = 4711L;
     CollectionStarted fact = new CollectionStarted(NOW.minus(3, ChronoUnit.DAYS), null, null, null);
     when(factDAO.getFacts(customerId)).thenReturn(singletonList(new FactWrapper(factId, fact)));
 
@@ -174,6 +175,6 @@ public class RuleEngineImplTest {
 
   @Value
   private static class AnyEvent implements CodekvastEvent {
-    private final Long customerId;
+    Long customerId;
   }
 }

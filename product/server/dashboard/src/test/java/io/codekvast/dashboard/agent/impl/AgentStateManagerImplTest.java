@@ -20,7 +20,6 @@ import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
-import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import java.time.Instant;
 import java.util.Optional;
@@ -116,7 +115,7 @@ public class AgentStateManagerImplTest {
     assertThat(response, is(true));
 
     verify(agentDAO).updateAgentEnabledState(customerId, jvmUuid, true);
-    verify(eventService).send(any(AgentPolledEvent.class));
+    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   @Test
@@ -132,7 +131,7 @@ public class AgentStateManagerImplTest {
 
     // then
     assertThat(response, is(true));
-    verify(eventService).send(any(AgentPolledEvent.class));
+    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   @Test
@@ -149,7 +148,7 @@ public class AgentStateManagerImplTest {
 
     // then
     assertThat(response, is(false));
-    verify(eventService).send(any(AgentPolledEvent.class));
+    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   @Test
@@ -163,7 +162,7 @@ public class AgentStateManagerImplTest {
 
     // then
     assertThat(response, is(false));
-    verify(eventService).send(any(AgentPolledEvent.class));
+    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   @Test
@@ -178,7 +177,7 @@ public class AgentStateManagerImplTest {
 
     // then
     assertThat(response, is(false));
-    verify(eventService).send(any(AgentPolledEvent.class));
+    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   private void setupCustomerData(Instant collectionStartedAt, Instant trialPeriodEndsAt) {
