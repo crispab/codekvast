@@ -229,8 +229,9 @@ public class ImportDAOImpl implements ImportDAO {
         incompleteMethods,
         existingMethods,
         invocationsNotFoundInCodeBase);
-    ensureInitialInvocations(data, customerId, appId, environmentId, entries, existingMethods);
-    removeStaleInvocations(customerId, appId, environmentId);
+    Instant now = Instant.now();
+    ensureInitialInvocations(data, customerId, appId, environmentId, entries, existingMethods, now);
+    removeStaleInvocations(customerId, appId, environmentId, now);
 
     customerService.assertDatabaseSize(customerId);
     return customerService.getCustomerDataByCustomerId(customerId).getTrialPeriodEndsAt();
@@ -344,7 +345,7 @@ public class ImportDAOImpl implements ImportDAO {
       logger.trace("Upserting invocation {}", signature);
       jdbcTemplate.update(
           new UpsertInvocationStatement(
-              customerId, appId, environmentId, methodId, INVOKED, invokedAtMillis));
+              customerId, appId, environmentId, methodId, INVOKED, invokedAtMillis, Instant.now()));
     }
   }
 
@@ -485,7 +486,8 @@ public class ImportDAOImpl implements ImportDAO {
       long appId,
       long environmentId,
       Collection<CodeBaseEntry3> entries,
-      Map<String, Long> existingMethods) {
+      Map<String, Long> existingMethods,
+      Instant now) {
     long startedAtMillis = System.currentTimeMillis();
     int importCount = 0;
 
@@ -496,7 +498,7 @@ public class ImportDAOImpl implements ImportDAO {
       int updated =
           jdbcTemplate.update(
               new UpsertInvocationStatement(
-                  customerId, appId, environmentId, methodId, initialStatus, 0L));
+                  customerId, appId, environmentId, methodId, initialStatus, 0L, now));
       importCount += updated == 1 ? 1 : 0;
     }
     logger.debug(
@@ -564,23 +566,20 @@ public class ImportDAOImpl implements ImportDAO {
     return null;
   }
 
-  private void removeStaleInvocations(long customerId, long appId, long environmentId) {
+  private void removeStaleInvocations(
+      long customerId, long appId, long environmentId, Instant now) {
     int deleted =
         jdbcTemplate.update(
-            "DELETE FROM invocations WHERE customerId = ? AND applicationId = ? AND environmentId = ? AND timestamp < CURRENT_TIMESTAMP() ",
+            "DELETE FROM invocations WHERE customerId = ? AND applicationId = ? AND environmentId = ? AND timestamp < ? ",
             customerId,
             appId,
-            environmentId);
+            environmentId,
+            Timestamp.from(now.minusMillis(1)));
     if (deleted > 0) {
       logger.info(
-          "Removed {} stale invocations rows for {}:{}:{}",
-          deleted,
-          customerId,
-          appId,
-          environmentId);
+          "Removed {} stale invocations for {}:{}:{}", deleted, customerId, appId, environmentId);
     } else {
-      logger.debug(
-          "Removed no stale invocations rows for {}:{}:{}", customerId, appId, environmentId);
+      logger.debug("Removed no stale invocations for {}:{}:{}", customerId, appId, environmentId);
     }
   }
 
@@ -673,13 +672,15 @@ public class ImportDAOImpl implements ImportDAO {
     private final long methodId;
     private final SignatureStatus2 status;
     private final long invokedAtMillis;
+    private final Instant now;
 
     @Override
     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+      Timestamp timestamp = Timestamp.from(now);
       String sql =
           String.format(
-              "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis) "
-                  + "VALUES(?, ?, ?, ?, ?, ?) %s",
+              "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis, timestamp) "
+                  + "VALUES(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE timestamp = ? %s",
               onDuplicateKey(invokedAtMillis));
       PreparedStatement ps = con.prepareStatement(sql);
       int column = 0;
@@ -689,16 +690,15 @@ public class ImportDAOImpl implements ImportDAO {
       ps.setLong(++column, methodId);
       ps.setString(++column, status.name());
       ps.setLong(++column, invokedAtMillis);
+      ps.setTimestamp(++column, timestamp); // insert
+      ps.setTimestamp(++column, timestamp); // update
       return ps;
     }
 
     private String onDuplicateKey(long invokedAtMillis) {
       return invokedAtMillis == 0
-          ? "ON DUPLICATE KEY UPDATE timestamp = CURRENT_TIMESTAMP()"
-          : "ON DUPLICATE KEY UPDATE "
-              + "invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis)), "
-              + "status = VALUE(status), "
-              + "timestamp = CURRENT_TIMESTAMP() ";
+          ? "" // Codebase
+          : ", invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis)), status = VALUE(status) ";
     }
   }
 
