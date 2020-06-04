@@ -4,24 +4,26 @@
 
 The following stack is used when developing Codekvast (in alphabetical order):
 
-1. Angular 7+
+1. Angular 8+
 1. AspectJ (in Load-Time Weaving mode)
+1. Chrome headless
 1. Docker Engine - Community 19.03+ and Docker Compose 1.24+ (For running MariaDB and RabbitMQ in development environment)
-1. Github
 1. git-crypt
+1. Github
 1. Gradle (via Gradle wrapper)
 1. Inkscape (SVG graphics)
-1. Java 8, 9, 10, 11, 12 and 13 (managed by SDKMAN).
+1. Java 8, 9, 10, 11, 12, 13 and 14 (managed by SDKMAN).
+1. jq (for parsing JSON in scripts)
 1. Kotlin
 1. Lombok
 1. MariaDB 10+ (Codekvast Dashboard)
-1. NodeJS
 1. Node Package Manager (npm)
-1. Chrome headless
+1. NodeJS
 1. Spring Boot
 1. TypeScript
 1. Webpack
 1. Yarn
+1. yq (for parsing YAML in scripts)
 
 ## Directory structure
 

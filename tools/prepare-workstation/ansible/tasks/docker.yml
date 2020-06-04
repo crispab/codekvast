@@ -2,14 +2,15 @@
 - name: Install Docker APT key
   apt_key: url=https://download.docker.com/linux/ubuntu/gpg id=0EBFCD88
 
-- name: Define Docker distribution release
-  set_fact: distribution_release='artful'
-
 - name: Define Docker APT repository
   apt_repository: filename=docker repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ distribution_release | default(ansible_distribution_release) }} stable'
 
 - name: Install Docker Engine
-  package: name=docker-ce state=present
+  package: name={{ item }} state=present
+  loop:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
 
 - name: Make Docker start after reboot
   service: name=docker enabled=yes
@@ -21,3 +22,18 @@
   user: name={{ actual_username }} groups=docker append=yes
   notify:
   - 'Relogin needed'
+
+- name: Check installed version of docker-compose
+  command: docker-compose --version
+  register: installed_version
+  ignore_errors: yes
+  failed_when: false
+  changed_when: false
+
+- name: Install docker-compose
+  when: installed_version.stdout is not defined or installed_version.stdout.find(docker_compose_version) == -1
+  get_url:
+    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}
+    dest: /usr/local/bin/docker-compose
+    force: yes
+    mode: a=rx

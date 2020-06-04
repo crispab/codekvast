@@ -3,14 +3,17 @@
   connection: local
   become: yes
 
+  vars:
+    - docker_compose_version: "1.26.0"
+
   vars_files:
-  - vars/secrets.yml
+    - vars/secrets.yml
 
   handlers:
-  - include: handlers/main.yml
+    - include: handlers/main.yml
 
   post_tasks:
-  - {include: tasks/tools.yml, tags: tools}
-  - {include: tasks/docker.yml, tags: docker}
-  - {include: tasks/aws-cli.yml, tags: aws}
-  - {include: tasks/google-chrome.yml, tags: chrome}
+    - {include: tasks/tools.yml, tags: tools}
+    - {include: tasks/docker.yml, tags: docker}
+    - {include: tasks/aws-cli.yml, tags: aws}
+    - {include: tasks/google-chrome.yml, tags: chrome}

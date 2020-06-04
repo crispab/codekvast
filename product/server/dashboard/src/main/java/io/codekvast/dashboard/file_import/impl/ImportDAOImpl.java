@@ -230,6 +230,7 @@ public class ImportDAOImpl implements ImportDAO {
         existingMethods,
         invocationsNotFoundInCodeBase);
     ensureInitialInvocations(data, customerId, appId, environmentId, entries, existingMethods);
+    removeStaleInvocations(customerId, appId, environmentId);
 
     customerService.assertDatabaseSize(customerId);
     return customerService.getCustomerDataByCustomerId(customerId).getTrialPeriodEndsAt();
@@ -563,6 +564,26 @@ public class ImportDAOImpl implements ImportDAO {
     return null;
   }
 
+  private void removeStaleInvocations(long customerId, long appId, long environmentId) {
+    int deleted =
+        jdbcTemplate.update(
+            "DELETE FROM invocations WHERE customerId = ? AND applicationId = ? AND environmentId = ? AND timestamp < CURRENT_TIMESTAMP() ",
+            customerId,
+            appId,
+            environmentId);
+    if (deleted > 0) {
+      logger.info(
+          "Removed {} stale invocations rows for {}:{}:{}",
+          deleted,
+          customerId,
+          appId,
+          environmentId);
+    } else {
+      logger.debug(
+          "Removed no stale invocations rows for {}:{}:{}", customerId, appId, environmentId);
+    }
+  }
+
   private Long doInsertRow(PreparedStatementCreator psc) {
     KeyHolder keyHolder = new GeneratedKeyHolder();
     jdbcTemplate.update(psc, keyHolder);
@@ -657,9 +678,9 @@ public class ImportDAOImpl implements ImportDAO {
     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
       String sql =
           String.format(
-              "INSERT %s INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis) "
+              "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis) "
                   + "VALUES(?, ?, ?, ?, ?, ?) %s",
-              ignoreUnlessInvoked(invokedAtMillis), onDuplicateKey(invokedAtMillis));
+              onDuplicateKey(invokedAtMillis));
       PreparedStatement ps = con.prepareStatement(sql);
       int column = 0;
       ps.setLong(++column, customerId);
@@ -671,16 +692,13 @@ public class ImportDAOImpl implements ImportDAO {
       return ps;
     }
 
-    private String ignoreUnlessInvoked(long invokedAtMillis) {
-      return invokedAtMillis == 0L ? "IGNORE" : "";
-    }
-
     private String onDuplicateKey(long invokedAtMillis) {
       return invokedAtMillis == 0
-          ? ""
+          ? "ON DUPLICATE KEY UPDATE timestamp = CURRENT_TIMESTAMP()"
           : "ON DUPLICATE KEY UPDATE "
               + "invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis)), "
-              + "status = VALUE(status)";
+              + "status = VALUE(status), "
+              + "timestamp = CURRENT_TIMESTAMP() ";
     }
   }
 

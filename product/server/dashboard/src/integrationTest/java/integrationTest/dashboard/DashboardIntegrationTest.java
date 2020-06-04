@@ -108,6 +108,8 @@ public class DashboardIntegrationTest {
   private static final String DATABASE = "codekvast";
   private static final String USERNAME = "codekvast";
   private static final String PASSWORD = "codekvast";
+  private static final String SYNTHETIC_SIGNATURE =
+      "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)";
 
   @ClassRule
   public static MariaDBContainer<?> mariaDB =
@@ -464,14 +466,7 @@ public class DashboardIntegrationTest {
     CodeBasePublication2 publication =
         CodeBasePublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(
-                asList(
-                    entry1,
-                    entry1
-                        .toBuilder()
-                        .signature(
-                            "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
-                        .build()))
+            .entries(asList(entry1, entry1.toBuilder().signature(SYNTHETIC_SIGNATURE).build()))
             .build();
     File file = writeToTempFile(publication);
 
@@ -498,6 +493,7 @@ public class DashboardIntegrationTest {
         countRowsInTable("types WHERE name = ?", entry1.getMethodSignature().getDeclaringType()),
         is(1));
     assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
+    assertThat(countRowsInTable("methods WHERE signature = ?", SYNTHETIC_SIGNATURE), is(0));
     assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
     assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(1));
   }
@@ -517,14 +513,7 @@ public class DashboardIntegrationTest {
     CodeBasePublication3 publication =
         CodeBasePublication3.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(
-                asList(
-                    entry1,
-                    entry1
-                        .toBuilder()
-                        .signature(
-                            "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
-                        .build()))
+            .entries(asList(entry1, entry1.toBuilder().signature(SYNTHETIC_SIGNATURE).build()))
             .build();
 
     // when
@@ -547,12 +536,71 @@ public class DashboardIntegrationTest {
         countRowsInTable("types WHERE name = ?", entry1.getMethodSignature().getDeclaringType()),
         is(1));
     assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
+    assertThat(countRowsInTable("methods WHERE signature = ?", SYNTHETIC_SIGNATURE), is(0));
     assertThat(
         countRowsInTable(
             "method_locations WHERE location = ?", entry1.getMethodSignature().getLocation()),
         is(1));
     assertThat(countRowsInTable("invocations WHERE invokedAtMillis = 0"), is(1));
     assertThat(countRowsInTable("invocations WHERE status = ?", NOT_INVOKED.name()), is(1));
+  }
+
+  @Test
+  public void should_import_codeBasePublication3_twice_with_one_method_removed()
+      throws InterruptedException {
+    // given
+    assertThat(countRowsInTable("applications"), is(0));
+    assertThat(countRowsInTable("environments"), is(0));
+    assertThat(countRowsInTable("jvms"), is(0));
+    assertThat(countRowsInTable("packages"), is(0));
+    assertThat(countRowsInTable("types"), is(0));
+    assertThat(countRowsInTable("methods"), is(0));
+    assertThat(countRowsInTable("invocations"), is(0));
+
+    CodeBaseEntry3 entry1 = CodeBaseEntry3.sampleCodeBaseEntry();
+    CodeBaseEntry3 entry2 =
+        CodeBaseEntry3.sampleCodeBaseEntry()
+            .toBuilder()
+            .signature(entry1.getSignature() + "2")
+            .build();
+
+    CodeBasePublication3 publication1 =
+        CodeBasePublication3.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .entries(asList(entry1, entry2))
+            .build();
+
+    // when
+    codeBaseImporter.importPublication(publication1);
+
+    // then
+    assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
+    assertThat(countRowsInTable("methods WHERE signature = ?", entry2.getSignature()), is(1));
+    assertThat(countRowsInTable("invocations"), is(2));
+
+    // given
+    CodeBasePublication3 publication2 =
+        CodeBasePublication3.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .entries(asList(entry1))
+            .build();
+
+    // when
+    Thread.sleep(1010); // Make sure database CURRENT_TIMESTAMP() yields a different second
+    codeBaseImporter.importPublication(publication2);
+
+    // then
+    assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
+    assertThat(countRowsInTable("invocations"), is(1));
+
+    // The method row is still there immediately after a codebase import
+    assertThat(countRowsInTable("methods WHERE signature = ?", entry2.getSignature()), is(1));
+
+    // when
+    weedingTask.performDataWeeding();
+
+    // then
+    assertThat(countRowsInTable("methods WHERE signature = ?", entry2.getSignature()), is(0));
   }
 
   @Test
@@ -567,12 +615,7 @@ public class DashboardIntegrationTest {
     assertThat(countRowsInTable("invocations"), is(0));
 
     CodeBaseEntry3 entry1 = CodeBaseEntry3.sampleCodeBaseEntry();
-    CodeBaseEntry3 entry2 =
-        entry1
-            .toBuilder()
-            .signature(
-                "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")
-            .build();
+    CodeBaseEntry3 entry2 = entry1.toBuilder().signature(SYNTHETIC_SIGNATURE).build();
     int signatureLength = DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH + 1;
     int indexLength = DatabaseLimits.MAX_METHOD_SIGNATURE_INDEX_LENGTH;
     CodeBaseEntry3 entry3 =
@@ -843,11 +886,7 @@ public class DashboardIntegrationTest {
         InvocationDataPublication2.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
             .recordingIntervalStartedAtMillis(intervalStartedAtMillis)
-            .invocations(
-                new HashSet<>(
-                    asList(
-                        "signature",
-                        "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)")))
+            .invocations(new HashSet<>(asList("signature", SYNTHETIC_SIGNATURE)))
             .build();
 
     // when
