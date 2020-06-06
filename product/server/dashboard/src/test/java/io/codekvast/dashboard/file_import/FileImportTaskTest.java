@@ -7,10 +7,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import io.codekvast.common.lock.Lock;
+import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +33,8 @@ public class FileImportTaskTest {
 
   @Mock private PublicationMetricsService metricsService;
 
+  @Mock private LockManager lockManager;
+
   private CodekvastDashboardSettings settings;
 
   private FileImportTask task;
@@ -38,7 +44,8 @@ public class FileImportTaskTest {
     settings = new CodekvastDashboardSettings();
     settings.setFileImportQueuePath(temporaryFolder.getRoot());
 
-    task = new FileImportTask(settings, importer, metricsService);
+    when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forSystem()));
+    task = new FileImportTask(settings, importer, metricsService, new LockTemplate(lockManager));
   }
 
   @Test

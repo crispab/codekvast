@@ -4,6 +4,5 @@
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh
-export AWS_PROFILE=codekvast
 
 aws ecs update-service --cluster=codekvast-prod --service=login --force-new-deployment | jq .service.taskDefinition | xargs

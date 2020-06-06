@@ -26,6 +26,10 @@ import io.codekvast.dashboard.model.PublicationType;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +39,30 @@ import org.springframework.stereotype.Service;
 public class PublicationMetricsServiceImpl implements PublicationMetricsService {
 
   private final MeterRegistry meterRegistry;
+  private final AtomicInteger queueLengthGauge = new AtomicInteger(0);
+  private final Map<PublicationType, AtomicInteger> publicationSizeGauges = new HashMap<>();
+  private final Map<PublicationType, AtomicInteger> ignoredSyntheticSignaturesGauges =
+      new HashMap<>();
+
+  @PostConstruct
+  void createGauges() {
+    meterRegistry.gauge("codekvast.publication.queueLength", queueLengthGauge);
+    for (PublicationType type : PublicationType.values()) {
+      Tags tags = getTags(type);
+
+      AtomicInteger size = new AtomicInteger(0);
+      publicationSizeGauges.put(type, size);
+      meterRegistry.gauge("codekvast.publication.size", tags, size);
+
+      AtomicInteger ignoredSynthetic = new AtomicInteger(0);
+      ignoredSyntheticSignaturesGauges.put(type, ignoredSynthetic);
+      meterRegistry.gauge("codekvast.publication.synthetic", tags, ignoredSynthetic);
+    }
+  }
 
   @Override
   public void gaugePublicationQueueLength(int queueLength) {
-    meterRegistry.gauge("codekvast.publication.queueLength", queueLength);
+    this.queueLengthGauge.set(queueLength);
   }
 
   @Override
@@ -51,9 +75,9 @@ public class PublicationMetricsServiceImpl implements PublicationMetricsService 
   public void recordImportedPublication(
       PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration) {
     Tags tags = getTags(type);
+    publicationSizeGauges.get(type).set(size);
+    ignoredSyntheticSignaturesGauges.get(type).set(ignoredSyntheticSignatures);
     meterRegistry.counter("codekvast.publication.accepted", tags).increment();
-    meterRegistry.gauge("codekvast.publication.size", tags, size);
-    meterRegistry.gauge("codekvast.publication.synthetic", tags, ignoredSyntheticSignatures);
     meterRegistry.timer("codekvast.publication.imported_in.millis", tags).record(duration);
   }
 

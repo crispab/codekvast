@@ -586,7 +586,7 @@ public class DashboardIntegrationTest {
             .build();
 
     // when
-    Thread.sleep(10); // Make sure Instant.now() yields a different timestamp
+    Thread.sleep(1010); // Make sure Instant.now() yields a different timestamp
     codeBaseImporter.importPublication(publication2);
 
     // then

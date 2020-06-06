@@ -4,8 +4,6 @@
 #---------------------------------------------------------------------------------------------------------
 source $(dirname $0)/.check-requirements.sh
 
-declare region=$(yq read playbooks/vars/common.yml aws_region)
-
 declare environment=${1:-staging}
 declare description=${2:-$(hostname)}
 declare fromPort=22

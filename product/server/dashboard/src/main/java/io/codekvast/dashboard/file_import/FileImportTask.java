@@ -21,6 +21,8 @@
  */
 package io.codekvast.dashboard.file_import;
 
+import io.codekvast.common.lock.Lock;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.thread.NamedThreadTemplate;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
@@ -45,6 +47,7 @@ public class FileImportTask {
   private final CodekvastDashboardSettings settings;
   private final PublicationImporter publicationImporter;
   private final PublicationMetricsService metricsService;
+  private final LockTemplate lockTemplate;
 
   @PostConstruct
   public void postConstruct() {
@@ -58,7 +61,11 @@ public class FileImportTask {
       initialDelayString = "${codekvast.dashboard.fileImportInitialDelaySeconds:5}000",
       fixedRateString = "${codekvast.dashboard.fileImportIntervalSeconds}000")
   public void importPublicationFiles() {
-    new NamedThreadTemplate().doInNamedThread("File Importer", this::run);
+    lockTemplate.doWithLock(
+        Lock.forFunction("fileImport"),
+        () -> {
+          new NamedThreadTemplate().doInNamedThread("File Importer", this::run);
+        });
   }
 
   private void run() {

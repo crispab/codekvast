@@ -44,7 +44,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -231,7 +234,7 @@ public class ImportDAOImpl implements ImportDAO {
         invocationsNotFoundInCodeBase);
     Instant now = Instant.now();
     ensureInitialInvocations(data, customerId, appId, environmentId, entries, existingMethods, now);
-    removeStaleInvocations(customerId, appId, environmentId, now);
+    removeStaleInvocations(customerId, appId, environmentId, now, existingMethods);
 
     customerService.assertDatabaseSize(customerId);
     return customerService.getCustomerDataByCustomerId(customerId).getTrialPeriodEndsAt();
@@ -567,20 +570,54 @@ public class ImportDAOImpl implements ImportDAO {
   }
 
   private void removeStaleInvocations(
-      long customerId, long appId, long environmentId, Instant now) {
-    int deleted =
-        jdbcTemplate.update(
-            "DELETE FROM invocations WHERE customerId = ? AND applicationId = ? AND environmentId = ? AND timestamp < ? ",
-            customerId,
-            appId,
-            environmentId,
-            Timestamp.from(now.minusMillis(1)));
-    if (deleted > 0) {
+      long customerId,
+      long appId,
+      long environmentId,
+      Instant now,
+      Map<String, Long> existingMethods) {
+
+    // TODO: Convert to a simple DELETE once the mystic stale deletions have been triaged
+
+    Map<Long, String> methodsById =
+        existingMethods.entrySet().stream()
+            .collect(Collectors.toMap(Entry::getValue, Entry::getKey, (a, b) -> b));
+
+    AtomicInteger deleted = new AtomicInteger(0);
+
+    jdbcTemplate.query(
+        "DELETE FROM invocations WHERE customerId = ? AND applicationId = ? AND environmentId = ? AND timestamp < ? "
+            + "RETURNING methodId, status, invokedAtMillis, createdAt, timestamp ",
+        rs -> {
+          long methodId = rs.getLong("methodId");
+          logger.info(
+              "Removed stale invocation {}:{}:{}:{} ('{}'), {}, createdAt {}, touched at {}, import started at = {}",
+              customerId,
+              appId,
+              environmentId,
+              methodId,
+              methodsById.get(methodId),
+              formatInvokedAt(rs.getString("status"), rs.getLong("invokedAtMillis")),
+              rs.getTimestamp("createdAt").toInstant(),
+              rs.getTimestamp("timestamp").toInstant(),
+              now);
+          deleted.incrementAndGet();
+        },
+        customerId,
+        appId,
+        environmentId,
+        Timestamp.from(now.minusMillis(1001)));
+    if (deleted.get() > 0) {
       logger.info(
           "Removed {} stale invocations for {}:{}:{}", deleted, customerId, appId, environmentId);
     } else {
       logger.debug("Removed no stale invocations for {}:{}:{}", customerId, appId, environmentId);
     }
+  }
+
+  private String formatInvokedAt(String status, long invokedAtMillis) {
+    return invokedAtMillis == 0L
+        ? status
+        : status + " at " + Instant.ofEpochMilli(invokedAtMillis).toString();
   }
 
   private Long doInsertRow(PreparedStatementCreator psc) {

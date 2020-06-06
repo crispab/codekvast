@@ -21,4 +21,11 @@ for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
     fi
 done
 
+if [[ "$(which yq)" == "" ]]; then
+    echo "yq is not installed"
+    exit 1
+fi
+
 cd $(dirname $0)
+export AWS_PROFILE=codekvast
+export AWS_REGION=$(yq read playbooks/vars/common.yml aws_region)

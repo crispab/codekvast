@@ -35,19 +35,19 @@ import lombok.With;
 @Builder
 @EqualsAndHashCode(exclude = "connection")
 public class Lock {
-  @NonNull private final String name;
+  @NonNull String name;
 
-  private final Long customerId;
+  Long customerId;
 
-  @NonNull private final Integer maxLockWaitSeconds;
+  @NonNull Integer maxLockWaitSeconds;
 
-  private final Instant waitStartedAt = Instant.now();
+  Instant waitStartedAt = Instant.now();
 
-  @With private final Instant acquiredAt;
+  @With Instant acquiredAt;
 
-  @With private final Instant releasedAt;
+  @With Instant releasedAt;
 
-  @With private final Connection connection;
+  @With Connection connection;
 
   public String key() {
     if (customerId == null || customerId < 0) {
