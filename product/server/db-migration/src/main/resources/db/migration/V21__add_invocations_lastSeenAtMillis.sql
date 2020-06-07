@@ -23,3 +23,11 @@
 ALTER TABLE invocations
     MODIFY COLUMN createdAt TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3) NOT NULL,
     ADD COLUMN lastSeenAtMillis BIGINT NULL AFTER createdAt;
+
+# noinspection SqlWithoutWhere
+UPDATE invocations
+SET lastSeenAtMillis = 0;
+
+ALTER TABLE invocations
+    MODIFY COLUMN lastSeenAtMillis BIGINT NOT NULL,
+    ADD INDEX ix_invocation_lastSeenAtMillis (lastSeenAtMillis);
