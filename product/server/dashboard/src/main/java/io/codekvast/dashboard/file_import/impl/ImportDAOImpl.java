@@ -585,12 +585,12 @@ public class ImportDAOImpl implements ImportDAO {
     AtomicInteger deleted = new AtomicInteger(0);
 
     jdbcTemplate.query(
-        "DELETE FROM invocations WHERE customerId = ? AND applicationId = ? AND environmentId = ? AND timestamp < ? "
-            + "RETURNING methodId, status, invokedAtMillis, createdAt, timestamp ",
+        "DELETE FROM invocations WHERE customerId = ? AND applicationId = ? AND environmentId = ? AND lastSeenAtMillis < ? "
+            + "RETURNING methodId, status, invokedAtMillis, createdAt, lastSeenAtMillis, timestamp ",
         rs -> {
           long methodId = rs.getLong("methodId");
           logger.info(
-              "Removed stale invocation {}:{}:{}:{} ('{}'), {}, createdAt {}, touched at {}, import started at = {}",
+              "Removed stale invocation {}:{}:{}:{} ('{}'), {}, createdAt={}, lastSeenAt={}, timestamp={}, now={}",
               customerId,
               appId,
               environmentId,
@@ -598,6 +598,7 @@ public class ImportDAOImpl implements ImportDAO {
               methodsById.get(methodId),
               formatInvokedAt(rs.getString("status"), rs.getLong("invokedAtMillis")),
               rs.getTimestamp("createdAt").toInstant(),
+              Instant.ofEpochMilli(rs.getLong("lastSeenAtMillis")),
               rs.getTimestamp("timestamp").toInstant(),
               now);
           deleted.incrementAndGet();
@@ -605,7 +606,7 @@ public class ImportDAOImpl implements ImportDAO {
         customerId,
         appId,
         environmentId,
-        Timestamp.from(now.minusMillis(1001)));
+        now.toEpochMilli());
     if (deleted.get() > 0) {
       logger.info(
           "Removed {} stale invocations for {}:{}:{}", deleted, customerId, appId, environmentId);
@@ -713,11 +714,11 @@ public class ImportDAOImpl implements ImportDAO {
 
     @Override
     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-      Timestamp timestamp = Timestamp.from(now);
+      long lastSeenAtMillis = now.toEpochMilli();
       String sql =
           String.format(
-              "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis, timestamp) "
-                  + "VALUES(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE timestamp = ? %s",
+              "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis, lastSeenAtMillis) "
+                  + "VALUES(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE lastSeenAtMillis = ? %s",
               onDuplicateKey(invokedAtMillis));
       PreparedStatement ps = con.prepareStatement(sql);
       int column = 0;
@@ -727,8 +728,8 @@ public class ImportDAOImpl implements ImportDAO {
       ps.setLong(++column, methodId);
       ps.setString(++column, status.name());
       ps.setLong(++column, invokedAtMillis);
-      ps.setTimestamp(++column, timestamp); // insert
-      ps.setTimestamp(++column, timestamp); // update
+      ps.setLong(++column, lastSeenAtMillis); // insert
+      ps.setLong(++column, lastSeenAtMillis); // update
       return ps;
     }
 
