@@ -348,7 +348,7 @@ public class ImportDAOImpl implements ImportDAO {
       logger.trace("Upserting invocation {}", signature);
       jdbcTemplate.update(
           new UpsertInvocationStatement(
-              customerId, appId, environmentId, methodId, INVOKED, invokedAtMillis, Instant.now()));
+              customerId, appId, environmentId, methodId, INVOKED, invokedAtMillis, null));
     }
   }
 
@@ -710,17 +710,22 @@ public class ImportDAOImpl implements ImportDAO {
     private final long methodId;
     private final SignatureStatus2 status;
     private final long invokedAtMillis;
-    private final Instant now;
+    private final Instant lastSeenAt;
 
     @Override
     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-      long lastSeenAtMillis = now.toEpochMilli();
-      String sql =
-          String.format(
-              "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis, lastSeenAtMillis) "
-                  + "VALUES(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE lastSeenAtMillis = ? %s",
-              onDuplicateKey(invokedAtMillis));
-      PreparedStatement ps = con.prepareStatement(sql);
+
+      String sql_codebase =
+          "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis, lastSeenAtMillis) "
+              + "VALUES(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE lastSeenAtMillis = ? ";
+
+      String sql_invocation =
+          "INSERT INTO invocations(customerId, applicationId, environmentId, methodId, status, invokedAtMillis) "
+              + "VALUES(?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
+              + "invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis)), status = VALUE(status)";
+
+      PreparedStatement ps =
+          con.prepareStatement(invokedAtMillis == 0L ? sql_codebase : sql_invocation);
       int column = 0;
       ps.setLong(++column, customerId);
       ps.setLong(++column, appId);
@@ -728,15 +733,11 @@ public class ImportDAOImpl implements ImportDAO {
       ps.setLong(++column, methodId);
       ps.setString(++column, status.name());
       ps.setLong(++column, invokedAtMillis);
-      ps.setLong(++column, lastSeenAtMillis); // insert
-      ps.setLong(++column, lastSeenAtMillis); // update
+      if (invokedAtMillis == 0L) { // codebase
+        ps.setLong(++column, lastSeenAt.toEpochMilli()); // insert
+        ps.setLong(++column, lastSeenAt.toEpochMilli()); // update
+      }
       return ps;
-    }
-
-    private String onDuplicateKey(long invokedAtMillis) {
-      return invokedAtMillis == 0
-          ? "" // Codebase
-          : ", invokedAtMillis = GREATEST(invokedAtMillis, VALUE(invokedAtMillis)), status = VALUE(status) ";
     }
   }
 
