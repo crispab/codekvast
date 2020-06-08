@@ -576,7 +576,7 @@ public class ImportDAOImpl implements ImportDAO {
       Instant now,
       Map<String, Long> existingMethods) {
 
-    // TODO: Convert to a simple DELETE once the mystic stale deletions have been triaged
+    // TODO: Convert to a simple DELETE once the erroneous stale deletions have been fixed
 
     Map<Long, String> methodsById =
         existingMethods.entrySet().stream()
@@ -585,7 +585,8 @@ public class ImportDAOImpl implements ImportDAO {
     AtomicInteger deleted = new AtomicInteger(0);
 
     jdbcTemplate.query(
-        "DELETE FROM invocations WHERE customerId = ? AND applicationId = ? AND environmentId = ? AND lastSeenAtMillis < ? "
+        "DELETE FROM invocations WHERE customerId = ? AND applicationId = ? AND environmentId = ? "
+            + "AND lastSeenAtMillis < ? AND status <> ? "
             + "RETURNING methodId, status, invokedAtMillis, createdAt, lastSeenAtMillis, timestamp ",
         rs -> {
           long methodId = rs.getLong("methodId");
@@ -606,7 +607,8 @@ public class ImportDAOImpl implements ImportDAO {
         customerId,
         appId,
         environmentId,
-        now.toEpochMilli());
+        now.toEpochMilli(),
+        INVOKED.name());
     if (deleted.get() > 0) {
       logger.info(
           "Removed {} stale invocations for {}:{}:{}", deleted, customerId, appId, environmentId);
@@ -616,9 +618,7 @@ public class ImportDAOImpl implements ImportDAO {
   }
 
   private String formatInvokedAt(String status, long invokedAtMillis) {
-    return invokedAtMillis == 0L
-        ? status
-        : status + " at " + Instant.ofEpochMilli(invokedAtMillis).toString();
+    return invokedAtMillis == 0L ? status : status + " at " + Instant.ofEpochMilli(invokedAtMillis);
   }
 
   private Long doInsertRow(PreparedStatementCreator psc) {

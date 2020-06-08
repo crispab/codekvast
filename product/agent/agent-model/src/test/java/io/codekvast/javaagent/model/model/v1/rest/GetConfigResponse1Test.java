@@ -1,7 +1,7 @@
 package io.codekvast.javaagent.model.model.v1.rest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import com.google.gson.Gson;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;

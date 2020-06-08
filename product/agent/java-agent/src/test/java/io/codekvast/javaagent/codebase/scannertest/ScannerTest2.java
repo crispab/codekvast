@@ -4,4 +4,9 @@ package io.codekvast.javaagent.codebase.scannertest;
 @SuppressWarnings("UnusedDeclaration")
 public class ScannerTest2 extends ScannerTest1 {
   public void m2() {}
+
+  @Override
+  public String defaultMethod_m2() {
+    return "defaultMethod_m2 override";
+  }
 }

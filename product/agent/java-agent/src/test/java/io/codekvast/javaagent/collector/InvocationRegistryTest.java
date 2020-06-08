@@ -1,7 +1,7 @@
 package io.codekvast.javaagent.collector;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import io.codekvast.javaagent.InvocationRegistry;
 import io.codekvast.javaagent.codebase.CodeBaseFingerprint;

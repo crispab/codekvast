@@ -3,10 +3,10 @@ package io.codekvast.dashboard.dashboard.response;
 import static io.codekvast.javaagent.model.v2.SignatureStatus2.EXCLUDED_BY_PACKAGE_NAME;
 import static io.codekvast.javaagent.model.v2.SignatureStatus2.INVOKED;
 import static io.codekvast.javaagent.model.v2.SignatureStatus2.NOT_INVOKED;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.codekvast.dashboard.dashboard.model.methods.ApplicationDescriptor;

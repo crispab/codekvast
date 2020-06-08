@@ -3,13 +3,14 @@ package io.codekvast.javaagent.codebase;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest1;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest2;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest3;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest4;
+import io.codekvast.javaagent.codebase.scannertest.ScannerTestIf;
 import io.codekvast.javaagent.codebase.scannertest.excluded.ExcludedScannerTest5;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
@@ -55,13 +56,26 @@ public class CodeBaseScannerTest {
       assertThat(entry.getSignature(), not(containsString("wait()")));
     }
 
-    assertThat(entries.size(), is(25));
+    assertThat(entries.size(), is(28));
+  }
+
+  @Test
+  public void should_find_base_methods_of_ScannerTestIf() {
+    scanner.findMethods(
+        codeBase, ScannerTestIf.class, codeBase.getConfig().getNormalizedPackages());
+    assertThat(codeBase.getSignatures().size(), is(2));
+  }
+
+  @Test
+  public void should_find_base_methods_of_ScannerTest1() {
+    scanner.findMethods(codeBase, ScannerTest1.class, codeBase.getConfig().getNormalizedPackages());
+    assertThat(codeBase.getSignatures().size(), is(2));
   }
 
   @Test
   public void should_find_base_methods_of_ScannerTest2() {
     scanner.findMethods(codeBase, ScannerTest2.class, codeBase.getConfig().getNormalizedPackages());
-    assertThat(codeBase.getSignatures().size(), is(1));
+    assertThat(codeBase.getSignatures().size(), is(2));
   }
 
   @Test

@@ -253,11 +253,6 @@ public class CodeBaseScanner {
   }
 
   void findConstructors(CodeBase codeBase, Class<?> clazz) {
-    if (clazz.isInterface()) {
-      logger.log(finest, "Ignoring interface " + clazz);
-      return;
-    }
-
     logger.log(finest, "Analyzing " + clazz);
     try {
       Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
@@ -277,11 +272,6 @@ public class CodeBaseScanner {
   }
 
   void findMethods(CodeBase codeBase, Class<?> clazz, List<String> packages) {
-    if (clazz.isInterface()) {
-      logger.log(finest, "Ignoring interface " + clazz);
-      return;
-    }
-
     logger.log(finest, "Analyzing " + clazz);
     try {
       Method[] declaredMethods = clazz.getDeclaredMethods();

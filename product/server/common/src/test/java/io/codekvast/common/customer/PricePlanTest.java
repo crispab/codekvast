@@ -4,9 +4,9 @@ import static io.codekvast.common.customer.PricePlanDefaults.DEMO;
 import static io.codekvast.common.customer.PricePlanDefaults.TEST;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
 
 import java.time.Clock;
 import java.time.Instant;

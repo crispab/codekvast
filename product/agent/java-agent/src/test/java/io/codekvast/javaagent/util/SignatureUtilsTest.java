@@ -11,8 +11,8 @@ import static io.codekvast.javaagent.util.SignatureUtils.stripModifiersAndReturn
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
-import static org.junit.Assert.assertThat;
 
 import io.codekvast.javaagent.config.MethodAnalyzer;
 import io.codekvast.javaagent.model.v3.MethodLocation3;

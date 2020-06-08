@@ -1,7 +1,7 @@
 package io.codekvast.javaagent.config;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import io.codekvast.javaagent.util.SignatureUtils;

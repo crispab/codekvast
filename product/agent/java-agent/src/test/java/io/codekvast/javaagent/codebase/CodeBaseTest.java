@@ -2,9 +2,9 @@ package io.codekvast.javaagent.codebase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -100,7 +100,7 @@ public class CodeBaseTest {
 
     // then
     assertThat(scannedClasses, greaterThanOrEqualTo(14));
-    assertThat(codeBase.getSignatures(), hasSize(37));
+    assertThat(codeBase.getSignatures(), hasSize(38));
     assertThatCodeBaseNotContains(codeBase, "InClassesOnly");
     assertThatCodeBaseContains(codeBase, "SampleApp");
     assertThatCodeBaseContains(codeBase, "sample.lib");
@@ -124,7 +124,7 @@ public class CodeBaseTest {
 
     // then
     assertThat(scannedClasses, greaterThanOrEqualTo(15));
-    assertThat(codeBase.getSignatures(), hasSize(39));
+    assertThat(codeBase.getSignatures(), hasSize(40));
     assertThatCodeBaseContains(codeBase, "InClassesOnly");
     assertThatCodeBaseContains(codeBase, "SampleApp");
     assertThatCodeBaseContains(codeBase, "sample.lib");
@@ -149,7 +149,7 @@ public class CodeBaseTest {
     // then
     assertThat(scannedClasses, greaterThanOrEqualTo(15));
 
-    assertThat(codeBase.getSignatures(), hasSize(39));
+    assertThat(codeBase.getSignatures(), hasSize(40));
     assertThatCodeBaseContains(codeBase, "InClassesOnly");
     assertThatCodeBaseContains(codeBase, "SampleApp");
     assertThatCodeBaseContains(codeBase, "sample.lib");
@@ -170,7 +170,7 @@ public class CodeBaseTest {
 
     // then
     assertThat(scannedClasses, greaterThanOrEqualTo(15));
-    assertThat(codeBase.getSignatures(), hasSize(39));
+    assertThat(codeBase.getSignatures(), hasSize(40));
     assertThatCodeBaseContains(codeBase, "InClassesOnly");
     assertThatCodeBaseContains(codeBase, "SampleApp");
     assertThatCodeBaseContains(codeBase, "sample.lib");
@@ -192,7 +192,7 @@ public class CodeBaseTest {
 
     // then
     assertThat(scannedClasses, greaterThanOrEqualTo(15));
-    assertThat(codeBase.getSignatures(), hasSize(39));
+    assertThat(codeBase.getSignatures(), hasSize(40));
     assertThatCodeBaseContains(codeBase, "InClassesOnly");
     assertThatCodeBaseContains(codeBase, "SampleApp");
     assertThatCodeBaseContains(codeBase, "sample.lib");

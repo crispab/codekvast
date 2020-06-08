@@ -1,7 +1,7 @@
 package io.codekvast.common.security;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.security.NoSuchAlgorithmException;
 import org.junit.Test;
