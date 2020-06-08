@@ -321,8 +321,6 @@
                 Name:           datadog
                 Host:           http-intake.logs.datadoghq.com
                 dd_service:     "codekvast-{{ item.name }}"
-                dd_source:      java
-                dd_message_key: message
                 dd_tags:        "Env:{{ env }}"
                 TLS:            "on"
                 provider:       ecs
