@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
+    <property scope="context" name="source" value="java" />
+
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
 
     <appender name="ColorConsole" class="ch.qos.logback.core.ConsoleAppender">
@@ -10,28 +12,25 @@
     </appender>
 
     <appender name="JsonFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_FILE}</file>
+        <file>build/log/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <fileNamePattern>build/log/application.log.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
             <maxFileSize>${LOG_FILE_MAX_SIZE:-10MB}</maxFileSize>
-            <maxHistory>${LOG_FILE_MAX_HISTORY:-0}</maxHistory>
+            <maxHistory>${LOG_FILE_MAX_HISTORY:-10}</maxHistory>
         </rollingPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <timeZone>UTC</timeZone>
             <fieldNames>
-                <timestamp>timestamp</timestamp>
-                <version>version</version>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
             </fieldNames>
         </encoder>
     </appender>
 
     <appender name="JsonConsole" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timeZone>UTC</timeZone>
             <fieldNames>
-                <level>severity</level>
-                <logger>class</logger>
-                <thread>thread</thread>
-                <stackTrace>exception</stackTrace>
                 <levelValue>[ignore]</levelValue>
                 <version>[ignore]</version>
             </fieldNames>

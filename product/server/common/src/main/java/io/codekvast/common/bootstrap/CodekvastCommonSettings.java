@@ -32,6 +32,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
@@ -87,6 +88,7 @@ public class CodekvastCommonSettings {
 
   @PostConstruct
   public void logStartup() {
+    MDC.put("hostname", getLocalHostname());
     logger.info("{} started", this);
   }
 

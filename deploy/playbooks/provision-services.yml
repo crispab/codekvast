@@ -369,7 +369,7 @@
             containerName:  "codekvast-{{ item.name }}"
             containerPort:  8080
         name:                              "{{ item.name }}"
-        health_check_grace_period_seconds: 180
+        health_check_grace_period_seconds: 60
         network_configuration:
           assign_public_ip: yes
           subnets:          "{{ subnet_info.subnets|map(attribute='id')|list }}"
