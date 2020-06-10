@@ -1,0 +1,27 @@
+{
+  "id": 13732644,
+  "name": "RabbitMQ queue buildup",
+  "type": "query alert",
+  "query": "avg(last_1m):avg:rabbitmq.overview.queue_totals.messages.count{env:prod} > 1000",
+  "message": "@slack-codekvast-alarms @olle.hallin@hit.se",
+  "tags": [],
+  "options": {
+    "notify_audit": false,
+    "locked": false,
+    "timeout_h": 0,
+    "silenced": {},
+    "include_tags": true,
+    "no_data_timeframe": null,
+    "require_full_window": true,
+    "new_host_delay": 300,
+    "notify_no_data": false,
+    "renotify_interval": 0,
+    "escalation_message": "",
+    "thresholds": {
+      "critical": 1000,
+      "warning": 500,
+      "warning_recovery": 100,
+      "critical_recovery": 50
+    }
+  }
+}

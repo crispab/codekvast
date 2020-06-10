@@ -1,0 +1,53 @@
+{
+  "id": 6148499,
+  "name": "High number of logged application errors",
+  "type": "log alert",
+  "query": "logs(\"env:prod status:error\").index(\"main\").rollup(\"count\").by(\"service\").last(\"5m\") > 5",
+  "message": "@slack-codekvast-alarms @olle.hallin@hit.se",
+  "tags": [],
+  "options": {
+    "notify_audit": false,
+    "locked": false,
+    "timeout_h": 0,
+    "silenced": {},
+    "include_tags": true,
+    "thresholds": {
+      "critical": 5,
+      "warning": 2
+    },
+    "queryConfig": {
+      "logset": {
+        "name": "main",
+        "type": "logs",
+        "dailyLimit": null,
+        "rateLimited": false,
+        "scopeId": "8939",
+        "query": "",
+        "retention": 15,
+        "readDataAccess": true,
+        "id": "8939",
+        "dailyQuotaDisabled": true
+      },
+      "track": "logs",
+      "timeRange": {
+        "to": 1591772790554,
+        "live": true,
+        "from": 1591769190554
+      },
+      "queryString": "env:prod status:error",
+      "indexes": [
+        "main"
+      ],
+      "queryIsFailed": false
+    },
+    "new_host_delay": 300,
+    "notify_no_data": false,
+    "renotify_interval": 0,
+    "enable_logs_sample": true,
+    "aggregation": {
+      "metric": "count",
+      "type": "count",
+      "groupBy": "core_service"
+    }
+  }
+}

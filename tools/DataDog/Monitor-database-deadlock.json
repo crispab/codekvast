@@ -1,0 +1,53 @@
+{
+  "id": 6455602,
+  "name": "Database deadlock occurred",
+  "type": "log alert",
+  "query": "logs(\"message:*DeadlockLoserDataAccessException*\").index(\"main\").rollup(\"count\").by(\"service\").last(\"5m\") >= 2",
+  "message": "@olle.hallin@hit.se @slack-codekvast-alarms",
+  "tags": [],
+  "options": {
+    "notify_audit": false,
+    "locked": false,
+    "timeout_h": 0,
+    "silenced": {},
+    "include_tags": true,
+    "thresholds": {
+      "critical": 2,
+      "warning": 1
+    },
+    "queryConfig": {
+      "logset": {
+        "name": "main",
+        "type": "logs",
+        "dailyLimit": null,
+        "rateLimited": null,
+        "scopeId": "8939",
+        "query": "",
+        "retention": 15,
+        "readDataAccess": true,
+        "id": "8939",
+        "dailyQuotaDisabled": true
+      },
+      "track": "logs",
+      "timeRange": {
+        "to": 1591773013421,
+        "live": true,
+        "from": 1591758013421
+      },
+      "queryString": "message:*DeadlockLoserDataAccessException*",
+      "indexes": [
+        "main"
+      ],
+      "queryIsFailed": false
+    },
+    "new_host_delay": 300,
+    "notify_no_data": false,
+    "renotify_interval": 0,
+    "enable_logs_sample": true,
+    "aggregation": {
+      "metric": "count",
+      "type": "count",
+      "groupBy": "core_service"
+    }
+  }
+}

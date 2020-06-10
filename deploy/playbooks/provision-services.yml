@@ -14,6 +14,7 @@
     env:        staging
     dns_suffix: "{{ ('-staging', '')[env == 'prod'] }}.codekvast.io"
     server_url: "https://api{{ dns_suffix }}"
+    force: false
 
     services:
       - name:               backoffice
@@ -369,7 +370,8 @@
             containerName:  "codekvast-{{ item.name }}"
             containerPort:  8080
         name:                              "{{ item.name }}"
-        health_check_grace_period_seconds: 60
+        force_new_deployment: "{{ force }}"
+        health_check_grace_period_seconds: 180
         network_configuration:
           assign_public_ip: yes
           subnets:          "{{ subnet_info.subnets|map(attribute='id')|list }}"
