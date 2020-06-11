@@ -53,7 +53,7 @@ public class CodekvastCommonSettings {
   private String applicationName;
   private String displayVersion;
 
-  private final String hostname = getLocalHostname();
+  private final String hostname = getLocalHostname(false);
 
   @Default private String environment = "dev";
 
@@ -88,7 +88,7 @@ public class CodekvastCommonSettings {
 
   @PostConstruct
   public void logStartup() {
-    MDC.put("hostname", getLocalHostname());
+    MDC.put("host", getLocalHostname(true));
     logger.info("{} started", this);
   }
 
@@ -100,7 +100,12 @@ public class CodekvastCommonSettings {
   }
 
   @SneakyThrows
-  private String getLocalHostname() {
-    return InetAddress.getLocalHost().getHostName();
+  private String getLocalHostname(boolean stripDomain) {
+    String hostName = InetAddress.getLocalHost().getHostName();
+    int pos = stripDomain ? hostName.indexOf('.') : hostName.length();
+    if (pos < 0) {
+      pos = hostName.length();
+    }
+    return hostName.substring(0, pos);
   }
 }
