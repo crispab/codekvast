@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
+    <define name="hostname" class="io.codekvast.common.logback.HostnamePropertyDefiner"/>
+
+    <!-- Add properties that are recognized by Datadog -->
     <property scope="context" name="source" value="java" />
+    <property scope="context" name="host" value="${hostname}" />
 
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
 

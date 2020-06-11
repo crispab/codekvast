@@ -68,9 +68,4 @@ object LoggingUtils {
     fun humanReadableDuration(first: Instant, last: Instant): String {
         return humanReadableDuration(Duration.between(first, last))
     }
-
-    @JvmStatic
-    fun setMdcHost() {
-        MDC.put("host", InetAddress.getLocalHost().hostName.substringBefore("."))
-    }
 }

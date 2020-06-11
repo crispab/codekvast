@@ -21,7 +21,6 @@
  */
 package io.codekvast.dashboard
 
-import io.codekvast.common.util.LoggingUtils.setMdcHost
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.ComponentScan
@@ -36,6 +35,5 @@ import org.springframework.context.annotation.ComponentScan
 class CodekvastDashboardApplication
 
 fun main(args: Array<String>) {
-    setMdcHost()
     runApplication<CodekvastDashboardApplication>(*args)
 }
