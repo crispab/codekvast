@@ -21,6 +21,8 @@
  */
 package io.codekvast.common.util
 
+import org.slf4j.MDC
+import java.net.InetAddress
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit.MILLIS
@@ -65,5 +67,10 @@ object LoggingUtils {
     @JvmStatic
     fun humanReadableDuration(first: Instant, last: Instant): String {
         return humanReadableDuration(Duration.between(first, last))
+    }
+
+    @JvmStatic
+    fun setMdcHost() {
+        MDC.put("host", InetAddress.getLocalHost().hostName.substringBefore("."))
     }
 }

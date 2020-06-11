@@ -32,7 +32,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
@@ -53,7 +52,7 @@ public class CodekvastCommonSettings {
   private String applicationName;
   private String displayVersion;
 
-  private final String hostname = getLocalHostname(false);
+  private final String hostname = getLocalHostname();
 
   @Default private String environment = "dev";
 
@@ -88,7 +87,6 @@ public class CodekvastCommonSettings {
 
   @PostConstruct
   public void logStartup() {
-    MDC.put("host", getLocalHostname(true));
     logger.info("{} started", this);
   }
 
@@ -100,12 +98,9 @@ public class CodekvastCommonSettings {
   }
 
   @SneakyThrows
-  private String getLocalHostname(boolean stripDomain) {
+  private String getLocalHostname() {
     String hostName = InetAddress.getLocalHost().getHostName();
-    int pos = stripDomain ? hostName.indexOf('.') : hostName.length();
-    if (pos < 0) {
-      pos = hostName.length();
-    }
-    return hostName.substring(0, pos);
+    int pos = hostName.indexOf('.');
+    return hostName.substring(0, pos < 1 ? hostName.length() : pos);
   }
 }

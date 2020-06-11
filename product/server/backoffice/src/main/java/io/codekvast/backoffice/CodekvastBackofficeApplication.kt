@@ -21,6 +21,7 @@
  */
 package io.codekvast.backoffice
 
+import io.codekvast.common.util.LoggingUtils.setMdcHost
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
@@ -37,5 +38,6 @@ import org.springframework.context.annotation.ComponentScan
 class CodekvastBackofficeApplication
 
 fun main(args: Array<String>) {
-  runApplication<CodekvastBackofficeApplication>(*args)
+    setMdcHost()
+    runApplication<CodekvastBackofficeApplication>(*args)
 }
