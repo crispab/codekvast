@@ -3,7 +3,7 @@
   package: name=nodejs-legacy state=absent
 
 - name: Define NodeJS APT source
-  shell: curl -sL https://deb.nodesource.com/setup_6.x | bash -
+  shell: curl -sL https://deb.nodesource.com/setup_14.x | bash -
   args:
     creates: /etc/apt/sources.list.d/nodesource.list
 
@@ -25,14 +25,10 @@
   - git-crypt
   - node-rimraf
   - nodejs
-  - ruby # For Kensa
-  - ruby-dev
   - yarn
 
-- name: Install snaps
-  snap: name={{ item }} state=present
-  loop:
-    - yq
+- name: Install yq
+  snap: name=yq state=present
 
 - name: Install gradlew finder
   template: src=gradlew-finder.sh dest=/usr/local/bin/gradlew mode=a=rx
@@ -40,5 +36,8 @@
 - name: Install Yarn package wait-on globally
   shell: yarn global add wait-on
 
-- name: Install Kensa gem
-  shell: gem install kensa
+- name: Install heroku
+  snap: name=heroku classic=yes state=present
+
+- name: Install Heroku addons-admin
+  shell: heroku plugins:install addons-admin

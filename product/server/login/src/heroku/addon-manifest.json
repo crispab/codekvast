@@ -8,7 +8,7 @@
     "regions": [
       "*"
     ],
-    "version": 2,
+    "version": 1,
     "password": "herokuApiPassword",
     "requires": [
       "attachable"
@@ -24,5 +24,5 @@
     ]
   },
   "name": "Codekvast",
-  "$base": 149613608647125
+  "$base": 153496800655459
 }

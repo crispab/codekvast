@@ -32,26 +32,34 @@ if [[ -z "$herokuApiSsoSalt" ]]; then
     exit 1
 fi
 
-declare tmpFile=$(mktemp)
-trap "rm -f ${tmpFile}" EXIT
+set -e
+echo "Checking the Heroku token..."
+heroku auth:token
 
-echo "Inserting proper secrets into ${addonManifest} ..."
-cat ${addonManifest} | sed "s/herokuApiPassword/${herokuApiPassword}/; s/herokuApiSsoSalt/${herokuApiSsoSalt}/" > ${tmpFile}
+declare tmpManifest=$(pwd)/addon-manifest.json
+trap "rm -f ${tmpManifest}" EXIT
+
+echo "Fetching the old manifest..."
+rm -f ${tmpManifest}
+heroku addons:admin:manifest:pull codekvast
+
+echo "Replacing old manifest with ${addonManifest} ..."
+cat ${addonManifest} | sed "s/herokuApiPassword/${herokuApiPassword}/; s/herokuApiSsoSalt/${herokuApiSsoSalt}/" > ${tmpManifest}
 
 echo "Checking that the real API password appears in addon-manifest.json ..."
-grep -q "\"$herokuApiPassword\"" ${tmpFile} || {
+grep -q "\"$herokuApiPassword\"" ${tmpManifest} || {
     echo "Failed to insert real Heroku API password in addon-manifest.json" 1>&2
     exit 1
 }
 
 echo "Checking that the real SSO salt appears in addon-manifest.json ..."
-grep -q "\"$herokuApiSsoSalt\"" ${tmpFile} || {
+grep -q "\"$herokuApiSsoSalt\"" ${tmpManifest} || {
     echo "Failed to insert real Heroku SSO salt in addon-manifest.json" 1>&2
     exit 1
 }
 
-echo "Testing the resulting addon-manifest.json..."
-kensa -f ${tmpFile} test manifest
+echo "Diffing the resulting addon-manifest.json..."
+heroku addons:admin:manifest:diff
 
 echo
 echo "All looks fine."
@@ -59,7 +67,7 @@ echo "All looks fine."
 echo -n "Push addon-manifest.json to Heroku? (y/N) "; read answer
 if [[ "$answer" == "y" ]]; then
     echo "Ok, here we go..."
-    kensa -f ${tmpFile} push
+    heroku addons:admin:manifest:push
 else
     echo "Nothing done."
 fi

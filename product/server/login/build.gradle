@@ -2,7 +2,6 @@ apply from: "$rootDir/gradle/spring-boot-app.gradle"
 apply from: "$rootDir/gradle/spring-boot-jdbc.gradle"
 apply from: "$rootDir/gradle/spring-boot-web.gradle"
 apply from: "$rootDir/gradle/google-jib.gradle"
-apply from: "$projectDir/src/heroku/build.gradle"
 
 description = 'The Codekvast Login server'
 applicationName = 'codekvast-login'
