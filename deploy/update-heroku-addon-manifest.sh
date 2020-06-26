@@ -6,11 +6,11 @@
 
 cd $(dirname $0)
 
-declare addonManifest=../product/server/login/src/heroku/addon-manifest.json
+declare addonManifestSrc=../product/server/login/src/heroku/addon-manifest.json
 declare secrets=playbooks/vars/secrets.yml
 
-if [[ ! -f ${addonManifest} ]]; then
-    echo "No such file: $addonManifest" 1>&2
+if [[ ! -f ${addonManifestSrc} ]]; then
+    echo "No such file: $addonManifestSrc" 1>&2
     exit 1
 fi
 
@@ -43,8 +43,8 @@ echo "Fetching the old manifest..."
 rm -f ${tmpManifest}
 heroku addons:admin:manifest:pull codekvast
 
-echo "Replacing old manifest with ${addonManifest} ..."
-cat ${addonManifest} | sed "s/herokuApiPassword/${herokuApiPassword}/; s/herokuApiSsoSalt/${herokuApiSsoSalt}/" > ${tmpManifest}
+echo "Replacing old live manifest with ${addonManifestSrc} (injecting correct credentials) ..."
+cat ${addonManifestSrc} | sed "s/herokuApiPassword/${herokuApiPassword}/; s/herokuApiSsoSalt/${herokuApiSsoSalt}/" > ${tmpManifest}
 
 echo "Checking that the real API password appears in addon-manifest.json ..."
 grep -q "\"$herokuApiPassword\"" ${tmpManifest} || {
@@ -65,9 +65,16 @@ echo
 echo "All looks fine."
 
 echo -n "Push addon-manifest.json to Heroku? (y/N) "; read answer
-if [[ "$answer" == "y" ]]; then
-    echo "Ok, here we go..."
-    heroku addons:admin:manifest:push
-else
+if [[ "$answer" != "y" ]]; then
     echo "Nothing done."
+    return 0
 fi
+
+echo "Pushing new manifest to Heroku..."
+heroku addons:admin:manifest:push
+
+echo "Fetching the new live manifest..."
+heroku addons:admin:manifest:pull codekvast
+
+echo "Updating ${addonManifestSrc} (removing secrets) ..."
+cat ${tmpManifest} | sed "s/${herokuApiPassword}/herokuApiPassword/; s/${herokuApiSsoSalt}/herokuApiSsoSalt/" > ${addonManifestSrc}

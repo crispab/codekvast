@@ -7,11 +7,11 @@
 
 cd $(dirname $0)
 
-declare addonManifest=../product/server/login/src/heroku/addon-manifest.json
+declare addonManifestSrc=../product/server/login/src/heroku/addon-manifest.json
 declare secrets=playbooks/vars/secrets.yml
 
-if [[ ! -f ${addonManifest} ]]; then
-    echo "No such file: $addonManifest" 1>&2
+if [[ ! -f ${addonManifestSrc} ]]; then
+    echo "No such file: $addonManifestSrc" 1>&2
     exit 1
 fi
 
@@ -42,5 +42,5 @@ declare tmpManifest=$(pwd)/addon-manifest.json
 trap "rm -f ${tmpManifest}" EXIT
 heroku addons:admin:manifest:pull codekvast
 
-echo "Removing secrets and updating ${addonManifest} ..."
-cat ${tmpManifest} | sed "s/${herokuApiPassword}/herokuApiPassword/; s/${herokuApiSsoSalt}/herokuApiSsoSalt/" > ${addonManifest}
+echo "Removing secrets and updating ${addonManifestSrc} ..."
+cat ${tmpManifest} | sed "s/${herokuApiPassword}/herokuApiPassword/; s/${herokuApiSsoSalt}/herokuApiSsoSalt/" > ${addonManifestSrc}
