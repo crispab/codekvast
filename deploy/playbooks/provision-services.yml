@@ -164,7 +164,7 @@
         health_check_port:             "9080"
         health_check_path:             /management/health/loadBalancer
         health_check_interval:         10
-        health_check_timeout:          2
+        health_check_timeout:          35 # spring.datasource.hikari.connection-timeout=30s
         healthy_threshold_count:       2
         unhealthy_threshold_count:     3
         deregistration_delay_timeout:  60

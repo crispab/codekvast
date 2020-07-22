@@ -45,6 +45,7 @@ spring:
     hikari:
       maximum-pool-size:     5
       connection-test-query: SELECT 1 FROM DUAL
+      connection-timeout: 30000 # millis
     username: codekvast
   rabbitmq:
     template:
