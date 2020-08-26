@@ -45,8 +45,6 @@ public class Lock {
 
   @With Instant acquiredAt;
 
-  @With Instant releasedAt;
-
   @With Connection connection;
 
   public String key() {
@@ -61,7 +59,7 @@ public class Lock {
   }
 
   public Duration getLockDuration() {
-    return Duration.between(acquiredAt, releasedAt);
+    return Duration.between(acquiredAt, Instant.now());
   }
 
   @Override
