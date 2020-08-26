@@ -57,7 +57,7 @@
         count:
           staging: 1
           prod:    2
-        db_connections: 5
+        db_connections: 2
         stickiness_enabled: true
         secrets:
           - name:      CODEKVAST_LOGIN_CIPHER_SECRET

@@ -60,11 +60,18 @@ public interface CommonMetricsService {
   void countLogin(String source);
 
   /**
-   * Records how a lock was used.
+   * Records how long we had to wait for a lock.
    *
    * @param lock The lock
    */
-  void recordLockUsage(Lock lock);
+  void recordLockWait(Lock lock);
+
+  /**
+   * Records how long a lock was held
+   *
+   * @param lock The lock
+   */
+  void recordLockDuration(Lock lock);
 
   /**
    * Count a failure to get a lock.

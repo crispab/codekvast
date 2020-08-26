@@ -76,10 +76,14 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
   }
 
   @Override
-  public void recordLockUsage(Lock lock) {
+  public void recordLockWait(Lock lock) {
     meterRegistry
         .timer("codekvast.lock.wait.millis", LOCK_TAG, lock.getName())
         .record(lock.getWaitDuration());
+  }
+
+  @Override
+  public void recordLockDuration(Lock lock) {
     meterRegistry
         .timer("codekvast.lock.duration.millis", LOCK_TAG, lock.getName())
         .record(lock.getLockDuration());

@@ -50,6 +50,7 @@ public class LockManagerImpl implements LockManager {
   public Optional<Lock> acquireLock(Lock lock) {
     Lock acquiredLock = doAcquireLock(lock);
     if (acquiredLock != null) {
+      metricsService.recordLockWait(acquiredLock);
       return Optional.of(acquiredLock);
     }
     metricsService.countLockFailure(lock);
@@ -60,6 +61,7 @@ public class LockManagerImpl implements LockManager {
   public void releaseLock(Lock lock) {
     val result = doReleaseLock(lock);
     if (result) {
+      metricsService.recordLockDuration(lock);
       logger.trace("Released lock {}", lock);
     } else {
       logger.warn(
