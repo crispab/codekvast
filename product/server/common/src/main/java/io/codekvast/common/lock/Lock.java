@@ -49,12 +49,12 @@ public class Lock {
 
   @With Connection connection;
 
-  public boolean isFunctionLock() {
+  public boolean isTaskLock() {
     return customerId == null || customerId < 0;
   }
 
   public String key() {
-    return isFunctionLock()
+    return isTaskLock()
         ? String.format("codekvast-%s", name)
         : String.format("codekvast-%s-%d", name, customerId);
   }
@@ -76,12 +76,12 @@ public class Lock {
     return String.format("%s(key=%s)", getClass().getSimpleName(), key());
   }
 
-  public static Lock forFunction(@NonNull String name) {
+  public static Lock forTask(@NonNull String name) {
     return Lock.builder().name(name).maxLockWaitSeconds(2).maxExpectedDurationSeconds(60).build();
   }
 
   public static Lock forSystem() {
-    return forFunction("system");
+    return forTask("system");
   }
 
   public static Lock forCustomer(@NonNull Long customerId) {

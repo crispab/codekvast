@@ -65,7 +65,7 @@ public class FileImportTask {
       fixedRateString = "${codekvast.dashboard.fileImportIntervalSeconds}000")
   public void importPublicationFiles() {
     lockTemplate.doWithLock(
-        Lock.forFunction("fileImport"),
+        Lock.forTask("fileImport"),
         () -> {
           new NamedThreadTemplate().doInNamedThread("File Importer", this::processQueue);
         });

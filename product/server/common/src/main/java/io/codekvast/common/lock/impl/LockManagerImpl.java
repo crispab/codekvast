@@ -99,10 +99,11 @@ public class LockManagerImpl implements LockManager {
         connection = null;
         return result;
       }
-      if (lock.isFunctionLock()) {
-        logger.info("Timeout when acquiring function lock {}", lock);
+      if (lock.isTaskLock()) {
+        logger.debug("Task '{}' is already running", lock.key());
       } else {
-        logger.warn("Timeout when acquiring customer lock {}", lock);
+        logger.warn(
+            "Failed to acquire lock '{}' within {}s", lock.key(), lock.getMaxLockWaitSeconds());
       }
     } catch (SQLException e) {
       logger.warn("Failed to acquire lock " + lock, e);

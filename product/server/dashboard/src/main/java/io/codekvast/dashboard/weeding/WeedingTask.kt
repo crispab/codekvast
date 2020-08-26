@@ -45,7 +45,7 @@ class WeedingTask
         fixedDelayString = "\${codekvast.dashboard.dataWeedingIntervalSeconds:3600}000")
     fun performDataWeeding() {
         NamedThreadTemplate().doInNamedThread("Weeder") {
-            lockTemplate.doWithLock(Lock.forFunction("weeder")) {
+            lockTemplate.doWithLock(Lock.forTask("weeder")) {
                 weedingService.findWeedingCandidates()
                 weedingService.performDataWeeding()
             }
