@@ -21,6 +21,8 @@
  */
 package io.codekvast.common.lock.impl;
 
+import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
+
 import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.metrics.CommonMetricsService;
@@ -62,6 +64,13 @@ public class LockManagerImpl implements LockManager {
     val result = doReleaseLock(lock);
     if (result) {
       metricsService.recordLockDuration(lock);
+      if (lock.wasLongDuration()) {
+        logger.warn(
+            "Lock '{}' held for a long time: waited for {}, lock held for {}",
+            lock.key(),
+            humanReadableDuration(lock.getWaitDuration()),
+            humanReadableDuration(lock.getLockDuration()));
+      }
       logger.trace("Released lock {}", lock);
     } else {
       logger.warn(
@@ -90,7 +99,11 @@ public class LockManagerImpl implements LockManager {
         connection = null;
         return result;
       }
-      logger.warn("Timeout when acquiring lock {}", lock);
+      if (lock.isFunctionLock()) {
+        logger.info("Timeout when acquiring function lock {}", lock);
+      } else {
+        logger.warn("Timeout when acquiring customer lock {}", lock);
+      }
     } catch (SQLException e) {
       logger.warn("Failed to acquire lock " + lock, e);
     } finally {

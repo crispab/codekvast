@@ -41,17 +41,22 @@ public class Lock {
 
   @NonNull Integer maxLockWaitSeconds;
 
+  @NonNull Integer maxExpectedDurationSeconds;
+
   Instant waitStartedAt = Instant.now();
 
   @With Instant acquiredAt;
 
   @With Connection connection;
 
+  public boolean isFunctionLock() {
+    return customerId == null || customerId < 0;
+  }
+
   public String key() {
-    if (customerId == null || customerId < 0) {
-      return String.format("codekvast-%s", name);
-    }
-    return String.format("codekvast-%s-%d", name, customerId);
+    return isFunctionLock()
+        ? String.format("codekvast-%s", name)
+        : String.format("codekvast-%s-%d", name, customerId);
   }
 
   public Duration getWaitDuration() {
@@ -62,13 +67,17 @@ public class Lock {
     return Duration.between(acquiredAt, Instant.now());
   }
 
+  public boolean wasLongDuration() {
+    return getLockDuration().toSeconds() >= getMaxExpectedDurationSeconds();
+  }
+
   @Override
   public String toString() {
     return String.format("%s(key=%s)", getClass().getSimpleName(), key());
   }
 
   public static Lock forFunction(@NonNull String name) {
-    return Lock.builder().name(name).maxLockWaitSeconds(2).build();
+    return Lock.builder().name(name).maxLockWaitSeconds(2).maxExpectedDurationSeconds(60).build();
   }
 
   public static Lock forSystem() {
@@ -76,6 +85,11 @@ public class Lock {
   }
 
   public static Lock forCustomer(@NonNull Long customerId) {
-    return Lock.builder().name("customer").customerId(customerId).maxLockWaitSeconds(120).build();
+    return Lock.builder()
+        .name("customer")
+        .customerId(customerId)
+        .maxLockWaitSeconds(20)
+        .maxExpectedDurationSeconds(20)
+        .build();
   }
 }

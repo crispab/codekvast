@@ -24,9 +24,12 @@ package io.codekvast.dashboard.file_import;
 import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.thread.NamedThreadTemplate;
+import io.codekvast.common.util.LoggingUtils;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,27 +67,52 @@ public class FileImportTask {
     lockTemplate.doWithLock(
         Lock.forFunction("fileImport"),
         () -> {
-          new NamedThreadTemplate().doInNamedThread("File Importer", this::run);
+          new NamedThreadTemplate().doInNamedThread("File Importer", this::processQueue);
         });
   }
 
-  private void run() {
+  private void processQueue() {
+    Instant startedAt = Instant.now();
     File queuePath = settings.getFileImportQueuePath();
-    int queueLength = countFiles(queuePath);
-    metricsService.gaugePublicationQueueLength(queueLength);
+
+    int queueLength = getQueueLength(queuePath);
+
     if (queueLength > 0) {
       logger.info("Importing {} new publication files", queueLength);
-      processFiles(queuePath);
+
+      doProcessQueue(queuePath);
+
+      logger.info(
+          "Imported {} new publications files in {}",
+          queueLength,
+          LoggingUtils.humanReadableDuration(startedAt, Instant.now()));
     }
   }
 
-  private void processFiles(File path) {
+  private int getQueueLength(File queuePath) {
+    Instant startedAt = Instant.now();
+
+    int queueLength = doCountFiles(queuePath);
+
+    Duration duration = Duration.between(startedAt, Instant.now());
+    if (duration.toSeconds() >= 1) {
+      logger.info(
+          "Counted {} files in {} in {}",
+          queueLength,
+          queuePath,
+          LoggingUtils.humanReadableDuration(duration));
+    }
+    metricsService.gaugePublicationQueueLength(queueLength);
+    return queueLength;
+  }
+
+  private void doProcessQueue(File path) {
     if (path != null) {
       File[] files = path.listFiles();
       if (files != null) {
         for (File file : files) {
           if (file.isDirectory()) {
-            processFiles(file);
+            doProcessQueue(file);
           } else if (file.getName().endsWith(".ser")) {
             boolean handled = publicationImporter.importPublicationFile(file);
             if (handled && settings.isDeleteImportedFiles()) {
@@ -98,14 +126,14 @@ public class FileImportTask {
     }
   }
 
-  private int countFiles(File path) {
+  private int doCountFiles(File path) {
     int result = 0;
     if (path != null) {
       File[] files = path.listFiles();
       if (files != null) {
         for (File file : files) {
           if (file.isDirectory()) {
-            result += countFiles(file);
+            result += doCountFiles(file);
           } else if (file.isFile()) {
             result += 1;
           }
