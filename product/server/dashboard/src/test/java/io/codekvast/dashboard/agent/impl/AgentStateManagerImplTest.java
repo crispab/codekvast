@@ -61,7 +61,7 @@ public class AgentStateManagerImplTest {
     settings.setFileImportQueuePath(temporaryFolder.getRoot());
     settings.setFileImportIntervalSeconds(60);
 
-    when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forCustomer(customerId)));
+    when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forAgent(customerId)));
 
     agentStateManager =
         new AgentStateManagerImpl(
@@ -76,7 +76,7 @@ public class AgentStateManagerImplTest {
     when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
     when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
     when(lockManager.acquireLock(any()))
-        .thenReturn(Optional.of(Lock.forCustomer(customerData.getCustomerId())));
+        .thenReturn(Optional.of(Lock.forAgent(customerData.getCustomerId())));
 
     // when
     val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);

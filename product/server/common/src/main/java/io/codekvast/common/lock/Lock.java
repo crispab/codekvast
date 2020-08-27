@@ -89,7 +89,16 @@ public class Lock {
         .name("customer")
         .customerId(customerId)
         .maxLockWaitSeconds(20)
-        .maxExpectedDurationSeconds(20)
+        .maxExpectedDurationSeconds(60)
+        .build();
+  }
+
+  public static Lock forAgent(@NonNull Long customerId) {
+    return Lock.builder()
+        .name("agent")
+        .customerId(customerId)
+        .maxLockWaitSeconds(20)
+        .maxExpectedDurationSeconds(5)
         .build();
   }
 }
