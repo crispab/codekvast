@@ -144,7 +144,7 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
     logger.debug("Saving Heroku accessToken for customer {}, expiresAt {}", customerId, expiresAt);
     int updated =
         jdbcTemplate.update(
-            "UPDATE heroku_details SET accessToken = ?, expiresAt = ? WHERE customerId = ?",
+            "UPDATE heroku_details SET accessToken = ?, expiresAt = ? WHERE customerId = ? ORDER BY id ",
             CipherUtils.encrypt(accessToken, settings.getCipherSecret()),
             Timestamp.from(expiresAt),
             customerId);

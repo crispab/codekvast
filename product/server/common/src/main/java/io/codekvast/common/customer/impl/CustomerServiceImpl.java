@@ -207,7 +207,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     int updated =
         jdbcTemplate.update(
-            "UPDATE customers SET collectionStartedAt = ?, trialPeriodEndsAt = ? WHERE id = ? ",
+            "UPDATE customers SET collectionStartedAt = ?, trialPeriodEndsAt = ? WHERE id = ? ORDER BY id ",
             Timestamp.from(result.getCollectionStartedAt()),
             Optional.ofNullable(result.getTrialPeriodEndsAt()).map(Timestamp::from).orElse(null),
             customerData.getCustomerId());
@@ -237,7 +237,8 @@ public class CustomerServiceImpl implements CustomerService {
     int updated =
         jdbcTemplate.update(
             "UPDATE users SET lastLoginAt = ?, lastLoginSource = ?, numberOfLogins = numberOfLogins + 1 "
-                + "WHERE customerId = ? AND email = ?",
+                + "WHERE customerId = ? AND email = ? "
+                + "ORDER BY id ",
             now,
             request.getSource(),
             request.getCustomerId(),
@@ -246,7 +247,8 @@ public class CustomerServiceImpl implements CustomerService {
       logger.debug("Updated user {}", request);
       updated =
           jdbcTemplate.update(
-              "UPDATE users SET firstLoginAt = ? WHERE numberOfLogins = 1 AND customerId = ? AND email = ?",
+              "UPDATE users SET firstLoginAt = ? WHERE numberOfLogins = 1 AND customerId = ? AND email = ?"
+                  + "ORDER BY id ",
               now,
               request.getCustomerId(),
               request.getEmail());
@@ -341,7 +343,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     int count =
         jdbcTemplate.update(
-            "UPDATE customers SET plan = ? WHERE source = ? AND externalId = ?",
+            "UPDATE customers SET plan = ? WHERE source = ? AND externalId = ? ORDER BY id ",
             newPlanName,
             source,
             externalId);
@@ -458,7 +460,7 @@ public class CustomerServiceImpl implements CustomerService {
   public void updateAppDetails(String appName, String contactEmail, Long customerId) {
     int count =
         jdbcTemplate.update(
-            "UPDATE customers SET name = ?, contactEmail = ? WHERE id = ? ",
+            "UPDATE customers SET name = ?, contactEmail = ? WHERE id = ? ORDER BY id ",
             appName,
             contactEmail,
             customerId);

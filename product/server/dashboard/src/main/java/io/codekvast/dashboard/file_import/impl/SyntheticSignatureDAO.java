@@ -53,7 +53,7 @@ public class SyntheticSignatureDAO {
   @Transactional
   public void rejectPattern(SyntheticSignaturePattern pattern, String errorMessage) {
     jdbcTemplate.update(
-        "UPDATE synthetic_signature_patterns SET errorMessage = ? WHERE id = ?",
+        "UPDATE synthetic_signature_patterns SET errorMessage = ? WHERE id = ? ",
         errorMessage,
         pattern.getId());
   }

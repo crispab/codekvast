@@ -53,7 +53,7 @@ public class AgentDAOImpl implements AgentDAO {
         jdbcTemplate.update(
             "UPDATE agent_state SET enabled = FALSE "
                 + "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND nextPollExpectedAt < ? "
-                + "ORDER BY id ",
+                + "ORDER BY jvmUuid ",
             customerId,
             thisJvmUuid,
             Timestamp.from(nextPollExpectedBefore));
@@ -69,7 +69,8 @@ public class AgentDAOImpl implements AgentDAO {
 
     int updated =
         jdbcTemplate.update(
-            "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = ? WHERE customerId = ? AND jvmUuid = ? ",
+            "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = ? WHERE customerId = ? AND jvmUuid = ? "
+                + "ORDER BY jvmUuid ",
             Timestamp.from(thisPollAt),
             nextExpectedPollTimestamp,
             FALSE,
@@ -136,7 +137,8 @@ public class AgentDAOImpl implements AgentDAO {
   @Override
   public void updateAgentEnabledState(long customerId, String thisJvmUuid, boolean enabled) {
     jdbcTemplate.update(
-        "UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ?",
+        "UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ? "
+            + "ORDER BY jvmUuid ",
         enabled,
         customerId,
         thisJvmUuid);

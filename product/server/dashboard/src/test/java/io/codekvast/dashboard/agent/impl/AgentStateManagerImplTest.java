@@ -88,7 +88,7 @@ public class AgentStateManagerImplTest {
   }
 
   @Test
-  public void should_give_up_when_failed_to_acquire_lock() {
+  public void should_return_enabled_publishers_when_failed_to_acquire_lock() {
     // given
     when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
     when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);

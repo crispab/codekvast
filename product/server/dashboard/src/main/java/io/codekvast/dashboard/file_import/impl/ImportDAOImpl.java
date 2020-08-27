@@ -79,7 +79,8 @@ public class ImportDAOImpl implements ImportDAO {
     int updated =
         jdbcTemplate.update(
             "UPDATE applications SET createdAt = LEAST(createdAt, ?) "
-                + "WHERE customerId = ? AND name = ?",
+                + "WHERE customerId = ? AND name = ? "
+                + "ORDER BY id ",
             createdAt,
             customerId,
             name);
@@ -120,7 +121,8 @@ public class ImportDAOImpl implements ImportDAO {
     int updated =
         jdbcTemplate.update(
             "UPDATE environments SET createdAt = LEAST(createdAt, ?) "
-                + "WHERE customerId = ? AND name = ?",
+                + "WHERE customerId = ? AND name = ? "
+                + "ORDER BY id ",
             createdAt,
             customerId,
             name);
@@ -158,7 +160,8 @@ public class ImportDAOImpl implements ImportDAO {
 
     int updated =
         jdbcTemplate.update(
-            "UPDATE jvms SET codeBaseFingerprint = ?, publishedAt = ?, garbage = ? WHERE uuid = ? ORDER BY id",
+            "UPDATE jvms SET codeBaseFingerprint = ?, publishedAt = ?, garbage = ? WHERE uuid = ? "
+                + "ORDER BY id ",
             data.getCodeBaseFingerprint(),
             publishedAt,
             FALSE,
@@ -681,7 +684,8 @@ public class ImportDAOImpl implements ImportDAO {
               "UPDATE methods\n"
                   + "SET visibility   = ?, createdAt = LEAST(createdAt, ?), declaringType = ?, exceptionTypes = ?, methodName = ?,\n"
                   + "  bridge = ?, synthetic = ?, modifiers = ?, packageName    = ?, parameterTypes = ?, returnType = ?\n"
-                  + "WHERE customerId = ? AND signature = ?");
+                  + "WHERE customerId = ? AND signature = ? "
+                  + "ORDER BY id ");
       int column = 0;
       MethodSignature3 method = entry.getMethodSignature();
       ps.setString(++column, entry.getVisibility());
