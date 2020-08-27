@@ -28,10 +28,16 @@ import io.codekvast.common.util.LoggingUtils;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.PublicationMetricsService;
 import java.io.File;
-import java.time.Duration;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -64,23 +70,25 @@ public class FileImportTask {
       initialDelayString = "${codekvast.dashboard.fileImportInitialDelaySeconds:5}000",
       fixedRateString = "${codekvast.dashboard.fileImportIntervalSeconds}000")
   public void importPublicationFiles() {
-    lockTemplate.doWithLock(
-        Lock.forTask("fileImport"),
-        () -> {
-          new NamedThreadTemplate().doInNamedThread("File Importer", this::processQueue);
-        });
+    new NamedThreadTemplate().doInNamedThread("FileImportTask", this::processQueue);
   }
 
+  @SneakyThrows
   private void processQueue() {
-    Instant startedAt = Instant.now();
-    File queuePath = settings.getFileImportQueuePath();
+    List<File> queue =
+        lockTemplate.doWithLock(
+            Lock.forTask("fileImport"),
+            () -> collectFiles(settings.getFileImportQueuePath()),
+            () -> Collections.emptyList());
 
-    int queueLength = getQueueLength(queuePath);
+    int queueLength = queue.size();
 
     if (queueLength > 0) {
       logger.info("Importing {} new publication files", queueLength);
 
-      doProcessQueue(queuePath);
+      Instant startedAt = Instant.now();
+
+      queue.forEach(this::doProcessFile);
 
       logger.info(
           "Imported {} new publications files in {}",
@@ -89,58 +97,23 @@ public class FileImportTask {
     }
   }
 
-  private int getQueueLength(File queuePath) {
-    Instant startedAt = Instant.now();
-
-    int queueLength = doCountFiles(queuePath);
-
-    Duration duration = Duration.between(startedAt, Instant.now());
-    if (duration.toSeconds() >= 1) {
-      logger.info(
-          "Counted {} files in {} in {}",
-          queueLength,
-          queuePath,
-          LoggingUtils.humanReadableDuration(duration));
-    }
-    metricsService.gaugePublicationQueueLength(queueLength);
-    return queueLength;
-  }
-
-  private void doProcessQueue(File path) {
-    if (path != null) {
-      File[] files = path.listFiles();
-      if (files != null) {
-        for (File file : files) {
-          if (file.isDirectory()) {
-            doProcessQueue(file);
-          } else if (file.getName().endsWith(".ser")) {
-            boolean handled = publicationImporter.importPublicationFile(file);
-            if (handled && settings.isDeleteImportedFiles()) {
-              deleteFile(file);
-            }
-          } else {
-            logger.debug("Ignoring {}", file);
-          }
-        }
-      }
-    }
-  }
-
-  private int doCountFiles(File path) {
-    int result = 0;
-    if (path != null) {
-      File[] files = path.listFiles();
-      if (files != null) {
-        for (File file : files) {
-          if (file.isDirectory()) {
-            result += doCountFiles(file);
-          } else if (file.isFile()) {
-            result += 1;
-          }
-        }
-      }
-    }
+  @SneakyThrows(IOException.class)
+  private List<File> collectFiles(File queuePath) {
+    List<File> result =
+        Files.list(queuePath.toPath())
+            .peek(p -> logger.debug("Found {}", p))
+            .map(Path::toFile)
+            .filter(file -> file.getName().endsWith(".ser"))
+            .collect(Collectors.toList());
+    metricsService.gaugePublicationQueueLength(result.size());
     return result;
+  }
+
+  public void doProcessFile(File file) {
+    boolean handled = publicationImporter.importPublicationFile(file);
+    if (handled && settings.isDeleteImportedFiles()) {
+      deleteFile(file);
+    }
   }
 
   private void deleteFile(File file) {

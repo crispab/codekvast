@@ -61,7 +61,7 @@ public class FileImportTaskTest {
   }
 
   @Test
-  public void should_ignore_non_zip_files() throws Exception {
+  public void should_ignore_non_ser_files() throws Exception {
     // given
     File file = createImportFile(".bar");
 
@@ -118,6 +118,6 @@ public class FileImportTaskTest {
   }
 
   private File createImportFile(String suffix) throws IOException {
-    return File.createTempFile("import", suffix, temporaryFolder.newFolder());
+    return File.createTempFile("import-", suffix, temporaryFolder.getRoot());
   }
 }

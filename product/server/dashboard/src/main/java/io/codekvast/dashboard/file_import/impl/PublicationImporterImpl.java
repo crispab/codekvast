@@ -92,7 +92,6 @@ public class PublicationImporterImpl implements PublicationImporter {
       logger.error("Could not import {}: {}. Will not try again.", file, e.toString());
       handled = true;
     } catch (LicenseViolationException e) {
-
       // Prevent the file from being processed again.
       // The agent will keep retrying uploading new publication files.
       logger.warn("Ignoring {}: {}", file, e.toString());
