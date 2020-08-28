@@ -41,7 +41,7 @@
               "type": "timeseries",
               "requests": [
                 {
-                  "q": "avg:hikaricp.connections.active{$env,$service} by {host}",
+                  "q": "avg:hikaricp.connections.active{*} by {service}",
                   "display_type": "line",
                   "style": {
                     "palette": "dog_classic",
@@ -84,7 +84,64 @@
                 "max": "auto",
                 "include_zero": true
               },
-              "title": "Codekvast lock failures",
+              "title": "Codekvast lock contention",
+              "show_legend": false,
+              "legend_size": "0"
+            }
+          },
+          {
+            "id": 4213738239879720,
+            "definition": {
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "avg:codekvast.lock.wait.max{*} by {lock}",
+                  "display_type": "line",
+                  "style": {
+                    "palette": "dog_classic",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  }
+                }
+              ],
+              "yaxis": {
+                "label": "",
+                "scale": "linear",
+                "min": "auto",
+                "max": "auto",
+                "include_zero": true
+              },
+              "title": "Codekvast lock wait",
+              "time": {},
+              "show_legend": false,
+              "legend_size": "0"
+            }
+          },
+          {
+            "id": 8926680383602704,
+            "definition": {
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "avg:codekvast.lock.duration.max{*} by {lock}",
+                  "display_type": "line",
+                  "style": {
+                    "palette": "dog_classic",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  },
+                  "on_right_yaxis": false
+                }
+              ],
+              "yaxis": {
+                "label": "",
+                "scale": "linear",
+                "min": "auto",
+                "max": "auto",
+                "include_zero": true
+              },
+              "title": "Codekvast lock duration",
+              "time": {},
               "show_legend": false,
               "legend_size": "0"
             }
@@ -122,7 +179,8 @@
                 "include_zero": true
               },
               "title": "HTTP requests",
-              "time": {}
+              "show_legend": false,
+              "legend_size": "0"
             }
           },
           {
@@ -154,17 +212,18 @@
                 }
               ],
               "title": "Accepted publications",
+              "time": {},
               "show_legend": false,
               "legend_size": "0"
             }
           },
           {
-            "id": 7940024245738866,
+            "id": 6785242223157962,
             "definition": {
               "type": "timeseries",
               "requests": [
                 {
-                  "q": "avg:codekvast.event_consumed.duration.millis.avg{*}",
+                  "q": "avg:codekvast.publication.import.duration.max{*}",
                   "display_type": "line",
                   "style": {
                     "palette": "dog_classic",
@@ -180,7 +239,35 @@
                 "max": "auto",
                 "include_zero": true
               },
-              "title": "Event processing time (ms)",
+              "title": "Publication import time",
+              "time": {},
+              "show_legend": false
+            }
+          },
+          {
+            "id": 7940024245738866,
+            "definition": {
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "avg:codekvast.event_consumed.duration.max{$env} by {event}",
+                  "display_type": "line",
+                  "style": {
+                    "palette": "dog_classic",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  }
+                }
+              ],
+              "yaxis": {
+                "label": "",
+                "scale": "linear",
+                "min": "auto",
+                "max": "auto",
+                "include_zero": true
+              },
+              "title": "Event processing time",
+              "time": {},
               "show_legend": false,
               "legend_size": "0"
             }
@@ -207,7 +294,8 @@
                 "max": "auto",
                 "include_zero": true
               },
-              "title": "Codekvast logins",
+              "title": "Logins",
+              "time": {},
               "show_legend": false,
               "legend_size": "0"
             }
