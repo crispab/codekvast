@@ -78,7 +78,7 @@ public class PublicationMetricsServiceImpl implements PublicationMetricsService 
     publicationSizeGauges.get(type).set(size);
     ignoredSyntheticSignaturesGauges.get(type).set(ignoredSyntheticSignatures);
     meterRegistry.counter("codekvast.publication.accepted", tags).increment();
-    meterRegistry.timer("codekvast.publication.imported_in.millis", tags).record(duration);
+    meterRegistry.timer("codekvast.publication.import.duration", tags).record(duration);
   }
 
   private Tags getTags(PublicationType type) {
