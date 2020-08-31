@@ -13,9 +13,6 @@ management:
   endpoint:
     health:
       cache.time-to-live: 1s
-  metrics:
-    tags:
-      service: "codekvast-login"
 
 server:
   servlet:

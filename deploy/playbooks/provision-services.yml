@@ -163,8 +163,8 @@
         health_check_protocol:         http
         health_check_port:             "9080"
         health_check_path:             /management/health/loadBalancer
-        health_check_interval:         10
-        health_check_timeout:          35 # spring.datasource.hikari.connection-timeout=30s
+        health_check_interval:         30
+        health_check_timeout:          15 # spring.datasource.hikari.connection-timeout=30s
         healthy_threshold_count:       2
         unhealthy_threshold_count:     3
         deregistration_delay_timeout:  60
@@ -347,6 +347,10 @@
               value: "{{ item.name }}{{ dns_suffix }}"
             - name:  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
               value: "{{ item.db_connections }}"
+            - name: MANAGEMENT_METRICS_TAGS_SERVICE
+              value: "codekvast-{{ item.name }}"
+            - name: MANAGEMENT_METRICS_TAGS_ENV
+              value: "{{ env }}"
       loop:     "{{ services }}"
       loop_control:
         label: "codekvast-{{ item.name }}"
