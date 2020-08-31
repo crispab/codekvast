@@ -35,6 +35,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -99,14 +100,16 @@ public class FileImportTask {
 
   @SneakyThrows(IOException.class)
   private List<File> collectFiles(File queuePath) {
-    List<File> result =
-        Files.list(queuePath.toPath())
-            .peek(p -> logger.debug("Found {}", p))
-            .map(Path::toFile)
-            .filter(file -> file.getName().endsWith(".ser"))
-            .collect(Collectors.toList());
-    metricsService.gaugePublicationQueueLength(result.size());
-    return result;
+    try (Stream<Path> pathStream = Files.list(queuePath.toPath())) {
+      List<File> result =
+          pathStream
+              .peek(p -> logger.debug("Found {}", p))
+              .map(Path::toFile)
+              .filter(file -> file.getName().endsWith(".ser"))
+              .collect(Collectors.toList());
+      metricsService.gaugePublicationQueueLength(result.size());
+      return result;
+    }
   }
 
   public void doProcessFile(File file) {
