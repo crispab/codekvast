@@ -44,7 +44,7 @@ public class FileImportTaskTest {
     settings = new CodekvastDashboardSettings();
     settings.setFileImportQueuePath(temporaryFolder.getRoot());
 
-    when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forSystem()));
+    when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forTask("test", 60)));
     task = new FileImportTask(settings, importer, metricsService, new LockTemplate(lockManager));
   }
 

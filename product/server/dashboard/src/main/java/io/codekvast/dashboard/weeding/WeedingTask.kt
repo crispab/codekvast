@@ -42,10 +42,10 @@ class WeedingTask
      * A scheduled task that invokes the data weeding service.
      */
     @Scheduled(initialDelayString = "\${codekvast.dashboard.dataWeedingInitialDelaySeconds:600}000",
-        fixedDelayString = "\${codekvast.dashboard.dataWeedingIntervalSeconds:3600}000")
+            fixedDelayString = "\${codekvast.dashboard.dataWeedingIntervalSeconds:3600}000")
     fun performDataWeeding() {
         NamedThreadTemplate().doInNamedThread("Weeder") {
-            lockTemplate.doWithLock(Lock.forTask("weeder")) {
+            lockTemplate.doWithLock(Lock.forTask("weeder", 10)) {
                 weedingService.findWeedingCandidates()
                 weedingService.performDataWeeding()
             }

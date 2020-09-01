@@ -76,20 +76,20 @@ public class Lock {
     return String.format("%s(key=%s)", getClass().getSimpleName(), key());
   }
 
-  public static Lock forTask(@NonNull String name) {
-    return Lock.builder().name(name).maxLockWaitSeconds(2).maxExpectedDurationSeconds(60).build();
-  }
-
-  public static Lock forSystem() {
-    return forTask("system");
+  public static Lock forTask(@NonNull String name, int maxExpectedDurationSeconds) {
+    return Lock.builder()
+        .name(name)
+        .maxLockWaitSeconds(2)
+        .maxExpectedDurationSeconds(maxExpectedDurationSeconds)
+        .build();
   }
 
   public static Lock forCustomer(@NonNull Long customerId) {
     return Lock.builder()
         .name("customer")
         .customerId(customerId)
-        .maxLockWaitSeconds(20)
-        .maxExpectedDurationSeconds(60)
+        .maxLockWaitSeconds(60)
+        .maxExpectedDurationSeconds(45)
         .build();
   }
 

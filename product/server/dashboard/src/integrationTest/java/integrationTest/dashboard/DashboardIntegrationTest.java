@@ -559,8 +559,7 @@ public class DashboardIntegrationTest {
 
     CodeBaseEntry3 entry1 = CodeBaseEntry3.sampleCodeBaseEntry();
     CodeBaseEntry3 entry2 =
-        CodeBaseEntry3.sampleCodeBaseEntry()
-            .toBuilder()
+        CodeBaseEntry3.sampleCodeBaseEntry().toBuilder()
             .signature(entry1.getSignature() + "2")
             .build();
 
@@ -619,8 +618,7 @@ public class DashboardIntegrationTest {
     int signatureLength = DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH + 1;
     int indexLength = DatabaseLimits.MAX_METHOD_SIGNATURE_INDEX_LENGTH;
     CodeBaseEntry3 entry3 =
-        entry1
-            .toBuilder()
+        entry1.toBuilder()
             .signature(RandomStringUtils.randomAlphanumeric(signatureLength - 2) + "()")
             .build();
 
@@ -724,8 +722,7 @@ public class DashboardIntegrationTest {
 
     // when
     invocationDataImporter.importPublication(
-        invocationDataPublication
-            .toBuilder()
+        invocationDataPublication.toBuilder()
             .recordingIntervalStartedAtMillis(intervalStartedAtMillis2)
             .build());
 
@@ -817,8 +814,7 @@ public class DashboardIntegrationTest {
             .build();
     long intervalStartedAtMillis2 = intervalStartedAtMillis1 + 3600;
     InvocationDataPublication2 invocationDataPublication2 =
-        invocationDataPublication1
-            .toBuilder()
+        invocationDataPublication1.toBuilder()
             .recordingIntervalStartedAtMillis(intervalStartedAtMillis2)
             .build();
     // when Record the invocation of one of the signatures twice in reversed time order
@@ -855,8 +851,7 @@ public class DashboardIntegrationTest {
     // when
     GetMethodsResponse2 methodsResponse =
         dashboardService.getMethods2(
-            GetMethodsRequest.defaults()
-                .toBuilder()
+            GetMethodsRequest.defaults().toBuilder()
                 .signature(signature1.substring(0, 3).toUpperCase())
                 .minCollectedDays(0)
                 .build());
@@ -971,8 +966,7 @@ public class DashboardIntegrationTest {
     // when
     GetConfigResponse1 response =
         agentService.getConfig(
-            GetConfigRequest1.sample()
-                .toBuilder()
+            GetConfigRequest1.sample().toBuilder()
                 .jvmUuid("uuid1")
                 .licenseKey("")
                 .startedAtMillis(Instant.now().minus(2, HOURS).toEpochMilli())
@@ -997,8 +991,7 @@ public class DashboardIntegrationTest {
     // when
     GetConfigResponse2 response =
         agentService.getConfig(
-            GetConfigRequest2.sample()
-                .toBuilder()
+            GetConfigRequest2.sample().toBuilder()
                 .jvmUuid("uuid1")
                 .licenseKey("")
                 .startedAtMillis(Instant.now().minus(2, HOURS).toEpochMilli())
@@ -1023,8 +1016,7 @@ public class DashboardIntegrationTest {
     // when
     GetConfigResponse2 response =
         agentService.getConfig(
-            GetConfigRequest2.sample()
-                .toBuilder()
+            GetConfigRequest2.sample().toBuilder()
                 .jvmUuid("uuid2")
                 .licenseKey("")
                 .startedAtMillis(Instant.now().minus(2, HOURS).toEpochMilli())
@@ -1229,7 +1221,7 @@ public class DashboardIntegrationTest {
 
   @Test
   public void should_acquire_free_lock() {
-    Optional<Lock> lock = acquireLock(Lock.forSystem());
+    Optional<Lock> lock = acquireLock(Lock.forTask("test", 60));
     assertThat(lock.isPresent(), is(true));
 
     lock.ifPresent(lockManager::releaseLock);
@@ -1237,7 +1229,7 @@ public class DashboardIntegrationTest {
 
   @Test
   public void should_handle_lock_wait_timeout() throws InterruptedException {
-    Lock lock = Lock.forSystem();
+    Lock lock = Lock.forTask("test", 60);
     CountDownLatch[] latches = {
       new CountDownLatch(1), new CountDownLatch(1), new CountDownLatch(1)
     };
@@ -1300,8 +1292,7 @@ public class DashboardIntegrationTest {
     assertThat(
         response,
         is(
-            GetConfigResponse1.sample()
-                .toBuilder()
+            GetConfigResponse1.sample().toBuilder()
                 .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
                 .codeBasePublisherConfig("enabled=true")
                 .codeBasePublisherName("http")
@@ -1320,8 +1311,7 @@ public class DashboardIntegrationTest {
     assertThat(
         response,
         is(
-            GetConfigResponse2.sample()
-                .toBuilder()
+            GetConfigResponse2.sample().toBuilder()
                 .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
                 .codeBasePublisherConfig(publisherConfig)
                 .codeBasePublisherName("http")

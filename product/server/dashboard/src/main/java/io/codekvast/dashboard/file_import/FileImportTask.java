@@ -78,7 +78,7 @@ public class FileImportTask {
   private void processQueue() {
     List<File> queue =
         lockTemplate.doWithLock(
-            Lock.forTask("fileImport"),
+            Lock.forTask("fileImport", 10),
             () -> collectFiles(settings.getFileImportQueuePath()),
             () -> Collections.emptyList());
 
