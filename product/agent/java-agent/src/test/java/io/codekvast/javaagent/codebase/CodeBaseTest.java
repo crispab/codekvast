@@ -36,8 +36,7 @@ public class CodeBaseTest {
     }
 
     return new CodeBase(
-        AgentConfigFactory.createSampleAgentConfig()
-            .toBuilder()
+        AgentConfigFactory.createSampleAgentConfig().toBuilder()
             .codeBase(sb.toString())
             .packages("sample")
             .build());

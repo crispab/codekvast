@@ -116,8 +116,7 @@ public class JavaAgentIntegrationTest {
     assertThat(javaVersions, notNullValue());
 
     AgentConfig agentConfig =
-        AgentConfigFactory.createTemplateConfig()
-            .toBuilder()
+        AgentConfigFactory.createTemplateConfig().toBuilder()
             .serverUrl("http://localhost:" + wireMockRule.port())
             .appName("SampleApp")
             .appVersion("literal 1.0")

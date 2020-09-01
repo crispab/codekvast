@@ -37,8 +37,7 @@ public class CodeBaseScannerTest {
   public void beforeTest() {
     codeBase =
         new CodeBase(
-            AgentConfigFactory.createSampleAgentConfig()
-                .toBuilder()
+            AgentConfigFactory.createSampleAgentConfig().toBuilder()
                 .codeBase(new File(TEST_CLASSES_DIR).getAbsolutePath())
                 .packages(ScannerTest1.class.getPackage().getName())
                 .excludePackages(ExcludedScannerTest5.class.getPackage().getName())
@@ -102,8 +101,7 @@ public class CodeBaseScannerTest {
     int numClasses =
         scanner.scanSignatures(
             new CodeBase(
-                AgentConfigFactory.createSampleAgentConfig()
-                    .toBuilder()
+                AgentConfigFactory.createSampleAgentConfig().toBuilder()
                     .codeBase(new File(SPRING_BOOT_EXECUTABLE_JAR_DIR).getAbsolutePath())
                     .packages("sample.springboot, sample.lib")
                     .build()));

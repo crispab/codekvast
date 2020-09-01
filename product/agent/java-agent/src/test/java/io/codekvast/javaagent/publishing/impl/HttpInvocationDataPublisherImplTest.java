@@ -26,8 +26,7 @@ import org.junit.Test;
 public class HttpInvocationDataPublisherImplTest {
 
   private final AgentConfig config =
-      AgentConfigFactory.createSampleAgentConfig()
-          .toBuilder()
+      AgentConfigFactory.createSampleAgentConfig().toBuilder()
           .appName("appName")
           .appVersion("appVersion")
           .build();

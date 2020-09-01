@@ -157,8 +157,7 @@ public class AgentConfigTest {
   @Test
   public void should_normalize_filename_prefix() {
     AgentConfig config =
-        AgentConfigFactory.createTemplateConfig()
-            .toBuilder()
+        AgentConfigFactory.createTemplateConfig().toBuilder()
             .appName("   Some funky App name#'**  ")
             .appVersion("literal =)(%1.2./()¤%&3-Beta4+.RELEASE")
             .build();
@@ -169,8 +168,7 @@ public class AgentConfigTest {
   @Test
   public void should_create_http_client_without_httpProxy() {
     AgentConfig config =
-        AgentConfigFactory.createSampleAgentConfig()
-            .toBuilder()
+        AgentConfigFactory.createSampleAgentConfig().toBuilder()
             .httpProxyUsername("proxyUsername")
             .build();
     OkHttpClient httpClient = config.getHttpClient();
@@ -200,8 +198,7 @@ public class AgentConfigTest {
   @Test
   public void should_accept_httpProxy_with_explicit_port() {
     AgentConfig config =
-        AgentConfigFactory.createSampleAgentConfig()
-            .toBuilder()
+        AgentConfigFactory.createSampleAgentConfig().toBuilder()
             .httpProxyHost("foo")
             .httpProxyPort(4711)
             .build();
@@ -217,8 +214,7 @@ public class AgentConfigTest {
   @Test
   public void should_accept_httpProxyHost_proxyUsername_and_proxyPassword() {
     AgentConfig config =
-        AgentConfigFactory.createSampleAgentConfig()
-            .toBuilder()
+        AgentConfigFactory.createSampleAgentConfig().toBuilder()
             .httpProxyHost("foo")
             .httpProxyUsername("username")
             .httpProxyPassword("password")
@@ -233,8 +229,7 @@ public class AgentConfigTest {
   @Test
   public void should_accept_httpProxyHost_proxyUsername_but_no_proxyPassword() {
     AgentConfig config =
-        AgentConfigFactory.createSampleAgentConfig()
-            .toBuilder()
+        AgentConfigFactory.createSampleAgentConfig().toBuilder()
             .httpProxyHost("foo")
             .httpProxyUsername("username")
             .httpProxyPassword(null)
@@ -258,8 +253,7 @@ public class AgentConfigTest {
   @Test(expected = IllegalArgumentException.class)
   public void should_reject_httpProxy_with_missing_port() {
     AgentConfig config =
-        AgentConfigFactory.createSampleAgentConfig()
-            .toBuilder()
+        AgentConfigFactory.createSampleAgentConfig().toBuilder()
             .httpProxyHost("foo")
             .httpProxyPort(0)
             .build();

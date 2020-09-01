@@ -204,8 +204,7 @@ public class AgentConfigFactory {
   }
 
   public static AgentConfig createSampleAgentConfig() {
-    return AgentConfigFactory.createTemplateConfig()
-        .toBuilder()
+    return AgentConfigFactory.createTemplateConfig().toBuilder()
         .appName("Sample Application Name")
         .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
         .packages("com.acme. , foo.bar.")
