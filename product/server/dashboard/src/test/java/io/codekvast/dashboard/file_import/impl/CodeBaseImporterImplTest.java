@@ -55,8 +55,7 @@ public class CodeBaseImporterImplTest {
             .entries(
                 asList(
                     CodeBaseEntry3.sampleCodeBaseEntry(),
-                    CodeBaseEntry3.sampleCodeBaseEntry()
-                        .toBuilder()
+                    CodeBaseEntry3.sampleCodeBaseEntry().toBuilder()
                         .signature(syntheticSignature)
                         .build()))
             .build();

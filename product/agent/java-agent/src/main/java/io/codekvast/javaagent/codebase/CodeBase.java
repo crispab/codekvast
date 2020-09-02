@@ -210,9 +210,7 @@ public class CodeBase {
   public CodeBasePublication3 getCodeBasePublication(long customerId, int sequenceNumber) {
     return CodeBasePublication3.builder()
         .commonData(
-            config
-                .commonPublicationData()
-                .toBuilder()
+            config.commonPublicationData().toBuilder()
                 .codeBaseFingerprint(getFingerprint().toString())
                 .customerId(customerId)
                 .sequenceNumber(sequenceNumber)

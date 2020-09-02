@@ -38,8 +38,7 @@ public class InvocationRegistryTest {
             + temporaryFolder.newFolder("codebase2").getAbsolutePath();
 
     AgentConfig config =
-        AgentConfigFactory.createSampleAgentConfig()
-            .toBuilder()
+        AgentConfigFactory.createSampleAgentConfig().toBuilder()
             .appName(APP_NAME)
             .appVersion(APP_VERSION)
             .codeBase(codeBase)

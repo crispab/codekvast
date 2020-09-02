@@ -23,8 +23,7 @@ import org.junit.Test;
 public class HttpCodeBasePublisherImplTest {
 
   private final AgentConfig config =
-      AgentConfigFactory.createSampleAgentConfig()
-          .toBuilder()
+      AgentConfigFactory.createSampleAgentConfig().toBuilder()
           .appName("appName")
           .appVersion("appVersion")
           .build();

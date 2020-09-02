@@ -16,8 +16,7 @@ public class SampleSwingApp extends JFrame {
 
   private static void initializeCodekvast() {
     AgentConfig config =
-        AgentConfigFactory.createTemplateConfig()
-            .toBuilder()
+        AgentConfigFactory.createTemplateConfig().toBuilder()
             .appName("swing-app")
             .appVersion("from static aspect")
             .codeBase("build/install/swing-app/lib")

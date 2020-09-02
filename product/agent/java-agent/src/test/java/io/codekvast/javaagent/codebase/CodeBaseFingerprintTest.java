@@ -163,8 +163,7 @@ public class CodeBaseFingerprintTest {
     // when
     CodeBaseFingerprint fp2 =
         CodeBaseFingerprint.builder(
-                config
-                    .toBuilder()
+                config.toBuilder()
                     .excludePackages(config.getExcludePackages() + "; some.more.packages")
                     .build())
             .build();

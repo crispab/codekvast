@@ -52,8 +52,7 @@ public class SchedulerTest {
   private final long T1 = System.currentTimeMillis();
 
   private final GetConfigResponse2 configResponse =
-      GetConfigResponse2.sample()
-          .toBuilder()
+      GetConfigResponse2.sample().toBuilder()
           .configPollIntervalSeconds(0)
           .configPollRetryIntervalSeconds(0)
           .codeBasePublisherCheckIntervalSeconds(0)
@@ -116,8 +115,7 @@ public class SchedulerTest {
     // given
     when(configPollerMock.doPoll())
         .thenReturn(
-            configResponse
-                .toBuilder()
+            configResponse.toBuilder()
                 .configPollIntervalSeconds(4)
                 .codeBasePublisherCheckIntervalSeconds(6)
                 .invocationDataPublisherIntervalSeconds(10)

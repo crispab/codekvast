@@ -54,8 +54,7 @@ public class CustomerDataTest {
   public void should_have_decent_toString_with_trialPeriod() {
 
     CustomerData cd =
-        customerData
-            .toBuilder()
+        customerData.toBuilder()
             .createdAt(COLLECTION_START)
             .collectionStartedAt(COLLECTION_START)
             .trialPeriodEndsAt(TRIAL_PERIOD_END)

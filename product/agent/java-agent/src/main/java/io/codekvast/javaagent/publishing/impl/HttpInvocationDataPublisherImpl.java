@@ -90,9 +90,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
     return InvocationDataPublication2.builder()
         .commonData(
-            getConfig()
-                .commonPublicationData()
-                .toBuilder()
+            getConfig().commonPublicationData().toBuilder()
                 .codeBaseFingerprint(getCodeBaseFingerprint().toString())
                 .customerId(customerId)
                 .sequenceNumber(this.getSequenceNumber())
