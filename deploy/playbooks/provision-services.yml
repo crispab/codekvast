@@ -15,6 +15,7 @@
     dns_suffix: "{{ ('-staging', '')[env == 'prod'] }}.codekvast.io"
     server_url: "https://api{{ dns_suffix }}"
     force: false
+    db_connection_timeout_seconds: 30
 
     services:
       - name:               backoffice
@@ -118,6 +119,8 @@
           value: "https://login{{ dns_suffix }}"
         - name:  SPRING_DATASOURCE_URL
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
+        - name:  SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
+          value: "{{ db_connection_timeout_seconds }}s"
     rds:
       tags:
         Owner: Codekvast
@@ -163,8 +166,8 @@
         health_check_protocol:         http
         health_check_port:             "9080"
         health_check_path:             /management/health/loadBalancer
-        health_check_interval:         30
-        health_check_timeout:          15 # spring.datasource.hikari.connection-timeout=30s
+        health_check_interval:         60
+        health_check_timeout:          "{{ db_connection_timeout_seconds }}"
         healthy_threshold_count:       2
         unhealthy_threshold_count:     3
         deregistration_delay_timeout:  60
