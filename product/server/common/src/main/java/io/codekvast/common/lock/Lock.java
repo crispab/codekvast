@@ -79,7 +79,7 @@ public class Lock {
   public static Lock forTask(@NonNull String name, int maxExpectedDurationSeconds) {
     return Lock.builder()
         .name(name)
-        .maxLockWaitSeconds(2)
+        .maxLockWaitSeconds(0)
         .maxExpectedDurationSeconds(maxExpectedDurationSeconds)
         .build();
   }
