@@ -15,7 +15,6 @@
     dns_suffix: "{{ ('-staging', '')[env == 'prod'] }}.codekvast.io"
     server_url: "https://api{{ dns_suffix }}"
     force: false
-    db_connection_timeout_seconds: 30
 
     services:
       - name:               backoffice
@@ -119,8 +118,6 @@
           value: "https://login{{ dns_suffix }}"
         - name:  SPRING_DATASOURCE_URL
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
-        - name:  SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
-          value: "{{ db_connection_timeout_seconds }}s"
     rds:
       tags:
         Owner: Codekvast
@@ -167,10 +164,10 @@
         health_check_port:             "9080"
         health_check_path:             /management/health/loadBalancer
         health_check_interval:         60
-        health_check_timeout:          "{{ db_connection_timeout_seconds }}"
+        health_check_timeout:          5
         healthy_threshold_count:       2
-        unhealthy_threshold_count:     3
-        deregistration_delay_timeout:  60
+        unhealthy_threshold_count:     4
+        deregistration_delay_timeout:  30
         state:                         present
         stickiness_enabled:            "{{ item.stickiness_enabled }}"
         stickiness_lb_cookie_duration: 60
@@ -378,7 +375,7 @@
             containerPort:  8080
         name:                              "{{ item.name }}"
         force_new_deployment: "{{ force }}"
-        health_check_grace_period_seconds: 180
+        health_check_grace_period_seconds: 240
         network_configuration:
           assign_public_ip: yes
           subnets:          "{{ subnet_info.subnets|map(attribute='id')|list }}"
