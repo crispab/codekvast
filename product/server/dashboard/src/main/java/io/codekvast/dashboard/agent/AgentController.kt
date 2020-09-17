@@ -37,6 +37,7 @@ import org.springframework.http.MediaType.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.io.IOException
 import javax.inject.Inject
 import javax.validation.Valid
 
@@ -55,6 +56,15 @@ class AgentController @Inject constructor(private val agentService: AgentService
     fun onLicenseViolationException(e: LicenseViolationException): ResponseEntity<String> {
         logger.warn("Rejected request: {}", e.message)
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.message)
+    }
+
+    @ExceptionHandler
+    fun onIOException(e: IOException): ResponseEntity<String> {
+        if (e.message?.contains("Remote peer closed connection before all data could be read") == true) {
+            logger.warn("{}", e.message)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+        }
+        throw e
     }
 
     @Suppress("DEPRECATION")
