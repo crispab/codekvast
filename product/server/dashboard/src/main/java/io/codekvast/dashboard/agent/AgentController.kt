@@ -60,7 +60,7 @@ class AgentController @Inject constructor(private val agentService: AgentService
 
     @ExceptionHandler
     fun onIOException(e: IOException): ResponseEntity<String> {
-        if (e.message?.contains("Remote peer closed connection before all data could be read") == true) {
+        if (e.message?.contains("Remote peer closed connection") == true) {
             logger.warn("{}", e.message)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
         }

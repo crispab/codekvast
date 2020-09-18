@@ -45,6 +45,7 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
   public static final String LOCK_TAG = "lock";
   public static final String SOURCE_TAG = "source";
   public static final String CONSUMER_TAG = "consumer";
+  public static final String QUEUE_TAG = "queue";
 
   private final MeterRegistry meterRegistry;
 
@@ -68,6 +69,11 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
   @Override
   public void countSentSlackMessage() {
     meterRegistry.counter("codekvast.slack_messages").increment();
+  }
+
+  @Override
+  public void countSentAmqpMessage(String queueName) {
+    meterRegistry.counter("codekvast.amqp_messages", QUEUE_TAG, queueName).increment();
   }
 
   @Override

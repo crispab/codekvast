@@ -25,6 +25,7 @@ import static io.codekvast.common.messaging.impl.RabbitmqConfig.CODEKVAST_EVENT_
 
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.CodekvastEvent;
+import io.codekvast.common.metrics.CommonMetricsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -42,6 +43,7 @@ import org.springframework.stereotype.Service;
 public class EventServiceAmqpImpl implements EventService {
 
   private final AmqpTemplate amqpTemplate;
+  private final CommonMetricsService metricsService;
 
   @Override
   public void send(CodekvastEvent event) {
@@ -54,5 +56,6 @@ public class EventServiceAmqpImpl implements EventService {
           message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
           return message;
         });
+    metricsService.countSentAmqpMessage(CODEKVAST_EVENT_QUEUE);
   }
 }
