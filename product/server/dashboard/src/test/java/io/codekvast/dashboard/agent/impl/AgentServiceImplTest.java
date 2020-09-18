@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +22,9 @@ import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
+import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -41,6 +44,7 @@ public class AgentServiceImplTest {
 
   @Mock private AgentDAO agentDAO;
 
+  @Mock private AgentMetricsService agentMetricsService;
   private final CustomerData customerData = CustomerData.sample();
 
   private AgentService service;
@@ -55,7 +59,12 @@ public class AgentServiceImplTest {
     when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
 
     service =
-        new AgentServiceImpl(settings, customerService, agentDAO, mock(AgentStateManager.class));
+        new AgentServiceImpl(
+            settings,
+            customerService,
+            agentDAO,
+            mock(AgentStateManager.class),
+            agentMetricsService);
   }
 
   @Test
@@ -160,5 +169,15 @@ public class AgentServiceImplTest {
 
     // then
     assertThat(correlationId2, is(correlationId));
+  }
+
+  @Test
+  public void should_count_agent_polls() {
+
+    // when
+    service.getConfig(GetConfigRequest1.sample());
+
+    // then
+    verify(agentMetricsService, times(1)).countAgentPoll();
   }
 }

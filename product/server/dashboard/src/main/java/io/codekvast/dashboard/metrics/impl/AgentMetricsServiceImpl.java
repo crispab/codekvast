@@ -81,6 +81,11 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
     meterRegistry.timer("codekvast.publication.import.duration", tags).record(duration);
   }
 
+  @Override
+  public void countAgentPoll() {
+    meterRegistry.counter("codekvast.agent.polls").increment();
+  }
+
   private Tags getTags(PublicationType type) {
     return Tags.of("type", type.toString());
   }

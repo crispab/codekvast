@@ -51,4 +51,7 @@ public interface AgentMetricsService {
    */
   void recordImportedPublication(
       PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration);
+
+  /** Count that an agent has polled */
+  void countAgentPoll();
 }

@@ -32,6 +32,7 @@ import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
@@ -69,6 +70,7 @@ public class AgentServiceImpl implements AgentService {
   private final CustomerService customerService;
   private final AgentDAO agentDAO;
   private final AgentStateManager agentStateManager;
+  private final AgentMetricsService metricsService;
 
   @Override
   @Transactional
@@ -83,6 +85,8 @@ public class AgentServiceImpl implements AgentService {
   @Transactional
   @Restartable
   public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
+    metricsService.countAgentPoll();
+
     CustomerData customerData =
         customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
 
