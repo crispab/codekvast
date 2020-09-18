@@ -26,8 +26,8 @@ compileJava.dependsOn processResources
 jar {
     manifest {
         attributes(
-            "Implementation-Title": archivesBaseName,
-            "Implementation-Version": codekvastDisplayVersion
+                "Implementation-Title": archivesBaseName,
+                "Implementation-Version": codekvastDisplayVersion
         )
     }
     preserveFileTimestamps false
@@ -35,7 +35,7 @@ jar {
 }
 
 googleJavaFormat {
-    toolVersion = '1.8'
+    toolVersion = '1.9'
 }
 
 lombok {
@@ -50,7 +50,7 @@ lombok {
 }
 
 delombok {
-  nocopy = true
+    nocopy = true
 }
 
 configurations.forEach { it ->
