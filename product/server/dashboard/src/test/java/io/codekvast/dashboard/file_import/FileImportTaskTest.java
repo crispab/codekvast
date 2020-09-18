@@ -11,7 +11,7 @@ import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.metrics.AgentMetricsService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class FileImportTaskTest {
 
   @Mock private PublicationImporter importer;
 
-  @Mock private PublicationMetricsService metricsService;
+  @Mock private AgentMetricsService metricsService;
 
   @Mock private LockManager lockManager;
 

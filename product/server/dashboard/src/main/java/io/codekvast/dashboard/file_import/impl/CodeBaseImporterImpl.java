@@ -29,7 +29,7 @@ import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.CodeBaseReceivedEvent;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
-import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
@@ -53,7 +53,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
   private final CommonImporter commonImporter;
   private final ImportDAO importDAO;
   private final SyntheticSignatureService syntheticSignatureService;
-  private final PublicationMetricsService metricsService;
+  private final AgentMetricsService metricsService;
   private final EventService eventService;
   private final LockTemplate lockTemplate;
   private final Clock clock;

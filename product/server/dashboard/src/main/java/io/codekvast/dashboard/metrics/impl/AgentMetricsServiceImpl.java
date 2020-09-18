@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.metrics.impl;
 
-import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 /** @author olle.hallin@crisp.se */
 @Service
 @RequiredArgsConstructor
-public class PublicationMetricsServiceImpl implements PublicationMetricsService {
+public class AgentMetricsServiceImpl implements AgentMetricsService {
 
   private final MeterRegistry meterRegistry;
   private final AtomicInteger queueLengthGauge = new AtomicInteger(0);

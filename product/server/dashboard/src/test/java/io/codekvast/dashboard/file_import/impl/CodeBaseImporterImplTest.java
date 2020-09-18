@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
-import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
@@ -35,7 +35,7 @@ public class CodeBaseImporterImplTest {
 
   @Mock private EventService eventService;
 
-  @Mock private PublicationMetricsService metricsService;
+  @Mock private AgentMetricsService metricsService;
 
   @InjectMocks private CodeBaseImporterImpl codeBaseImporter;
 

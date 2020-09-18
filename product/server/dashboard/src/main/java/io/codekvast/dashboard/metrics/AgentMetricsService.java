@@ -25,11 +25,11 @@ import io.codekvast.dashboard.model.PublicationType;
 import java.time.Duration;
 
 /**
- * Wrapper for publication metrics.
+ * Wrapper for agent metrics.
  *
  * @author olle.hallin@crisp.se
  */
-public interface PublicationMetricsService {
+public interface AgentMetricsService {
 
   /**
    * Updates the gauge for the number of queued publications.

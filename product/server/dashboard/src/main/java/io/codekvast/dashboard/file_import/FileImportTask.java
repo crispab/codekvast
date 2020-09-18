@@ -26,7 +26,7 @@ import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.thread.NamedThreadTemplate;
 import io.codekvast.common.util.LoggingUtils;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.metrics.PublicationMetricsService;
+import io.codekvast.dashboard.metrics.AgentMetricsService;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -56,7 +56,7 @@ public class FileImportTask {
 
   private final CodekvastDashboardSettings settings;
   private final PublicationImporter publicationImporter;
-  private final PublicationMetricsService metricsService;
+  private final AgentMetricsService metricsService;
   private final LockTemplate lockTemplate;
 
   @PostConstruct
