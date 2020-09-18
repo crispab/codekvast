@@ -56,6 +56,5 @@ public class EventServiceAmqpImpl implements EventService {
           message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
           return message;
         });
-    metricsService.countSentAmqpMessage(CODEKVAST_EVENT_QUEUE);
   }
 }

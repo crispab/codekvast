@@ -52,8 +52,6 @@ public interface CommonMetricsService {
 
   void countSentSlackMessage();
 
-  void countSentAmqpMessage(String queueName);
-
   /**
    * Counts a login
    *

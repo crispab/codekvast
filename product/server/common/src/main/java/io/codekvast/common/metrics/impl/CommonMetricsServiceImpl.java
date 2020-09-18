@@ -72,11 +72,6 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
   }
 
   @Override
-  public void countSentAmqpMessage(String queueName) {
-    meterRegistry.counter("codekvast.amqp_messages", QUEUE_TAG, queueName).increment();
-  }
-
-  @Override
   public void countLogin(String source) {
     meterRegistry.counter("codekvast.login.count", SOURCE_TAG, source).increment();
   }
