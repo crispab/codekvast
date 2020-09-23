@@ -31,7 +31,6 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
-import java.io.IOException;
 import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +57,7 @@ public class AgentControllerTest {
     this.mockMvc =
         MockMvcBuilders.standaloneSetup(agentController)
             .setMessageConverters(new GsonHttpMessageConverter(), new StringHttpMessageConverter())
+            .addFilters(new LogAndSuppressRemoteClosedConnectionException())
             .build();
   }
 
@@ -173,40 +173,6 @@ public class AgentControllerTest {
   public void should_accept_upload_invocation_data_publication2_when_valid_license()
       throws Exception {
     assertUploadPublication(PublicationType.INVOCATIONS, V2_UPLOAD_INVOCATION_DATA);
-  }
-
-  @Test
-  public void should_handle_abandoned_publication_upload() throws Exception {
-    PublicationType publicationType = PublicationType.CODEBASE;
-    String endpoint = V3_UPLOAD_CODEBASE;
-    String licenseKey = "licenseKey";
-    String fingerprint = "fingerprint";
-    int publicationSize = 10000;
-    String originalFilename = String.format("codekvast-%s-9128371293719273.ser", publicationType);
-
-    MockMultipartFile multipartFile =
-        new MockMultipartFile(
-            PARAM_PUBLICATION_FILE,
-            originalFilename,
-            APPLICATION_OCTET_STREAM_VALUE,
-            ("PublicationContent-" + publicationType).getBytes());
-
-    when(agentService.savePublication(
-            eq(publicationType),
-            eq(licenseKey),
-            eq(fingerprint),
-            eq(publicationSize),
-            any(InputStream.class)))
-        .thenThrow(new IOException("Remote peer closed connection before all data could be read"));
-
-    mockMvc
-        .perform(
-            multipart(endpoint)
-                .file(multipartFile)
-                .param(PARAM_LICENSE_KEY, licenseKey)
-                .param(PARAM_FINGERPRINT, fingerprint)
-                .param(PARAM_PUBLICATION_SIZE, publicationSize + ""))
-        .andExpect(status().isBadRequest());
   }
 
   private void assertUploadPublication(PublicationType publicationType, String endpoint)

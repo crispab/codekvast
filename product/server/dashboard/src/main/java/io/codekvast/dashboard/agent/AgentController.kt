@@ -58,15 +58,6 @@ class AgentController @Inject constructor(private val agentService: AgentService
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.message)
     }
 
-    @ExceptionHandler
-    fun onIOException(e: IOException): ResponseEntity<String> {
-        if (e.message?.contains("Remote peer closed connection") == true) {
-            logger.warn("{}", e.message)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
-        }
-        throw e
-    }
-
     @Suppress("DEPRECATION")
     @PostMapping(value = [V1_POLL_CONFIG], consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun getConfig1(@Valid @RequestBody request: GetConfigRequest1): GetConfigResponse1 {
