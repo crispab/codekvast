@@ -9,17 +9,13 @@
 1. Bug fix: codekvast-javaagent now ignores types annotated with @org.aspectj.lang.annotation.Aspect.
    This fixes a bug where a Spring-managed @Aspect clashes with the Codekvast-managed AspectJ load-time weaver,
    so that the aspect does not kick in.
-1. Added Java 15 to the agent test suite.
-
-## 1.3.3
-
+1. Added Java 14 and 15 to the agent test suite.
 1. codekvast-javaagent now detects default methods in interfaces.
 1. codekvast-javaagent accepts apiKey (aka CODEKVAST_API_KEY or -Dcodekvast.apiKey) as synonym to licenseKey.
 1. Dashboard: handler for deadlock exceptions.
 1. Lock management: now uses the database functions GET_LOCK() and RELEASE_LOCK() instead of SELECT ... FOR UPDATE
 1. Dashboard: now refuses to import synthetic methods. WeederService removes already imported synthetic methods.
 1. Upgraded to Gradle 6.5, Spring Boot 2.2.7, Kotlin 1.3.72 plus some more
-1. Added Java 14 to the agent test suite.
 1. Converted deployment model from EC2 "pets" to ECS Fargate "cattle".
 1. Automatic cleanup of disappeared methods on codebase import.
 
