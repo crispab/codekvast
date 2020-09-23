@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 1.4.1
+
+1. Upgraded to xxx
+
 ## 1.4.0
 
 1. Bug fix: codekvast-javaagent now ignores types annotated with @org.aspectj.lang.annotation.Aspect.
