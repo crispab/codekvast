@@ -36,6 +36,8 @@ dependencies {
     testImplementation testFrameworks
 
     integrationTestCompile "com.github.tomakehurst:wiremock:$wiremockVersion"
+    integrationTestCompile "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
+    integrationTestRuntime aspectjWeaver
     integrationTestRuntime logback
 
     jacocoagent "org.jacoco:org.jacoco.agent:$jacocoVersion:runtime@jar"
@@ -148,7 +150,7 @@ integrationTest {
 
     systemProperty 'integrationTest.codekvastAgent', shadowJar.outputs.files.asPath
     systemProperty 'integrationTest.jacocoAgent', "${configurations.jacocoagent.asPath}=destfile=${buildDir}/jacoco/integrationTest2.exec,output=file,dumponexit=true"
-    systemProperty 'integrationTest.classpath', "build/classes/java/integrationTest"
+    systemProperty 'integrationTest.classpath', "build/classes/java/integrationTest:${configurations.integrationTestRuntime.asPath}"
     systemProperty 'integrationTest.javaVersions', """
         ${sdkmanJavaVersion_8},
         ${sdkmanJavaVersion_9},

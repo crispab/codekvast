@@ -9,7 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.DISABLED_IN_CONFIG;
-import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.ENABLED_IN_CONFIG_AND_SERVER;
+import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.ENABLED_IN_CONFIG_AND_ENABLED_IN_SERVER;
 import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.ENABLED_IN_CONFIG_BUT_DISABLED_IN_SERVER;
 import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.NOT_FOUND_CONFIG;
 import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.NO_CONFIG;
@@ -55,7 +55,7 @@ public class JavaAgentIntegrationTest {
     NOT_FOUND_CONFIG(false),
     DISABLED_IN_CONFIG(false),
     ENABLED_IN_CONFIG_BUT_DISABLED_IN_SERVER(true),
-    ENABLED_IN_CONFIG_AND_SERVER(true);
+    ENABLED_IN_CONFIG_AND_ENABLED_IN_SERVER(true);
 
     final boolean shouldStart;
   }
@@ -90,15 +90,14 @@ public class JavaAgentIntegrationTest {
       if (v.startsWith("8")) {
         // Test missing config and disabled by config only once.
         // We only need to test this once, since CodekvastAgent.premain() will exit immediately
-        // before any Java version-specific
-        // code is executed.
+        // before any Java version-specific code is executed.
         result.add(new TestConfig(v, NO_CONFIG));
         result.add(new TestConfig(v, NOT_FOUND_CONFIG));
         result.add(new TestConfig(v, DISABLED_IN_CONFIG));
         result.add(new TestConfig(v, ENABLED_IN_CONFIG_BUT_DISABLED_IN_SERVER));
       }
       // Test weaving and uploading for all versions
-      result.add(new TestConfig(v, ENABLED_IN_CONFIG_AND_SERVER));
+      result.add(new TestConfig(v, ENABLED_IN_CONFIG_AND_ENABLED_IN_SERVER));
     }
     return result;
   }
@@ -188,7 +187,7 @@ public class JavaAgentIntegrationTest {
     assumeTrue(testConfig.agentState.shouldStart);
 
     // given
-    boolean enabledByServer = testConfig.agentState == ENABLED_IN_CONFIG_AND_SERVER;
+    boolean enabledByServer = testConfig.agentState == ENABLED_IN_CONFIG_AND_ENABLED_IN_SERVER;
 
     givenThat(
         post(V2_POLL_CONFIG)
@@ -228,7 +227,7 @@ public class JavaAgentIntegrationTest {
         stdout, containsString("define aspect io.codekvast.javaagent.MethodExecutionAspect"));
     assertThat(
         stdout,
-        containsString("Join point 'constructor-execution(void sample.app.SampleApp.<init>())'"));
+        containsString("Join point 'constructor-execution(void sample.app.SampleApp.<init>("));
     assertThat(
         stdout,
         containsString("Join point 'method-execution(int sample.app.SampleApp.add(int, int))'"));
@@ -236,6 +235,11 @@ public class JavaAgentIntegrationTest {
         stdout,
         containsString(
             "Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))'"));
+    assertThat(
+        stdout,
+        not(
+            containsString(
+                "Join point 'method-execution(void sample.app.excluded.SampleAspect.logAspectLoaded())'")));
     assertThat(
         stdout,
         not(
@@ -268,6 +272,15 @@ public class JavaAgentIntegrationTest {
   private void assertSampleAppOutput(String stdout) {
     assertThat(stdout, containsString("[INFO] sample.app.SampleApp - SampleApp starts"));
     assertThat(stdout, containsString("[INFO] sample.app.SampleApp - 2+2=4"));
+    assertThat(
+        stdout,
+        containsString(
+            "[INFO] sample.app.excluded.SampleAspect - Before execution(void sample.app.SampleService1.doSomething(int))"));
+    assertThat(stdout, containsString("[INFO] sample.app.SampleService1 - Doing something 1"));
+    assertThat(
+        stdout,
+        containsString(
+            "[INFO] sample.app.excluded.SampleAspect - After execution(void sample.app.SampleService1.doSomething(int))"));
     assertThat(stdout, containsString("[INFO] sample.app.SampleApp - Exit"));
   }
 
