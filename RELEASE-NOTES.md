@@ -1,15 +1,22 @@
 # Codekvast Release Notes
 
+## 1.4.0
+
+1. Bug fix: codekvast-javaagent now ignores types annotated with @org.aspectj.lang.annotation.Aspect.
+   This fixes a bug where a Spring-managed @Aspect clashes with the Codekvast-managed AspectJ load-time weaver,
+   so that the aspect does not kick in.
+1. Added Java 15 to the agent test suite.
+
 ## 1.3.3
 
-1. codekvast-agent now detects default methods in interfaces.
-1. codekvast-agent accepts apiKey (aka CODEKVAST_API_KEY or -Dcodekvast.apiKey) as synonym to licenseKey.
+1. codekvast-javaagent now detects default methods in interfaces.
+1. codekvast-javaagent accepts apiKey (aka CODEKVAST_API_KEY or -Dcodekvast.apiKey) as synonym to licenseKey.
 1. Dashboard: handler for deadlock exceptions.
 1. Lock management: now uses the database functions GET_LOCK() and RELEASE_LOCK() instead of SELECT ... FOR UPDATE
 1. Dashboard: now refuses to import synthetic methods. WeederService removes already imported synthetic methods.
 1. Upgraded to Gradle 6.5, Spring Boot 2.2.7, Kotlin 1.3.72 plus some more
 1. Added Java 14 to the agent test suite.
-1. Converted deployment model from EC2 "pets" to ECS "cattle".
+1. Converted deployment model from EC2 "pets" to ECS Fargate "cattle".
 1. Automatic cleanup of disappeared methods on codebase import.
 
 ## 1.3.2
@@ -19,12 +26,12 @@
 
 ## 1.3.1
 
-1. codekvast-agent logs a warning about missing mandatory properties and simply does not start even if codekvast.enabled=true.
+1. codekvast-javaagent logs a warning about missing mandatory properties and simply does not start even if codekvast.enabled=true.
    It does not throw an exception as before.
 
 ## 1.3
 
-1. codekvast-agent does not require any mandatory parameters when $CODEKVAST_ENABLED=false or -Dcodekvast.enabled=false 
+1. codekvast-javaagent does not require any mandatory parameters when $CODEKVAST_ENABLED=false or -Dcodekvast.enabled=false
 1. Fixed some UX glitches in Dashboard's Method form.
 1. Added '*.canEqual(java.lang.Object)' to synthetic methods
 
@@ -56,7 +63,7 @@
 3. Changed the way the agent's codekvast.conf is located: if one of -Dcodekvast.configuration or CODEKVAST_CONFIG is specified,
    no automatic locations are examined. This makes it possible to disable the agent without editing or moving the config file.
 4. Upgraded to Spring Boot 2.1.3, Angular 7.2.6, TypeScript 3.3.3
-5. Added support for Basic proxy authentication in codekvast-agent.
+5. Added support for Basic proxy authentication in codekvast-javaagent.
 
 ## 0.26.0
 
@@ -88,7 +95,7 @@
 4. Upgraded to Gradle 4.10.
 5. Added login count metrics.
 6. Added file import metrics.
-7. Bug fix in the agent. Applying codekvast-agent on a Spring Boot 2.0+ executable jar resulted in an NPE when trying to scan the codebase.
+7. Bug fix in the agent. Applying codekvast-javaagent on a Spring Boot 2.0+ executable jar resulted in an NPE when trying to scan the codebase.
 8. Removed Codekvast Admin.
 
 ## 0.24.2
@@ -125,15 +132,15 @@ be interpreted as `path/to/webapp/WEB-INF/classes/` and `path/to/webapp/WEB-INF/
 ## 0.23.5
 
 1. Added column jvms.codeBaseFingerprint
-2. codekvast-agent.jar now includes the number of codebase files in uploads to server.
+2. codekvast-javaagent.jar now includes the number of codebase files in uploads to server.
 
 ## 0.23.4
 
-1. codekvast-agent.jar now logs repetitive stuff on FINE level. One-time bootstrap stuff is still logged on INFO level.
+1. codekvast-javaagent.jar now logs repetitive stuff on FINE level. One-time bootstrap stuff is still logged on INFO level.
 
 ## 0.23.3
 
-1. codekvast-agent.jar now waits for a war to be exploded before trying to resolve the app version
+1. codekvast-javaagent.jar now waits for a war to be exploded before trying to resolve the app version
 2. Fixed open file leak in AgentServiceImpl. Now uploaded files' input streams are closed in a try-finally block.
 
 ## 0.23.2
@@ -202,7 +209,7 @@ be interpreted as `path/to/webapp/WEB-INF/classes/` and `path/to/webapp/WEB-INF/
 
 ## 0.21.5
 
-1. Added Boot-Class-Path to codekvast-agent's MANIFEST.MF (eliminates the need for -Xbootclasspath/a:codekvast-agent-x.x.jar)
+1. Added Boot-Class-Path to codekvast-javaagent's MANIFEST.MF (eliminates the need for -Xbootclasspath/a:codekvast-javaagent-x.x.jar)
 1. Improved handling of communication failures in Codekvast Warehouse.
 1. Added support for trial periods.
 1. Increased maxMethods to 25.000 in TEST price plan.
@@ -255,11 +262,11 @@ be interpreted as `path/to/webapp/WEB-INF/classes/` and `path/to/webapp/WEB-INF/
 
 ## 0.20.1
 
-1. Removed classifier 'all' from codekvast-agent-x.x.x.jar. It used to be named codekvast-agent-x.x.x-all.jar
+1. Removed classifier 'all' from codekvast-javaagent-x.x.x.jar. It used to be named codekvast-javaagent-x.x.x-all.jar
 
 ## 0.20.0
 
-1. Merged codekvast-agent.jar and aspectjweaver.jar
+1. Merged codekvast-javaagent.jar and aspectjweaver.jar
 
 ## 0.19.0
 
@@ -503,7 +510,7 @@ instructions.
 
 ## 0.12.0
 
-1. Renamed codekvast-agent to codekvast-daemon
+1. Renamed codekvast-javaagent to codekvast-daemon
 
 ## 0.11.11
 
@@ -583,7 +590,7 @@ instructions.
 
 ## 0.10.1
 
-1. Added Redhat 6 start script for codekvast-agent.
+1. Added Redhat 6 start script for codekvast-javaagent.
 
 ## 0.10.0
 
@@ -591,7 +598,7 @@ instructions.
 
 ## 0.9.5
 
-1. Bug fix in codekvast-agent: Method.millisSinceJvmStart was not correct.
+1. Bug fix in codekvast-javaagent: Method.millisSinceJvmStart was not correct.
 1. Implemented server-side support for application statistics.
 
 ## 0.9.4
@@ -608,18 +615,18 @@ instructions.
 
 ## 0.9.1
 
-1. Added a Gentoo start script for codekvast-server and codekvast-agent.
+1. Added a Gentoo start script for codekvast-server and codekvast-javaagent.
 
 ## 0.9.0
 
 1. Improved the installation procedures in CodekvastUserManual.
 1. Now CodekvastUserManual.html is self-contained. No more external images.
-1. codekvast-agent now runs on Java 6.
+1. codekvast-javaagent now runs on Java 6.
 
 ## 0.8.18
 
 1. Improved the server web interface.
-1. codekvast-agent now uses a private H2 database for storing not yet uploaded data.
+1. codekvast-javaagent now uses a private H2 database for storing not yet uploaded data.
 
 ## 0.8.17
 

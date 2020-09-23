@@ -55,7 +55,10 @@ public abstract class AbstractMethodExecutionAspect {
           + "|| execution(String toString()) ")
   public void trivialMethodExecution() {}
 
-  @Before("methodExecution() && !trivialMethodExecution()")
+  @Pointcut("within(@org.aspectj.lang.annotation.Aspect *)")
+  public void withinAspect() {}
+
+  @Before("methodExecution() && !trivialMethodExecution() && !withinAspect()")
   public void registerInvocation(JoinPoint.StaticPart thisJointPoint) {
     InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature());
   }

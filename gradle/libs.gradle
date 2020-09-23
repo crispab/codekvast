@@ -2,7 +2,7 @@ ext {
     aspectjVersion = '1.9.5'
     flywayVersion = '6.4.2'
     gsonVersion = '2.8.6'
-    jacocoVersion = '0.8.5'
+    jacocoVersion = '0.8.6'
     mariadbVersion = '10.4'
     rabbitmqVersion = '3.8-management-alpine'
     seleniumVersion = '3.141.59'

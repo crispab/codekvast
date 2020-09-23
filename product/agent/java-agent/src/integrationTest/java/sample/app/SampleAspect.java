@@ -1,4 +1,4 @@
-package sample.app.excluded;
+package sample.app;
 
 import javax.annotation.PostConstruct;
 import lombok.extern.java.Log;

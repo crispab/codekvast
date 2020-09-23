@@ -239,7 +239,7 @@ public class JavaAgentIntegrationTest {
         stdout,
         not(
             containsString(
-                "Join point 'method-execution(void sample.app.excluded.SampleAspect.logAspectLoaded())'")));
+                "Join point 'method-execution(void sample.app.SampleAspect.logAspectLoaded())'")));
     assertThat(
         stdout,
         not(
@@ -275,12 +275,12 @@ public class JavaAgentIntegrationTest {
     assertThat(
         stdout,
         containsString(
-            "[INFO] sample.app.excluded.SampleAspect - Before execution(void sample.app.SampleService1.doSomething(int))"));
+            "[INFO] sample.app.SampleAspect - Before execution(void sample.app.SampleService1.doSomething(int))"));
     assertThat(stdout, containsString("[INFO] sample.app.SampleService1 - Doing something 1"));
     assertThat(
         stdout,
         containsString(
-            "[INFO] sample.app.excluded.SampleAspect - After execution(void sample.app.SampleService1.doSomething(int))"));
+            "[INFO] sample.app.SampleAspect - After execution(void sample.app.SampleService1.doSomething(int))"));
     assertThat(stdout, containsString("[INFO] sample.app.SampleApp - Exit"));
   }
 
