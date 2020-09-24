@@ -375,7 +375,7 @@
             containerPort:  8080
         name:                              "{{ item.name }}"
         force_new_deployment: "{{ force }}"
-        health_check_grace_period_seconds: 240
+        health_check_grace_period_seconds: 300
         network_configuration:
           assign_public_ip: yes
           subnets:          "{{ subnet_info.subnets|map(attribute='id')|list }}"
