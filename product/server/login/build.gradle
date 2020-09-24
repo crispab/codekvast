@@ -10,7 +10,7 @@ version = codekvastVersion
 mainClassName = 'io.codekvast.login.CodekvastLoginApplication'
 
 dependencies {
-    implementation project(":product:server:common")
+    implementation project(':product:server:common')
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.springframework.security:spring-security-web'

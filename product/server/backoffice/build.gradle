@@ -18,7 +18,7 @@ configurations {
 
 
 dependencies {
-  implementation project(":product:server:common")
+  implementation project(':product:server:common')
   implementation 'org.drools:drools-compiler:7.37.0.Final'
   implementation "com.google.code.gson:gson:$gsonVersion"
   implementation 'org.springframework.boot:spring-boot-starter-mustache'
