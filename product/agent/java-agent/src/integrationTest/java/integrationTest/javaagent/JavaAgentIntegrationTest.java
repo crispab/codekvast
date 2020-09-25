@@ -302,7 +302,7 @@ public class JavaAgentIntegrationTest {
         new ArrayList<>(
             Arrays.asList(
                 java,
-                "-javaagent:" + jacocoAgent,
+                // TODO: Make integration test work with JaCoCo: "-javaagent:" + jacocoAgent,
                 "-javaagent:" + codekvastAgent,
                 "-cp",
                 cp,

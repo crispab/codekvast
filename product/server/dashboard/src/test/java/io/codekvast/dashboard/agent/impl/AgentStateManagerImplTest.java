@@ -72,7 +72,8 @@ public class AgentStateManagerImplTest {
   }
 
   @Test
-  @Ignore("TODO: Remove this test once RestartableTransactionAspect has been verified in production")
+  @Ignore(
+      "TODO: Remove this test once RestartableTransactionAspect has been verified in production")
   public void should_acquire_and_release_lock() {
     // given
     when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);

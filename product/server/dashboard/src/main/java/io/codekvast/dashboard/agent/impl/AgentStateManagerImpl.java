@@ -23,7 +23,6 @@ package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
-import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
@@ -54,18 +53,18 @@ public class AgentStateManagerImpl implements AgentStateManager {
   public boolean updateAgentState(
       CustomerData customerData, String jvmUuid, String appName, String environment) {
     return doUpdateAgentState(customerData, jvmUuid, appName, environment);
-//    return lockTemplate.doWithLock(
-//        Lock.forAgent(customerData.getCustomerId()),
-//        () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
-//        () -> {
-//          logger.warn(
-//              "Failed to acquire lock, treating agent {}:{}:{}:{} as enabled.",
-//              customerData.getCustomerId(),
-//              environment,
-//              appName,
-//              jvmUuid);
-//          return true;
-//        });
+    //    return lockTemplate.doWithLock(
+    //        Lock.forAgent(customerData.getCustomerId()),
+    //        () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
+    //        () -> {
+    //          logger.warn(
+    //              "Failed to acquire lock, treating agent {}:{}:{}:{} as enabled.",
+    //              customerData.getCustomerId(),
+    //              environment,
+    //              appName,
+    //              jvmUuid);
+    //          return true;
+    //        });
   }
 
   private boolean doUpdateAgentState(
