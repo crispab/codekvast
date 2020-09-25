@@ -8,7 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,16 +15,13 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.customer.PricePlanDefaults;
-import io.codekvast.common.lock.Lock;
-import io.codekvast.common.lock.LockManager;
-import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
+import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import java.time.Instant;
 import java.util.Optional;
 import lombok.val;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -47,8 +43,6 @@ public class AgentStateManagerImplTest {
 
   @Mock private EventService eventService;
 
-  @Mock private LockManager lockManager;
-
   private final CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
 
   private CustomerData customerData;
@@ -62,32 +56,11 @@ public class AgentStateManagerImplTest {
     settings.setFileImportQueuePath(temporaryFolder.getRoot());
     settings.setFileImportIntervalSeconds(60);
 
-    when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forAgent(customerId)));
-
     agentStateManager =
         new AgentStateManagerImpl(
-            settings, customerService, eventService, agentDAO, new LockTemplate(lockManager));
+            settings, customerService, eventService, agentDAO);
 
     setupCustomerData(null, null);
-  }
-
-  @Test
-  @Ignore(
-      "TODO: Remove this test once RestartableTransactionAspect has been verified in production")
-  public void should_acquire_and_release_lock() {
-    // given
-    when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
-    when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
-    when(lockManager.acquireLock(any()))
-        .thenReturn(Optional.of(Lock.forAgent(customerData.getCustomerId())));
-
-    // when
-    val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);
-
-    verify(lockManager).acquireLock(any());
-    verify(lockManager).releaseLock(any());
-
-    assertThat(response, is(true));
   }
 
   @Test
@@ -95,12 +68,9 @@ public class AgentStateManagerImplTest {
     // given
     when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
     when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
-    when(lockManager.acquireLock(any())).thenReturn(Optional.empty());
 
     // when
     val response = agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment);
-
-    verify(lockManager, never()).releaseLock(any());
 
     assertThat(response, is(true));
   }
@@ -118,7 +88,7 @@ public class AgentStateManagerImplTest {
     assertThat(response, is(true));
 
     verify(agentDAO).updateAgentEnabledState(customerId, jvmUuid, true);
-    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
+    verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   @Test
@@ -134,7 +104,7 @@ public class AgentStateManagerImplTest {
 
     // then
     assertThat(response, is(true));
-    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
+    verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   @Test
@@ -151,7 +121,7 @@ public class AgentStateManagerImplTest {
 
     // then
     assertThat(response, is(false));
-    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
+    verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   @Test
@@ -165,7 +135,7 @@ public class AgentStateManagerImplTest {
 
     // then
     assertThat(response, is(false));
-    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
+    verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   @Test
@@ -180,7 +150,7 @@ public class AgentStateManagerImplTest {
 
     // then
     assertThat(response, is(false));
-    // TODO: When beefier CloudAMQP: verify(eventService).send(any(AgentPolledEvent.class));
+    verify(eventService).send(any(AgentPolledEvent.class));
   }
 
   private void setupCustomerData(Instant collectionStartedAt, Instant trialPeriodEndsAt) {
