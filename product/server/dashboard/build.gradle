@@ -89,7 +89,7 @@ task generateCodekvastConfig {
     configFile.text = """# Run Codekvast against Sample App
 appName = $archivesBaseName
 appVersion = $codekvastDisplayVersion
-# aspectjOptions = -verbose -showWeaveInfo
+aspectjOptions = -verbose -showWeaveInfo
 codeBase = build/libs/$archivesBaseName-$version-all.jar
 methodVisibility = all
 packages = io.codekvast

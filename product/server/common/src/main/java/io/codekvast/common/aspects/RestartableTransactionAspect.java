@@ -25,6 +25,7 @@ import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
 
 import java.time.Instant;
 import java.util.Random;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -50,14 +51,19 @@ public class RestartableTransactionAspect {
 
   private final Random random = new Random();
 
+  @PostConstruct
+  public void aspectLoaded() {
+    logger.info("{} loaded", this.getClass().getSimpleName());
+  }
+
+  @Pointcut("@annotation(io.codekvast.common.aspects.Restartable)")
+  private void anyRestartable() {}
+
   @Pointcut("execution(* *(..))")
   private void methodExecution() {}
 
   @Pointcut("within(io.codekvast..*)")
   private void withinCodekvast() {}
-
-  @Pointcut("@annotation(io.codekvast.common.aspects.Restartable)")
-  private void anyRestartable() {}
 
   @Around("anyRestartable() && methodExecution() && withinCodekvast()")
   public Object restartableOperation(ProceedingJoinPoint pjp) throws Throwable {

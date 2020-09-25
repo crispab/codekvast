@@ -53,18 +53,19 @@ public class AgentStateManagerImpl implements AgentStateManager {
   @SneakyThrows
   public boolean updateAgentState(
       CustomerData customerData, String jvmUuid, String appName, String environment) {
-    return lockTemplate.doWithLock(
-        Lock.forAgent(customerData.getCustomerId()),
-        () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
-        () -> {
-          logger.warn(
-              "Failed to acquire lock, treating agent {}:{}:{}:{} as enabled.",
-              customerData.getCustomerId(),
-              environment,
-              appName,
-              jvmUuid);
-          return true;
-        });
+    return doUpdateAgentState(customerData, jvmUuid, appName, environment);
+//    return lockTemplate.doWithLock(
+//        Lock.forAgent(customerData.getCustomerId()),
+//        () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
+//        () -> {
+//          logger.warn(
+//              "Failed to acquire lock, treating agent {}:{}:{}:{} as enabled.",
+//              customerData.getCustomerId(),
+//              environment,
+//              appName,
+//              jvmUuid);
+//          return true;
+//        });
   }
 
   private boolean doUpdateAgentState(

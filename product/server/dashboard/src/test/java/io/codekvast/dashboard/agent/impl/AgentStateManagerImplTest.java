@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.util.Optional;
 import lombok.val;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -71,6 +72,7 @@ public class AgentStateManagerImplTest {
   }
 
   @Test
+  @Ignore("TODO: Remove this test once RestartableTransactionAspect has been verified in production")
   public void should_acquire_and_release_lock() {
     // given
     when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
