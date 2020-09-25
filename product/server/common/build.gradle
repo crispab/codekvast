@@ -40,6 +40,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
 
     runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.3'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
