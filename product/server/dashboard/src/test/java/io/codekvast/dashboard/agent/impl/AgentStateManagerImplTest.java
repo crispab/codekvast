@@ -57,8 +57,7 @@ public class AgentStateManagerImplTest {
     settings.setFileImportIntervalSeconds(60);
 
     agentStateManager =
-        new AgentStateManagerImpl(
-            settings, customerService, eventService, agentDAO);
+        new AgentStateManagerImpl(settings, customerService, eventService, agentDAO);
 
     setupCustomerData(null, null);
   }
