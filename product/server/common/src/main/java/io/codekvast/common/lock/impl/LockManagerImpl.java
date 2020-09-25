@@ -73,7 +73,7 @@ public class LockManagerImpl implements LockManager {
       }
       logger.trace("Released lock {}", lock);
     } else {
-      logger.warn(
+      logger.debug(
           "Attempt to release lock {} which was not previously acquired on this connection", lock);
     }
   }
@@ -127,7 +127,7 @@ public class LockManagerImpl implements LockManager {
         }
       }
     } catch (SQLException e) {
-      logger.warn("Failed to release lock " + lock, e);
+      logger.error("Failed to release lock " + lock, e);
     } finally {
       doClose(connection);
     }
