@@ -42,7 +42,7 @@ public class CorrelationIdHolder {
   public static String get() {
     String id = holder.get();
     if (id == null) {
-      id = UUID.randomUUID().toString();
+      id = generateNew();
       set(id);
     }
     return id;

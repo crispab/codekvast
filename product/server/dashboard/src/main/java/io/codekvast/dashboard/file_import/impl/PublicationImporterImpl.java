@@ -22,6 +22,8 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.common.customer.LicenseViolationException;
+import io.codekvast.common.lock.Lock;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
@@ -67,9 +69,22 @@ public class PublicationImporterImpl implements PublicationImporter {
   private final Validator validator;
   private final AgentMetricsService metricsService;
   private final AgentService agentService;
+  private final LockTemplate lockTemplate;
 
   @Override
+  @SneakyThrows
   public boolean importPublicationFile(File file) {
+    return lockTemplate.doWithLock(
+        Lock.forPublication(file),
+        () -> doImportPublicationFile(file),
+        () -> {
+          logger.info(
+              "Processing of {} was already in progress in another transaction", file.getName());
+          return false;
+        });
+  }
+
+  private boolean doImportPublicationFile(File file) {
     logger.info("Processing {}", file.getName());
     boolean handled;
     CorrelationIdHolder.set(agentService.getCorrelationIdFromPublicationFile(file));

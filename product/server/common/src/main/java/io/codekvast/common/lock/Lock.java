@@ -21,6 +21,7 @@
  */
 package io.codekvast.common.lock;
 
+import java.io.File;
 import java.sql.Connection;
 import java.time.Duration;
 import java.time.Instant;
@@ -90,6 +91,14 @@ public class Lock {
         .customerId(customerId)
         .maxLockWaitSeconds(60)
         .maxExpectedDurationSeconds(45)
+        .build();
+  }
+
+  public static Lock forPublication(@NonNull File file) {
+    return Lock.builder()
+        .name(file.getName())
+        .maxLockWaitSeconds(0)
+        .maxExpectedDurationSeconds(60)
         .build();
   }
 }

@@ -9,6 +9,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import io.codekvast.common.lock.Lock;
+import io.codekvast.common.lock.LockManager;
+import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
@@ -24,6 +27,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.Optional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import org.assertj.core.util.Files;
@@ -46,6 +50,8 @@ public class PublicationImporterImplTest {
 
   @Mock private AgentService agentService;
 
+  @Mock private LockManager lockManager;
+
   private PublicationImporter publicationImporter;
 
   @Before
@@ -55,7 +61,18 @@ public class PublicationImporterImplTest {
         .thenReturn(CorrelationIdHolder.generateNew());
     this.publicationImporter =
         new PublicationImporterImpl(
-            codeBaseImporter, invocationDataImporter, validator, metricsService, agentService);
+            codeBaseImporter,
+            invocationDataImporter,
+            validator,
+            metricsService,
+            agentService,
+            new LockTemplate(lockManager));
+    when(lockManager.acquireLock(any()))
+        .thenReturn(
+            Optional.of(
+                Lock.forPublication(
+                    new File(
+                        "/intake/queue/invocations-29-683ce793-8bb8-4dc9-a494-cb2543aa7964.ser"))));
   }
 
   @Test
@@ -127,6 +144,20 @@ public class PublicationImporterImplTest {
     assertThat(handled, is(true));
     verify(invocationDataImporter).importPublication(any(InvocationDataPublication2.class));
     verify(validator).validate(any());
+    verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
+  }
+
+  @Test
+  public void should_not_process_locked_file() throws URISyntaxException {
+    // given
+    File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
+    when(lockManager.acquireLock(any())).thenReturn(Optional.empty());
+
+    // when
+    boolean handled = publicationImporter.importPublicationFile(file);
+
+    // then
+    assertThat(handled, is(false));
     verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
   }
 
