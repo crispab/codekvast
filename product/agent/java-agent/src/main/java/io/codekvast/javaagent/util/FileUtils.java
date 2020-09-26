@@ -126,8 +126,10 @@ public final class FileUtils {
     }
     logger.fine(
         String.format(
-            "Serialized %s in %d ms",
-            object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt));
+            "Serialized %s to %d bytes in %d ms",
+            object.getClass().getSimpleName(),
+            file.length(),
+            System.currentTimeMillis() - startedAt));
     return file;
   }
 
