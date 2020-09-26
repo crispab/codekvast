@@ -26,7 +26,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
@@ -43,7 +42,7 @@ public class LogAndSuppressRemoteClosedConnectionException extends GenericFilter
    * request; nested exception is java.lang.RuntimeException: java.io.IOException: UT000128: Remote
    * peer closed connection before all data could be read"
    *
-   * <p>and turn it in to a 400 Bad Request.
+   * <p>Log it as a warning and continue.
    */
   @Override
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -51,14 +50,11 @@ public class LogAndSuppressRemoteClosedConnectionException extends GenericFilter
     try {
       chain.doFilter(req, res);
     } catch (NestedServletException e) {
-      if (e.getMessage()
-          .contains("UT000128: Remote peer closed connection before all data could be read")) {
+      if (e.getMessage().contains("UT000128: Remote peer closed connection")) {
         logger.warn("{}", e.getMessage());
-        HttpServletResponse response = (HttpServletResponse) res;
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-        return;
+      } else {
+        throw e;
       }
-      throw e;
     }
   }
 }
