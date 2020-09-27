@@ -18,6 +18,7 @@ import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.metrics.AgentMetricsService;
 import java.time.Instant;
 import java.util.Optional;
 import lombok.val;
@@ -28,6 +29,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+@SuppressWarnings("ClassWithTooManyFields")
 public class AgentStateManagerImplTest {
 
   private final Long customerId = 1L;
@@ -43,6 +45,8 @@ public class AgentStateManagerImplTest {
 
   @Mock private EventService eventService;
 
+  @Mock private AgentMetricsService agentMetricsService;
+
   private final CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
 
   private CustomerData customerData;
@@ -57,7 +61,8 @@ public class AgentStateManagerImplTest {
     settings.setFileImportIntervalSeconds(60);
 
     agentStateManager =
-        new AgentStateManagerImpl(settings, customerService, eventService, agentDAO);
+        new AgentStateManagerImpl(
+            settings, customerService, eventService, agentDAO, agentMetricsService);
 
     setupCustomerData(null, null);
   }

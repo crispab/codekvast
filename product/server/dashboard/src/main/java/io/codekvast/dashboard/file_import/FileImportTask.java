@@ -100,6 +100,10 @@ public class FileImportTask {
 
   @SneakyThrows(IOException.class)
   private List<File> collectFiles(File queuePath) {
+    if (queuePath.mkdirs()) {
+      logger.info("Created {}", queuePath.getAbsolutePath());
+    }
+
     try (Stream<Path> pathStream = Files.list(queuePath.toPath())) {
       List<File> result =
           pathStream

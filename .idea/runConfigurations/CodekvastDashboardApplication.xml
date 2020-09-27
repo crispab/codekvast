@@ -27,6 +27,16 @@
         <option name="name" value="codekvast.dashboard.delete-imported-files" />
         <option name="value" value="false" />
       </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="codekvast.agent-statistics.delay.seconds" />
+        <option name="value" value="10" />
+      </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="codekvast.agent-statistics.interval.seconds" />
+        <option name="value" value="10" />
+      </param>
     </additionalParameters>
     <RunnerSettings />
     <method v="2">

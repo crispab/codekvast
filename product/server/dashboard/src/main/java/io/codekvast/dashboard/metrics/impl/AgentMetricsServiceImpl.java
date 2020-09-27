@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.metrics.impl;
 
 import io.codekvast.dashboard.metrics.AgentMetricsService;
+import io.codekvast.dashboard.metrics.AgentStatistics;
 import io.codekvast.dashboard.model.PublicationType;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
@@ -40,6 +41,9 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
 
   private final MeterRegistry meterRegistry;
   private final AtomicInteger queueLengthGauge = new AtomicInteger(0);
+  private final AtomicInteger disabledAgentsGauge = new AtomicInteger(0);
+  private final AtomicInteger deadAgentsGauge = new AtomicInteger(0);
+  private final AtomicInteger aliveAgentsGauge = new AtomicInteger(0);
   private final Map<PublicationType, AtomicInteger> publicationSizeGauges = new HashMap<>();
   private final Map<PublicationType, AtomicInteger> ignoredSyntheticSignaturesGauges =
       new HashMap<>();
@@ -47,6 +51,10 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
   @PostConstruct
   void createGauges() {
     meterRegistry.gauge("codekvast.publication.queueLength", queueLengthGauge);
+    meterRegistry.gauge("codekvast.agents", Tags.of("state", "disabled"), disabledAgentsGauge);
+    meterRegistry.gauge("codekvast.agents", Tags.of("state", "dead"), deadAgentsGauge);
+    meterRegistry.gauge("codekvast.agents", Tags.of("state", "alive"), aliveAgentsGauge);
+
     for (PublicationType type : PublicationType.values()) {
       Tags tags = getTags(type);
 
@@ -58,6 +66,13 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
       ignoredSyntheticSignaturesGauges.put(type, ignoredSynthetic);
       meterRegistry.gauge("codekvast.publication.synthetic", tags, ignoredSynthetic);
     }
+  }
+
+  @Override
+  public void gaugeAgents(AgentStatistics statistics) {
+    this.disabledAgentsGauge.set(statistics.getNumDisabled());
+    this.deadAgentsGauge.set(statistics.getNumDead());
+    this.aliveAgentsGauge.set(statistics.getNumAlive());
   }
 
   @Override
@@ -84,6 +99,11 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
   @Override
   public void countAgentPoll() {
     meterRegistry.counter("codekvast.agent.polls").increment();
+  }
+
+  @Override
+  public void countWeededRows(int deletedRows) {
+    meterRegistry.counter("codekvast.weeder.deleted_rows").increment(deletedRows);
   }
 
   private Tags getTags(PublicationType type) {

@@ -26,11 +26,14 @@ import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.dashboard.metrics.AgentMetricsService;
+import io.codekvast.dashboard.metrics.AgentStatistics;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +47,18 @@ public class AgentStateManagerImpl implements AgentStateManager {
   private final CustomerService customerService;
   private final EventService eventService;
   private final AgentDAO agentDAO;
+
+  private final AgentMetricsService agentMetricsService;
+
+  @Scheduled(
+      initialDelayString = "${codekvast.agent-statistics.delay.seconds:60}000",
+      fixedRateString = "${codekvast.agent-statistics.interval.seconds:60}000")
+  @Transactional(readOnly = true)
+  void countAgents() {
+    AgentStatistics statistics = agentDAO.getAgentStatistics(Instant.now().minusSeconds(10));
+    logger.debug("Collected {}", statistics);
+    agentMetricsService.gaugeAgents(statistics);
+  }
 
   @Override
   @Transactional

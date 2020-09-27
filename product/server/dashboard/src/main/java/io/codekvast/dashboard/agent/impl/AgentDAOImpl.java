@@ -24,10 +24,12 @@ package io.codekvast.dashboard.agent.impl;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+import io.codekvast.dashboard.metrics.AgentStatistics;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -41,7 +43,6 @@ import org.springframework.stereotype.Repository;
 public class AgentDAOImpl implements AgentDAO {
 
   private static final String ENVIRONMENTS_CACHE = "environments";
-  private static final String CODEBASE_FINGERPRINTS_CACHE = "codeBaseFingerprints";
 
   private final JdbcTemplate jdbcTemplate;
 
@@ -118,7 +119,7 @@ public class AgentDAOImpl implements AgentDAO {
             customerId,
             thisJvmUuid);
     // If this is the first poll, return true. Or else nothing will be published.
-    return list.isEmpty() ? true : list.get(0);
+    return list.isEmpty() || list.get(0);
   }
 
   @Override
@@ -142,5 +143,29 @@ public class AgentDAOImpl implements AgentDAO {
         enabled,
         customerId,
         thisJvmUuid);
+  }
+
+  @Override
+  public AgentStatistics getAgentStatistics(Instant nextPollExpectedAfter) {
+    AtomicInteger numDisabled = new AtomicInteger();
+    AtomicInteger numDead = new AtomicInteger();
+    AtomicInteger numAlive = new AtomicInteger();
+
+    jdbcTemplate.query(
+        "SELECT garbage, enabled, nextPollExpectedAt FROM agent_state WHERE garbage = FALSE",
+        rs -> {
+          boolean enabled = rs.getBoolean("enabled");
+          Instant nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt").toInstant();
+          boolean alive = enabled && nextPollExpectedAt.isAfter(nextPollExpectedAfter);
+
+          numDisabled.addAndGet(!enabled ? 1 : 0);
+          numDead.addAndGet(enabled && !alive ? 1 : 0);
+          numAlive.addAndGet(alive ? 1 : 0);
+        });
+    return AgentStatistics.builder()
+        .numDisabled(numDisabled.get())
+        .numDead(numDead.get())
+        .numAlive(numAlive.get())
+        .build();
   }
 }

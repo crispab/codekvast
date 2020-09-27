@@ -27,6 +27,7 @@ import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.lock.Lock
 import io.codekvast.common.lock.LockTemplate
 import io.codekvast.common.util.LoggingUtils.humanReadableDuration
+import io.codekvast.dashboard.metrics.AgentMetricsService
 import io.codekvast.dashboard.weeding.WeedingService
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
@@ -46,7 +47,8 @@ import javax.inject.Inject
 class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTemplate,
                                              private val customerService: CustomerService,
                                              private val clock: Clock,
-                                             private val lockTemplate: LockTemplate) : WeedingService {
+                                             private val lockTemplate: LockTemplate,
+                                             private val agentMetricsService: AgentMetricsService) : WeedingService {
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
@@ -99,16 +101,17 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         deletedRows += deletedAgents
 
         val deletedRabbitMessageIds = jdbcTemplate.update("DELETE FROM rabbitmq_message_ids WHERE receivedAt < ?",
-            Timestamp.from(clock.instant().minus(1, ChronoUnit.HOURS)))
+                Timestamp.from(clock.instant().minus(1, ChronoUnit.HOURS)))
         deletedRows += deletedRabbitMessageIds
 
         if (deletedRows > 0) {
             logger.info(String.format("Deleted %,d database rows (%,d agents, %,d JVMs, %,d methods (of which %,d were synthetic), %,d method locations, %,d applications, %,d environments, %,d invocations and %,d RabbitMQ messageIds) in %s.",
-                deletedRows, deletedAgents, deletedJvms, deletedMethods, deletedSyntheticMethods, deletedMethodLocations, deletedApplications, deletedEnvironments, deletedInvocations,
-                deletedRabbitMessageIds, humanReadableDuration(startedAt, clock.instant())))
+                    deletedRows, deletedAgents, deletedJvms, deletedMethods, deletedSyntheticMethods, deletedMethodLocations, deletedApplications, deletedEnvironments, deletedInvocations,
+                    deletedRabbitMessageIds, humanReadableDuration(startedAt, clock.instant())))
         } else {
             logger.debug("Found nothing to delete")
         }
+        agentMetricsService.countWeededRows(deletedRows);
     }
 
     private fun countRows(table: String) = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM $table", Int::class.java)!!
@@ -138,7 +141,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             logger.debug("Finding dead agents for the customer {} which have not polled in the last {} minutes", cd.customerId, deadIfNotPolledForSeconds / 60)
 
             var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND lastPolledAt < ? ",
-                cd.customerId, deadIfNotPolledAfter)
+                    cd.customerId, deadIfNotPolledAfter)
             if (count == 0) {
                 logger.debug("Found no dead agents for the customer {}", cd.customerId)
             } else {
@@ -151,7 +154,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             logger.debug("Finding dead JVMs for the customer {} which have not published anything in the last {} minutes", cd.customerId, deadIfNotPublishedForSeconds / 60)
 
             count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? ",
-                cd.customerId, deadIfNotPublishedAfter)
+                    cd.customerId, deadIfNotPublishedAfter)
             if (count == 0) {
                 logger.debug("Found no dead JVMs for the customer {} in {}", cd.customerId, humanReadableDuration(startedAt, clock.instant()))
             } else {
@@ -160,11 +163,11 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
             startedAt = clock.instant()
             count = jdbcTemplate.update("UPDATE methods m, synthetic_signature_patterns p " +
-                "SET m.garbage = TRUE " +
-                "WHERE m.customerId = ? " +
-                "AND m.signature REGEXP p.pattern " +
-                "AND p.errorMessage IS NULL ",
-                cd.customerId)
+                    "SET m.garbage = TRUE " +
+                    "WHERE m.customerId = ? " +
+                    "AND m.signature REGEXP p.pattern " +
+                    "AND p.errorMessage IS NULL ",
+                    cd.customerId)
             if (count == 0) {
                 logger.debug("Found no synthetic methods for the customer {} in {}", cd.customerId, humanReadableDuration(startedAt, clock.instant()))
             } else {

@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.agent.impl;
 
+import io.codekvast.dashboard.metrics.AgentStatistics;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -73,7 +74,7 @@ public interface AgentDAO {
 
   /**
    * Retrieves the name of the environment a certain JVM executes in. Used for upgrading a
-   * GetConfigRequest2 to format 2.
+   * GetConfigRequest2 to format 3.
    *
    * @param jvmUuid The JVM UUID of this (the polling) agent.
    * @return The name of the environment. Returns empty of unknown environment.
@@ -89,4 +90,13 @@ public interface AgentDAO {
    * @param enabled The result of this poll.
    */
   void updateAgentEnabledState(long customerId, String thisJvmUuid, boolean enabled);
+
+  /**
+   * Get agent statistics.
+   *
+   * @param nextPollExpectedAfter The instant the agent is supposed to poll after to be considered
+   *     alive.
+   * @return Agent statistics
+   */
+  AgentStatistics getAgentStatistics(Instant nextPollExpectedAfter);
 }

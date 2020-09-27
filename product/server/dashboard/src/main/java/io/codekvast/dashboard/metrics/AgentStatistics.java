@@ -21,47 +21,21 @@
  */
 package io.codekvast.dashboard.metrics;
 
-import io.codekvast.dashboard.model.PublicationType;
-import java.time.Duration;
+import lombok.Builder;
+import lombok.Value;
 
 /**
- * Wrapper for agent metrics.
+ * Statistics for the number of agents that report to Codekvast.
  *
  * @author olle.hallin@crisp.se
  */
-public interface AgentMetricsService {
-
-  /**
-   * Updates the gauges for the number of disabled, dead and alive agents.
-   *
-   * @param statistics The agent statistics.
-   */
-  void gaugeAgents(AgentStatistics statistics);
-
-  /**
-   * Updates the gauge for the number of queued publications.
-   *
-   * @param queueLength The queue length.
-   */
-  void gaugePublicationQueueLength(int queueLength);
-
-  /** Count the fact that a publication was rejected. */
-  void countRejectedPublication(PublicationType type);
-
-  /**
-   * Record the fact that a publication was imported.
-   *
-   * @param type The type of publication.
-   * @param size The size of the publication.
-   * @param ignoredSyntheticSignatures The number of synthetic signatures that were ignored.
-   * @param duration The time it took to import it.
-   */
-  void recordImportedPublication(
-      PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration);
-
-  /** Count that an agent has polled */
-  void countAgentPoll();
-
-  /** Count how many rows were deleted by the weeding service */
-  void countWeededRows(int deletedRows);
+@Value
+@Builder
+public class AgentStatistics {
+  /** The number of disabled agents. */
+  int numDisabled;
+  /** The number of enabled but dead agents. */
+  int numDead;
+  /** The number of alive agents. */
+  int numAlive;
 }
