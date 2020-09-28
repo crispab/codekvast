@@ -122,7 +122,7 @@ class AgentController @Inject constructor(private val agentService: AgentService
                                         publicationSize: Int,
                                         file: MultipartFile) {
 
-        logger.debug("Received {} ({} {}, {}) with licenseKey={}, fingerprint={}",
+        logger.info("Received {} ({} {}, {}) with licenseKey={}, fingerprint={}",
             file.originalFilename, publicationSize, publicationType, humanReadableByteCount(file.size), licenseKey, fingerprint)
 
         agentService.savePublication(publicationType, licenseKey, fingerprint, publicationSize, file.inputStream)
