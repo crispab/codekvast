@@ -87,7 +87,7 @@ public class Lock {
         .tag("customer")
         .customerId(customerId)
         .maxLockWaitSeconds(60)
-        .maxExpectedDurationSeconds(60)
+        .maxExpectedDurationSeconds(90)
         .build();
   }
 
@@ -96,7 +96,7 @@ public class Lock {
         .name(file.getName())
         .tag("publication")
         .maxLockWaitSeconds(0)
-        .maxExpectedDurationSeconds(60)
+        .maxExpectedDurationSeconds(90)
         .build();
   }
 }
