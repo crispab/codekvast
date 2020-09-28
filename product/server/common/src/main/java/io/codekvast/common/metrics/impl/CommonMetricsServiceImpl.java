@@ -45,7 +45,6 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
   public static final String LOCK_TAG = "lock";
   public static final String SOURCE_TAG = "source";
   public static final String CONSUMER_TAG = "consumer";
-  public static final String QUEUE_TAG = "queue";
 
   private final MeterRegistry meterRegistry;
 
@@ -79,20 +78,20 @@ public class CommonMetricsServiceImpl implements CommonMetricsService {
   @Override
   public void recordLockWait(Lock lock) {
     meterRegistry
-        .timer("codekvast.lock.wait", LOCK_TAG, lock.getName())
+        .timer("codekvast.lock.wait", LOCK_TAG, lock.getTag())
         .record(lock.getWaitDuration());
   }
 
   @Override
   public void recordLockDuration(Lock lock) {
     meterRegistry
-        .timer("codekvast.lock.duration", LOCK_TAG, lock.getName())
+        .timer("codekvast.lock.duration", LOCK_TAG, lock.getTag())
         .record(lock.getLockDuration());
   }
 
   @Override
   public void countLockFailure(Lock lock) {
-    meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.getName()).increment();
+    meterRegistry.counter("codekvast.lock.failed", LOCK_TAG, lock.getTag()).increment();
   }
 
   @Override

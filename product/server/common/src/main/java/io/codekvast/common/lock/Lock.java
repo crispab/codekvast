@@ -37,17 +37,12 @@ import lombok.With;
 @EqualsAndHashCode(exclude = "connection")
 public class Lock {
   @NonNull String name;
-
+  @NonNull String tag;
   Long customerId;
-
   @NonNull Integer maxLockWaitSeconds;
-
   @NonNull Integer maxExpectedDurationSeconds;
-
   Instant waitStartedAt = Instant.now();
-
   @With Instant acquiredAt;
-
   @With Connection connection;
 
   public boolean isTaskLock() {
@@ -80,6 +75,7 @@ public class Lock {
   public static Lock forTask(@NonNull String name, int maxExpectedDurationSeconds) {
     return Lock.builder()
         .name(name)
+        .tag(name)
         .maxLockWaitSeconds(0)
         .maxExpectedDurationSeconds(maxExpectedDurationSeconds)
         .build();
@@ -88,15 +84,17 @@ public class Lock {
   public static Lock forCustomer(@NonNull Long customerId) {
     return Lock.builder()
         .name("customer")
+        .tag("customer")
         .customerId(customerId)
         .maxLockWaitSeconds(60)
-        .maxExpectedDurationSeconds(45)
+        .maxExpectedDurationSeconds(60)
         .build();
   }
 
   public static Lock forPublication(@NonNull File file) {
     return Lock.builder()
         .name(file.getName())
+        .tag("publication")
         .maxLockWaitSeconds(0)
         .maxExpectedDurationSeconds(60)
         .build();
