@@ -30,6 +30,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,8 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
   private final AtomicInteger disabledAgentsGauge = new AtomicInteger(0);
   private final AtomicInteger deadAgentsGauge = new AtomicInteger(0);
   private final AtomicInteger aliveAgentsGauge = new AtomicInteger(0);
-  private final Map<PublicationType, AtomicInteger> publicationSizeGauges = new HashMap<>();
+  private final Map<PublicationType, AtomicInteger> publicationLogicalSizeGauges = new HashMap<>();
+  private final Map<PublicationType, AtomicLong> publicationPhysicalSizeGauges = new HashMap<>();
   private final Map<PublicationType, AtomicInteger> ignoredSyntheticSignaturesGauges =
       new HashMap<>();
 
@@ -58,9 +60,13 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
     for (PublicationType type : PublicationType.values()) {
       Tags tags = getTags(type);
 
-      AtomicInteger size = new AtomicInteger(0);
-      publicationSizeGauges.put(type, size);
-      meterRegistry.gauge("codekvast.publication.size", tags, size);
+      AtomicInteger logicalSize = new AtomicInteger(0);
+      publicationLogicalSizeGauges.put(type, logicalSize);
+      meterRegistry.gauge("codekvast.publication.size.entries", tags, logicalSize);
+
+      AtomicLong physicalSize = new AtomicLong(0L);
+      publicationPhysicalSizeGauges.put(type, physicalSize);
+      meterRegistry.gauge("codekvast.publication.size.bytes", tags, physicalSize);
 
       AtomicInteger ignoredSynthetic = new AtomicInteger(0);
       ignoredSyntheticSignaturesGauges.put(type, ignoredSynthetic);
@@ -81,6 +87,11 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
   }
 
   @Override
+  public void gaugePhysicalPublicationSize(PublicationType type, long sizeInBytes) {
+    this.publicationPhysicalSizeGauges.get(type).set(sizeInBytes);
+  }
+
+  @Override
   public void countRejectedPublication(PublicationType type) {
     Tags tags = getTags(type);
     meterRegistry.counter("codekvast.publication.rejected", tags).increment();
@@ -88,9 +99,9 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
 
   @Override
   public void recordImportedPublication(
-      PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration) {
+      PublicationType type, int logicalSize, int ignoredSyntheticSignatures, Duration duration) {
     Tags tags = getTags(type);
-    publicationSizeGauges.get(type).set(size);
+    publicationLogicalSizeGauges.get(type).set(logicalSize);
     ignoredSyntheticSignaturesGauges.get(type).set(ignoredSyntheticSignatures);
     meterRegistry.counter("codekvast.publication.accepted", tags).increment();
     meterRegistry.timer("codekvast.publication.import.duration", tags).record(duration);

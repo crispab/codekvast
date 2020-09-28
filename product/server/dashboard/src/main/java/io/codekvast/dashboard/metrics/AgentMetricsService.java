@@ -45,6 +45,14 @@ public interface AgentMetricsService {
    */
   void gaugePublicationQueueLength(int queueLength);
 
+  /**
+   * Gauge the size in bytes of a received publication.
+   *
+   * @param type The type of publication.
+   * @param sizeInBytes The physical size in bytes.
+   */
+  void gaugePhysicalPublicationSize(PublicationType type, long sizeInBytes);
+
   /** Count the fact that a publication was rejected. */
   void countRejectedPublication(PublicationType type);
 
@@ -52,12 +60,12 @@ public interface AgentMetricsService {
    * Record the fact that a publication was imported.
    *
    * @param type The type of publication.
-   * @param size The size of the publication.
+   * @param logicalSize The logical size of the publication (number of entries).
    * @param ignoredSyntheticSignatures The number of synthetic signatures that were ignored.
    * @param duration The time it took to import it.
    */
   void recordImportedPublication(
-      PublicationType type, int size, int ignoredSyntheticSignatures, Duration duration);
+      PublicationType type, int logicalSize, int ignoredSyntheticSignatures, Duration duration);
 
   /** Count that an agent has polled */
   void countAgentPoll();

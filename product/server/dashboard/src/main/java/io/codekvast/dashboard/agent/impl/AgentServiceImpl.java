@@ -192,6 +192,7 @@ public class AgentServiceImpl implements AgentService {
         result.getName(),
         humanReadableByteCount(result.length()),
         codebaseFingerprint);
+    metricsService.gaugePhysicalPublicationSize(publicationType, result.length());
     return result;
   }
 
