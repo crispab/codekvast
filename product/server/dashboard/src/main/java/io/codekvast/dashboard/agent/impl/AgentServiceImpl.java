@@ -22,7 +22,7 @@
 package io.codekvast.dashboard.agent.impl;
 
 import static io.codekvast.common.util.LoggingUtils.humanReadableByteCount;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 
 import io.codekvast.common.aspects.Restartable;
 import io.codekvast.common.customer.CustomerData;
@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -180,7 +181,11 @@ public class AgentServiceImpl implements AgentService {
     createDirectory(settings.getFileImportQueuePath());
 
     File result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get());
-    Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
+
+    // Hide the file from the FileImportTask until it is complete.
+    Path tmpPath = result.toPath().resolveSibling(result.getName() + ".tmp");
+    Files.copy(inputStream, tmpPath);
+    Files.move(tmpPath, result.toPath(), ATOMIC_MOVE);
 
     logger.info(
         "Saved {} ({}), fingerprint = {}",
