@@ -1,8 +1,8 @@
 package io.codekvast.backoffice.rules.impl
 
 import com.google.gson.GsonBuilder
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
-import org.junit.Assert.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import kotlin.test.assertEquals

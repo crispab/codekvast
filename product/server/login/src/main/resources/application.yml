@@ -23,9 +23,6 @@ server:
       persistent: false
 spring:
   application.name:    Codekvast Login
-  http:
-    converters.preferred-json-mapper: gson
-    log-request-details:              true
   cache:
     caffeine:
       spec: 'expireAfterAccess=10m'

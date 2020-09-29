@@ -57,9 +57,6 @@ spring:
         default-requeue-rejected: false
   flyway:
     validate-on-migrate: false
-  http:
-    converters.preferred-json-mapper: gson
-    log-request-details:              true
   output.ansi.enabled: detect
   mail:
     host: email-smtp.eu-central-1.amazonaws.com
@@ -74,3 +71,7 @@ spring:
   cache:
     caffeine:
       spec: 'expireAfterAccess=10m'
+  mvc:
+    converters:
+      preferred-json-mapper: gson
+    log-request-details: true

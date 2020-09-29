@@ -1,5 +1,5 @@
 def kotlinVersion = '1.4.10'
-def springBootVersion = '2.2.7.RELEASE'
+def springBootVersion = '2.3.4.RELEASE'
 
 repositories {
     jcenter()
@@ -18,7 +18,6 @@ dependencies {
     classpath 'io.freefair.gradle:lombok-plugin:4.1.6'
     classpath 'org.ajoberstar.grgit:grgit-gradle:3.1.1'
     classpath 'org.asciidoctor:asciidoctor-gradle-jvm:2.4.0'
-    classpath 'org.flywaydb:flyway-gradle-plugin:5.2.4'
     classpath 'org.jetbrains.kotlin:kotlin-allopen:' + kotlinVersion
     classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:' + kotlinVersion
     classpath 'org.kordamp:markdown-gradle-plugin:1.2.0'

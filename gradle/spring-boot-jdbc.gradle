@@ -1,20 +1,11 @@
 //-----------------------------------------------------------------------------------------------------------------------------
 // Common stuff for any Spring Boot app that uses JDBC
 //-----------------------------------------------------------------------------------------------------------------------------
-apply plugin: 'org.flywaydb.flyway'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation "org.flywaydb:flyway-core:$flywayVersion"
+    implementation "org.flywaydb:flyway-core"
 
     runtimeOnly 'com.zaxxer:HikariCP'
     runtimeOnly mariadbDriver
-}
-
-flyway {
-    url = 'jdbc:mariadb://localhost/codekvast'
-    user = 'codekvast'
-    password = 'codekvast'
-    validateOnMigrate = false
-    locations = ["filesystem:$rootDir/product/server/db-migration/src/main/resources/db/migration/"]
 }

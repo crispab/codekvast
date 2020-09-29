@@ -26,9 +26,6 @@ spring:
   application.name:    Codekvast Dashboard
   profiles:
     include: common
-  http:
-    converters.preferred-json-mapper: gson
-    log-request-details:              true
   output.ansi.enabled: detect
   servlet:
     multipart:
@@ -42,8 +39,5 @@ spring:
         queue-capacity: 100
       thread-name-prefix: 'Codekvast task-'
     scheduling.pool.size: 5
-  cache:
-    caffeine:
-      spec: 'expireAfterAccess=10m, recordStats'
 
 springfox.documentation.swagger.v2.path: /api-docs

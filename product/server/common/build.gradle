@@ -17,6 +17,7 @@ check.dependsOn integrationTest
 
 dependencies {
     api 'io.micrometer:micrometer-registry-datadog'
+    api 'javax.validation:validation-api:2.0.1.Final'
     api 'org.springframework.boot:spring-boot-starter-security'
 
     implementation slf4jApi
@@ -24,7 +25,6 @@ dependencies {
     implementation 'com.github.seratch:jslack:3.4.2'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'javax.servlet:javax.servlet-api'
-    implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.jetbrains:annotations:20.1.0'
     implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
     implementation 'org.springframework.boot:spring-boot-starter'
@@ -35,9 +35,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springframework.boot:spring-boot-starter-undertow'
 
-    runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.4'
-    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
     runtimeOnly 'com.fasterxml.jackson.module:jackson-module-kotlin'
+    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
+    runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.4'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-validation'
 
     testImplementation testFrameworks
     testRuntimeOnly logback

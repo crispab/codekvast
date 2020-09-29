@@ -8,6 +8,7 @@ dependencies {
     integrationTestCompile 'org.springframework.amqp:spring-rabbit'
     integrationTestCompile "org.testcontainers:mariadb:$testcontainersVersion"
     integrationTestCompile "org.testcontainers:rabbitmq:$testcontainersVersion"
+    integrationTestCompile 'org.apache.commons:commons-lang3:3.11'
 }
 
 integrationTest {
