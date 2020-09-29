@@ -12,6 +12,8 @@ logging:
     name: build/log/application.log
   level:
     io.codekvast: DEBUG
+    org.springframework.cache: DEBUG
+    com.github.benmanes.caffeine: DEBUG
 
 spring:
   profiles:
@@ -21,6 +23,9 @@ spring:
     url:      jdbc:mariadb://localhost/codekvast
   rabbitmq:
     addresses: "amqp://admin:secret@localhost:5672"
+  cache:
+    caffeine:
+      spec: 'expireAfterAccess=10s'
 
 server:
   undertow:
