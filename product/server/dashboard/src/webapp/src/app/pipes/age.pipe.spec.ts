@@ -56,6 +56,10 @@ describe('AgePipe', () => {
         expect(pipe.transform(value, pattern)).toBe(parentPipe.transform(value, pattern));
     });
 
+    it('Should transform getPastDate(7, 4, 36, 12) to "7d"', () => {
+        expect(pipe.transform(getPastDate(7, 4, 36, 12), 'age')).toBe('7d');
+    });
+
     it('Should transform getPastDate(2, 4, 36, 12) to "2d 4h"', () => {
         expect(pipe.transform(getPastDate(2, 4, 36, 12), 'age')).toBe('2d 4h');
     });

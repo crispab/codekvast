@@ -57,7 +57,7 @@ export class AgePipe implements PipeTransform {
             age -= days * this.dayMillis;
             result += days + 'd';
             delimiter = ' ';
-            fields += 1;
+            fields = days >= 7 ? 2 : 1; // Don't show anything more if more than 7 days
         }
         if (fields < 2 && age > this.hourMillis) {
             let hours = Math.trunc(age / this.hourMillis);
