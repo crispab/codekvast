@@ -63,11 +63,11 @@ node {
                 try {
                     sh "./.gradlew :product:system-test:test"
                 } finally {
-                    archiveArtifacts '**/system-test/build/*.log'
+                    // archiveArtifacts '**/system-test/build/*.log'
 
                     // Prevent junit publisher to fail if Gradle has skipped the test
-                    sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs --no-run-if-empty touch"
-                    junit '**/build/test-results/test/*.xml'
+                    sh "find . -name '*.xml' | grep 'system-test/build/test-results/test/' | xargs --no-run-if-empty touch"
+                    junit '**/system-test/build/test-results/test/*.xml'
                 }
             }
 
