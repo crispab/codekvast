@@ -1,3 +1,4 @@
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'java'
 apply plugin: 'com.ofg.uptodate'
 apply plugin: 'jacoco'
@@ -14,6 +15,12 @@ uptodate {
     addExcludedVersionPatterns '.*-b[0-9]+$'
     addExcludedVersionPatterns '.*-[0-9]$'
     addExcludedVersionPatterns '.*-android$'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
+    }
 }
 
 dependencies {

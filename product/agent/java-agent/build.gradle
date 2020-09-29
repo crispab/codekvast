@@ -35,7 +35,7 @@ dependencies {
 
     testImplementation testFrameworks
 
-    integrationTestCompile "com.github.tomakehurst:wiremock:$wiremockVersion"
+    integrationTestCompile "com.github.tomakehurst:wiremock-standalone:$wiremockVersion"
     integrationTestCompile "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
     integrationTestRuntime aspectjWeaver
     integrationTestRuntime logback

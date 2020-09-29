@@ -1,5 +1,13 @@
+apply from: "$rootDir/gradle/libs.gradle"
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"
+    }
+}
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"

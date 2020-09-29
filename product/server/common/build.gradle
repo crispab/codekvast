@@ -4,7 +4,6 @@ apply from: "$rootDir/gradle/java-11.gradle"
 apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'java-library'
-apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.unbroken-dome.test-sets'
 
 archivesBaseName = "codekvast-common"
@@ -15,12 +14,6 @@ testSets {
 
 integrationTest.mustRunAfter test
 check.dependsOn integrationTest
-
-dependencyManagement {
-    imports {
-        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
-    }
-}
 
 dependencies {
     api 'io.micrometer:micrometer-registry-datadog'
