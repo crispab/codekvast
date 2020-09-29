@@ -493,6 +493,8 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   private CustomerData getCustomerData(String where_clause, Object... identifiers) {
+    logger.debug("getCustomerData({}, {})", where_clause, identifiers);
+
     Map<String, Object> result =
         jdbcTemplate.queryForMap(
             "SELECT "
