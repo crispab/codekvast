@@ -3,7 +3,8 @@
 ## 1.4.1
 
 1. Upgraded to Kotlin 1.4.10
-2. Bug fixes
+2. Upgraded some dependencies
+3. Bug fixes
 
 ## 1.4.0
 

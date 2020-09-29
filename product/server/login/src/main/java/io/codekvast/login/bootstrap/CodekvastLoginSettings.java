@@ -21,8 +21,6 @@
  */
 package io.codekvast.login.bootstrap;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import io.codekvast.common.security.CipherException;
 import io.codekvast.common.security.CipherUtils;
 import javax.annotation.PostConstruct;
@@ -33,6 +31,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -85,7 +84,7 @@ public class CodekvastLoginSettings {
     String encrypted = CipherUtils.encrypt(plainText, cipherSecret);
     String decrypted = CipherUtils.decrypt(encrypted, cipherSecret);
 
-    checkState(decrypted.equals(plainText), "Invalid cipherSecret");
+    Assert.isTrue(decrypted.equals(plainText), "Invalid cipherSecret");
   }
 
   @PostConstruct
