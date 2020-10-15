@@ -409,16 +409,7 @@ public class ImportDAOImpl implements ImportDAO {
     long startedAtMillis = System.currentTimeMillis();
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
-      String signature = entry.getSignature();
-      if (signature.length() > DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH) {
-        logger.warn(
-            "Too long signature {}:'{}' ({} characters), longer than {} characters, will be truncated.",
-            customerId,
-            signature,
-            signature.length(),
-            DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH);
-        signature = DatabaseLimits.normalizeSignature(signature);
-      }
+      String signature = truncateTooLongSignature(customerId, entry.getSignature());
 
       if (!existingMethods.containsKey(signature)) {
         existingMethods.put(
@@ -435,6 +426,28 @@ public class ImportDAOImpl implements ImportDAO {
     }
     logger.debug(
         "Imported {} methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
+  }
+
+  private String truncateTooLongSignature(long customerId, String signature) {
+    if (signature.length() > DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH) {
+      int inserted =
+          jdbcTemplate.update(
+              "INSERT IGNORE INTO truncated_signatures(customerId, signature, length, truncatedLength) VALUES(?, ?, ?, ?)",
+              customerId,
+              signature,
+              signature.length(),
+              DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH);
+      if (inserted > 0) {
+        logger.warn(
+            "Too long signature {}:'{}' ({} characters), longer than {} characters, will be truncated.",
+            customerId,
+            signature,
+            signature.length(),
+            DatabaseLimits.MAX_METHOD_SIGNATURE_LENGTH);
+      }
+      return DatabaseLimits.normalizeSignature(signature);
+    }
+    return signature;
   }
 
   private void insertMethodLocations(

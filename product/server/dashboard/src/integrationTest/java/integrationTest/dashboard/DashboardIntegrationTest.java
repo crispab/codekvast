@@ -625,7 +625,7 @@ public class DashboardIntegrationTest {
     CodeBasePublication3 publication =
         CodeBasePublication3.builder()
             .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .entries(asList(entry1, entry2, entry3))
+            .entries(asList(entry1, entry2, entry3, entry3))
             .build();
 
     // when
@@ -650,6 +650,9 @@ public class DashboardIntegrationTest {
     assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
     assertThat(countRowsInTable("methods WHERE signature = ?", entry2.getSignature()), is(0));
     assertThat(countRowsInTable("methods WHERE signature = ?", entry3.getSignature()), is(0));
+    assertThat(
+        countRowsInTable("truncated_signatures WHERE signature = ?", entry3.getSignature()), is(1));
+
     assertThat(
         countRowsInTable(
             "methods WHERE signature LIKE ?",

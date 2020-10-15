@@ -20,15 +20,16 @@
 -- THE SOFTWARE.
 --
 
--- SELECT name FROM internal_locks WHERE name = 'IMPORT' FOR UPDATE;
+CREATE TABLE truncated_signatures
+(
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customerId      BIGINT                              NOT NULL,
+    signature       TEXT                                NOT NULL,
+    length          INTEGER                             NOT NULL,
+    truncatedLength INTEGER                             NOT NULL,
+    createdAt       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
--- -------------------------------------------------------------------------------------------------------
--- It does not work with a unique index on methods.signature, since MariaDB has a restriction on
--- an index key to be max 3032 bytes.
--- A VARCHAR(2000) in UTF-8 could be up to 6000 bytes, so the index needs to be shorter.
--- This means that even if the two signatures are different, they could collide in the index.
---
--- We have to rely on the application to not insert duplicate values.
--- -------------------------------------------------------------------------------------------------------
-ALTER TABLE methods
-    DROP INDEX ix_method_identity;
+    CONSTRAINT ix_truncated_signatures_identity UNIQUE (customerId, signature),
+    INDEX ix_truncated_signatures_customerId (customerId),
+    CONSTRAINT ix_truncated_signatures_customerId FOREIGN KEY (customerId) REFERENCES customers (id) ON DELETE CASCADE
+);
