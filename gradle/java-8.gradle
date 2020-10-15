@@ -1,7 +1,7 @@
 apply from: "$rootDir/gradle/java.gradle"
 
-sourceCompatibility = 8
-targetCompatibility = 8
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 tasks.withType(JavaCompile) {
     options.bootstrapClasspath = files("$rootDir/tools/java-8-zulu-x86_64/jre/lib/rt.jar")
