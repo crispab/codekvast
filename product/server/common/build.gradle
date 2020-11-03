@@ -43,5 +43,5 @@ dependencies {
     testImplementation testFrameworks
     testRuntimeOnly logback
 
-    integrationTestCompile sourceSets.test.output
+    integrationTestImplementation sourceSets.test.output
 }

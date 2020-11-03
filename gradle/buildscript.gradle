@@ -1,5 +1,5 @@
 def kotlinVersion = '1.4.10'
-def springBootVersion = '2.3.4.RELEASE'
+def springBootVersion = '2.3.5.RELEASE'
 
 repositories {
     jcenter()
@@ -8,20 +8,20 @@ repositories {
 }
 
 dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
-    classpath 'com.google.cloud.tools:jib-gradle-plugin:2.2.0'
-    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+    classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
+    classpath 'gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:2.6.0'
+    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
     classpath 'com.ofg:uptodate-gradle-plugin:1.6.3'
     classpath 'gradle.plugin.com.energizedwork.webdriver-binaries:webdriver-binaries-gradle-plugin:1.4'
     classpath 'gradle.plugin.com.github.sherter.google-java-format:google-java-format-gradle-plugin:0.9'
-    classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
-    classpath 'io.freefair.gradle:lombok-plugin:4.1.6'
-    classpath 'org.ajoberstar.grgit:grgit-gradle:3.1.1'
-    classpath 'org.asciidoctor:asciidoctor-gradle-jvm:2.4.0'
+    classpath 'gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0'
+    classpath 'io.freefair.gradle:lombok-plugin:5.3.0'
+    classpath 'org.ajoberstar.grgit:grgit-gradle:4.1.0'
+    classpath 'org.asciidoctor:asciidoctor-gradle-jvm:3.3.0'
     classpath 'org.jetbrains.kotlin:kotlin-allopen:' + kotlinVersion
     classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:' + kotlinVersion
-    classpath 'org.kordamp:markdown-gradle-plugin:1.2.0'
+    classpath 'org.kordamp.gradle:markdown-gradle-plugin:2.2.0'
     classpath 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
     classpath 'org.springframework.boot:spring-boot-gradle-plugin:' + springBootVersion
-    classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:2.2.1'
+    classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:3.0.1'
 }
