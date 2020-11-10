@@ -62,8 +62,8 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         val methodsBefore = countRows("methods")
         val methodLocationsBefore = countRows("method_locations")
 
-        val deletedJvms = jdbcTemplate.update("DELETE FROM jvms WHERE garbage = TRUE ")
-        val deletedSyntheticMethods = jdbcTemplate.update("DELETE FROM methods WHERE garbage = TRUE ")
+        val deletedJvms = jdbcTemplate.update("DELETE FROM jvms WHERE garbage = TRUE ORDER BY id")
+        val deletedSyntheticMethods = jdbcTemplate.update("DELETE FROM methods WHERE garbage = TRUE ORDER BY id")
 
         var deletedMethodLocations = 0
         var deletedMethods = 0
@@ -97,10 +97,12 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             deletedRows += deletedEnvironments
         }
 
-        val deletedAgents = jdbcTemplate.update("DELETE FROM agent_state WHERE garbage = TRUE ")
+        val deletedAgents = jdbcTemplate.update("DELETE FROM agent_state WHERE garbage = TRUE ORDER BY id")
         deletedRows += deletedAgents
 
-        val deletedRabbitMessageIds = jdbcTemplate.update("DELETE FROM rabbitmq_message_ids WHERE receivedAt < ?",
+        val deletedRabbitMessageIds = jdbcTemplate.update("""
+                DELETE FROM rabbitmq_message_ids WHERE receivedAt < ?
+                ORDER BY messageId""".trimMargin(),
                 Timestamp.from(clock.instant().minus(1, ChronoUnit.HOURS)))
         deletedRows += deletedRabbitMessageIds
 
