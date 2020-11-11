@@ -15,9 +15,6 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.customer.PricePlanDefaults;
-import io.codekvast.common.lock.Lock;
-import io.codekvast.common.lock.LockManager;
-import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
@@ -50,8 +47,6 @@ public class AgentStateManagerImplTest {
 
   @Mock private AgentMetricsService agentMetricsService;
 
-  @Mock private LockManager lockManager;
-
   private final CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
 
   private CustomerData customerData;
@@ -65,16 +60,9 @@ public class AgentStateManagerImplTest {
     settings.setFileImportQueuePath(temporaryFolder.getRoot());
     settings.setFileImportIntervalSeconds(60);
 
-    when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forAgent(customerId)));
-
     agentStateManager =
         new AgentStateManagerImpl(
-            settings,
-            customerService,
-            eventService,
-            agentDAO,
-            new LockTemplate(lockManager),
-            agentMetricsService);
+            settings, customerService, eventService, agentDAO, agentMetricsService);
 
     setupCustomerData(null, null);
   }

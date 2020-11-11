@@ -23,8 +23,6 @@ package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
-import io.codekvast.common.lock.Lock;
-import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
@@ -49,7 +47,6 @@ public class AgentStateManagerImpl implements AgentStateManager {
   private final CustomerService customerService;
   private final EventService eventService;
   private final AgentDAO agentDAO;
-  private final LockTemplate lockTemplate;
   private final AgentMetricsService agentMetricsService;
 
   @Scheduled(
@@ -67,18 +64,10 @@ public class AgentStateManagerImpl implements AgentStateManager {
   @SneakyThrows
   public boolean updateAgentState(
       CustomerData customerData, String jvmUuid, String appName, String environment) {
-    return lockTemplate.doWithLock(
-        Lock.forAgent(customerData.getCustomerId()),
-        () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
-        () -> {
-          logger.warn(
-              "Failed to acquire lock, treating agent {}:{}:{}:{} as enabled.",
-              customerData.getCustomerId(),
-              environment,
-              appName,
-              jvmUuid);
-          return true;
-        });
+
+    agentDAO.writeLockAgentStateForCustomer(customerData.getCustomerId());
+
+    return doUpdateAgentState(customerData, jvmUuid, appName, environment);
   }
 
   private boolean doUpdateAgentState(

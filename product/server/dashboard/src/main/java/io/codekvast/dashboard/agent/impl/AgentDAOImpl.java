@@ -26,6 +26,7 @@ import static java.lang.Boolean.TRUE;
 
 import io.codekvast.dashboard.metrics.AgentStatistics;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -47,14 +48,29 @@ public class AgentDAOImpl implements AgentDAO {
   private final JdbcTemplate jdbcTemplate;
 
   @Override
+  public void writeLockAgentStateForCustomer(long customerId) {
+    Instant startedAt = Instant.now();
+    List<Long> ids =
+        jdbcTemplate.queryForList(
+            "SELECT id FROM agent_state WHERE customerId = ? ORDER BY customerId, jvmUuid "
+                + "LOCK IN SHARE MODE WAIT 30",
+            Long.class,
+            customerId);
+    logger.debug(
+        "Locked {} agent_state rows belonging to customer {} in {}",
+        ids.size(),
+        customerId,
+        Duration.between(startedAt, Instant.now()));
+  }
+
+  @Override
   public void disableDeadAgents(
       long customerId, String thisJvmUuid, Instant nextPollExpectedBefore) {
     // Disable all agents that have been dead for more than two file import intervals...
     int updated =
         jdbcTemplate.update(
             "UPDATE agent_state SET enabled = FALSE "
-                + "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND nextPollExpectedAt < ? "
-                + "ORDER BY jvmUuid ",
+                + "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND nextPollExpectedAt < ? ",
             customerId,
             thisJvmUuid,
             Timestamp.from(nextPollExpectedBefore));
@@ -70,8 +86,7 @@ public class AgentDAOImpl implements AgentDAO {
 
     int updated =
         jdbcTemplate.update(
-            "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = ? WHERE customerId = ? AND jvmUuid = ? "
-                + "ORDER BY jvmUuid ",
+            "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = ? WHERE customerId = ? AND jvmUuid = ? ",
             Timestamp.from(thisPollAt),
             nextExpectedPollTimestamp,
             FALSE,
@@ -138,8 +153,7 @@ public class AgentDAOImpl implements AgentDAO {
   @Override
   public void updateAgentEnabledState(long customerId, String thisJvmUuid, boolean enabled) {
     jdbcTemplate.update(
-        "UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ? "
-            + "ORDER BY jvmUuid ",
+        "UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ? ",
         enabled,
         customerId,
         thisJvmUuid);
@@ -152,7 +166,7 @@ public class AgentDAOImpl implements AgentDAO {
     AtomicInteger numAlive = new AtomicInteger();
 
     jdbcTemplate.query(
-        "SELECT garbage, enabled, nextPollExpectedAt FROM agent_state WHERE garbage = FALSE",
+        "SELECT enabled, nextPollExpectedAt FROM agent_state WHERE garbage = FALSE",
         rs -> {
           boolean enabled = rs.getBoolean("enabled");
           Instant nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt").toInstant();

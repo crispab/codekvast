@@ -33,6 +33,13 @@ import java.util.Optional;
 public interface AgentDAO {
 
   /**
+   * Puts a write lock all rows in agent_state belonging to a certain customer.
+   *
+   * @param customerId The customer id
+   */
+  void writeLockAgentStateForCustomer(long customerId);
+
+  /**
    * Set all agents that have not polled for a certain period of time to disabled.
    *
    * @param customerId The customer ID.
