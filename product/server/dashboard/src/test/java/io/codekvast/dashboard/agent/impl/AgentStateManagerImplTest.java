@@ -65,7 +65,7 @@ public class AgentStateManagerImplTest {
     settings.setFileImportQueuePath(temporaryFolder.getRoot());
     settings.setFileImportIntervalSeconds(60);
 
-    when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forCustomer(customerId)));
+    when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forAgent(customerId)));
 
     agentStateManager =
         new AgentStateManagerImpl(

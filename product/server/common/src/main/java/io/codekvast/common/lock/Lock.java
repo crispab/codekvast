@@ -91,6 +91,16 @@ public class Lock {
         .build();
   }
 
+  public static Lock forAgent(@NonNull Long customerId) {
+    return Lock.builder()
+        .name("agent")
+        .tag("agent")
+        .customerId(customerId)
+        .maxLockWaitSeconds(20)
+        .maxExpectedDurationSeconds(5)
+        .build();
+  }
+
   public static Lock forPublication(@NonNull File file) {
     return Lock.builder()
         .name(file.getName())

@@ -68,7 +68,7 @@ public class AgentStateManagerImpl implements AgentStateManager {
   public boolean updateAgentState(
       CustomerData customerData, String jvmUuid, String appName, String environment) {
     return lockTemplate.doWithLock(
-        Lock.forCustomer(customerData.getCustomerId()),
+        Lock.forAgent(customerData.getCustomerId()),
         () -> doUpdateAgentState(customerData, jvmUuid, appName, environment),
         () -> {
           logger.warn(
