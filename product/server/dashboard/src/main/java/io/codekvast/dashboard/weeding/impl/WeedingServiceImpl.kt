@@ -142,7 +142,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             val deadIfNotPolledAfter = Timestamp.from(now.minus(deadIfNotPolledForSeconds, ChronoUnit.SECONDS))
             logger.debug("Finding dead agents for the customer {} which have not polled in the last {} minutes", cd.customerId, deadIfNotPolledForSeconds / 60)
 
-            var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND lastPolledAt < ? ",
+            var count = jdbcTemplate.update("UPDATE agent_state SET garbage = TRUE WHERE customerId = ? AND lastPolledAt < ? AND garbage = FALSE",
                     cd.customerId, deadIfNotPolledAfter)
             if (count == 0) {
                 logger.debug("Found no dead agents for the customer {}", cd.customerId)
@@ -155,7 +155,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
             val deadIfNotPublishedAfter = Timestamp.from(now.minus(deadIfNotPublishedForSeconds, ChronoUnit.SECONDS))
             logger.debug("Finding dead JVMs for the customer {} which have not published anything in the last {} minutes", cd.customerId, deadIfNotPublishedForSeconds / 60)
 
-            count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? ",
+            count = jdbcTemplate.update("UPDATE jvms SET garbage = TRUE WHERE customerId = ? AND publishedAt < ? AND garbage = FALSE",
                     cd.customerId, deadIfNotPublishedAfter)
             if (count == 0) {
                 logger.debug("Found no dead JVMs for the customer {} in {}", cd.customerId, humanReadableDuration(startedAt, clock.instant()))

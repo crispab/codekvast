@@ -21,9 +21,6 @@
  */
 package io.codekvast.dashboard.agent.impl;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-
 import io.codekvast.dashboard.metrics.AgentStatistics;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -69,8 +66,8 @@ public class AgentDAOImpl implements AgentDAO {
     // Disable all agents that have been dead for more than two file import intervals...
     int updated =
         jdbcTemplate.update(
-            "UPDATE agent_state SET enabled = FALSE "
-                + "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND nextPollExpectedAt < ? ",
+            "UPDATE agent_state SET enabled = FALSE, garbage = TRUE "
+                + "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND garbage = FALSE AND nextPollExpectedAt < ? ",
             customerId,
             thisJvmUuid,
             Timestamp.from(nextPollExpectedBefore));
@@ -86,22 +83,18 @@ public class AgentDAOImpl implements AgentDAO {
 
     int updated =
         jdbcTemplate.update(
-            "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = ? WHERE customerId = ? AND jvmUuid = ? ",
+            "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = FALSE WHERE customerId = ? AND jvmUuid = ? ",
             Timestamp.from(thisPollAt),
             nextExpectedPollTimestamp,
-            FALSE,
             customerId,
             thisJvmUuid);
     if (updated == 0) {
       jdbcTemplate.update(
-          "INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?,"
-              + " ?, ?)",
+          "INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?, TRUE, FALSE)",
           customerId,
           thisJvmUuid,
           Timestamp.from(thisPollAt),
-          nextExpectedPollTimestamp,
-          TRUE,
-          FALSE);
+          nextExpectedPollTimestamp);
 
       logger.info("The agent {}:'{}' has started", customerId, thisJvmUuid);
     } else {
@@ -114,7 +107,7 @@ public class AgentDAOImpl implements AgentDAO {
       long customerId, String thisJvmUuid, Instant nextPollExpectedAfter) {
     return jdbcTemplate.queryForObject(
         "SELECT COUNT(1) FROM agent_state "
-            + "WHERE enabled = TRUE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
+            + "WHERE enabled = TRUE AND garbage = FALSE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
         Integer.class,
         customerId,
         Timestamp.from(nextPollExpectedAfter),
