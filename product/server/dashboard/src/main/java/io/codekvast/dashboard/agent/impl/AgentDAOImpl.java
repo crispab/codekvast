@@ -52,11 +52,11 @@ public class AgentDAOImpl implements AgentDAO {
     Instant startedAt = Instant.now();
     List<Long> ids =
         jdbcTemplate.queryForList(
-            "SELECT id FROM agent_state WHERE customerId = ? ORDER BY customerId, jvmUuid "
+            "SELECT id FROM agent_state WHERE customerId = ? AND garbage = FALSE ORDER BY customerId, jvmUuid "
                 + "LOCK IN SHARE MODE WAIT 30",
             Long.class,
             customerId);
-    logger.debug(
+    logger.info( // TODO: change to debug
         "Locked {} agent_state rows belonging to customer {} in {}",
         ids.size(),
         customerId,
@@ -75,7 +75,7 @@ public class AgentDAOImpl implements AgentDAO {
             thisJvmUuid,
             Timestamp.from(nextPollExpectedBefore));
     if (updated > 0) {
-      logger.info("Disabled {} dead agents for customer {}", updated, customerId);
+      logger.info("Detected {} dead agents for customer {}", updated, customerId);
     }
   }
 

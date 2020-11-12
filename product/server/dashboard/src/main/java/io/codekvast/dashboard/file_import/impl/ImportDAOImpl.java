@@ -39,6 +39,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
@@ -248,7 +249,7 @@ public class ImportDAOImpl implements ImportDAO {
       long publishedAtMillis,
       Collection<CodeBaseEntry3> entries,
       Set<String> existingPackages) {
-    long startedAtMillis = System.currentTimeMillis();
+    Instant startedAt = Instant.now();
     Timestamp createdAt = new Timestamp(publishedAtMillis);
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
@@ -274,7 +275,7 @@ public class ImportDAOImpl implements ImportDAO {
       }
     }
     logger.debug(
-        "Imported {} packages in {} ms", count, System.currentTimeMillis() - startedAtMillis);
+        "Imported {} packages in {} ms", count, Duration.between(startedAt, Instant.now()));
   }
 
   private void importNewTypes(
@@ -282,7 +283,7 @@ public class ImportDAOImpl implements ImportDAO {
       long publishedAtMillis,
       Collection<CodeBaseEntry3> entries,
       Set<String> existingTypes) {
-    long startedAtMillis = System.currentTimeMillis();
+    Instant startedAt = Instant.now();
     Timestamp createdAt = new Timestamp(publishedAtMillis);
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
@@ -308,7 +309,7 @@ public class ImportDAOImpl implements ImportDAO {
       }
     }
     logger.debug(
-        "Imported {} packages in {} ms", count, System.currentTimeMillis() - startedAtMillis);
+        "Imported {} packages in {} ms", count, Duration.between(startedAt, Instant.now()));
   }
 
   @Override
@@ -406,7 +407,7 @@ public class ImportDAOImpl implements ImportDAO {
       long publishedAtMillis,
       Collection<CodeBaseEntry3> entries,
       Map<String, Long> existingMethods) {
-    long startedAtMillis = System.currentTimeMillis();
+    Instant startedAt = Instant.now();
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
       String signature = truncateTooLongSignature(customerId, entry.getSignature());
@@ -425,7 +426,7 @@ public class ImportDAOImpl implements ImportDAO {
       }
     }
     logger.debug(
-        "Imported {} methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
+        "Imported {} methods in {} ms", count, Duration.between(startedAt, Instant.now()));
   }
 
   private String truncateTooLongSignature(long customerId, String signature) {
@@ -455,7 +456,7 @@ public class ImportDAOImpl implements ImportDAO {
       Collection<CodeBaseEntry3> entries,
       Map<String, Long> existingMethods,
       Set<Long> existingMethodLocations) {
-    long startedAtMillis = System.currentTimeMillis();
+    Instant startedAt = Instant.now();
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
       String location = entry.getMethodSignature().getLocation();
@@ -471,7 +472,7 @@ public class ImportDAOImpl implements ImportDAO {
     logger.debug(
         "Inserted {} method locations in {} ms",
         count,
-        System.currentTimeMillis() - startedAtMillis);
+        Duration.between(startedAt, Instant.now()));
   }
 
   private void updateIncompleteMethods(
@@ -481,7 +482,7 @@ public class ImportDAOImpl implements ImportDAO {
       Set<String> incompleteMethods,
       Map<String, Long> existingMethods,
       Set<Long> incompleteInvocations) {
-    long startedAtMillis = System.currentTimeMillis();
+    Instant startedAt = Instant.now();
     int count = 0;
     for (CodeBaseEntry3 entry : entries) {
       String signature = DatabaseLimits.normalizeSignature(entry.getSignature());
@@ -496,7 +497,7 @@ public class ImportDAOImpl implements ImportDAO {
     logger.debug(
         "Updated {} incomplete methods in {} ms",
         count,
-        System.currentTimeMillis() - startedAtMillis);
+        Duration.between(startedAt, Instant.now()));
   }
 
   private void ensureInitialInvocations(
@@ -507,7 +508,7 @@ public class ImportDAOImpl implements ImportDAO {
       Collection<CodeBaseEntry3> entries,
       Map<String, Long> existingMethods,
       Instant now) {
-    long startedAtMillis = System.currentTimeMillis();
+    Instant startedAt = Instant.now();
     int importCount = 0;
 
     for (CodeBaseEntry3 entry : entries) {
@@ -523,7 +524,7 @@ public class ImportDAOImpl implements ImportDAO {
     logger.debug(
         "Imported {} initial invocations in {} ms",
         importCount,
-        System.currentTimeMillis() - startedAtMillis);
+        Duration.between(startedAt, Instant.now()));
   }
 
   private SignatureStatus2 calculateInitialStatus(

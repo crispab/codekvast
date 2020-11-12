@@ -66,10 +66,10 @@ public class LockManagerImpl implements LockManager {
       metricsService.recordLockDuration(lock);
       if (lock.wasLongDuration()) {
         logger.warn(
-            "Lock '{}' held for a long time: waited for {}, lock held for {}",
+            "Lock '{}' held for a long time: {} (waited for {})",
             lock.key(),
-            humanReadableDuration(lock.getWaitDuration()),
-            humanReadableDuration(lock.getLockDuration()));
+            humanReadableDuration(lock.getLockDuration()),
+            humanReadableDuration(lock.getWaitDuration()));
       }
       logger.trace("Released lock {}", lock);
     } else {
@@ -99,11 +99,11 @@ public class LockManagerImpl implements LockManager {
         connection = null;
         return result;
       }
-      if (lock.isTaskLock()) {
-        logger.debug("Task '{}' is already running", lock.key());
-      } else {
+      if (lock.getMaxLockWaitSeconds() > 0) {
         logger.warn(
             "Failed to acquire lock '{}' within {}s", lock.key(), lock.getMaxLockWaitSeconds());
+      } else {
+        logger.debug("Task for '{}' is already running", lock.key());
       }
     } catch (SQLException e) {
       logger.warn("Failed to acquire lock " + lock, e);

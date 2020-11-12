@@ -81,7 +81,7 @@
         db_subnet_group_name:                            "codekvast-{{ env }}"
         db_name:                                         codekvast
         engine:                                          mariadb
-        engine_version:                                  "10.4"
+        engine_version:                                  "10.4.13"
         master_user_password:                            "{{ secrets.mariadb[env].root_password }}"
         master_username:                                 root
         port:                                            3306
@@ -116,7 +116,7 @@
         login_password:      "{{ secrets.mariadb[env].root_password }}"
         name:                codekvast
         host:                "%"
-        password:            "{{ secrets.mariadb.application_password }}"
+        password:            "{{ secrets.mariadb[env].application_password }}"
         priv:                "codekvast.*:CREATE,ALTER,DROP,SELECT,INSERT,UPDATE,DELETE"
 
     - name: "Store MariaDB application password as a secret"
@@ -125,7 +125,7 @@
         region:          "{{ aws_region }}"
         description:     "Codekvast database application password"
         name:            "/codekvast/{{ env }}/mariadb/application_password"
-        value:           "{{ secrets.mariadb.application_password }}"
+        value:           "{{ secrets.mariadb[env].application_password }}"
         string_type:     "SecureString"
         overwrite_value: "always"
       tags: secrets
