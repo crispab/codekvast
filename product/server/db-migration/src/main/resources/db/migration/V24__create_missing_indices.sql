@@ -20,4 +20,5 @@
 -- THE SOFTWARE.
 --
 
-CREATE INDEX ix_invocation_customerId_status ON invocations(customerId, status);
+ALTER TABLE invocations
+    ADD INDEX ix_invocation_customerId_status (customerId, status);

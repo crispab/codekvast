@@ -425,8 +425,7 @@ public class ImportDAOImpl implements ImportDAO {
         count += 1;
       }
     }
-    logger.debug(
-        "Imported {} methods in {} ms", count, Duration.between(startedAt, Instant.now()));
+    logger.debug("Imported {} methods in {} ms", count, Duration.between(startedAt, Instant.now()));
   }
 
   private String truncateTooLongSignature(long customerId, String signature) {
@@ -470,9 +469,7 @@ public class ImportDAOImpl implements ImportDAO {
       }
     }
     logger.debug(
-        "Inserted {} method locations in {} ms",
-        count,
-        Duration.between(startedAt, Instant.now()));
+        "Inserted {} method locations in {} ms", count, Duration.between(startedAt, Instant.now()));
   }
 
   private void updateIncompleteMethods(
