@@ -17,5 +17,5 @@ The aspect is written in @Aspect style"""
 
 dependencies {
     inpath project(":product:agent:java-agent")
-    compile aspectjRuntime
+    implementation aspectjRuntime
 }

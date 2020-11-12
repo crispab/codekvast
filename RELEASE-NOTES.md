@@ -2,9 +2,10 @@
 
 ## 1.4.1
 
-1. Upgraded to Kotlin 1.4.10, Spring Boot 2.3.4
-2. Upgraded some dependencies
-3. Bug fixes
+1. codekvast-javaagent now uses aspectweaver 1.9.6
+2. Upgraded to Kotlin 1.4.10, Spring Boot 2.3.5
+3. Upgraded some dependencies
+4. Bug fixes
 
 ## 1.4.0
 

@@ -24,7 +24,7 @@ include ':sample:swing-app'
 include ':sample:sample-concrete-aspect'
 
 buildCache {
-    local(DirectoryBuildCache) {
+    local {
         directory = new File(rootDir, '.build-cache')
     }
 }

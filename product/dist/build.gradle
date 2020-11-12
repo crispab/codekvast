@@ -1,12 +1,12 @@
 apply plugin: 'distribution'
-apply plugin: 'org.kordamp.markdown.convert'
+apply plugin: 'org.kordamp.gradle.markdown'
 
 description = 'Package codekvast-agent.zip and uploads it to http://download.codekvast.io'
 
 distributions {
 
     agent {
-        baseName = "codekvast-agent-$codekvastVersion"
+        distributionBaseName = "codekvast-agent-$codekvastVersion"
         contents {
             from(file('src/dist/codekvast.conf')) {
                 into "/"

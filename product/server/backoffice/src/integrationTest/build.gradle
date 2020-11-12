@@ -5,7 +5,7 @@ testSets {
 }
 
 dependencies {
-    integrationTestCompile 'org.springframework.amqp:spring-rabbit'
+    integrationTestImplementation 'org.springframework.amqp:spring-rabbit'
 }
 
 integrationTest {

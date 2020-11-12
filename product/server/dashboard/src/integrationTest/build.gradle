@@ -5,10 +5,10 @@ testSets {
 }
 
 dependencies {
-    integrationTestCompile 'org.springframework.amqp:spring-rabbit'
-    integrationTestCompile "org.testcontainers:mariadb:$testcontainersVersion"
-    integrationTestCompile "org.testcontainers:rabbitmq:$testcontainersVersion"
-    integrationTestCompile 'org.apache.commons:commons-lang3:3.11'
+    integrationTestImplementation 'org.springframework.amqp:spring-rabbit'
+    integrationTestImplementation "org.testcontainers:mariadb:$testcontainersVersion"
+    integrationTestImplementation "org.testcontainers:rabbitmq:$testcontainersVersion"
+    integrationTestImplementation 'org.apache.commons:commons-lang3:3.11'
 }
 
 integrationTest {

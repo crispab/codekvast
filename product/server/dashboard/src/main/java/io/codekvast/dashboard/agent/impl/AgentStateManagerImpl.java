@@ -47,7 +47,6 @@ public class AgentStateManagerImpl implements AgentStateManager {
   private final CustomerService customerService;
   private final EventService eventService;
   private final AgentDAO agentDAO;
-
   private final AgentMetricsService agentMetricsService;
 
   @Scheduled(
@@ -65,6 +64,9 @@ public class AgentStateManagerImpl implements AgentStateManager {
   @SneakyThrows
   public boolean updateAgentState(
       CustomerData customerData, String jvmUuid, String appName, String environment) {
+
+    agentDAO.writeLockAgentStateForCustomer(customerData.getCustomerId());
+
     return doUpdateAgentState(customerData, jvmUuid, appName, environment);
   }
 
