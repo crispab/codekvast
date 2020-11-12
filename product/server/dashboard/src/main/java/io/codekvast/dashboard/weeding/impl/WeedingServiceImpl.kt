@@ -113,7 +113,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         } else {
             logger.debug("Found nothing to delete")
         }
-        agentMetricsService.countWeededRows(deletedRows);
+        agentMetricsService.countWeededRows(deletedRows)
     }
 
     private fun countRows(table: String) = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM $table", Int::class.java)!!
