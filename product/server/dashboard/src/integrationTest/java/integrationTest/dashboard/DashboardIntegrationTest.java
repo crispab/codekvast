@@ -979,10 +979,10 @@ public class DashboardIntegrationTest {
     assertConfigPollResponse(response);
 
     // Assert all dead agents are marked as disabled as well
-    assertAgentEnabled("uuid1", TRUE);
-    assertAgentEnabled("uuid2", FALSE);
-    assertAgentEnabled("uuid3", FALSE);
-    assertAgentEnabled("uuid4", FALSE);
+    assertAgentEnabledAndGarbage("uuid1", TRUE, FALSE);
+    assertAgentEnabledAndGarbage("uuid2", FALSE, FALSE);
+    assertAgentEnabledAndGarbage("uuid3", TRUE, TRUE);
+    assertAgentEnabledAndGarbage("uuid4", FALSE, TRUE);
   }
 
   @Test
@@ -1003,11 +1003,11 @@ public class DashboardIntegrationTest {
     // then
     assertConfigPollResponse(response, "enabled=true");
 
-    // Assert all dead agents are marked as disabled as well
-    assertAgentEnabled("uuid1", TRUE);
-    assertAgentEnabled("uuid2", FALSE);
-    assertAgentEnabled("uuid3", FALSE);
-    assertAgentEnabled("uuid4", FALSE);
+    // Assert all dead agents are marked as garbage
+    assertAgentEnabledAndGarbage("uuid1", TRUE, FALSE);
+    assertAgentEnabledAndGarbage("uuid2", FALSE, FALSE);
+    assertAgentEnabledAndGarbage("uuid3", TRUE, TRUE);
+    assertAgentEnabledAndGarbage("uuid4", FALSE, TRUE);
   }
 
   @Test
@@ -1028,10 +1028,10 @@ public class DashboardIntegrationTest {
     // then
     assertConfigPollResponse(response, "enabled=false");
 
-    assertAgentEnabled("uuid1", TRUE);
-    assertAgentEnabled("uuid2", FALSE);
-    assertAgentEnabled("uuid3", FALSE);
-    assertAgentEnabled("uuid4", FALSE);
+    assertAgentEnabledAndGarbage("uuid1", TRUE, FALSE);
+    assertAgentEnabledAndGarbage("uuid2", FALSE, FALSE);
+    assertAgentEnabledAndGarbage("uuid3", TRUE, TRUE);
+    assertAgentEnabledAndGarbage("uuid4", FALSE, TRUE);
   }
 
   @Test
@@ -1283,11 +1283,17 @@ public class DashboardIntegrationTest {
     }
   }
 
-  private void assertAgentEnabled(String jvmUuid, Boolean expectedEnabled) {
+  private void assertAgentEnabledAndGarbage(
+      String jvmUuid, Boolean expectedEnabled, Boolean expectedEnabledGarbage) {
     Boolean enabled =
         jdbcTemplate.queryForObject(
             "SELECT enabled FROM agent_state WHERE jvmUuid = ? ", Boolean.class, jvmUuid);
     assertThat(enabled, is(expectedEnabled));
+
+    Boolean garbage =
+        jdbcTemplate.queryForObject(
+            "SELECT garbage FROM agent_state WHERE jvmUuid = ? ", Boolean.class, jvmUuid);
+    assertThat(garbage, is(expectedEnabledGarbage));
   }
 
   private void assertConfigPollResponse(GetConfigResponse1 response) {

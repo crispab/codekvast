@@ -30,6 +30,9 @@ dependencies {
 // Let spring-boot-configuration-processor do it's job before compiling...
 compileJava.dependsOn processResources
 
+// Don't waste time if the build will fail because of bad code formatting...
+compileJava.dependsOn verifyGoogleJavaFormat
+
 jar {
     manifest {
         attributes(

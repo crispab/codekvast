@@ -70,7 +70,7 @@ public class AgentStateManagerImplTest {
   @Test
   public void should_return_enabled_publishers_when_failed_to_acquire_lock() {
     // given
-    when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
+    when(agentDAO.getNumOtherEnabledAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
     when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
 
     // when
@@ -82,7 +82,7 @@ public class AgentStateManagerImplTest {
   @Test
   public void should_return_enabled_publishers_when_below_agent_limit_no_trial_period() {
     // given
-    when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
+    when(agentDAO.getNumOtherEnabledAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
     when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
 
     // when
@@ -100,7 +100,7 @@ public class AgentStateManagerImplTest {
     // given
     Instant now = Instant.now();
     setupCustomerData(now.minus(10, DAYS), now.plus(10, DAYS));
-    when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
+    when(agentDAO.getNumOtherEnabledAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
     when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
 
     // when
@@ -117,7 +117,7 @@ public class AgentStateManagerImplTest {
     // given
     Instant now = Instant.now();
     setupCustomerData(now.minus(10, DAYS), now.minus(1, DAYS));
-    when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
+    when(agentDAO.getNumOtherEnabledAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
     when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
 
     // when
@@ -131,7 +131,7 @@ public class AgentStateManagerImplTest {
   @Test
   public void should_return_disabled_publishers_when_above_agent_limit_no_trial_period() {
     // given
-    when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(10);
+    when(agentDAO.getNumOtherEnabledAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(10);
     when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(TRUE);
 
     // when
@@ -145,7 +145,7 @@ public class AgentStateManagerImplTest {
   @Test
   public void should_return_disabled_publishers_when_below_agent_limit_disabled_environment() {
     // given
-    when(agentDAO.getNumOtherAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
+    when(agentDAO.getNumOtherEnabledAliveAgents(eq(customerId), eq(jvmUuid), any())).thenReturn(1);
     when(agentDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid))).thenReturn(FALSE);
     when(agentDAO.getEnvironmentName(eq(jvmUuid))).thenReturn(Optional.of("environment"));
 

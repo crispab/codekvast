@@ -75,7 +75,7 @@ public class AgentStateManagerImpl implements AgentStateManager {
     long customerId = customerData.getCustomerId();
     Instant now = Instant.now();
 
-    agentDAO.disableDeadAgents(
+    agentDAO.markDeadAgentsAsGarbage(
         customerId, jvmUuid, now.minusSeconds(settings.getFileImportIntervalSeconds() * 2));
 
     agentDAO.setAgentTimestamps(
@@ -85,8 +85,8 @@ public class AgentStateManagerImpl implements AgentStateManager {
         now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
 
     CustomerData cd = customerService.registerAgentPoll(customerData, now);
-    int numOtherEnabledLiveAgents =
-        agentDAO.getNumOtherAliveAgents(customerId, jvmUuid, now.minusSeconds(10));
+    int numOtherEnabledAliveAgents =
+        agentDAO.getNumOtherEnabledAliveAgents(customerId, jvmUuid, now.minusSeconds(10));
 
     val event =
         AgentPolledEvent.builder()
@@ -98,7 +98,7 @@ public class AgentStateManagerImpl implements AgentStateManager {
             .jvmUuid(jvmUuid)
             .polledAt(now)
             .tooManyLiveAgents(
-                numOtherEnabledLiveAgents >= customerData.getPricePlan().getMaxNumberOfAgents())
+                numOtherEnabledAliveAgents >= customerData.getPricePlan().getMaxNumberOfAgents())
             .trialPeriodEndsAt(cd.getTrialPeriodEndsAt())
             .build();
 

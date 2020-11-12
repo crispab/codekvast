@@ -61,13 +61,13 @@ public class AgentDAOImpl implements AgentDAO {
   }
 
   @Override
-  public void disableDeadAgents(
+  public void markDeadAgentsAsGarbage(
       long customerId, String thisJvmUuid, Instant nextPollExpectedBefore) {
-    // Disable all agents that have been dead for more than two file import intervals...
+    // Mark all agents that have not polled recently as garbage
     int updated =
         jdbcTemplate.update(
-            "UPDATE agent_state SET enabled = FALSE, garbage = TRUE "
-                + "WHERE customerId = ? AND jvmUuid != ? AND enabled = TRUE AND garbage = FALSE AND nextPollExpectedAt < ? ",
+            "UPDATE agent_state SET garbage = TRUE "
+                + "WHERE customerId = ? AND jvmUuid != ? AND garbage = FALSE AND nextPollExpectedAt < ? ",
             customerId,
             thisJvmUuid,
             Timestamp.from(nextPollExpectedBefore));
@@ -79,12 +79,14 @@ public class AgentDAOImpl implements AgentDAO {
   @Override
   public void setAgentTimestamps(
       long customerId, String thisJvmUuid, Instant thisPollAt, Instant nextExpectedPollAt) {
+
+    Timestamp thisPollAtTimestamp = Timestamp.from(thisPollAt);
     Timestamp nextExpectedPollTimestamp = Timestamp.from(nextExpectedPollAt);
 
     int updated =
         jdbcTemplate.update(
             "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = FALSE WHERE customerId = ? AND jvmUuid = ? ",
-            Timestamp.from(thisPollAt),
+            thisPollAtTimestamp,
             nextExpectedPollTimestamp,
             customerId,
             thisJvmUuid);
@@ -93,7 +95,7 @@ public class AgentDAOImpl implements AgentDAO {
           "INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?, TRUE, FALSE)",
           customerId,
           thisJvmUuid,
-          Timestamp.from(thisPollAt),
+          thisPollAtTimestamp,
           nextExpectedPollTimestamp);
 
       logger.info("The agent {}:'{}' has started", customerId, thisJvmUuid);
@@ -103,7 +105,7 @@ public class AgentDAOImpl implements AgentDAO {
   }
 
   @Override
-  public int getNumOtherAliveAgents(
+  public int getNumOtherEnabledAliveAgents(
       long customerId, String thisJvmUuid, Instant nextPollExpectedAfter) {
     return jdbcTemplate.queryForObject(
         "SELECT COUNT(1) FROM agent_state "

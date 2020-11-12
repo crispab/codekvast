@@ -47,7 +47,7 @@ public interface AgentDAO {
    * @param nextPollExpectedBefore Agents that are expected to poll after this instant are
    *     considered alive.
    */
-  void disableDeadAgents(long customerId, String thisJvmUuid, Instant nextPollExpectedBefore);
+  void markDeadAgentsAsGarbage(long customerId, String thisJvmUuid, Instant nextPollExpectedBefore);
 
   /**
    * Update this agent's timestamps.
@@ -68,7 +68,8 @@ public interface AgentDAO {
    * @param nextPollExpectedAfter The instant the agents are supposed to poll after.
    * @return Number of alive agents (excluding this).
    */
-  int getNumOtherAliveAgents(long customerId, String thisJvmUuid, Instant nextPollExpectedAfter);
+  int getNumOtherEnabledAliveAgents(
+      long customerId, String thisJvmUuid, Instant nextPollExpectedAfter);
 
   /**
    * Is the environment the agent is running in enabled?
