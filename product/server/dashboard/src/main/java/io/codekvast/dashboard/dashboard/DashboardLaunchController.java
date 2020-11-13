@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author olle.hallin@crisp.se
  */
 @Controller
-@CrossOrigin(origins = "*", allowCredentials = "true")
+@CrossOrigin(originPatterns = "*", allowCredentials = "true")
 @RequiredArgsConstructor
 @Slf4j
 public class DashboardLaunchController {

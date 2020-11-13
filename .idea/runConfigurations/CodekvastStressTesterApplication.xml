@@ -2,9 +2,15 @@
   <configuration default="false" name="CodekvastStressTesterApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <module name="codekvast.product.server.stress-tester.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.stress_tester.StressTesterApplication" />
-    <option name="ACTIVE_PROFILES" value="dev" />
+    <option name="ACTIVE_PROFILES" value="dev,common-dev" />
+    <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.file.name" />
+        <option name="value" value="build/codekvast-stress-tester.log" />
+      </param>
       <param>
         <option name="enabled" value="true" />
         <option name="name" value="stressTestRateMillis" />

@@ -1,5 +1,5 @@
 #---------------------------------------------------------
-# Activate with --spring.profiles.active=dev-secrets
+# Activate with --spring.profiles.include=dev-secrets
 # This file is encrypted by git-crypt.
 # It is only used when testing in localhost.
 #---------------------------------------------------------

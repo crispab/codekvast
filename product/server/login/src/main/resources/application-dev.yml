@@ -1,13 +1,10 @@
 codekvast:
   login:
-    cipherSecret:                someCipherSecret
-    herokuApiPassword:           herokuApiPassword
-    herokuApiSsoSalt:            herokuApiSsoSalt
-    herokuCodekvastUrl:          http://localhost:8080
-    herokuOAuthClientId:         herokuOAuthClientId
-    herokuOAuthClientSecret:     herokuOAuthClientSecret
-spring:
-  profiles:
-    include: common-dev
+    cipherSecret: someCipherSecret
+    herokuApiPassword: herokuApiPassword
+    herokuApiSsoSalt: herokuApiSsoSalt
+    herokuCodekvastUrl: http://localhost:8080
+    herokuOAuthClientId: herokuOAuthClientId
+    herokuOAuthClientSecret: herokuOAuthClientSecret
 server:
-  port:                     8080
+  port: 8080

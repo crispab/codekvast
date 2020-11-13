@@ -17,15 +17,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /** @author olle.hallin@crisp.se */
 public class HerokuServiceImplTest {
 
-  private CodekvastLoginSettings settings = new CodekvastLoginSettings();
+  private final CodekvastLoginSettings settings = new CodekvastLoginSettings();
 
   @Mock private HerokuApiWrapper herokuApiWrapper;
 
@@ -37,9 +37,9 @@ public class HerokuServiceImplTest {
 
   private HerokuServiceImpl service;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     service = new HerokuServiceImpl(settings, customerService, herokuApiWrapper, herokuDetailsDAO);
   }
 

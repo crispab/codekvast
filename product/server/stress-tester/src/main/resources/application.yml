@@ -1,19 +1,22 @@
 spring:
-  application.name:    Codekvast Stress Tester
+  application.name: Codekvast Stress Tester
   datasource:
-    url:      jdbc:mariadb://localhost/codekvast
+    url: jdbc:mariadb://localhost/codekvast
     username: codekvast
     password: codekvast
+  flyway:
+    url: jdbc:mariadb://localhost/codekvast
+    user: codekvast
+    password: codekvast
+    validate-on-migrate: false
   profiles:
     include: no-slack-integration
   rabbitmq:
     addresses: "amqp://admin:secret@localhost:5672"
     template:
       retry:
-        enabled:          true
+        enabled: true
         initial-interval: 2s
-  flyway:
-    validate-on-migrate: false
 management:
   metrics:
     export:
@@ -21,7 +24,7 @@ management:
         enabled: false
 logging:
   file:
-    name: build/log/stress-tester.log
+    name: build/stress-tester.log
   level:
     io.codekvast: INFO
 

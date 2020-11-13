@@ -269,7 +269,7 @@ public class SignatureUtilsTest {
         is(
             new MethodLocation3(
                 "public void org.assertj.core.api.AbstractAssert.isNull()",
-                "assertj-core-3.16.1.jar")));
+                "assertj-core-3.18.1.jar")));
     assertThat(
         stripModifiersAndReturnType(sigLoc.getSignature()),
         is("public org.assertj.core.api.AbstractAssert.isNull()"));

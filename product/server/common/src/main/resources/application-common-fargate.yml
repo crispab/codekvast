@@ -1,8 +1,6 @@
 # This profile is activated when deployed to AWS ECS Fargate.
 
 logging:
-  file:
-    name:
   level:
     io.codekvast:                               INFO
     io.micrometer.datadog.DatadogMeterRegistry: OFF
@@ -33,5 +31,3 @@ server:
 spring:
   main:
     banner-mode:        off
-  profiles:
-    include: json-logging-console

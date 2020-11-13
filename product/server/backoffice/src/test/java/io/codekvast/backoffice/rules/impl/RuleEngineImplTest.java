@@ -23,12 +23,15 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import lombok.Value;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /** @author olle.hallin@crisp.se */
+@ExtendWith(MockitoExtension.class)
 public class RuleEngineImplTest {
 
   private static final Instant NOW = Instant.now();
@@ -43,9 +46,9 @@ public class RuleEngineImplTest {
 
   private RuleEngine ruleEngine;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     ruleEngine = new RuleEngineImpl(factDAO, mailSender, customerService, clock).configureDrools();
   }
@@ -113,7 +116,7 @@ public class RuleEngineImplTest {
     // given
     val event = CodeBaseReceivedEvent.sample();
     Long customerId = event.getCustomerId();
-    Long factId = 4711L;
+    long factId = 4711L;
     when(factDAO.getFacts(customerId))
         .thenReturn(
             singletonList(

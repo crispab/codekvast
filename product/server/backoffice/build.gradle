@@ -19,7 +19,8 @@ configurations {
 
 dependencies {
   implementation project(':product:server:common')
-  implementation 'org.drools:drools-compiler:7.37.0.Final'
+  implementation "org.drools:drools-compiler:$droolsVersion"
+  implementation "org.drools:drools-mvel:$droolsVersion"
   implementation "com.google.code.gson:gson:$gsonVersion"
   implementation 'org.springframework.boot:spring-boot-starter-mustache'
   implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -32,7 +33,10 @@ dependencies {
 run {
   dependsOn startDockerContainers
   jvmArgs = ['-enableassertions',]
-  args = ['--spring.profiles.active=dev']
+  args = [
+          "--logging.file.name=$buildDir/${applicationName}.log",
+          '--spring.profiles.active=dev,common-dev'
+  ]
 }
 
 bootRun {
@@ -101,7 +105,7 @@ task launchBackofficeWithCodekvastAgentAttached(type: Exec, dependsOn: [bootJar,
   args "-jar", "build/libs/${archivesBaseName}-${version}-all.jar"
   args "--logging.level.root=INFO"
   args "--logging.level.io.codekvast=INFO"
-  args "--logging.file.name=$buildDir/log/${applicationName}.log"
+  args "--logging.file.name=$buildDir/${applicationName}.log"
 
-  args "--spring.profiles.active=dev,stress-test"
+  args "--spring.profiles.active=dev,common-dev,stress-test"
 }

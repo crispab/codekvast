@@ -1,17 +1,18 @@
 package io.codekvast.login.heroku;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 
 /** @author olle.hallin@crisp.se */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class HerokuResourcesControllerTest {
 
   @Mock private CodekvastLoginSettings settings;
@@ -22,28 +23,22 @@ public class HerokuResourcesControllerTest {
 
   @InjectMocks private HerokuResourcesController controller;
 
-  @Test(expected = BadCredentialsException.class)
+  @Test
   public void should_reject_malformed_basic_auth() {
     // given
     when(settings.getHerokuApiPassword()).thenReturn("password");
 
-    // when
-    controller.validateBasicAuth("foobar");
-
-    // then
-    // exception!
+    // when, then
+    assertThrows(BadCredentialsException.class, () -> controller.validateBasicAuth("foobar"));
   }
 
-  @Test(expected = BadCredentialsException.class)
+  @Test
   public void should_reject_invalid_basic_auth() {
     // given
     when(settings.getHerokuApiPassword()).thenReturn("password");
 
-    // when
-    controller.validateBasicAuth("Basic foobar");
-
-    // then
-    // exception!
+    // when, then
+    assertThrows(BadCredentialsException.class, () -> controller.validateBasicAuth("Basic foobar"));
   }
 
   @Test

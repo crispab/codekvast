@@ -62,7 +62,9 @@ run {
     // "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
   ]
 
-  args = ['--spring.profiles.active=dev',
+  args = [
+          "--logging.file.name=$buildDir/${applicationName}.log",
+          '--spring.profiles.active=dev,common-dev,dev-webpack-dev-server',
           '--codekvast.dashboard.fileImportIntervalSeconds=10',
           '--codekvast.jwtExpirationHours=-5'
   ]
@@ -122,7 +124,7 @@ task launchDashboardWithCodekvastAgentAttached(type: Exec, dependsOn: [bootJar, 
   args "--logging.level.root=INFO"
   args "--logging.level.io.codekvast=INFO"
   args "--logging.level.io.codekvast.common.aspects=DEBUG"
-  args "--logging.file.name=$buildDir/log/${applicationName}.log"
+  args "--logging.file.name=$buildDir/${applicationName}.log"
   args "--codekvast.dashboard.fileImportIntervalSeconds=10"
   args "--codekvast.dashboard.dataWeedingIntervalSeconds=10"
   args "--codekvast.dashboard.dataWeedingInitialDelaySeconds=10"

@@ -8,9 +8,22 @@
       </pattern>
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.backoffice.CodekvastBackofficeApplication" />
-    <option name="ACTIVE_PROFILES" value="dev,dev-secrets,no-mail-sender" />
+    <option name="ACTIVE_PROFILES" value="dev,common-dev,dev-secrets,no-mail-sender" />
     <option name="VM_PARAMETERS" value="-Xms10m -Xmx100m -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=&quot;/tmp/codekvast-backoffice.hprof&quot;" />
+    <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
     <option name="ALTERNATIVE_JRE_PATH" />
+    <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.file.name" />
+        <option name="value" value="build/codekvast-backoffice.log" />
+      </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.level.root" />
+        <option name="value" value="debug" />
+      </param>
+    </additionalParameters>
     <RunnerSettings />
     <method v="2">
       <option name="Gradle.BeforeRunTask" enabled="true" tasks="startDockerContainers" externalProjectPath="$PROJECT_DIR$/product/server/backoffice" vmOptions="" scriptParameters="" />

@@ -2,6 +2,3 @@
 codekvast:
   dashboard:
     fileImportQueuePath: /codekvast/queue
-spring:
-  profiles:
-    include: common-fargate

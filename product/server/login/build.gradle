@@ -29,7 +29,10 @@ dependencies {
 run {
     dependsOn startDockerContainers
     jvmArgs = ['-enableassertions',]
-    args = ['--spring.profiles.active=dev,dev-secrets,webpack-dev-server']
+    args = [
+            "--logging.file.name=$buildDir/${applicationName}.log",
+            '--spring.profiles.active=dev,common-dev,dev-secrets,dev-webpack-dev-server'
+    ]
 }
 
 bootRun {
@@ -42,9 +45,9 @@ bootRun {
 bootJar {
     launchScript {
         properties([
-            'initInfoProvides'        : applicationName,
-            'initInfoShortDescription': 'Codekvast Login',
-            'initInfoDescription'     : 'Codekvast Login handles logins',
+                'initInfoProvides'        : applicationName,
+                'initInfoShortDescription': 'Codekvast Login',
+                'initInfoDescription'     : 'Codekvast Login handles logins',
         ])
     }
 }

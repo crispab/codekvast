@@ -106,8 +106,8 @@ import org.testcontainers.containers.RabbitMQContainer;
 public class DashboardIntegrationTest {
 
   private static final String DATABASE = "codekvast";
-  private static final String USERNAME = "codekvast";
-  private static final String PASSWORD = "codekvast";
+  private static final String USERNAME = "codekvastUser";
+  private static final String PASSWORD = "codekvastPassword";
   private static final String SYNTHETIC_SIGNATURE =
       "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)";
 
@@ -128,6 +128,11 @@ public class DashboardIntegrationTest {
   @BeforeClass
   public static void beforeClass() {
     System.setProperty("spring.datasource.url", mariaDB.getJdbcUrl());
+    System.setProperty("spring.datasource.username", USERNAME);
+    System.setProperty("spring.datasource.password", PASSWORD);
+    System.setProperty("spring.flyway.url", mariaDB.getJdbcUrl());
+    System.setProperty("spring.flyway.user", USERNAME);
+    System.setProperty("spring.flyway.password", PASSWORD);
     System.setProperty("spring.rabbitmq.addresses", rabbitMQ.getAmqpUrl());
   }
 

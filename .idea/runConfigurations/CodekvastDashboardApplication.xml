@@ -2,13 +2,18 @@
   <configuration default="false" name="CodekvastDashboardApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <module name="codekvast.product.server.dashboard.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboardApplication" />
-    <option name="ACTIVE_PROFILES" value="dev,dev-secrets,dev-webpack-dev-server" />
+    <option name="ACTIVE_PROFILES" value="dev,common-dev,dev-secrets,dev-webpack-dev-server" />
     <option name="VM_PARAMETERS" value="-ea" />
-    <option name="WORKING_DIRECTORY" value="file://$MODULE_WORKING_DIR$" />
+    <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.file.name" />
+        <option name="value" value="build/codekvast-dashboard.log" />
+      </param>
       <param>
         <option name="name" value="logging.level.org.springframework" />
         <option name="value" value="debug" />

@@ -9,16 +9,17 @@ codekvast:
 
 logging:
   file:
-    name: build/log/application.log
+    name: build/application.log
   level:
     io.codekvast: DEBUG
     org.springframework.cache: DEBUG
     com.github.benmanes.caffeine: DEBUG
 
 spring:
-  profiles:
-    include: color-logging,json-logging-file
   datasource:
+    password: codekvast
+    url:      jdbc:mariadb://localhost/codekvast
+  flyway:
     password: codekvast
     url:      jdbc:mariadb://localhost/codekvast
   rabbitmq:
@@ -30,7 +31,7 @@ spring:
 server:
   undertow:
     accesslog:
-      dir:     build/log
+      dir:     build
       prefix:  access.
 
 management:

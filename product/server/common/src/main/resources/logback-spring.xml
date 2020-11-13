@@ -1,64 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <configuration>
-    <define name="hostname" class="io.codekvast.common.logback.HostnamePropertyDefiner"/>
+  <!-- Pick up the hostname -->
+  <define name="HOSTNAME" class="io.codekvast.common.logback.HostnamePropertyDefiner"/>
 
-    <!-- Add properties that are recognized by Datadog -->
-    <property scope="context" name="ddsource" value="java" />
-    <property scope="context" name="host" value="${hostname}" />
+  <!-- Add properties that are recognized by Datadog -->
+  <property scope="context" name="ddsource" value="java"/>
+  <property scope="context" name="host" value="${HOSTNAME}"/>
 
-    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+  <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}application.log}"/>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
-    <appender name="ColorConsole" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%clr(%d){faint} %clr(%-5p) %clr([%t]){faint} %clr(%c){blue} - %m%n</pattern>
-        </encoder>
-    </appender>
+  <!-- Add a JSON console appender to use in Fargate -->
+  <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <timeZone>UTC</timeZone>
+      <fieldNames>
+        <levelValue>[ignore]</levelValue>
+        <version>[ignore]</version>
+      </fieldNames>
+    </encoder>
+  </appender>
 
-    <appender name="JsonFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>build/log/application.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>build/log/application.log.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
-            <maxFileSize>${LOG_FILE_MAX_SIZE:-10MB}</maxFileSize>
-            <maxHistory>${LOG_FILE_MAX_HISTORY:-10}</maxHistory>
-        </rollingPolicy>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <timeZone>UTC</timeZone>
-            <fieldNames>
-                <levelValue>[ignore]</levelValue>
-                <version>[ignore]</version>
-            </fieldNames>
-        </encoder>
-    </appender>
+  <springProfile name="!common-fargate">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="FILE"/>
+    </root>
+    <logger name="io.codekvast" level="DEBUG"/>
+  </springProfile>
 
-    <appender name="JsonConsole" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <timeZone>UTC</timeZone>
-            <fieldNames>
-                <levelValue>[ignore]</levelValue>
-                <version>[ignore]</version>
-            </fieldNames>
-        </encoder>
-    </appender>
+  <springProfile name="common-fargate">
+    <logger name="JSON_VALIDATOR" level="OFF"/>
+    <root level="INFO">
+      <appender-ref ref="JSON_CONSOLE"/>
+    </root>
+  </springProfile>
 
-    <springProfile name="color-logging">
-        <root level="INFO">
-            <appender-ref ref="ColorConsole"/>
-        </root>
-        <logger name="io.codekvast" level="DEBUG"/>
-    </springProfile>
-
-    <springProfile name="json-logging-console">
-        <logger name="JSON_VALIDATOR" level="OFF"/>
-        <root level="INFO">
-            <appender-ref ref="JsonConsole"/>
-        </root>
-    </springProfile>
-
-    <springProfile name="json-logging-file">
-        <logger name="JSON_VALIDATOR" level="OFF"/>
-        <root level="INFO">
-            <appender-ref ref="JsonFile"/>
-        </root>
-    </springProfile>
 </configuration>

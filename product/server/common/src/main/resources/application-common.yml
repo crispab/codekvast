@@ -47,6 +47,9 @@ spring:
       connection-test-query: SELECT 1 FROM DUAL
       connection-timeout: 30000 # millis
     username: codekvast
+  flyway:
+    user: codekvast
+    validate-on-migrate: false
   rabbitmq:
     template:
       retry:
@@ -55,8 +58,6 @@ spring:
     listener:
       simple:
         default-requeue-rejected: false
-  flyway:
-    validate-on-migrate: false
   output.ansi.enabled: detect
   mail:
     host: email-smtp.eu-central-1.amazonaws.com

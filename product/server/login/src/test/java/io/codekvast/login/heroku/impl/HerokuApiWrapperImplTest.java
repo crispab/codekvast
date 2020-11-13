@@ -8,7 +8,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.gson.Gson;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
@@ -21,27 +21,34 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /** @author olle.hallin@crisp.se */
 public class HerokuApiWrapperImplTest {
-
-  @Rule public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
+  private WireMockServer wireMockServer;
 
   private final Gson gson = new Gson();
   private final CodekvastLoginSettings settings = new CodekvastLoginSettings();
 
   private HerokuApiWrapperImpl herokuApiWrapper;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
-    settings.setHerokuApiBaseUrl("http://localhost:" + wireMockRule.port());
-    settings.setHerokuOAuthBaseUrl("http://localhost:" + wireMockRule.port());
+    wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
+    wireMockServer.start();
+
+    settings.setHerokuApiBaseUrl("http://localhost:" + wireMockServer.port());
+    settings.setHerokuOAuthBaseUrl("http://localhost:" + wireMockServer.port());
     settings.setHerokuOAuthClientSecret("clientSecret");
 
     herokuApiWrapper = new HerokuApiWrapperImpl(settings);
+  }
+
+  @AfterEach
+  public void afterTest() {
+    wireMockServer.stop();
   }
 
   @Test
@@ -127,6 +134,6 @@ public class HerokuApiWrapperImplTest {
   }
 
   private String readResource(String s) throws IOException {
-    return new String(Files.readAllBytes(Paths.get(getClass().getResource(s).getPath())), "UTF-8");
+    return Files.readString(Paths.get(getClass().getResource(s).getPath()));
   }
 }
