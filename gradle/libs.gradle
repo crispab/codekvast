@@ -8,7 +8,7 @@ ext {
     rabbitmqVersion = '3.8-management-alpine'
     seleniumVersion = '3.141.59'
     springBootVersion = '2.4.0'
-    springfoxVersion = '3.0.0'
+    springfoxVersion = '2.9.2'
     testcontainersVersion = '1.15.0'
     wiremockVersion = '2.27.2'
 
