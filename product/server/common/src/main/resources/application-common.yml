@@ -1,7 +1,7 @@
 # Default values for CodekvastCommonProperties
 codekvast:
   common:
-    jwtExpirationHours:                       168
+    jwtExpirationHours: 168
 
 management:
   endpoints:
@@ -9,21 +9,21 @@ management:
     jmx:
       domain: Codekvast
     web:
-      base-path:        /management
+      base-path: /management
       exposure.include: '*'
   endpoint:
     health:
-      show-details:       "ALWAYS"
+      show-details: "ALWAYS"
       cache.time-to-live: 10s
       group:
         loadBalancer:
-          show-details:       "ALWAYS"
+          show-details: "ALWAYS"
           cache.time-to-live: 10s
-          include:            '*'
-          exclude:            rabbit
+          include: '*'
+          exclude: rabbit
   metrics:
     web.server.request.autotime.enabled: true
-    export.datadog.enabled:              false
+    export.datadog.enabled: false
   health:
     mail:
       enabled: false
@@ -41,9 +41,11 @@ server:
       pattern: combined
   forward-headers-strategy: framework
 spring:
+  config:
+    use-legacy-processing: true # Support nested spring.profiles.include
   datasource:
     hikari:
-      maximum-pool-size:     5
+      maximum-pool-size: 5
       connection-test-query: SELECT 1 FROM DUAL
       connection-timeout: 30000 # millis
     username: codekvast
@@ -52,7 +54,7 @@ spring:
   rabbitmq:
     template:
       retry:
-        enabled:          true
+        enabled: true
         initial-interval: 2s
     listener:
       simple:
@@ -66,7 +68,7 @@ spring:
         smtp:
           auth: true
           starttls:
-            enabled:  true
+            enabled: true
             required: true
   cache:
     caffeine:

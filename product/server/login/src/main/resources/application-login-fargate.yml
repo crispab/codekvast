@@ -1,1 +1,4 @@
 # This profile is activated when deploying to AWS ECS Fargate
+spring:
+  profiles:
+    include: common-fargate

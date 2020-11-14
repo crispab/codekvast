@@ -3,3 +3,6 @@ management:
   health:
     mail:
       enabled: true
+spring:
+  profiles:
+    include: common-fargate

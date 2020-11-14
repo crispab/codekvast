@@ -64,7 +64,7 @@ run {
 
   args = [
           "--logging.file.name=$buildDir/${applicationName}.log",
-          '--spring.profiles.active=dev,common-dev,dev-webpack-dev-server',
+          '--spring.profiles.active=dev,dev-webpack-dev-server',
           '--codekvast.dashboard.fileImportIntervalSeconds=10',
           '--codekvast.jwtExpirationHours=-5'
   ]

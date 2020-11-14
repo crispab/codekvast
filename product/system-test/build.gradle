@@ -48,7 +48,7 @@ ext.launchCommands = [
         "--management.server.port=${allocateFreePort()} " +
         "--spring.datasource.url=$jdbcUrl " +
         "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-        "--spring.profiles.active=dev,common-dev,system-test " +
+        "--spring.profiles.active=dev,system-test " +
         "--logging.file.name=${buildDir}/system-test-backoffice.log ",
 
     'dashboard': "$java -jar ${bootJars['dashboard'].asPath} " +
@@ -56,7 +56,7 @@ ext.launchCommands = [
         "--management.server.port=${allocateFreePort()} " +
         "--spring.datasource.url=$jdbcUrl " +
         "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-        "--spring.profiles.active=dev,common-dev,system-test " +
+        "--spring.profiles.active=dev,system-test " +
         "--logging.file.name=${buildDir}/system-test-dashboard.log ",
 
     'login'    : "$java -jar ${bootJars['login'].asPath} " +
@@ -64,7 +64,7 @@ ext.launchCommands = [
         "--management.server.port=${allocateFreePort()} " +
         "--spring.datasource.url=$jdbcUrl " +
         "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-        "--spring.profiles.active=dev,common-dev,system-test " +
+        "--spring.profiles.active=dev,system-test " +
         "--logging.file.name=${buildDir}/system-test-login.log "
 ]
 

@@ -19,7 +19,7 @@ run {
     dependsOn startDockerContainers
     jvmArgs = ['-enableassertions',]
     args = [
-            '--spring.profiles.active=dev,common-dev'
+            '--spring.profiles.active=dev'
     ]
 }
 

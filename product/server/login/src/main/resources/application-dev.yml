@@ -8,3 +8,6 @@ codekvast:
     herokuOAuthClientSecret: herokuOAuthClientSecret
 server:
   port: 8080
+spring:
+  profiles:
+    include: common-dev

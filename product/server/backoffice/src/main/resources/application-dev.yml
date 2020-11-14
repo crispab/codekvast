@@ -3,3 +3,6 @@ server:
 management:
   server:
     port: 9082
+spring:
+  profiles:
+    include: common-dev

@@ -35,7 +35,7 @@ run {
   jvmArgs = ['-enableassertions',]
   args = [
           "--logging.file.name=$buildDir/${applicationName}.log",
-          '--spring.profiles.active=dev,common-dev'
+          '--spring.profiles.active=dev'
   ]
 }
 
@@ -107,5 +107,5 @@ task launchBackofficeWithCodekvastAgentAttached(type: Exec, dependsOn: [bootJar,
   args "--logging.level.io.codekvast=INFO"
   args "--logging.file.name=$buildDir/${applicationName}.log"
 
-  args "--spring.profiles.active=dev,common-dev,stress-test"
+  args "--spring.profiles.active=dev,stress-test"
 }

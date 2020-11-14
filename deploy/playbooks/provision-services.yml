@@ -342,7 +342,7 @@
         computed:
           envvars:
             - name:  SPRING_PROFILES_ACTIVE
-              value: "{{ item.name }}-fargate,common-fargate"
+              value: "{{ item.name }}-fargate"
             - name:  CODEKVAST_COMMON_DNS_CNAME
               value: "{{ item.name }}{{ dns_suffix }}"
             - name:  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE

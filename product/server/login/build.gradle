@@ -31,7 +31,7 @@ run {
     jvmArgs = ['-enableassertions',]
     args = [
             "--logging.file.name=$buildDir/${applicationName}.log",
-            '--spring.profiles.active=dev,common-dev,dev-secrets,dev-webpack-dev-server'
+            '--spring.profiles.active=dev,dev-secrets,dev-webpack-dev-server'
     ]
 }
 
