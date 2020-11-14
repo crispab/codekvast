@@ -19,9 +19,6 @@ spring:
   datasource:
     password: codekvast
     url:      jdbc:mariadb://localhost/codekvast
-  flyway:
-    password: codekvast
-    url:      jdbc:mariadb://localhost/codekvast
   rabbitmq:
     addresses: "amqp://admin:secret@localhost:5672"
   cache:

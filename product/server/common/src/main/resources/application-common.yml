@@ -48,7 +48,6 @@ spring:
       connection-timeout: 30000 # millis
     username: codekvast
   flyway:
-    user: codekvast
     validate-on-migrate: false
   rabbitmq:
     template:

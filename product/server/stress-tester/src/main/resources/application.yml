@@ -5,9 +5,6 @@ spring:
     username: codekvast
     password: codekvast
   flyway:
-    url: jdbc:mariadb://localhost/codekvast
-    user: codekvast
-    password: codekvast
     validate-on-migrate: false
   profiles:
     include: no-slack-integration
