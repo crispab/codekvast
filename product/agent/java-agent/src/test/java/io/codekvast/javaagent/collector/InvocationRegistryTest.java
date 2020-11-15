@@ -10,32 +10,32 @@ import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.util.SignatureUtils;
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import org.aspectj.lang.Signature;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class InvocationRegistryTest {
 
   private static final String APP_NAME = "Invocations Registry Test";
   private static final String APP_VERSION = "1.2.3-rc-2";
 
-  @Rule public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir File temporaryFolder;
 
   private Signature signature1;
   private Signature signature2;
 
-  @Before
+  @BeforeEach
   public void beforeTest() throws IOException, NoSuchMethodException {
     String codeBase =
-        temporaryFolder.newFolder("codebase1").getAbsolutePath()
+        new File(temporaryFolder, "codebase1").getAbsolutePath()
             + ", "
-            + temporaryFolder.newFolder("codebase2").getAbsolutePath();
+            + new File(temporaryFolder, "codebase2").getAbsolutePath();
 
     AgentConfig config =
         AgentConfigFactory.createSampleAgentConfig().toBuilder()
@@ -48,7 +48,7 @@ public class InvocationRegistryTest {
     signature2 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m2"));
   }
 
-  @After
+  @AfterEach
   public void afterTest() {
     InvocationRegistry.initialize(null);
   }

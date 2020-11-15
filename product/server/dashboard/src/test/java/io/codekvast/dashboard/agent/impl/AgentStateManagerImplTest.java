@@ -19,13 +19,13 @@ import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.AgentMetricsService;
+import java.io.File;
 import java.time.Instant;
 import java.util.Optional;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -36,8 +36,6 @@ public class AgentStateManagerImplTest {
   private final String jvmUuid = "jvmUuid";
   private final String appName = "appName";
   private final String environment = "environment";
-
-  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   @Mock private AgentDAO agentDAO;
 
@@ -53,11 +51,11 @@ public class AgentStateManagerImplTest {
 
   private AgentStateManager agentStateManager;
 
-  @Before
-  public void beforeTest() {
+  @BeforeEach
+  public void beforeTest(@TempDir File temporaryFolder) {
     MockitoAnnotations.openMocks(this);
 
-    settings.setFileImportQueuePath(temporaryFolder.getRoot());
+    settings.setFileImportQueuePath(temporaryFolder);
     settings.setFileImportIntervalSeconds(60);
 
     agentStateManager =

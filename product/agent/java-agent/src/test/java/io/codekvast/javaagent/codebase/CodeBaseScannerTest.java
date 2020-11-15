@@ -16,15 +16,11 @@ import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
 import java.io.File;
 import java.util.Collection;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class CodeBaseScannerTest {
-
-  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   private static final String TEST_CLASSES_DIR = "build/classes/java/test";
   private static final String SPRING_BOOT_EXECUTABLE_JAR_DIR =
@@ -33,7 +29,7 @@ public class CodeBaseScannerTest {
   private final CodeBaseScanner scanner = new CodeBaseScanner();
   private CodeBase codeBase;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
     codeBase =
         new CodeBase(
@@ -109,7 +105,7 @@ public class CodeBaseScannerTest {
   }
 
   @Test
-  @Ignore("Default disabled")
+  @Disabled("Default disabled")
   public void stability_test() {
     for (int i = 0; i < 10_000; i++) {
       System.out.printf("Stability test #%05d%n", i);

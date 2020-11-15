@@ -6,7 +6,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,16 +29,16 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class AgentServiceImplTest {
 
-  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir File temporaryFolder;
 
   @Mock private CustomerService customerService;
 
@@ -49,12 +49,12 @@ public class AgentServiceImplTest {
 
   private AgentService service;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
     MockitoAnnotations.openMocks(this);
 
     CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
-    settings.setFileImportQueuePath(temporaryFolder.getRoot());
+    settings.setFileImportQueuePath(temporaryFolder);
 
     when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
 
@@ -82,7 +82,7 @@ public class AgentServiceImplTest {
           PublicationType.CODEBASE, "key", "fingerprint", publicationSize, inputStream);
 
       // then
-      fail("Expected a LicenseViolationException");
+      Assertions.fail("Expected a LicenseViolationException");
     } catch (LicenseViolationException expected) {
       // Expected outcome
     } finally {
@@ -148,9 +148,11 @@ public class AgentServiceImplTest {
     assertThat(resultingFile.length(), is((long) contents.length()));
   }
 
-  @Test(expected = NullPointerException.class)
-  public void should_reject_null_licenseKey() throws Exception {
-    service.savePublication(PublicationType.CODEBASE, null, "fingerprint", 0, null);
+  @Test
+  public void should_reject_null_licenseKey() {
+    assertThrows(
+        NullPointerException.class,
+        () -> service.savePublication(PublicationType.CODEBASE, null, "fingerprint", 0, null));
   }
 
   @Test

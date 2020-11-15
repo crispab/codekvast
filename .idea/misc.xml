@@ -35,6 +35,9 @@
     <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="methodExecution" />
     <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="trivialMethodExecution" />
     <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="syntheticMethodExecution" />
+    <writeAnnotations>
+      <writeAnnotation name="org.junit.jupiter.api.io.TempDir" />
+    </writeAnnotations>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">

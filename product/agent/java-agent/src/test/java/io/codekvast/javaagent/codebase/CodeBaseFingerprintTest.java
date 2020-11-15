@@ -11,22 +11,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import lombok.SneakyThrows;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class CodeBaseFingerprintTest {
 
-  @Rule public final TemporaryFolder folder = new TemporaryFolder();
+  @TempDir File tempDir;
 
-  private final File files[] = new File[3];
+  private final File[] files = new File[3];
   private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
     for (int i = 0; i < files.length; i++) {
-      files[i] = new File(folder.getRoot(), "/foo" + i);
+      files[i] = new File(tempDir, "/foo" + i);
       writeFile(files[i], "foo" + i);
     }
   }

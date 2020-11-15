@@ -15,19 +15,16 @@ import io.codekvast.dashboard.metrics.AgentMetricsService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 /** @author olle.hallin@crisp.se */
-@RunWith(MockitoJUnitRunner.class)
 public class FileImportTaskTest {
 
-  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir File temporaryFolder;
 
   @Mock private PublicationImporter importer;
 
@@ -39,10 +36,11 @@ public class FileImportTaskTest {
 
   private FileImportTask task;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
+    MockitoAnnotations.openMocks(this);
     settings = new CodekvastDashboardSettings();
-    settings.setFileImportQueuePath(temporaryFolder.getRoot());
+    settings.setFileImportQueuePath(temporaryFolder);
 
     when(lockManager.acquireLock(any())).thenReturn(Optional.of(Lock.forTask("test", 60)));
     task = new FileImportTask(settings, importer, metricsService, new LockTemplate(lockManager));
@@ -118,6 +116,6 @@ public class FileImportTaskTest {
   }
 
   private File createImportFile(String suffix) throws IOException {
-    return File.createTempFile("import-", suffix, temporaryFolder.getRoot());
+    return File.createTempFile("import-", suffix, temporaryFolder);
   }
 }
