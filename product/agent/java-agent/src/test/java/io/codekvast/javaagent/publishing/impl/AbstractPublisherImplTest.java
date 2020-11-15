@@ -6,10 +6,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import io.codekvast.javaagent.publishing.Publisher;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.springframework.boot.test.system.OutputCaptureRule;
 
 /** @author olle.hallin@crisp.se */
+@EnableRuleMigrationSupport
 public class AbstractPublisherImplTest {
 
   @Rule public OutputCaptureRule output = new JulAwareOutputCapture();

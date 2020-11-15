@@ -8,7 +8,6 @@ import org.springframework.boot.test.system.OutputCaptureRule;
 
 /** @author olle.hallin@crisp.se */
 public class JulAwareOutputCapture extends OutputCaptureRule {
-  private final Locale oldLocale = Locale.getDefault();
 
   public JulAwareOutputCapture() {
     Locale.setDefault(Locale.ENGLISH);

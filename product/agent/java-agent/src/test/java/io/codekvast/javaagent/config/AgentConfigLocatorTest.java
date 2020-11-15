@@ -6,22 +6,24 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import io.codekvast.javaagent.publishing.impl.JulAwareOutputCapture;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.springframework.boot.test.system.OutputCaptureRule;
 
+@EnableRuleMigrationSupport
 public class AgentConfigLocatorTest {
 
   @Rule public OutputCaptureRule outputCapture = new JulAwareOutputCapture();
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
     System.clearProperty(AgentConfigLocator.SYSPROP_CONFIG);
   }
 
-  @After
+  @AfterEach
   public void afterTest() {
     System.clearProperty(AgentConfigLocator.SYSPROP_CONFIG);
   }

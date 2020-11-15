@@ -19,14 +19,16 @@ import io.codekvast.javaagent.publishing.impl.JulAwareOutputCapture;
 import io.codekvast.javaagent.publishing.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.javaagent.publishing.impl.NoOpInvocationDataPublisherImpl;
 import java.io.IOException;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.system.OutputCaptureRule;
 
 /** @author olle.hallin@crisp.se */
+@EnableRuleMigrationSupport
 public class SchedulerTest {
 
   @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
@@ -59,7 +61,7 @@ public class SchedulerTest {
           .invocationDataPublisherIntervalSeconds(0)
           .build();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MockitoAnnotations.openMocks(this);
     scheduler =

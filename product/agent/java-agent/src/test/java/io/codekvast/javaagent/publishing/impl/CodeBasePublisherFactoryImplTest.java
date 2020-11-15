@@ -10,10 +10,12 @@ import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.springframework.boot.test.system.OutputCaptureRule;
 
 /** @author olle.hallin@crisp.se */
+@EnableRuleMigrationSupport
 public class CodeBasePublisherFactoryImplTest {
 
   private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();

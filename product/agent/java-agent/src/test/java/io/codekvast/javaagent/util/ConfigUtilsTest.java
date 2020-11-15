@@ -22,11 +22,13 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import org.junit.After;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.springframework.boot.test.system.OutputCaptureRule;
 
+@EnableRuleMigrationSupport
 public class ConfigUtilsTest {
 
   private static final String MY_PROP1 = ConfigUtilsTest.class.getName() + ".prop1";
@@ -36,7 +38,7 @@ public class ConfigUtilsTest {
 
   @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
 
-  @After
+  @AfterEach
   public void afterTest() {
     System.getProperties().remove(MY_PROP1);
     System.getProperties().remove(MY_PROP2);

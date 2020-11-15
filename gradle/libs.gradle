@@ -19,6 +19,7 @@ ext {
     slf4jApi = 'org.slf4j:slf4j-api:1.7.30'
     testFrameworks = [
             'junit:junit:4.13.1',
+            'org.junit.jupiter:junit-jupiter-migrationsupport',
             'org.hamcrest:hamcrest-core:2.2',
             'org.hamcrest:hamcrest-library:2.2',
             'org.mockito:mockito-core:3.6.0',
