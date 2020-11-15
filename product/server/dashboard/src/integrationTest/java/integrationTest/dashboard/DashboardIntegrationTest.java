@@ -130,9 +130,6 @@ public class DashboardIntegrationTest {
     System.setProperty("spring.datasource.url", mariaDB.getJdbcUrl());
     System.setProperty("spring.datasource.username", USERNAME);
     System.setProperty("spring.datasource.password", PASSWORD);
-    System.setProperty("spring.flyway.url", mariaDB.getJdbcUrl());
-    System.setProperty("spring.flyway.user", USERNAME);
-    System.setProperty("spring.flyway.password", PASSWORD);
     System.setProperty("spring.rabbitmq.addresses", rabbitMQ.getAmqpUrl());
   }
 
