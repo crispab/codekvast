@@ -38,7 +38,7 @@ public class SecurityServiceImplTest {
 
   @BeforeEach
   public void beforeTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     securityService = new SecurityServiceImpl(settings, customerService, jdbcTemplate);
     securityService.postConstruct();
   }

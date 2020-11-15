@@ -23,8 +23,8 @@ import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -36,15 +36,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 public class DashboardApiControllerTest {
   @Mock private DashboardService dashboardService;
 
-  private CodekvastCommonSettings settings = new CodekvastCommonSettings();
+  private final CodekvastCommonSettings settings = new CodekvastCommonSettings();
 
   private MockMvc mockMvc;
 
   private final Gson gson = new Gson();
 
-  @Before
+  @BeforeEach
   public void setup() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     DashboardApiController dashboardApiController =
         new DashboardApiController(dashboardService, settings);
     this.mockMvc =

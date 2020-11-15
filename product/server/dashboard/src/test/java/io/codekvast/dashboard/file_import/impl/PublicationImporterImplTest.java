@@ -31,8 +31,8 @@ import java.util.Optional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import org.assertj.core.util.Files;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.dao.DuplicateKeyException;
@@ -54,9 +54,9 @@ public class PublicationImporterImplTest {
 
   private PublicationImporter publicationImporter;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     when(agentService.getCorrelationIdFromPublicationFile(any()))
         .thenReturn(CorrelationIdHolder.generateNew());
     this.publicationImporter =

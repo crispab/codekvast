@@ -3,7 +3,7 @@ package io.codekvast.dashboard.dashboard.model.methods;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author olle.hallin@crisp.se */
 public class GetMethodsRequestTest {

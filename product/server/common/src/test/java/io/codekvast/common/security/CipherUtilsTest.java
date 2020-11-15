@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.security.NoSuchAlgorithmException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author olle.hallin@crisp.se */
 public class CipherUtilsTest {

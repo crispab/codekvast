@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.is;
 import com.google.gson.Gson;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that Gson plays well together with the Lombok-generated stuff.

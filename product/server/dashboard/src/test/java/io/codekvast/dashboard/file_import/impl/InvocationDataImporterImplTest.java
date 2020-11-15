@@ -5,7 +5,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.codekvast.common.lock.LockTemplate;
-import io.codekvast.common.messaging.EventService;
 import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
@@ -14,15 +13,13 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 /** @author olle.hallin@crisp.se */
-@RunWith(MockitoJUnitRunner.class)
 public class InvocationDataImporterImplTest {
 
   private static final Instant NOW = Instant.now();
@@ -33,14 +30,13 @@ public class InvocationDataImporterImplTest {
 
   @Mock private LockTemplate lockTemplate;
 
-  @Mock private EventService eventService;
-
   @Mock private AgentMetricsService metricsService;
 
   @InjectMocks private InvocationDataImporterImpl invocationDataImporter;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
+    MockitoAnnotations.openMocks(this);
     when(clock.instant()).thenReturn(NOW);
   }
 

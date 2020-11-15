@@ -55,7 +55,7 @@ public class AgentStateManagerImplTest {
 
   @Before
   public void beforeTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     settings.setFileImportQueuePath(temporaryFolder.getRoot());
     settings.setFileImportIntervalSeconds(60);

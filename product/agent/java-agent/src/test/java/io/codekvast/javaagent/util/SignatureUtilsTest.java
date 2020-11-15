@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import lombok.val;
 import org.assertj.core.api.AbstractAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("ALL")
 public class SignatureUtilsTest {

@@ -6,7 +6,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.verify;
@@ -23,8 +23,8 @@ import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,9 +46,9 @@ public class DashboardServiceImplTest {
 
   private DashboardServiceImpl dashboardService;
 
-  @Before
+  @BeforeEach
   public void beforeTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     dashboardService =
         new DashboardServiceImpl(
             jdbcTemplate, namedParameterJdbcTemplate, customerIdProvider, customerService, clock);

@@ -5,7 +5,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.codekvast.javaagent.util.Constants;
 import java.io.File;
@@ -18,8 +19,8 @@ import java.util.UUID;
 import lombok.SneakyThrows;
 import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class AgentConfigTest {
 
@@ -33,7 +34,7 @@ public class AgentConfigTest {
     modifiedSystemProps.add(key);
   }
 
-  @After
+  @AfterEach
   public void afterTest() {
     for (String key : modifiedSystemProps) {
       System.clearProperty(key);
@@ -250,14 +251,15 @@ public class AgentConfigTest {
     assertThat(httpClient1, sameInstance(httpClient2));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_reject_httpProxy_with_missing_port() {
     AgentConfig config =
         AgentConfigFactory.createSampleAgentConfig().toBuilder()
             .httpProxyHost("foo")
             .httpProxyPort(0)
             .build();
-    config.getHttpClient();
+
+    assertThrows(IllegalArgumentException.class, config::getHttpClient);
   }
 
   @Test

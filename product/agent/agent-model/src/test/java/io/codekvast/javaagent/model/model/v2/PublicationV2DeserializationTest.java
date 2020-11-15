@@ -8,7 +8,7 @@ import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * A test to prove that we can deserialize publications produced by a v2 agent. The test resources

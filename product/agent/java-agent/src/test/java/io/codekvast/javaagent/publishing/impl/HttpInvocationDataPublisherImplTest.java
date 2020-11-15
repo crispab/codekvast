@@ -20,7 +20,7 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author olle.hallin@crisp.se */
 public class HttpInvocationDataPublisherImplTest {

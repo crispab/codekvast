@@ -34,7 +34,7 @@ public class SlackServiceIntegrationTest {
   public void beforeTest() throws Exception {
     assumeTrue("true".equals(System.getenv("RUN_SLACK_TESTS")));
 
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     Properties props = new Properties();
     props.load(getClass().getResourceAsStream("/secrets.properties"));

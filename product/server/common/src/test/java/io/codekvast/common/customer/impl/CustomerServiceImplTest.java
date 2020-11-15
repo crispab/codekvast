@@ -51,7 +51,7 @@ public class CustomerServiceImplTest {
 
   @BeforeEach
   public void beforeTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     service = new CustomerServiceImpl(jdbcTemplate, slackService, metricsService, eventService);
 

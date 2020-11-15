@@ -5,13 +5,13 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v3.MethodSignature3;
 import java.net.URL;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CodeBaseTest {
 
@@ -42,7 +42,7 @@ public class CodeBaseTest {
             .build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void should_handle_null_codeBase() {
     codeBase = new CodeBase(null);
   }
@@ -53,7 +53,7 @@ public class CodeBaseTest {
     codeBase = getCodeBase("foobar");
 
     // then
-    assertThat(codeBase.getUrls().length, is(0));
+    assertThrows(NullPointerException.class, () -> codeBase.getUrls());
   }
 
   @Test
@@ -64,7 +64,7 @@ public class CodeBaseTest {
     // then
     assertThat(codeBase.getUrls(), notNullValue());
     assertThat(codeBase.getUrls().length, is(1));
-    assertTrue(codeBase.getUrls()[0].getPath().endsWith("/"));
+    Assertions.assertTrue(codeBase.getUrls()[0].getPath().endsWith("/"));
 
     CodeBaseFingerprint fingerprint = codeBase.getFingerprint();
     assertThat(fingerprint.getNumClassFiles(), is(1));
@@ -227,13 +227,13 @@ public class CodeBaseTest {
         return;
       }
     }
-    fail("Missing signature: " + signature);
+    Assertions.fail("Missing signature: " + signature);
   }
 
   private void assertThatCodeBaseNotContains(CodeBase codeBase, String signature) {
     for (MethodSignature3 sig : codeBase.getSignatures()) {
       if (sig.getAspectjString().contains(signature)) {
-        fail("Unexpected signature: " + sig.getAspectjString());
+        Assertions.fail("Unexpected signature: " + sig.getAspectjString());
       }
     }
   }

@@ -9,7 +9,7 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author olle.hallin@crisp.se */
 public class ConfigPollerImplTest {

@@ -11,7 +11,7 @@ import static org.hamcrest.core.IsNull.nullValue;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author olle.hallin@crisp.se */
 public class PricePlanTest {

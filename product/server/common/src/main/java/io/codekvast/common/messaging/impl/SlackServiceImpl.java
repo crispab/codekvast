@@ -94,6 +94,7 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
 
   private void doSend(String text, Channel channel) {
     String ch = channel.name().toLowerCase().replace("_", "-");
+    @SuppressWarnings("deprecation")
     Payload payload =
         Payload.builder().text(String.format("%s: %s", Instant.now(), text)).channel(ch).build();
 

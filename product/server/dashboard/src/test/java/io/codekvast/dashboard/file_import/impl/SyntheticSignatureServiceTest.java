@@ -29,7 +29,7 @@ public class SyntheticSignatureServiceTest {
 
   @BeforeEach
   public void beforeTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     when(dao.getPatterns()).thenReturn(Collections.emptyList());
 
     syntheticSignatureService = new SyntheticSignatureService(dao);

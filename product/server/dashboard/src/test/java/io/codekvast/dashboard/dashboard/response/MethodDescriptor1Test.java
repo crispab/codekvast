@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.codekvast.dashboard.dashboard.model.methods.ApplicationDescriptor;
 import io.codekvast.dashboard.dashboard.model.methods.EnvironmentDescriptor;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author olle.hallin@crisp.se */
 public class MethodDescriptor1Test {

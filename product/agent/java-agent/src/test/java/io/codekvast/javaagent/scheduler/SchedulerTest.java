@@ -61,7 +61,7 @@ public class SchedulerTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     scheduler =
         new Scheduler(
             config,

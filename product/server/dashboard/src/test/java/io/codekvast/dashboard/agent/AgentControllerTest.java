@@ -32,8 +32,8 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.GetConfigRequest2;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
 import java.io.InputStream;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -50,9 +50,9 @@ public class AgentControllerTest {
 
   private final Gson gson = new Gson();
 
-  @Before
+  @BeforeEach
   public void setup() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     AgentController agentController = new AgentController(agentService);
     this.mockMvc =
         MockMvcBuilders.standaloneSetup(agentController)

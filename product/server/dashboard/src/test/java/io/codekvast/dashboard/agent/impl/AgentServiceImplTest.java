@@ -51,7 +51,7 @@ public class AgentServiceImplTest {
 
   @Before
   public void beforeTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
     settings.setFileImportQueuePath(temporaryFolder.getRoot());

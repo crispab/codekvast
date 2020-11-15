@@ -48,7 +48,7 @@ class CodekvastJsonMessageConverterTest {
 
   @BeforeEach
   void beforeEach() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     when(settings.getApplicationName()).thenReturn(APPLICATION_NAME);
     when(clock.instant()).thenReturn(NOW);
   }
