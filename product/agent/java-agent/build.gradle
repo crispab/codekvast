@@ -37,6 +37,7 @@ dependencies {
 
     integrationTestImplementation "com.github.tomakehurst:wiremock-standalone:$wiremockVersion"
     integrationTestImplementation "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
+    integrationTestImplementation testFrameworks
     integrationTestRuntimeOnly aspectjWeaver
     integrationTestRuntimeOnly logback
 
@@ -142,6 +143,7 @@ test {
 integrationTest {
     dependsOn verifyShadowJar
     shouldRunAfter test
+    useJUnitPlatform()
 
     inputs.files file("build.gradle")
     inputs.files shadowJar.outputs.files

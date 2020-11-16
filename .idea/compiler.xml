@@ -13,8 +13,8 @@
         <module name="codekvast.product.agent.java-agent.integrationTest" />
         <module name="codekvast.sample.sample-lib.test" />
         <module name="codekvast.sample.sample-gradle-application.test" />
-        <module name="codekvast.product.server.common.integrationTest" />
         <module name="codekvast.product.server.dashboard.integrationTest" />
+        <module name="codekvast.product.server.common.integrationTest" />
         <module name="codekvast.product.server.common.test" />
         <module name="codekvast.product.server.login.test" />
         <module name="codekvast.product.server.stress-tester.test" />
@@ -48,8 +48,8 @@
         <module name="codekvast.product.system-test.main" />
         <module name="codekvast.product.server.dashboard.main" />
         <module name="codekvast.product.server.common.main" />
-        <module name="codekvast.product.agent.java-agent.main" />
         <module name="codekvast.product.server.login.main" />
+        <module name="codekvast.product.agent.java-agent.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8" />

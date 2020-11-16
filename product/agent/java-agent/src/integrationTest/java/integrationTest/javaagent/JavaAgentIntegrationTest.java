@@ -8,21 +8,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.DISABLED_IN_CONFIG;
-import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.ENABLED_IN_CONFIG_AND_ENABLED_IN_SERVER;
-import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.ENABLED_IN_CONFIG_BUT_DISABLED_IN_SERVER;
-import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.NOT_FOUND_CONFIG;
-import static integrationTest.javaagent.JavaAgentIntegrationTest.AgentState.NO_CONFIG;
 import static io.codekvast.javaagent.model.Endpoints.Agent.V2_POLL_CONFIG;
 import static io.codekvast.javaagent.model.Endpoints.Agent.V2_UPLOAD_INVOCATION_DATA;
 import static io.codekvast.javaagent.model.Endpoints.Agent.V3_UPLOAD_CODEBASE;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.gson.Gson;
 import io.codekvast.javaagent.AspectjMessageHandler;
 import io.codekvast.javaagent.config.AgentConfig;
@@ -37,108 +32,50 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class JavaAgentIntegrationTest {
 
-  @RequiredArgsConstructor
-  enum AgentState {
-    NO_CONFIG(false),
-    NOT_FOUND_CONFIG(false),
-    DISABLED_IN_CONFIG(false),
-    ENABLED_IN_CONFIG_BUT_DISABLED_IN_SERVER(true),
-    ENABLED_IN_CONFIG_AND_ENABLED_IN_SERVER(true);
-
-    final boolean shouldStart;
-  }
-
-  @RequiredArgsConstructor
-  private static class TestConfig {
-    private final String javaVersion;
-    private final AgentState agentState;
-
-    @Override
-    public String toString() {
-      return "JVM=" + javaVersion + ", agentState=" + agentState;
-    }
-  }
-
-  private static final String jacocoAgent = System.getProperty("integrationTest.jacocoAgent");
-  private static final String codekvastAgent = System.getProperty("integrationTest.codekvastAgent");
+  private static final String jacocoAgentPath = System.getProperty("integrationTest.jacocoAgent");
+  private static final String codekvastAgentPath =
+      System.getProperty("integrationTest.codekvastAgent");
   private static final String classpath = System.getProperty("integrationTest.classpath");
-  private static final String javaVersions = System.getProperty("integrationTest.javaVersions");
-
-  @ClassRule
-  public static WireMockRule wireMockRule =
-      new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
-
+  private static final String javaVersionsString =
+      System.getProperty("integrationTest.javaVersions");
   private static final Gson gson = new Gson();
+  private static WireMockServer wireMockServer;
 
-  @Parameterized.Parameters(name = "{0}")
-  public static List<TestConfig> testParameters() {
-    List<TestConfig> result = new ArrayList<>();
-    for (String version : javaVersions.split(",")) {
-      String v = version.trim();
-      if (v.startsWith("8")) {
-        // Test missing config and disabled by config only once.
-        // We only need to test this once, since CodekvastAgent.premain() will exit immediately
-        // before any Java version-specific code is executed.
-        result.add(new TestConfig(v, NO_CONFIG));
-        result.add(new TestConfig(v, NOT_FOUND_CONFIG));
-        result.add(new TestConfig(v, DISABLED_IN_CONFIG));
-        result.add(new TestConfig(v, ENABLED_IN_CONFIG_BUT_DISABLED_IN_SERVER));
-      }
-      // Test weaving and uploading for all versions
-      result.add(new TestConfig(v, ENABLED_IN_CONFIG_AND_ENABLED_IN_SERVER));
-    }
-    return result;
+  @BeforeAll
+  public static void beforeAll() {
+    assertNotNull(jacocoAgentPath, "This test must be started from Gradle");
+    assertNotNull(codekvastAgentPath, "This test must be started from Gradle");
+    assertNotNull(classpath, "This test must be started from Gradle");
+    assertNotNull(javaVersionsString, "This test must be started from Gradle");
+
+    wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
+    wireMockServer.start();
+    WireMock.configureFor(wireMockServer.port());
   }
 
-  // Is injected from testParameters()
-  private final TestConfig testConfig;
-
-  private File agentConfigFile;
-
-  @Before
-  public void beforeTest() throws Exception {
-    assertThat(jacocoAgent, notNullValue());
-    assertThat(codekvastAgent, notNullValue());
-    assertThat(classpath, notNullValue());
-    assertThat(javaVersions, notNullValue());
-
-    AgentConfig agentConfig =
-        AgentConfigFactory.createTemplateConfig().toBuilder()
-            .serverUrl("http://localhost:" + wireMockRule.port())
-            .appName("SampleApp")
-            .appVersion("literal 1.0")
-            .aspectjOptions("-verbose -showWeaveInfo")
-            .enabled(testConfig.agentState.shouldStart)
-            .packages("sample")
-            .methodVisibility("protected")
-            .excludePackages("sample.app.excluded")
-            .codeBase("build/classes/java/integrationTest")
-            .bridgeAspectjMessagesToJUL(true)
-            .schedulerInitialDelayMillis(0)
-            .schedulerIntervalMillis(100)
-            .build();
-    agentConfigFile = FileUtils.serializeToFile(agentConfig, "codekvast", ".conf.ser");
-    agentConfigFile.deleteOnExit();
+  @AfterAll
+  public static void afterAll() {
+    wireMockServer.shutdown();
   }
 
   @Test
   public void should_not_start_when_no_config() throws Exception {
-    assumeTrue(testConfig.agentState == NO_CONFIG);
-
     // given
-    List<String> command = buildJavaCommand(null);
+    List<String> command = buildJavaCommand(getLowestJavaVersion(), null);
 
     // when
     String stdout = executeCommand(command);
@@ -150,10 +87,8 @@ public class JavaAgentIntegrationTest {
 
   @Test
   public void should_not_start_when_not_found_config() throws Exception {
-    assumeTrue(testConfig.agentState == NOT_FOUND_CONFIG);
-
     // given
-    List<String> command = buildJavaCommand("foobar");
+    List<String> command = buildJavaCommand(getLowestJavaVersion(), "foobar");
 
     // when
     String stdout = executeCommand(command);
@@ -169,10 +104,9 @@ public class JavaAgentIntegrationTest {
 
   @Test
   public void should_not_start_when_disabled_in_config() throws Exception {
-    assumeTrue(testConfig.agentState == DISABLED_IN_CONFIG);
-
     // given
-    List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
+    List<String> command =
+        buildJavaCommand(getLowestJavaVersion(), createAgentConfigFile(false).getAbsolutePath());
 
     // when
     String stdout = executeCommand(command);
@@ -182,12 +116,12 @@ public class JavaAgentIntegrationTest {
     assertSampleAppOutput(stdout);
   }
 
-  @Test
-  public void should_weave_and_call_server() throws Exception {
-    assumeTrue(testConfig.agentState.shouldStart);
-
+  @ParameterizedTest(
+      name = "should weave and call server when Java version is {0} and enabled is {1}")
+  @MethodSource("testConfigurations")
+  public void should_weave_and_call_server(String javaVersion, boolean enabledByServer)
+      throws Exception {
     // given
-    boolean enabledByServer = testConfig.agentState == ENABLED_IN_CONFIG_AND_ENABLED_IN_SERVER;
 
     givenThat(
         post(V2_POLL_CONFIG)
@@ -211,7 +145,9 @@ public class JavaAgentIntegrationTest {
     givenThat(post(V3_UPLOAD_CODEBASE).willReturn(ok()));
     givenThat(post(V2_UPLOAD_INVOCATION_DATA).willReturn(ok()));
 
-    List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
+    File agentConfigFile = createAgentConfigFile(true);
+
+    List<String> command = buildJavaCommand(javaVersion, agentConfigFile.getAbsolutePath());
 
     // when
     String stdout = executeCommand(command);
@@ -253,7 +189,7 @@ public class JavaAgentIntegrationTest {
     assertThat(stdout, containsString("Codekvast shutdown completed in "));
     assertThat(stdout, not(containsString("error")));
     assertThat(stdout, not(containsString("[SEVERE]")));
-    if (atLeastJava9()) {
+    if (atLeastJava9(javaVersion)) {
       assertThat(
           stdout,
           containsString(
@@ -267,6 +203,32 @@ public class JavaAgentIntegrationTest {
       verify(postRequestedFor(urlEqualTo(V3_UPLOAD_CODEBASE)));
       verify(postRequestedFor(urlEqualTo(V2_UPLOAD_INVOCATION_DATA)));
     }
+  }
+
+  private static List<String> getJavaVersions() {
+    return Arrays.stream(javaVersionsString.split(","))
+        .map(String::trim)
+        .collect(Collectors.toList());
+  }
+
+  private static String getLowestJavaVersion() {
+    List<String> versions = getJavaVersions();
+    return versions.get(versions.size() - 1);
+  }
+
+  private static String getHighestJavaVersion() {
+    List<String> versions = getJavaVersions();
+    return versions.get(0);
+  }
+
+  public static List<Arguments> testConfigurations() {
+    List<Arguments> result = new ArrayList<>();
+    result.add(Arguments.of(getHighestJavaVersion(), false));
+    for (String v : getJavaVersions()) {
+      result.add(Arguments.of(v, true));
+    }
+    result.add(Arguments.of(getLowestJavaVersion(), false));
+    return result;
   }
 
   private void assertSampleAppOutput(String stdout) {
@@ -284,26 +246,44 @@ public class JavaAgentIntegrationTest {
     assertThat(stdout, containsString("[INFO] sample.app.SampleApp - Exit"));
   }
 
-  private boolean atLeastJava9() {
-    String v = testConfig.javaVersion;
-    return !v.startsWith("8");
+  private File createAgentConfigFile(boolean enabled) throws Exception {
+    AgentConfig agentConfig =
+        AgentConfigFactory.createTemplateConfig().toBuilder()
+            .serverUrl("http://localhost:" + wireMockServer.port())
+            .appName("SampleApp")
+            .appVersion("literal 1.0")
+            .aspectjOptions("-verbose -showWeaveInfo")
+            .enabled(enabled)
+            .packages("sample")
+            .methodVisibility("protected")
+            .excludePackages("sample.app.excluded")
+            .codeBase("build/classes/java/integrationTest")
+            .bridgeAspectjMessagesToJUL(true)
+            .schedulerInitialDelayMillis(0)
+            .schedulerIntervalMillis(100)
+            .build();
+    File agentConfigFile = FileUtils.serializeToFile(agentConfig, "codekvast", ".conf.ser");
+    agentConfigFile.deleteOnExit();
+    return agentConfigFile;
   }
 
-  private List<String> buildJavaCommand(String configPath) {
+  private boolean atLeastJava9(String javaVersion) {
+    return !javaVersion.startsWith("8");
+  }
+
+  private List<String> buildJavaCommand(String javaVersion, String configPath) {
     String cp =
         classpath.endsWith(":") ? classpath.substring(0, classpath.length() - 2) : classpath;
 
     String java =
-        String.format(
-            "%s/.sdkman/candidates/java/%s/bin/java",
-            System.getenv("HOME"), testConfig.javaVersion);
+        String.format("%s/.sdkman/candidates/java/%s/bin/java", System.getenv("HOME"), javaVersion);
 
     List<String> command =
         new ArrayList<>(
             Arrays.asList(
                 java,
                 // TODO: Make integration test work with JaCoCo: "-javaagent:" + jacocoAgent,
-                "-javaagent:" + codekvastAgent,
+                "-javaagent:" + codekvastAgentPath,
                 "-cp",
                 cp,
                 "-Djava.util.logging.config.file=src/integrationTest/resources/logging.properties",
