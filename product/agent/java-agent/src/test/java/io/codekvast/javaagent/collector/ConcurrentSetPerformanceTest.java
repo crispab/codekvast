@@ -64,24 +64,19 @@ public class ConcurrentSetPerformanceTest {
   static class BlockingQueueStrategy implements Strategy {
     private final Set<String> set = new HashSet<>();
     private BlockingQueue<String> queue;
-    private Thread consumer;
 
     @Override
     public void initialize(int numThreads) {
       queue = new LinkedBlockingQueue<>(); // new ArrayBlockingQueue<String>(numThreads);
-      consumer =
+      Thread consumer =
           new Thread(
-              new Runnable() {
-
-                @Override
-                public void run() {
-                  while (true) {
-                    try {
-                      set.add(queue.take());
-                    } catch (InterruptedException e) {
-                      e.printStackTrace();
-                      break;
-                    }
+              () -> {
+                while (true) {
+                  try {
+                    set.add(queue.take());
+                  } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
                   }
                 }
               });
@@ -112,8 +107,7 @@ public class ConcurrentSetPerformanceTest {
 
   @SuppressWarnings("unused")
   static class AtomicReferenceWrappedRegularHashSet implements Strategy {
-    private final AtomicReference<Set<String>> ref =
-        new AtomicReference<Set<String>>(new HashSet<String>());
+    private final AtomicReference<Set<String>> ref = new AtomicReference<>(new HashSet<>());
     private int numThreads;
 
     @Override
@@ -182,7 +176,7 @@ public class ConcurrentSetPerformanceTest {
     public void initialize(int numThreads) {
       set =
           Collections.newSetFromMap(
-              new ConcurrentHashMap<String, Boolean>(NUM_DIFFERENT_STRINGS, 0.9f, numThreads));
+              new ConcurrentHashMap<>(NUM_DIFFERENT_STRINGS, 0.9f, numThreads));
     }
 
     @Override
@@ -224,7 +218,7 @@ public class ConcurrentSetPerformanceTest {
     }
   }
 
-  private static final Strategy STRATEGIES[] = {
+  private static final Strategy[] STRATEGIES = {
     // new AtomicReferenceWrappedRegularHashSet(),
     new ConcurrentSkipListStrategy(),
     new SetFromConcurrentHashMapStrategy(),
@@ -234,11 +228,11 @@ public class ConcurrentSetPerformanceTest {
 
   private static final Random RANDOM = new Random();
 
-  private static final String RANDOM_STRINGS[] =
+  private static final String[] RANDOM_STRINGS =
       generateRandomStrings(NUM_DIFFERENT_STRINGS, AVG_STRING_LENGTH);
 
   private static String[] generateRandomStrings(int numStrings, int avgLength) {
-    String strings[] = new String[numStrings];
+    String[] strings = new String[numStrings];
     for (int i = 0; i < strings.length; i++) {
       strings[i] = createRandomString(avgLength);
     }
@@ -260,8 +254,8 @@ public class ConcurrentSetPerformanceTest {
   @Builder
   @EqualsAndHashCode(of = "strategy")
   static class Result implements Comparable<Result> {
-    private final Long elapsedMillis;
-    private final String strategy;
+    Long elapsedMillis;
+    String strategy;
 
     String getMessage() {
       return String.format("%4d ms: %s", elapsedMillis, strategy);
@@ -339,7 +333,7 @@ public class ConcurrentSetPerformanceTest {
   }
 
   @After
-  public void afterTest() throws Exception {
+  public void afterTest() {
     System.out.printf("%d threads:%n", numThreads);
     System.out.println("-------------");
 
@@ -396,20 +390,17 @@ public class ConcurrentSetPerformanceTest {
     for (int i = 0; i < numThreads; i++) {
       final Thread t =
           new Thread(
-              new Runnable() {
-                @Override
-                public void run() {
-                  try {
-                    // Maximize lock contention...
-                    startingLine.await();
+              () -> {
+                try {
+                  // Maximize lock contention...
+                  startingLine.await();
 
-                    for (String s : RANDOM_STRINGS) {
-                      strategy.add(s);
-                    }
-                  } catch (InterruptedException ignored) {
-                  } finally {
-                    allThreadsFinished.countDown();
+                  for (String s : RANDOM_STRINGS) {
+                    strategy.add(s);
                   }
+                } catch (InterruptedException ignored) {
+                } finally {
+                  allThreadsFinished.countDown();
                 }
               });
       t.start();
