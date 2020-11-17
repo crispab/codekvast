@@ -20,7 +20,7 @@
       - name:               backoffice
         cnames:
           - backoffice
-        count:
+        replicas:
           staging: 1
           prod:    2
         db_connections: 2
@@ -36,10 +36,10 @@
         cnames:
           - api
           - dashboard
-        count:
+        replicas:
           staging: 1
           prod:    2
-        db_connections: 10
+        db_connections: 8
         stickiness_enabled: false
         volumes:
           - name: intake
@@ -54,7 +54,7 @@
       - name:               login
         cnames:
           - login
-        count:
+        replicas:
           staging: 1
           prod:    2
         db_connections: 2
@@ -366,7 +366,7 @@
         profile:                           codekvast
         region:                            "{{ aws_region }}"
         cluster:                           "codekvast-{{ env }}"
-        desired_count:                     "{{ item.count[env] }}"
+        desired_count:                     "{{ item.replicas[env] }}"
         launch_type:                       FARGATE
         task_definition:                   "codekvast-{{ item.name }}"
         load_balancers:
