@@ -30,3 +30,10 @@ GET http://{{server1}}.codekvast.io:9082/management/lbhealth
 Accept: application/json
 
 ###
+GET http://localhost:9082/management/health
+Accept: application/json
+
+###
+GET http://localhost:9082/management/metrics
+Accept: application/json
+

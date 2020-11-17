@@ -6,6 +6,7 @@
 2. Upgraded to Kotlin 1.4.10, Spring Boot 2.4
 3. Upgraded some dependencies
 4. Bug fixes
+5. dbHealthIndicator now runs in a separate connection pool
 
 ## 1.4.0
 

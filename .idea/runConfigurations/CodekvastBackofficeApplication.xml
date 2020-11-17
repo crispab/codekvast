@@ -19,7 +19,6 @@
         <option name="value" value="build/codekvast-backoffice.log" />
       </param>
       <param>
-        <option name="enabled" value="true" />
         <option name="name" value="logging.level.root" />
         <option name="value" value="debug" />
       </param>
