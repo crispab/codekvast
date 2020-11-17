@@ -52,7 +52,7 @@ public class CodeBasePublication3 implements Serializable {
   @Override
   public String toString() {
     return String.format(
-        "%s(commonData=%s, entries.size()=%d)",
+        "%s(commonData=%s, entries.size=%d)",
         this.getClass().getSimpleName(), commonData, entries.size());
   }
 }

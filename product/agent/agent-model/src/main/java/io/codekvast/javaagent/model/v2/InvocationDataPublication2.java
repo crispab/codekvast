@@ -55,7 +55,7 @@ public class InvocationDataPublication2 implements Serializable {
   @Override
   public String toString() {
     return String.format(
-        "InvocationDataPublication{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
+        "InvocationDataPublication{commonData=%1$s, invocations.size=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
         commonData, invocations.size(), recordingIntervalStartedAtMillis);
   }
 }
