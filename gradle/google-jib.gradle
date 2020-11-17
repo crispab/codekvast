@@ -3,19 +3,19 @@ apply plugin: 'com.google.cloud.tools.jib'
 ext.jibExtraDirectories = ['build/jib-extra']
 
 task jibCreateAgentProperties {
-  group "jib"
-  description "Creates a codekvast-agent.properties for use in Docker"
+    group "jib"
+    description "Creates a codekvast-agent.properties for use in Docker"
 
-  def configFile = file("build/jib-extra/app/codekvast-agent.properties")
+    def configFile = file("build/jib-extra/app/codekvast-agent.properties")
 
-  inputs.property("codekvastVersion", codekvastDisplayVersion)
-  inputs.file file("$rootDir/deploy/playbooks/vars/secrets.yml")
+    inputs.property("codekvastVersion", codekvastDisplayVersion)
+    inputs.file file("$rootDir/deploy/playbooks/vars/secrets.yml")
 
-  outputs.file configFile
+    outputs.file configFile
 
-  doLast {
-    configFile.parentFile.mkdirs()
-    configFile.text = """
+    doLast {
+        configFile.parentFile.mkdirs()
+        configFile.text = """
 appName = ${archivesBaseName} 
 appVersion = literal ${codekvastDisplayVersion}
 codeBase = /app/classes, /app/libs 
@@ -27,53 +27,54 @@ methodVisibility = all
 packages = io.codekvast
 serverUrl = https://api.codekvast.io
 """
-  }
+    }
 }
 
 task jibFetchCodekvastJavaAgent(type: Sync) {
-  from tasks.getByPath(":product:agent:java-agent:shadowJar").outputs.files
-  into "build/jib-extra/app/agent"
+    from tasks.getByPath(":product:agent:java-agent:shadowJar").outputs.files
+    into "build/jib-extra/app/agent"
 }
 
 jib {
-  from {
-    image = "azul/zulu-openjdk-alpine:${getOpenJdkVersion()}"
-  }
-  to {
-    image = "${getAwsAccount()}.dkr.ecr.eu-central-1.amazonaws.com/codekvast/${archivesBaseName}"
-    credHelper = 'ecr-login'
-    tags = [codekvastDisplayVersion, 'latest']
-  }
-  container {
-    jvmFlags = [
-      '-XX:+ExitOnOutOfMemoryError',
-      '-Dcodekvast.configuration=/app/codekvast-agent.properties',
-      "-javaagent:/app/agent/codekvast-javaagent-${codekvastVersion}.jar".toString(),
-      '-Dspring.devtools.restart.enabled=false'
-    ]
-    ports = ["8080", "9080"]
-  }
-  extraDirectories.paths = ['build/jib-extra']
+    from {
+        image = "azul/zulu-openjdk-alpine:${getOpenJdkVersion()}"
+    }
+    to {
+        image = "${getAwsAccount()}.dkr.ecr.eu-central-1.amazonaws.com/codekvast/${archivesBaseName}"
+        credHelper = 'ecr-login'
+        tags = [codekvastDisplayVersion, 'latest']
+    }
+    container {
+        jvmFlags = [
+                '-XX:+ExitOnOutOfMemoryError',
+                '-XX:+UseParallelGC',
+                '-Dcodekvast.configuration=/app/codekvast-agent.properties',
+                "-javaagent:/app/agent/codekvast-javaagent-${codekvastVersion}.jar".toString(),
+                '-Dspring.devtools.restart.enabled=false'
+        ]
+        ports = ["8080", "9080"]
+    }
+    extraDirectories.paths = ['build/jib-extra']
 }
 
 task jibCollectExtra {
-  group 'jib'
-  description 'Placeholder for collecting stuff into build/jib-extra'
+    group 'jib'
+    description 'Placeholder for collecting stuff into build/jib-extra'
 }
 
 tasks.jib.dependsOn jibCreateAgentProperties, jibFetchCodekvastJavaAgent, jibCollectExtra
 
 def getOpenJdkVersion() {
-  def gradle_properties = file("$rootDir/gradle.properties").text
-  def matcher = gradle_properties =~ ~/(?m)^sdkmanJavaDefault\s*[=:]\s*(.*)-zulu/
-  assert matcher.find() : "Did not find sdkmanJavaDefault in $rootDir/gradle.properties"
-  return matcher.group(1)
+    def gradle_properties = file("$rootDir/gradle.properties").text
+    def matcher = gradle_properties =~ ~/(?m)^sdkmanJavaDefault\s*[=:]\s*(.*)-zulu/
+    assert matcher.find(): "Did not find sdkmanJavaDefault in $rootDir/gradle.properties"
+    return matcher.group(1)
 }
 
 def getAwsAccount() {
-  return "yq read $rootDir/deploy/playbooks/vars/common.yml aws_account".execute().in.text.trim()
+    return "yq read $rootDir/deploy/playbooks/vars/common.yml aws_account".execute().in.text.trim()
 }
 
 def getCodekvastLicenseKey() {
-  return "yq read $rootDir/deploy/playbooks/vars/secrets.yml secrets.codekvast.agent.licenseKey".execute().in.text.trim()
+    return "yq read $rootDir/deploy/playbooks/vars/secrets.yml secrets.codekvast.agent.licenseKey".execute().in.text.trim()
 }
