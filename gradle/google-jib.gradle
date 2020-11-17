@@ -62,7 +62,7 @@ task jibCollectExtra {
     description 'Placeholder for collecting stuff into build/jib-extra'
 }
 
-tasks.jib.dependsOn jibCreateAgentProperties, jibFetchCodekvastJavaAgent, jibCollectExtra
+tasks.jib.dependsOn check, jibCreateAgentProperties, jibFetchCodekvastJavaAgent, jibCollectExtra
 
 def getOpenJdkVersion() {
     def gradle_properties = file("$rootDir/gradle.properties").text
