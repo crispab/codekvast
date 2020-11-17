@@ -51,7 +51,7 @@ public class LogAndSuppressRemoteClosedConnectionException extends GenericFilter
       chain.doFilter(req, res);
     } catch (NestedServletException e) {
       if (e.getMessage().contains("UT000128: Remote peer closed connection")) {
-        logger.warn("{}", e.getMessage());
+        logger.warn("{}. Request={}", e.getMessage(), req);
       } else {
         throw e;
       }
