@@ -47,7 +47,6 @@ jib {
     container {
         jvmFlags = [
                 '-XX:+ExitOnOutOfMemoryError',
-                '-XX:+UseParallelGC',
                 '-Dcodekvast.configuration=/app/codekvast-agent.properties',
                 "-javaagent:/app/agent/codekvast-javaagent-${codekvastVersion}.jar".toString(),
                 '-Dspring.devtools.restart.enabled=false'
