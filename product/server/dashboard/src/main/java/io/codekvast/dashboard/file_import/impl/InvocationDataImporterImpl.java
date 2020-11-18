@@ -59,7 +59,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
   private final Clock clock;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Restartable
   public boolean importPublication(InvocationDataPublication2 publication) {
     logger.debug("Importing {}", publication);

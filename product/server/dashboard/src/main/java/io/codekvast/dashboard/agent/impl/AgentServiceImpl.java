@@ -74,7 +74,7 @@ public class AgentServiceImpl implements AgentService {
   private final AgentMetricsService metricsService;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Restartable
   public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
     val environment = agentDAO.getEnvironmentName(request.getJvmUuid()).orElse(UNKNOWN_ENVIRONMENT);
@@ -83,7 +83,7 @@ public class AgentServiceImpl implements AgentService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Restartable
   public GetConfigResponse2 getConfig(GetConfigRequest2 request) throws LicenseViolationException {
     metricsService.countAgentPoll();

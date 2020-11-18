@@ -48,7 +48,7 @@ public abstract class AbstractCodekvastEventListener {
   private final Clock clock;
 
   @RabbitListener(queues = CODEKVAST_EVENT_QUEUE, ackMode = "AUTO")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void onMessage(Message message, @Payload CodekvastEvent event) throws Exception {
     logger.debug("Received {}", message);
     Instant startedAt = clock.instant();

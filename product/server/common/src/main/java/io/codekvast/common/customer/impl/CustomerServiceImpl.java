@@ -87,7 +87,7 @@ public class CustomerServiceImpl implements CustomerService {
   private final EventService eventService;
 
   @PostConstruct
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void ensurePricePlansExistInDatabase() {
     for (PricePlanDefaults pricePlanDefaults : PricePlanDefaults.values()) {
       int updated =
@@ -187,7 +187,7 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public CustomerData registerAgentPoll(CustomerData customerData, Instant polledAt) {
     CustomerData result = customerData;
     if (customerData.getCollectionStartedAt() == null) {
@@ -230,7 +230,7 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void registerLogin(LoginRequest request) {
     Timestamp now = new Timestamp(System.currentTimeMillis());
 
@@ -281,7 +281,7 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @CacheEvict(value = CUSTOMERS_CACHE, allEntries = true)
   public AddCustomerResponse addCustomer(AddCustomerRequest request) {
     Long newCustomerId = null;
@@ -328,7 +328,7 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @CacheEvict(value = CUSTOMERS_CACHE, allEntries = true)
   public void changePlanForExternalId(
       String source, @NonNull String externalId, @NonNull String newPlanName) {
@@ -393,7 +393,7 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @CacheEvict(value = CUSTOMERS_CACHE, allEntries = true)
   public void deleteCustomerByExternalId(@NonNull String source, String externalId) {
     CustomerData customerData = getCustomerDataByExternalId(source, externalId);
@@ -455,7 +455,7 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @CacheEvict(value = CUSTOMERS_CACHE, allEntries = true)
   public void updateAppDetails(String appName, String contactEmail, Long customerId) {
     int count =

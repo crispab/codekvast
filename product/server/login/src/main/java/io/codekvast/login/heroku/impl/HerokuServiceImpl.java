@@ -55,7 +55,7 @@ public class HerokuServiceImpl implements HerokuService {
   private final HerokuDetailsDAO herokuDetailsDAO;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException {
     logger.debug("Handling {}", request);
     try {
@@ -130,7 +130,7 @@ public class HerokuServiceImpl implements HerokuService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Secured(Roles.ADMIN)
   public String getAccessTokenFor(Long customerId) throws CipherException {
     String accessToken = herokuDetailsDAO.getAccessToken(customerId);

@@ -54,7 +54,7 @@ public class LoginServiceImpl implements LoginService {
   private final EventService eventService;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public URI getDashboardLaunchURI(Long customerId) {
     User user = getUserFromSecurityContext();
 

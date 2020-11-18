@@ -85,7 +85,7 @@ class RuleEngineImpl(
     return resourcePatternResolver.getResources("classpath*:$rulesPath**/*.*")
   }
 
-  @Transactional
+  @Transactional(rollbackFor = [Exception::class])
   override fun handle(event: CodekvastEvent) {
     val startedAt = clock.instant()
     val customerId = event.customerId

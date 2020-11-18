@@ -50,7 +50,7 @@ public class SyntheticSignatureDAO {
   }
 
   @CacheEvict(SYNTHETIC_SIGNATURE_PATTERNS_CACHE)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void rejectPattern(SyntheticSignaturePattern pattern, String errorMessage) {
     jdbcTemplate.update(
         "UPDATE synthetic_signature_patterns SET errorMessage = ? WHERE id = ? ",

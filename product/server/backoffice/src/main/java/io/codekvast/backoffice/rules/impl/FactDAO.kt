@@ -47,7 +47,7 @@ class FactDAO(private val jdbcTemplate: JdbcTemplate) {
   val logger: Logger = LoggerFactory.getLogger(this::class.java)
   private val gson = GsonBuilder().registerTypeAdapter(Instant::class.java, InstantTypeAdapter()).create()
 
-  @Transactional(propagation = Propagation.MANDATORY)
+  @Transactional(rollbackFor = [Exception::class], propagation = Propagation.MANDATORY)
   fun getFacts(customerId: Long): List<FactWrapper> {
 
     val rowMapper = RowMapper { rs, _ ->
@@ -73,7 +73,7 @@ class FactDAO(private val jdbcTemplate: JdbcTemplate) {
     return wrappers
   }
 
-  @Transactional(propagation = Propagation.MANDATORY)
+  @Transactional(rollbackFor = [Exception::class], propagation = Propagation.MANDATORY)
   fun addFact(customerId: Long, fact: PersistentFact): Long {
     val keyHolder: KeyHolder = GeneratedKeyHolder()
     val inserted = jdbcTemplate.update(
@@ -88,7 +88,7 @@ class FactDAO(private val jdbcTemplate: JdbcTemplate) {
     return factId
   }
 
-  @Transactional(propagation = Propagation.MANDATORY)
+  @Transactional(rollbackFor = [Exception::class], propagation = Propagation.MANDATORY)
   fun updateFact(customerId: Long, factId: Long, fact: PersistentFact) {
     val updated = jdbcTemplate.update(
       "UPDATE facts SET type = ?, data = ? WHERE id = ? AND customerId = ?",
@@ -98,7 +98,7 @@ class FactDAO(private val jdbcTemplate: JdbcTemplate) {
     }
   }
 
-  @Transactional(propagation = Propagation.MANDATORY)
+  @Transactional(rollbackFor = [Exception::class], propagation = Propagation.MANDATORY)
   fun removeFact(customerId: Long, factId: Long) {
     val deleted = jdbcTemplate.update(
       "DELETE FROM facts WHERE id = ? AND customerId = ?", factId, customerId)

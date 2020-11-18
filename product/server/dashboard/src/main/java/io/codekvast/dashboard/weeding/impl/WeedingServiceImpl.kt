@@ -52,7 +52,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
-    @Transactional
+    @Transactional(rollbackFor = [Exception::class])
     @Restartable
     override fun performDataWeeding() {
         val startedAt = clock.instant()
@@ -118,7 +118,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
 
     private fun countRows(table: String) = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM $table", Int::class.java)!!
 
-    @Transactional
+    @Transactional(rollbackFor = [Exception::class])
     @Restartable
     override fun findWeedingCandidates() {
         val startedAt = clock.instant()

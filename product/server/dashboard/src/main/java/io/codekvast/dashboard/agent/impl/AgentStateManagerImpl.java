@@ -60,7 +60,7 @@ public class AgentStateManagerImpl implements AgentStateManager {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @SneakyThrows
   public boolean updateAgentState(
       CustomerData customerData, String jvmUuid, String appName, String environment) {

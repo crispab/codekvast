@@ -113,7 +113,7 @@ public class SecurityServiceImpl implements SecurityService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public String createCodeForWebappToken(Long customerId, WebappCredentials credentials) {
     String token = tokenFactory.createWebappToken(customerId, credentials);
     String code = UUID.randomUUID().toString().replace("-", "").toLowerCase();
@@ -131,7 +131,7 @@ public class SecurityServiceImpl implements SecurityService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public String tradeCodeToWebappToken(String code) {
     String token;
     try {
@@ -155,7 +155,7 @@ public class SecurityServiceImpl implements SecurityService {
   }
 
   @Scheduled(initialDelay = 60_000L, fixedRate = 600_000L)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void removeExpiredTokenCodes() {
     new NamedThreadTemplate().doInNamedThread("Token Cleaner", this::doRemoveExpiredTokens);
@@ -205,7 +205,7 @@ public class SecurityServiceImpl implements SecurityService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public String doHerokuSingleSignOn(
       String token, String externalId, String email, long timestampSeconds, String salt)
       throws AuthenticationException {

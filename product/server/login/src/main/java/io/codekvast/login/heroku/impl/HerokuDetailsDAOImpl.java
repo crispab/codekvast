@@ -57,7 +57,7 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void saveTokens(
       HerokuOAuthTokenResponse tokenResponse, String callbackUrl, String licenseKey)
       throws CipherException {
@@ -138,7 +138,7 @@ public class HerokuDetailsDAOImpl implements HerokuDetailsDAO {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void updateAccessToken(Long customerId, String accessToken, Instant expiresAt)
       throws CipherException {
     logger.debug("Saving Heroku accessToken for customer {}, expiresAt {}", customerId, expiresAt);

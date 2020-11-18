@@ -67,8 +67,7 @@ public class AgentDAOImpl implements AgentDAO {
     int updated =
         jdbcTemplate.update(
             "UPDATE agent_state SET garbage = TRUE "
-                + "WHERE customerId = ? AND jvmUuid != ? AND garbage = FALSE AND nextPollExpectedAt < ? "
-                + "ORDER BY customerId, jvmUuid ",
+                + "WHERE customerId = ? AND jvmUuid != ? AND garbage = FALSE AND nextPollExpectedAt < ? ",
             customerId,
             thisJvmUuid,
             Timestamp.from(nextPollExpectedBefore));
@@ -86,8 +85,7 @@ public class AgentDAOImpl implements AgentDAO {
 
     int updated =
         jdbcTemplate.update(
-            "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = FALSE WHERE customerId = ? AND jvmUuid = ? "
-                + "ORDER BY customerId, jvmUuid",
+            "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = FALSE WHERE customerId = ? AND jvmUuid = ? ",
             thisPollAtTimestamp,
             nextExpectedPollTimestamp,
             customerId,
