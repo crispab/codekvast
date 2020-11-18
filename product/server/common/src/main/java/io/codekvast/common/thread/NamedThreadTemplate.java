@@ -32,14 +32,14 @@ import lombok.NonNull;
 public class NamedThreadTemplate {
 
   /**
-   * Executes a task with a certain name on the thread and a new CorrelationId.
+   * Executes a task with a certain name suffix on the thread and a new CorrelationId.
    *
-   * @param threadName The thread name to set
+   * @param threadNameSuffix The suffix to append to the thread name
    * @param task The task to execute
    */
-  public void doInNamedThread(@NonNull String threadName, Runnable task) {
+  public void doInNamedThread(@NonNull String threadNameSuffix, Runnable task) {
     String oldThreadName = Thread.currentThread().getName();
-    Thread.currentThread().setName("Codekvast " + threadName);
+    Thread.currentThread().setName(oldThreadName + "-" + threadNameSuffix);
     CorrelationIdHolder.generateAndSetNew();
     try {
       task.run();
