@@ -61,46 +61,59 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
   @Override
   @Transactional(rollbackFor = Exception.class)
   @Restartable
-  public boolean importPublication(InvocationDataPublication2 publication) {
+  public boolean importPublication(InvocationDataPublication2 publication) throws Exception {
     logger.debug("Importing {}", publication);
-    Instant startedAt = clock.instant();
+
     CommonPublicationData2 data = publication.getCommonData();
 
     Set<String> invocations =
         publication.getInvocations().stream()
             .filter(i -> !syntheticSignatureService.isSyntheticMethod(i))
             .collect(Collectors.toSet());
+
     int ignoredSyntheticSignatures = publication.getInvocations().size() - invocations.size();
 
-    lockTemplate.doWithLock(
-        Lock.forCustomer(data.getCustomerId()),
-        () -> {
-          ImportContext importContext = commonImporter.importCommonData(data);
-          Instant trialPeriodEndsAt =
-              importDAO.importInvocations(
-                  importContext, publication.getRecordingIntervalStartedAtMillis(), invocations);
-          eventService.send(
-              InvocationDataReceivedEvent.builder()
-                  .customerId(data.getCustomerId())
-                  .appName(data.getAppName())
-                  .appVersion(data.getAppVersion())
-                  .agentVersion(data.getAgentVersion())
-                  .environment(data.getEnvironment())
-                  .hostname(data.getHostname())
-                  .size(invocations.size())
-                  .receivedAt(Instant.ofEpochMilli(data.getPublishedAtMillis()))
-                  .trialPeriodEndsAt(trialPeriodEndsAt)
-                  .build());
-        });
+    Duration duration =
+        lockTemplate.doWithLockOrThrow(
+            Lock.forCustomer(data.getCustomerId()),
+            () ->
+                doImportInvocations(
+                    publication.getRecordingIntervalStartedAtMillis(), data, invocations));
 
-    Duration duration = Duration.between(startedAt, clock.instant());
     logger.info(
         "Imported {} in {} (ignoring {} synthetic signatures)",
         publication,
         humanReadableDuration(duration),
         ignoredSyntheticSignatures);
+
     metricsService.recordImportedPublication(
         PublicationType.INVOCATIONS, invocations.size(), ignoredSyntheticSignatures, duration);
+
     return true;
+  }
+
+  private Duration doImportInvocations(
+      long recordingIntervalStartedAtMillis, CommonPublicationData2 data, Set<String> invocations) {
+    Instant startedAt = clock.instant();
+
+    ImportContext importContext = commonImporter.importCommonData(data);
+
+    Instant trialPeriodEndsAt =
+        importDAO.importInvocations(importContext, recordingIntervalStartedAtMillis, invocations);
+
+    eventService.send(
+        InvocationDataReceivedEvent.builder()
+            .customerId(data.getCustomerId())
+            .appName(data.getAppName())
+            .appVersion(data.getAppVersion())
+            .agentVersion(data.getAgentVersion())
+            .environment(data.getEnvironment())
+            .hostname(data.getHostname())
+            .size(invocations.size())
+            .receivedAt(Instant.ofEpochMilli(data.getPublishedAtMillis()))
+            .trialPeriodEndsAt(trialPeriodEndsAt)
+            .build());
+
+    return Duration.between(startedAt, clock.instant());
   }
 }

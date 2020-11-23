@@ -1,6 +1,7 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import static java.util.Arrays.asList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +42,7 @@ public class CodeBaseImporterImplTest {
   }
 
   @Test
-  public void should_ignore_synthetic_signatures() {
+  public void should_ignore_synthetic_signatures() throws Exception {
     // given
     String syntheticSignature =
         "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)";
@@ -57,11 +58,13 @@ public class CodeBaseImporterImplTest {
             .build();
 
     when(syntheticSignatureService.isSyntheticMethod(syntheticSignature)).thenReturn(true);
+    when(lockTemplate.doWithLockOrThrow(any(), any())).thenReturn(Duration.ofSeconds(1));
 
     // when
     codeBaseImporter.importPublication(publication);
 
     // then
-    verify(metricsService).recordImportedPublication(PublicationType.CODEBASE, 1, 1, Duration.ZERO);
+    verify(metricsService)
+        .recordImportedPublication(PublicationType.CODEBASE, 1, 1, Duration.ofSeconds(1));
   }
 }

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.lock.LockTemplate;
+import io.codekvast.common.lock.LockTimeoutException;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
@@ -76,7 +77,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_import_CodeBasePublication3() throws URISyntaxException {
+  public void should_import_CodeBasePublication3() throws Exception {
     // given
     File file = new File(getClass().getResource("/sample-publications/codebase-v2.ser").toURI());
     when(codeBaseImporter.importPublication(any(CodeBasePublication3.class))).thenReturn(true);
@@ -93,8 +94,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_reject_CodeBasePublication3_when_DuplicateKeyException()
-      throws URISyntaxException {
+  public void should_retry_CodeBasePublication3_when_DuplicateKeyException() throws Exception {
     // given
     File file = new File(getClass().getResource("/sample-publications/codebase-v2.ser").toURI());
     when(codeBaseImporter.importPublication(any(CodeBasePublication3.class)))
@@ -131,7 +131,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_import_InvocationDataPublication2() throws URISyntaxException {
+  public void should_import_InvocationDataPublication2() throws Exception {
     // given
     File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
     when(invocationDataImporter.importPublication(any(InvocationDataPublication2.class)))
@@ -162,12 +162,29 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_reject_InvocationDataPublication2_when_DuplicateKeyException()
-      throws URISyntaxException {
+  public void should_retry_InvocationDataPublication2_when_DuplicateKeyException()
+      throws Exception {
     // given
     File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
     when(invocationDataImporter.importPublication(any(InvocationDataPublication2.class)))
         .thenThrow(new DuplicateKeyException("Thrown by mock"));
+
+    // when
+    boolean handled = publicationImporter.importPublicationFile(file);
+
+    // then
+    assertThat(handled, is(false));
+    verify(invocationDataImporter).importPublication(any(InvocationDataPublication2.class));
+    verify(validator).validate(any());
+    verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator);
+  }
+
+  @Test
+  public void should_retry_InvocationDataPublication2_when_LockTimeoutException() throws Exception {
+    // given
+    File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
+    when(invocationDataImporter.importPublication(any(InvocationDataPublication2.class)))
+        .thenThrow(new LockTimeoutException("Thrown by mock"));
 
     // when
     boolean handled = publicationImporter.importPublicationFile(file);

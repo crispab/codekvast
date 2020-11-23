@@ -92,12 +92,6 @@ public class AgentMetricsServiceImpl implements AgentMetricsService {
   }
 
   @Override
-  public void countRejectedPublication(PublicationType type) {
-    Tags tags = getTags(type);
-    meterRegistry.counter("codekvast.publication.rejected", tags).increment();
-  }
-
-  @Override
   public void recordImportedPublication(
       PublicationType type, int logicalSize, int ignoredSyntheticSignatures, Duration duration) {
     Tags tags = getTags(type);

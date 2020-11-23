@@ -53,9 +53,6 @@ public interface AgentMetricsService {
    */
   void gaugePhysicalPublicationSize(PublicationType type, long sizeInBytes);
 
-  /** Count the fact that a publication was rejected. */
-  void countRejectedPublication(PublicationType type);
-
   /**
    * Record the fact that a publication was imported.
    *

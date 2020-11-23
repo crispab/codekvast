@@ -61,9 +61,8 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
   @Override
   @Transactional(rollbackFor = Exception.class)
   @Restartable
-  public boolean importPublication(CodeBasePublication3 publication) {
+  public boolean importPublication(CodeBasePublication3 publication) throws Exception {
     logger.debug("Importing {}", publication);
-    Instant startedAt = clock.instant();
     CommonPublicationData2 data = publication.getCommonData();
 
     Collection<CodeBaseEntry3> entries =
@@ -72,34 +71,40 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
             .collect(Collectors.toList());
     int ignoredSyntheticSignatures = publication.getEntries().size() - entries.size();
 
-    lockTemplate.doWithLock(
-        Lock.forCustomer(data.getCustomerId()),
-        () -> {
-          CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
-          Instant trialPeriodEndsAt = importDAO.importMethods(data, importContext, entries);
+    Duration duration =
+        lockTemplate.doWithLockOrThrow(
+            Lock.forCustomer(data.getCustomerId()), () -> doImportCodeBase(data, entries));
 
-          eventService.send(
-              CodeBaseReceivedEvent.builder()
-                  .customerId(data.getCustomerId())
-                  .appName(data.getAppName())
-                  .appVersion(data.getAppVersion())
-                  .agentVersion(data.getAgentVersion())
-                  .environment(data.getEnvironment())
-                  .hostname(data.getHostname())
-                  .size(entries.size())
-                  .receivedAt(Instant.ofEpochMilli(data.getPublishedAtMillis()))
-                  .trialPeriodEndsAt(trialPeriodEndsAt)
-                  .build());
-        });
-
-    Duration duration = Duration.between(startedAt, clock.instant());
     logger.info(
         "Imported {} in {} (ignoring {} synthetic signatures)",
         publication,
         humanReadableDuration(duration),
         ignoredSyntheticSignatures);
+
     metricsService.recordImportedPublication(
         PublicationType.CODEBASE, entries.size(), ignoredSyntheticSignatures, duration);
     return true;
+  }
+
+  private Duration doImportCodeBase(
+      CommonPublicationData2 data, Collection<CodeBaseEntry3> entries) {
+    Instant startedAt = clock.instant();
+
+    CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
+    Instant trialPeriodEndsAt = importDAO.importMethods(data, importContext, entries);
+
+    eventService.send(
+        CodeBaseReceivedEvent.builder()
+            .customerId(data.getCustomerId())
+            .appName(data.getAppName())
+            .appVersion(data.getAppVersion())
+            .agentVersion(data.getAgentVersion())
+            .environment(data.getEnvironment())
+            .hostname(data.getHostname())
+            .size(entries.size())
+            .receivedAt(Instant.ofEpochMilli(data.getPublishedAtMillis()))
+            .trialPeriodEndsAt(trialPeriodEndsAt)
+            .build());
+    return Duration.between(startedAt, clock.instant());
   }
 }

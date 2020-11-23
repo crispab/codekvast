@@ -33,5 +33,5 @@ public interface InvocationDataImporter {
    * @return true iff the publication was handled.
    */
   @SuppressWarnings("SameReturnValue")
-  boolean importPublication(InvocationDataPublication2 publication);
+  boolean importPublication(InvocationDataPublication2 publication) throws Exception;
 }

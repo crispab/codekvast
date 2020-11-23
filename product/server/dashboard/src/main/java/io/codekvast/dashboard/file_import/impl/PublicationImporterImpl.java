@@ -24,13 +24,13 @@ package io.codekvast.dashboard.file_import.impl;
 import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockTemplate;
+import io.codekvast.common.lock.LockTimeoutException;
 import io.codekvast.common.messaging.CorrelationIdHolder;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
 import io.codekvast.dashboard.metrics.AgentMetricsService;
-import io.codekvast.dashboard.model.PublicationType;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
@@ -88,7 +88,7 @@ public class PublicationImporterImpl implements PublicationImporter {
     logger.info("Processing {}", file.getName());
     boolean handled;
     CorrelationIdHolder.set(agentService.getCorrelationIdFromPublicationFile(file));
-    PublicationType publicationType = agentService.getPublicationTypeFromPublicationFile(file);
+
     try (ObjectInputStream ois =
         new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 
@@ -100,6 +100,10 @@ public class PublicationImporterImpl implements PublicationImporter {
           System.currentTimeMillis() - startedAt);
 
       handled = !isValidObject(object) || handlePublication(object);
+    } catch (LockTimeoutException | DataAccessException e) {
+      // A new attempt to process the file should be made in a new transaction.
+      logger.warn("Could not import {}: {}. Will try again.", file, e.toString());
+      handled = false;
     } catch (InvalidClassException e) {
       // An incompatible publication file was lying in the queue.
       // The publication data is lost.
@@ -111,26 +115,19 @@ public class PublicationImporterImpl implements PublicationImporter {
       // The agent will keep retrying uploading new publication files.
       logger.warn("Ignoring {}: {}", file, e.toString());
       handled = true;
-    } catch (DataAccessException e) {
-      // A new attempt to process the file should be made in a new transaction.
-      logger.warn("Could not import {}: {}. Will try again.", file, e.toString());
-      handled = false;
     } catch (Exception e) {
       // A new attempt to process the file should be made.
       // Perhaps after deploying a new version of the service.
-      logger.error("Cannot import " + file + ". Will try again.", e);
+      logger.error("Could not import " + file + ". Will try again.", e);
       handled = false;
     } finally {
       CorrelationIdHolder.clear();
     }
-    if (!handled) {
-      metricsService.countRejectedPublication(publicationType);
-    }
     return handled;
   }
 
-  @SneakyThrows
-  private boolean handlePublication(Object object) {
+  @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks"})
+  private boolean handlePublication(Object object) throws Exception {
     if (object instanceof CodeBasePublication2) {
       return codeBaseImporter.importPublication(
           toCodeBasePublication3((CodeBasePublication2) object));

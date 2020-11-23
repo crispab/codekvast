@@ -501,7 +501,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_codeBasePublication3() {
+  public void should_import_codeBasePublication3() throws Exception {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -548,8 +548,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_codeBasePublication3_twice_with_one_method_removed()
-      throws InterruptedException {
+  public void should_import_codeBasePublication3_twice_with_one_method_removed() throws Exception {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -605,7 +604,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_codeBasePublication3_with_too_long_signature_entry() {
+  public void should_import_codeBasePublication3_with_too_long_signature_entry() throws Exception {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -675,7 +674,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_invocationDataPublication_then_codeBasePublication() {
+  public void should_import_invocationDataPublication_then_codeBasePublication() throws Exception {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -765,7 +764,8 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_codeBasePublication_then_invocationDataPublication_twice() {
+  public void should_import_codeBasePublication_then_invocationDataPublication_twice()
+      throws Exception {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -872,7 +872,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_invocationDataPublication() {
+  public void should_import_invocationDataPublication() throws Exception {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));

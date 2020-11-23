@@ -40,6 +40,7 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -78,9 +79,7 @@ public class FileImportTask {
   private void processQueue() {
     List<File> queue =
         lockTemplate.doWithLock(
-            Lock.forTask("fileImport", 10),
-            () -> collectFiles(settings.getFileImportQueuePath()),
-            () -> Collections.emptyList());
+            Lock.forTask("fileImport", 10), this::collectFilesInQueue, Collections::emptyList);
 
     int queueLength = queue.size();
 
@@ -99,7 +98,8 @@ public class FileImportTask {
   }
 
   @SneakyThrows(IOException.class)
-  private List<File> collectFiles(File queuePath) {
+  private List<File> collectFilesInQueue() {
+    val queuePath = settings.getFileImportQueuePath();
     if (queuePath.mkdirs()) {
       logger.info("Created {}", queuePath.getAbsolutePath());
     }

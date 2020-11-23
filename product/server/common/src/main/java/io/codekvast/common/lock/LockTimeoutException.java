@@ -19,19 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.file_import;
+package io.codekvast.common.lock;
 
-import io.codekvast.javaagent.model.v3.CodeBasePublication3;
+/** An exception that is thrown when a lock cannot be acquired within the timeout. */
+public class LockTimeoutException extends Exception {
 
-/** @author olle.hallin@crisp.se */
-public interface CodeBaseImporter {
-
-  /**
-   * Imports a CodeBasePublication3
-   *
-   * @param publication The publication to import.
-   * @return true iff the publication was handled
-   */
-  @SuppressWarnings("SameReturnValue")
-  boolean importPublication(CodeBasePublication3 publication) throws Exception;
+  public LockTimeoutException(String message) {
+    super(message);
+  }
 }
