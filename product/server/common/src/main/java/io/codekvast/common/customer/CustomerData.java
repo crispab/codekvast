@@ -34,23 +34,23 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class CustomerData {
-  @NonNull private Long customerId;
+  @NonNull Long customerId;
 
-  @NonNull private String customerName;
+  @NonNull String customerName;
 
-  @NonNull private String source;
+  @NonNull String source;
 
-  private String contactEmail;
+  String contactEmail;
 
-  private String customerNotes;
+  String customerNotes;
 
-  @NonNull private PricePlan pricePlan;
+  @NonNull PricePlan pricePlan;
 
-  private Instant createdAt;
+  Instant createdAt;
 
-  private Instant collectionStartedAt;
+  Instant collectionStartedAt;
 
-  private Instant trialPeriodEndsAt;
+  Instant trialPeriodEndsAt;
 
   public boolean isTrialPeriodExpired(Instant now) {
     return trialPeriodEndsAt != null && trialPeriodEndsAt.isBefore(now);

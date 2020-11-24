@@ -91,7 +91,12 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
     Instant startedAt = clock.instant();
 
     CommonImporter.ImportContext importContext = commonImporter.importCommonData(data);
-    Instant trialPeriodEndsAt = importDAO.importMethods(data, importContext, entries);
+
+    boolean isNewCodebase = importDAO.importCodeBaseFingerprint(data, importContext);
+
+    if (isNewCodebase) {
+      importDAO.importMethods(data, importContext, entries);
+    }
 
     eventService.send(
         CodeBaseReceivedEvent.builder()
@@ -103,7 +108,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
             .hostname(data.getHostname())
             .size(entries.size())
             .receivedAt(Instant.ofEpochMilli(data.getPublishedAtMillis()))
-            .trialPeriodEndsAt(trialPeriodEndsAt)
+            .trialPeriodEndsAt(importContext.getTrialPeriodEndsAt())
             .build());
     return Duration.between(startedAt, clock.instant());
   }

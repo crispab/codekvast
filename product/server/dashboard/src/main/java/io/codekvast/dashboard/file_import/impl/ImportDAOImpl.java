@@ -209,7 +209,54 @@ public class ImportDAOImpl implements ImportDAO {
   }
 
   @Override
-  public Instant importMethods(
+  public boolean importCodeBaseFingerprint(
+      CommonPublicationData2 data, ImportContext importContext) {
+    long customerId = importContext.getCustomerId();
+    long applicationId = importContext.getAppId();
+    String codeBaseFingerprint = data.getCodeBaseFingerprint();
+    Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
+
+    int updated =
+        jdbcTemplate.update(
+            "UPDATE codebase_fingerprints SET publishedAt = ? "
+                + "WHERE customerId = ? "
+                + "AND applicationId = ? "
+                + "AND codeBaseFingerprint = ? "
+                + "ORDER BY id ",
+            publishedAt,
+            customerId,
+            applicationId,
+            codeBaseFingerprint);
+
+    if (updated > 0) {
+      logger.debug(
+          "Codebase fingerprint {}:{}:{} has already been imported",
+          customerId,
+          importContext.getAppId(),
+          codeBaseFingerprint);
+      return false;
+    }
+
+    int inserted =
+        jdbcTemplate.update(
+            "INSERT INTO codebase_fingerprints(customerId, applicationId, codeBaseFingerprint, publishedAt) "
+                + "VALUES(?, ?, ?, ?)",
+            customerId,
+            applicationId,
+            codeBaseFingerprint,
+            publishedAt);
+
+    if (inserted != 1) {
+      logger.error("Failed to insert into codebase_fingerprints");
+      return false;
+    }
+
+    logger.info("Imported codebase fingerprint {}:{}:{}", customerId, applicationId, codeBaseFingerprint);
+    return true;
+  }
+
+  @Override
+  public void importMethods(
       CommonPublicationData2 data,
       ImportContext importContext,
       Collection<CodeBaseEntry3> entries) {
@@ -241,7 +288,6 @@ public class ImportDAOImpl implements ImportDAO {
     removeStaleInvocations(customerId, appId, environmentId, now, existingMethods);
 
     customerService.assertDatabaseSize(customerId);
-    return customerService.getCustomerDataByCustomerId(customerId).getTrialPeriodEndsAt();
   }
 
   private void importNewPackages(
@@ -313,7 +359,7 @@ public class ImportDAOImpl implements ImportDAO {
   }
 
   @Override
-  public Instant importInvocations(
+  public void importInvocations(
       ImportContext importContext, long recordingIntervalStartedAtMillis, Set<String> invocations) {
     long customerId = importContext.getCustomerId();
     long appId = importContext.getAppId();
@@ -329,7 +375,6 @@ public class ImportDAOImpl implements ImportDAO {
         existingMethods);
 
     customerService.assertDatabaseSize(customerId);
-    return customerService.getCustomerDataByCustomerId(customerId).getTrialPeriodEndsAt();
   }
 
   private void doImportInvocations(

@@ -98,8 +98,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
 
     ImportContext importContext = commonImporter.importCommonData(data);
 
-    Instant trialPeriodEndsAt =
-        importDAO.importInvocations(importContext, recordingIntervalStartedAtMillis, invocations);
+    importDAO.importInvocations(importContext, recordingIntervalStartedAtMillis, invocations);
 
     eventService.send(
         InvocationDataReceivedEvent.builder()
@@ -111,7 +110,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
             .hostname(data.getHostname())
             .size(invocations.size())
             .receivedAt(Instant.ofEpochMilli(data.getPublishedAtMillis()))
-            .trialPeriodEndsAt(trialPeriodEndsAt)
+            .trialPeriodEndsAt(importContext.getTrialPeriodEndsAt())
             .build());
 
     return Duration.between(startedAt, clock.instant());

@@ -21,7 +21,9 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
+import io.codekvast.common.customer.CustomerService;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
+import java.time.Instant;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -38,32 +40,31 @@ import org.springframework.stereotype.Component;
 class CommonImporter {
 
   private final ImportDAO importDAO;
+  private final CustomerService customerService;
 
   ImportContext importCommonData(CommonPublicationData2 data) {
     long appId = importDAO.importApplication(data);
     long environmentId = importDAO.importEnvironment(data);
     long jvmId = importDAO.importJvm(data, appId, environmentId);
-
     return ImportContext.builder()
         .customerId(data.getCustomerId())
         .appId(appId)
         .environmentId(environmentId)
         .jvmId(jvmId)
         .publishedAtMillis(data.getPublishedAtMillis())
+        .trialPeriodEndsAt(customerService.getCustomerDataByCustomerId(data.getCustomerId())
+            .getTrialPeriodEndsAt())
         .build();
   }
 
   @Value
   @Builder
   static class ImportContext {
-    @NonNull private final Long customerId;
-
-    @NonNull private final Long appId;
-
-    @NonNull private final Long environmentId;
-
-    @NonNull private final Long jvmId;
-
-    @NonNull private final Long publishedAtMillis;
+    @NonNull Long customerId;
+    @NonNull Long appId;
+    @NonNull Long environmentId;
+    @NonNull Long jvmId;
+    @NonNull Long publishedAtMillis;
+    Instant trialPeriodEndsAt;
   }
 }

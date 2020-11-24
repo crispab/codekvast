@@ -59,6 +59,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -458,6 +459,7 @@ public class DashboardIntegrationTest {
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
     assertThat(countRowsInTable("jvms"), is(0));
+    assertThat(countRowsInTable("codebase_fingerprints"), is(0));
     assertThat(countRowsInTable("packages"), is(0));
     assertThat(countRowsInTable("types"), is(0));
     assertThat(countRowsInTable("methods"), is(0));
@@ -486,6 +488,11 @@ public class DashboardIntegrationTest {
     assertThat(
         countRowsInTable("jvms WHERE uuid = ?", publication.getCommonData().getJvmUuid()), is(1));
     assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
+    assertThat(
+        countRowsInTable(
+            "codebase_fingerprints WHERE codeBaseFingerprint = ?",
+            publication.getCommonData().getCodeBaseFingerprint()),
+        is(1));
     assertThat(
         countRowsInTable("method_locations"), is(0)); // location is not supported in CodeBaseEntry2
     assertThat(
@@ -566,7 +573,10 @@ public class DashboardIntegrationTest {
 
     CodeBasePublication3 publication1 =
         CodeBasePublication3.builder()
-            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .commonData(
+                CommonPublicationData2.sampleCommonPublicationData().toBuilder()
+                    .codeBaseFingerprint("fingerprint1")
+                    .build())
             .entries(asList(entry1, entry2))
             .build();
 
@@ -581,7 +591,10 @@ public class DashboardIntegrationTest {
     // given
     CodeBasePublication3 publication2 =
         CodeBasePublication3.builder()
-            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .commonData(
+                CommonPublicationData2.sampleCommonPublicationData().toBuilder()
+                    .codeBaseFingerprint("fingerprint2")
+                    .build())
             .entries(asList(entry1))
             .build();
 
@@ -601,6 +614,70 @@ public class DashboardIntegrationTest {
 
     // then
     assertThat(countRowsInTable("methods WHERE signature = ?", entry2.getSignature()), is(0));
+  }
+
+  @Test
+  public void should_ignore_already_imported_codeBasePublication3() throws Exception {
+    // given
+    assertThat(countRowsInTable("applications"), is(0));
+    assertThat(countRowsInTable("environments"), is(0));
+    assertThat(countRowsInTable("jvms"), is(0));
+    assertThat(countRowsInTable("codebase_fingerprints"), is(0));
+    assertThat(countRowsInTable("packages"), is(0));
+    assertThat(countRowsInTable("types"), is(0));
+    assertThat(countRowsInTable("methods"), is(0));
+    assertThat(countRowsInTable("invocations"), is(0));
+
+    CodeBaseEntry3 entry1 = CodeBaseEntry3.sampleCodeBaseEntry();
+    CodeBaseEntry3 entry2 =
+        CodeBaseEntry3.sampleCodeBaseEntry().toBuilder()
+            .signature(entry1.getSignature() + "2")
+            .build();
+
+    long now = System.currentTimeMillis();
+
+    CodeBasePublication3 publication1 =
+        CodeBasePublication3.builder()
+            .commonData(
+                CommonPublicationData2.sampleCommonPublicationData().toBuilder()
+                    .codeBaseFingerprint("fingerprint1")
+                    .publishedAtMillis(now)
+                    .build())
+            .entries(asList(entry1))
+            .build();
+
+    // when
+    codeBaseImporter.importPublication(publication1);
+
+    // then
+    assertThat(countRowsInTable("methods"), is(1));
+    assertThat(
+        countRowsInTable(
+            "codebase_fingerprints WHERE publishedAt = ?",
+            Timestamp.from(Instant.ofEpochMilli(now).truncatedTo(ChronoUnit.MILLIS))),
+        is(1));
+
+    // given
+    CodeBasePublication3 publication2 =
+        CodeBasePublication3.builder()
+            .commonData(
+                CommonPublicationData2.sampleCommonPublicationData().toBuilder()
+                    .codeBaseFingerprint("fingerprint1")
+                    .publishedAtMillis(now + 1000)
+                    .build())
+            .entries(asList(entry1, entry2))
+            .build();
+
+    // when
+    codeBaseImporter.importPublication(publication2);
+
+    // then
+    assertThat(countRowsInTable("methods"), is(1));
+    assertThat(
+        countRowsInTable(
+            "codebase_fingerprints WHERE publishedAt = ?",
+            Timestamp.from(Instant.ofEpochMilli(now + 1000).truncatedTo(ChronoUnit.MILLIS))),
+        is(1));
   }
 
   @Test
