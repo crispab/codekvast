@@ -52,8 +52,10 @@ class CommonImporter {
         .environmentId(environmentId)
         .jvmId(jvmId)
         .publishedAtMillis(data.getPublishedAtMillis())
-        .trialPeriodEndsAt(customerService.getCustomerDataByCustomerId(data.getCustomerId())
-            .getTrialPeriodEndsAt())
+        .trialPeriodEndsAt(
+            customerService
+                .getCustomerDataByCustomerId(data.getCustomerId())
+                .getTrialPeriodEndsAt())
         .build();
   }
 

@@ -230,7 +230,7 @@ public class ImportDAOImpl implements ImportDAO {
 
     if (updated > 0) {
       logger.debug(
-          "Codebase fingerprint {}:{}:{} has already been imported",
+          "Already imported codebase: {}:{}:{}",
           customerId,
           importContext.getAppId(),
           codeBaseFingerprint);
@@ -247,11 +247,15 @@ public class ImportDAOImpl implements ImportDAO {
             publishedAt);
 
     if (inserted != 1) {
-      logger.error("Failed to insert into codebase_fingerprints");
+      logger.error(
+          "Failed to imported codebase: {}:{}:{}",
+          customerId,
+          importContext.getAppId(),
+          codeBaseFingerprint);
       return false;
     }
 
-    logger.info("Imported codebase fingerprint {}:{}:{}", customerId, applicationId, codeBaseFingerprint);
+    logger.info("Imported codebase {}:{}:{}", customerId, applicationId, codeBaseFingerprint);
     return true;
   }
 
