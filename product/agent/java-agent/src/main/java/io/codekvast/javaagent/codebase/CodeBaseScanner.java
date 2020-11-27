@@ -142,8 +142,7 @@ public class CodeBaseScanner {
       return null;
     }
     URL url = codeBase.getUrls()[0];
-    try {
-      JarFile jarFile = new JarFile(url.getFile());
+    try (JarFile jarFile = new JarFile(url.getFile())) {
       Attributes attributes = jarFile.getManifest().getMainAttributes();
       String mainClass = attributes.getValue(Attributes.Name.MAIN_CLASS);
       if (mainClass != null && mainClass.contains("org.springframework.boot.loader.")) {

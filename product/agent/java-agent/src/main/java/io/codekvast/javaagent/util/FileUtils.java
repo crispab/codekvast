@@ -25,7 +25,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -68,24 +67,10 @@ public final class FileUtils {
 
   private static Properties readPropertiesFrom(InputStream inputStream) throws IOException {
     Properties result = new Properties();
-    Reader reader = null;
-    try {
-      reader = new InputStreamReader(inputStream, UTF_8);
+    try (Reader reader = new InputStreamReader(inputStream, UTF_8)) {
       result.load(reader);
-    } finally {
-      safeClose(reader);
     }
     return result;
-  }
-
-  private static void safeClose(Closeable closeable) {
-    if (closeable != null) {
-      try {
-        closeable.close();
-      } catch (IOException e) {
-        // ignore
-      }
-    }
   }
 
   public static void safeDelete(File file) {
@@ -95,23 +80,21 @@ public final class FileUtils {
   }
 
   public static void writeToFile(String text, File file) {
-    Writer writer = null;
-    try {
-      File parentDir = file.getParentFile();
-      if (parentDir != null && !parentDir.isDirectory()) {
-        logger.fine("Creating " + parentDir);
-        parentDir.mkdirs();
-        if (!parentDir.isDirectory()) {
-          logger.warning("Failed to create " + parentDir);
-        }
+    File parentDir = file.getParentFile();
+    if (parentDir != null && !parentDir.isDirectory()) {
+      logger.fine("Creating " + parentDir);
+      parentDir.mkdirs();
+      if (!parentDir.isDirectory()) {
+        logger.warning("Failed to create " + parentDir);
       }
-      writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(file)), UTF_8);
+    }
+
+    try (Writer writer =
+        new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(file)), UTF_8)) {
       writer.write(text);
       writer.flush();
     } catch (IOException e) {
       throw new RuntimeException("Codekvast cannot create " + file, e);
-    } finally {
-      safeClose(writer);
     }
   }
 

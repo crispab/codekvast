@@ -81,8 +81,6 @@ public class FilenameAppVersionStrategy extends AbstractAppVersionStrategy {
             return version;
           }
         }
-      }
-      for (File file : files) {
         if (file.isDirectory()) {
           String version = search(file, pattern);
           if (version != null) {

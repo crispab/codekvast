@@ -18,7 +18,6 @@ import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
-import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import java.io.BufferedOutputStream;
@@ -39,7 +38,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.dao.DuplicateKeyException;
 
 /** @author olle.hallin@crisp.se */
-public class PublicationImporterImplTest {
+class PublicationImporterImplTest {
 
   @Mock private CodeBaseImporter codeBaseImporter;
 
@@ -54,7 +53,7 @@ public class PublicationImporterImplTest {
   private PublicationImporter publicationImporter;
 
   @BeforeEach
-  public void beforeTest() {
+  void beforeTest() {
     MockitoAnnotations.openMocks(this);
     when(agentService.getCorrelationIdFromPublicationFile(any()))
         .thenReturn(CorrelationIdHolder.generateNew());
@@ -76,7 +75,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_import_CodeBasePublication3() throws Exception {
+  void should_import_CodeBasePublication3() throws Exception {
     // given
     File file = new File(getClass().getResource("/sample-publications/codebase-v2.ser").toURI());
     when(codeBaseImporter.importPublication(any(CodeBasePublication3.class))).thenReturn(true);
@@ -93,7 +92,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_retry_CodeBasePublication3_when_DuplicateKeyException() throws Exception {
+  void should_retry_CodeBasePublication3_when_DuplicateKeyException() throws Exception {
     // given
     File file = new File(getClass().getResource("/sample-publications/codebase-v2.ser").toURI());
     when(codeBaseImporter.importPublication(any(CodeBasePublication3.class)))
@@ -111,8 +110,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_swallow_CodeBasePublication2_when_InvalidClassException()
-      throws URISyntaxException {
+  void should_swallow_CodeBasePublication2_when_InvalidClassException() throws URISyntaxException {
     // given
     File file =
         new File(
@@ -130,7 +128,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_import_InvocationDataPublication2() throws Exception {
+  void should_import_InvocationDataPublication2() throws Exception {
     // given
     File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
     when(invocationDataImporter.importPublication(any(InvocationDataPublication2.class)))
@@ -147,7 +145,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_not_process_locked_file() throws URISyntaxException {
+  void should_not_process_locked_file() throws URISyntaxException {
     // given
     File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
     when(lockManager.acquireLock(any())).thenReturn(Optional.empty());
@@ -161,8 +159,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_retry_InvocationDataPublication2_when_DuplicateKeyException()
-      throws Exception {
+  void should_retry_InvocationDataPublication2_when_DuplicateKeyException() throws Exception {
     // given
     File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
     when(invocationDataImporter.importPublication(any(InvocationDataPublication2.class)))
@@ -179,7 +176,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_retry_InvocationDataPublication2_when_LockTimeoutException() throws Exception {
+  void should_retry_InvocationDataPublication2_when_LockTimeoutException() throws Exception {
     // given
     File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
     when(invocationDataImporter.importPublication(any(InvocationDataPublication2.class)))
@@ -196,7 +193,7 @@ public class PublicationImporterImplTest {
   }
 
   @Test
-  public void should_ignore_unrecognized_content() throws IOException {
+  void should_ignore_unrecognized_content() throws IOException {
     // given
     File file = Files.newTemporaryFile();
     file.deleteOnExit();
@@ -217,7 +214,7 @@ public class PublicationImporterImplTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void should_handle_invalid_content() throws URISyntaxException {
+  void should_handle_invalid_content() throws URISyntaxException {
     // given
     File file = new File(getClass().getResource("/sample-publications/invocations-v2.ser").toURI());
     when(validator.validate(any()))

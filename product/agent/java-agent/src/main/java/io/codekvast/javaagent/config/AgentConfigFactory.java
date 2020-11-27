@@ -195,7 +195,7 @@ public class AgentConfigFactory {
     for (String prop : sysProps) {
       String v = System.getProperty(prop);
       if (v != null && !v.isEmpty()) {
-        sb.append(delimiter).append(prop).append("=").append(v.replaceAll(",", "\\,"));
+        sb.append(delimiter).append(prop).append("=").append(v.replace(",", "\\,"));
         delimiter = ", ";
       }
     }

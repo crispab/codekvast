@@ -65,6 +65,7 @@ public class ComputerID {
     try {
       items.add(InetAddress.getLocalHost().getHostName());
     } catch (UnknownHostException ignore) {
+      // ignore
     }
   }
 

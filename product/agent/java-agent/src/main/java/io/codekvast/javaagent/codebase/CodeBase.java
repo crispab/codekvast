@@ -111,15 +111,15 @@ public class CodeBase {
           addUrl(makeSureBasenameEndsWithSlash(file));
         }
         traverse(builder, file.listFiles());
-      } else if (file.getName().endsWith(".jar")) {
-        builder.record(file);
-        addUrl(file);
-      } else if (file.getName().endsWith(".war")) {
-        builder.record(file);
-        needsExploding = true;
-      } else if (file.getName().endsWith(".ear")) {
-        builder.record(file);
-        needsExploding = true;
+      } else {
+        String name = file.getName();
+        if (name.endsWith(".jar")) {
+          builder.record(file);
+          addUrl(file);
+        } else if (name.endsWith(".war") || name.endsWith(".ear")) {
+          builder.record(file);
+          needsExploding = true;
+        }
       }
     }
 
@@ -178,10 +178,8 @@ public class CodeBase {
   void addSignature(MethodSignature3 signature) {
     String normalizedSignature = SignatureUtils.normalizeSignature(signature);
 
-    if (normalizedSignature != null) {
-      if (signatures.add(signature)) {
-        logger.finest("  Found " + normalizedSignature);
-      }
+    if (normalizedSignature != null && signatures.add(signature)) {
+      logger.finest("  Found " + normalizedSignature);
     }
   }
 

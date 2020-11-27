@@ -127,6 +127,7 @@ public class InvocationRegistry {
       publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
     } catch (InterruptedException ignored) {
       // Do nothing here
+      Thread.currentThread().interrupt();
     } finally {
       invocations[oldIndex].clear();
     }
@@ -145,6 +146,7 @@ public class InvocationRegistry {
           invocations[currentInvocationIndex].add(queue.take());
         } catch (InterruptedException e) {
           logger.fine("Interrupted");
+          Thread.currentThread().interrupt();
           return;
         }
       }

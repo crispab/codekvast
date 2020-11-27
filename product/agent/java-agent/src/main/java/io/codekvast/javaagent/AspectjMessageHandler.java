@@ -25,7 +25,6 @@ import static org.aspectj.bridge.IMessage.Kind;
 import static org.aspectj.bridge.IMessage.WEAVEINFO;
 
 import lombok.extern.java.Log;
-import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 
@@ -36,7 +35,7 @@ public class AspectjMessageHandler implements IMessageHandler {
   public static final String LOGGER_NAME = "io.codekvast.aspectjweaver";
 
   @Override
-  public boolean handleMessage(IMessage message) throws AbortException {
+  public boolean handleMessage(IMessage message) {
     if (message.isDebug()) {
 
       String m = message.getMessage();
@@ -70,8 +69,12 @@ public class AspectjMessageHandler implements IMessageHandler {
   }
 
   @Override
-  public void dontIgnore(Kind kind) {}
+  public void dontIgnore(Kind kind) {
+    // No-op
+  }
 
   @Override
-  public void ignore(Kind kind) {}
+  public void ignore(Kind kind) {
+    // No-op
+  }
 }

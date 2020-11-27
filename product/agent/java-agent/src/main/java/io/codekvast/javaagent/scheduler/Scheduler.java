@@ -119,6 +119,7 @@ public class Scheduler implements Runnable {
         executor.awaitTermination(10, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
         logger.fine("Stop interrupted");
+        Thread.currentThread().interrupt();
       }
 
       if (dynamicConfig != null) {

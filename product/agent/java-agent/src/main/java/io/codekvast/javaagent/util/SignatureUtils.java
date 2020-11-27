@@ -58,7 +58,7 @@ public class SignatureUtils {
   }
 
   public static String normalizeSignature(String signature) {
-    return signature == null ? null : signature.replaceAll(" final ", " ");
+    return signature == null ? null : signature.replace(" final ", " ");
   }
 
   /**

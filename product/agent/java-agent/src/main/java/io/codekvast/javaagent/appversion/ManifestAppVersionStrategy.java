@@ -60,9 +60,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
     String jarUri = args[1];
     String manifestAttribute = args.length > 2 ? args[2] : DEFAULT_MANIFEST_ATTRIBUTE;
     for (File codeBaseFile : codeBases) {
-      JarFile jarFile = null;
-      try {
-        jarFile = new JarFile(getJarFile(codeBaseFile, jarUri));
+      try (JarFile jarFile = new JarFile(getJarFile(codeBaseFile, jarUri))) {
         Attributes attributes = jarFile.getManifest().getMainAttributes();
         String resolvedVersion = attributes.getValue(manifestAttribute);
         if (resolvedVersion != null) {
@@ -83,13 +81,6 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
         }
       } catch (Exception e) {
         logger.info("Cannot open " + jarUri + ": " + e);
-      } finally {
-        if (jarFile != null) {
-          try {
-            jarFile.close();
-          } catch (IOException ignore) {
-          }
-        }
       }
     }
     logger.info(
@@ -103,6 +94,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
     try {
       url = new URL(jarUri);
     } catch (MalformedURLException ignore) {
+      // Ignore
     }
 
     if (url == null) {
@@ -141,8 +133,6 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
           logger.fine("Found " + file);
           return new URL(file.toURI().toString());
         }
-      }
-      for (File file : files) {
         if (file.isDirectory()) {
           URL url = search(file, regex);
           if (url != null) {

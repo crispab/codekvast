@@ -80,15 +80,11 @@ public class PropertiesAppVersionStrategy extends AbstractAppVersionStrategy {
 
     if (files != null) {
       for (File file : files) {
-        if (file.isFile()) {
-          if (file.getName().equals(baseName)) {
-            String version = getVersionFrom(file, args);
-            logger.fine(String.format("Found version '%s' in %s", version, file));
-            return version;
-          }
+        if (file.isFile() && file.getName().equals(baseName)) {
+          String version = getVersionFrom(file, args);
+          logger.fine(String.format("Found version '%s' in %s", version, file));
+          return version;
         }
-      }
-      for (File file : files) {
         if (file.isDirectory()) {
           String version = search(file, baseName, args);
           if (version != null) {
