@@ -47,8 +47,6 @@ public class PublicationImporterImplTest {
 
   @Mock private Validator validator;
 
-  @Mock private AgentMetricsService metricsService;
-
   @Mock private AgentService agentService;
 
   @Mock private LockManager lockManager;
@@ -60,20 +58,21 @@ public class PublicationImporterImplTest {
     MockitoAnnotations.openMocks(this);
     when(agentService.getCorrelationIdFromPublicationFile(any()))
         .thenReturn(CorrelationIdHolder.generateNew());
-    this.publicationImporter =
-        new PublicationImporterImpl(
-            codeBaseImporter,
-            invocationDataImporter,
-            validator,
-            metricsService,
-            agentService,
-            new LockTemplate(lockManager));
+
     when(lockManager.acquireLock(any()))
         .thenReturn(
             Optional.of(
                 Lock.forPublication(
                     new File(
                         "/intake/queue/invocations-29-683ce793-8bb8-4dc9-a494-cb2543aa7964.ser"))));
+
+    this.publicationImporter =
+        new PublicationImporterImpl(
+            codeBaseImporter,
+            invocationDataImporter,
+            validator,
+            agentService,
+            new LockTemplate(lockManager));
   }
 
   @Test

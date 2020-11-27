@@ -30,7 +30,6 @@ import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
-import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3;
@@ -67,7 +66,6 @@ public class PublicationImporterImpl implements PublicationImporter {
   private final CodeBaseImporter codeBaseImporter;
   private final InvocationDataImporter invocationDataImporter;
   private final Validator validator;
-  private final AgentMetricsService metricsService;
   private final AgentService agentService;
   private final LockTemplate lockTemplate;
 
