@@ -62,7 +62,7 @@ public class LockTemplate {
    * @param lockAction The action to execute within the lock
    * @param <V> The type to return
    * @return The result of either lockAction or failedAction, depending on if the lock was acquired.
-   * @throws A LockTimeoutException if failed to acquire the lock.
+   * @throws LockTimeoutException if failed to acquire the lock.
    */
   public <V> V doWithLockOrThrow(Lock lock, Callable<V> lockAction) throws Exception {
     Optional<Lock> optionalLock = lockManager.acquireLock(lock);
