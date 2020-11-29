@@ -18,7 +18,6 @@ import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
-import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.model.v3.CodeBasePublication3;
 import java.io.BufferedOutputStream;
