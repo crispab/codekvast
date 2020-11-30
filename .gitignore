@@ -59,3 +59,4 @@ typings/
 ajcore.*.txt
 **/.DS_Store
 /product/server/dashboard/src/webapp/coverage/
+/.idea/sonarlint/issuestore/
