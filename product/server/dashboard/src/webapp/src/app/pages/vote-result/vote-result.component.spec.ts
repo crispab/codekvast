@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {VoteResultComponent} from './vote-result.component';
 import {Location} from '@angular/common';
@@ -12,7 +12,7 @@ describe('VoteResultComponent', () => {
     let locationStub: Partial<Location> = {back: function () {}};
     let activatedRouteStub: Partial<ActivatedRoute> = {params: new Observable<Params>()};
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         // noinspection JSIgnoredPromiseFromCall
         TestBed.configureTestingModule({
                    declarations: [VoteResultComponent],

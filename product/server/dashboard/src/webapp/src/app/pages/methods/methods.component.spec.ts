@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {MethodsComponent} from './methods.component';
 import {FormsModule} from '@angular/forms';
@@ -15,7 +15,7 @@ describe('MethodsComponent', () => {
     let component: MethodsComponent;
     let fixture: ComponentFixture<MethodsComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         // noinspection JSIgnoredPromiseFromCall
         TestBed.configureTestingModule({
                    imports: [FormsModule],

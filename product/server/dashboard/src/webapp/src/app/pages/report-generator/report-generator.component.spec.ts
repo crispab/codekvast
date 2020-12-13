@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {ReportGeneratorComponent} from './report-generator.component';
 import {Component, Input} from '@angular/core';
@@ -15,7 +15,7 @@ describe('ReportGeneratorComponent', () => {
     let component: ReportGeneratorComponent;
     let fixture: ComponentFixture<ReportGeneratorComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         // noinspection JSIgnoredPromiseFromCall
         TestBed.configureTestingModule({
                    declarations: [ReportGeneratorComponent, VoteComponentStub],

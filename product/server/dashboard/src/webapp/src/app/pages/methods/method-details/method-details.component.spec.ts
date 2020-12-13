@@ -1,6 +1,6 @@
 import {ActivatedRoute, Params} from '@angular/router';
 import {AgePipe} from '../../../pipes/age.pipe';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
 import {InvocationStatusPipe} from '../../../pipes/invocation-status.pipe';
 import {MethodDetailsComponent} from './method-details.component';
@@ -27,7 +27,7 @@ describe('MethodDetailsComponent', () => {
     };
     let activatedRouteStub: Partial<ActivatedRoute> = {params: new Observable<Params>()};
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         // noinspection JSIgnoredPromiseFromCall
         TestBed.configureTestingModule({
                    declarations: [MethodDetailsComponent, AgePipe, InvocationStatusPipe, SettingsEditorComponentStub],

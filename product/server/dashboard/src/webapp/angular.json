@@ -30,7 +30,7 @@
                         "baseHref": "/",
                         "styles": [],
                         "scripts": [],
-                        "es5BrowserSupport": true
+                        "aot": true
                     },
                     "configurations": {
                         "production": {
@@ -43,9 +43,7 @@
                             "optimization": false,
                             "outputHashing": "all",
                             "sourceMap": false,
-                            "extractCss": true,
                             "namedChunks": false,
-                            "aot": true,
                             "extractLicenses": true,
                             "vendorChunk": true,
                             "buildOptimizer": true,
@@ -54,6 +52,10 @@
                                     "type": "initial",
                                     "maximumWarning": "2mb",
                                     "maximumError": "5mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb"
                                 }
                             ]
                         }

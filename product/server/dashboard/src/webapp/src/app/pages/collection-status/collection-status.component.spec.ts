@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {CollectionStatusComponent} from './collection-status.component';
 import {Component, Input, NO_ERRORS_SCHEMA} from '@angular/core';
@@ -31,7 +31,7 @@ export class SettingsEditorComponentStub {
 describe('CollectionStatusComponent', () => {
     let component: CollectionStatusComponent;
     let fixture: ComponentFixture<CollectionStatusComponent>;
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         // noinspection JSIgnoredPromiseFromCall
         TestBed.configureTestingModule({
                    declarations: [CollectionStatusComponent, NgbProgressbarStubComponent, AgePipe, SettingsEditorComponentStub],
