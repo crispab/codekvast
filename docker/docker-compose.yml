@@ -21,7 +21,16 @@ services:
         - database:/var/lib/mysql
         ports:
         - '3306:3306'
-        command: "--character-set-server=utf8"
+        command: "
+        --slow_query_log=1
+        --log_output=TABLE
+        --log_queries_not_using_indexes=ON
+        --character-set-server=utf8
+        --performance_schema=ON
+        --performance-schema-instrument='stage/%=ON'
+        --performance-schema-consumer-events-stages-current=ON
+        --performance-schema-consumer-events-stages-history=ON
+        --performance-schema-consumer-events-stages-history-long=ON"
 
     rabbitmq:
         image: rabbitmq:3.8-management-alpine

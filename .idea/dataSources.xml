@@ -39,5 +39,14 @@
       <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mariadb://db-prod.codekvast.io:3306/codekvast</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="codekvast@localhost (root)" uuid="82f557c5-b04d-4e04-80d1-ea1569d5f78a">
+      <driver-ref>mysql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/codekvast</jdbc-url>
+      <driver-properties>
+        <property name="autoReconnect" value="true" />
+      </driver-properties>
+    </data-source>
   </component>
 </project>
