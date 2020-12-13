@@ -19,7 +19,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'org.springframework.boot:spring-boot-starter-mustache'
     implementation "com.google.code.gson:gson:$gsonVersion"
-    implementation 'com.jayway.jsonpath:json-path:2.4.0'
+    implementation 'com.jayway.jsonpath:json-path:2.5.0'
 
     runtimeOnly project(':product:server:db-migration')
 

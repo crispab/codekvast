@@ -1,29 +1,29 @@
 ext {
     aspectjVersion = '1.9.6'
-    droolsVersion = '7.45.0.Final'
+    droolsVersion = '7.47.0.Final'
     gsonVersion = '2.8.6'
     jacocoVersion = '0.8.6'
-    kotlinVersion = '1.4.10'
+    kotlinVersion = '1.4.21'
     mariadbVersion = '10.4'
     rabbitmqVersion = '3.8-management-alpine'
     seleniumVersion = '3.141.59'
-    springBootVersion = '2.4.0'
+    springBootVersion = '2.4.1'
     springfoxVersion = '2.9.2'
-    testcontainersVersion = '1.15.0'
+    testcontainersVersion = '1.15.1'
     wiremockVersion = '2.27.2'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
     logback = 'ch.qos.logback:logback-classic:1.2.3'
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.7.0'
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.7.1'
     slf4jApi = 'org.slf4j:slf4j-api:1.7.30'
     testFrameworks = [
             'junit:junit:4.13.1',
             'org.junit.jupiter:junit-jupiter-migrationsupport',
             'org.hamcrest:hamcrest-core:2.2',
             'org.hamcrest:hamcrest-library:2.2',
-            'org.mockito:mockito-core:3.6.0',
-            'org.mockito:mockito-junit-jupiter:3.6.0',
+            'org.mockito:mockito-core:3.6.28',
+            'org.mockito:mockito-junit-jupiter:3.6.28',
             "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
             'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     ]
