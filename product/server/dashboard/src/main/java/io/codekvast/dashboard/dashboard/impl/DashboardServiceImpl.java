@@ -328,7 +328,7 @@ public class DashboardServiceImpl implements DashboardService {
   private List<EnvironmentStatusDescriptor> getEnvironments(Long customerId) {
     List<EnvironmentStatusDescriptor> result = new ArrayList<>();
     jdbcTemplate.query(
-        "SELECT name, enabled, updatedBy, notes FROM environments " + "WHERE customerId = ? ",
+        "SELECT name, enabled, updatedBy, notes FROM environments WHERE customerId = ? ",
         rs -> {
           result.add(
               EnvironmentStatusDescriptor.builder()
