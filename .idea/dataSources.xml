@@ -2,17 +2,12 @@
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
     <data-source source="LOCAL" name="codekvast@localhost" uuid="72f56ea9-3139-4722-9b04-833ba9c0a5fe">
-      <driver-ref>mysql</driver-ref>
+      <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/codekvast</jdbc-url>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://localhost:3306/codekvast</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
-        <property name="zeroDateTimeBehavior" value="convertToNull" />
-        <property name="tinyInt1isBit" value="false" />
-        <property name="characterEncoding" value="utf8" />
-        <property name="characterSetResults" value="utf8" />
-        <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
     <data-source source="LOCAL" name="codekvast@staging" uuid="14b18f70-8dc6-4aa7-a9f1-4e4eed2f67f2">
@@ -40,10 +35,10 @@
       <jdbc-url>jdbc:mariadb://db-prod.codekvast.io:3306/codekvast</jdbc-url>
     </data-source>
     <data-source source="LOCAL" name="codekvast@localhost (root)" uuid="82f557c5-b04d-4e04-80d1-ea1569d5f78a">
-      <driver-ref>mysql</driver-ref>
+      <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/codekvast</jdbc-url>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://localhost:3306/codekvast</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
       </driver-properties>
