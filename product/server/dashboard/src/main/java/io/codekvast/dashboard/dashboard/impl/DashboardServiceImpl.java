@@ -356,11 +356,11 @@ public class DashboardServiceImpl implements DashboardService {
     List<ApplicationDescriptor2> result = new ArrayList<>();
 
     jdbcTemplate.query(
-        "SELECT a.name AS appName, e.name AS envName, MIN(i.createdAt) AS collectedSince, MAX(i.timestamp) AS collectedTo\n"
-            + "FROM invocations i\n"
-            + "       INNER JOIN applications a ON i.applicationId = a.id\n"
-            + "       INNER JOIN environments e ON i.environmentId = e.id\n"
-            + "WHERE a.customerId = ?\n"
+        "SELECT a.name AS appName, e.name AS envName, ad.collectedSince, ad.collectedTo\n"
+            + "FROM application_descriptors ad\n"
+            + "       INNER JOIN applications a ON ad.applicationId = a.id\n"
+            + "       INNER JOIN environments e ON ad.environmentId = e.id\n"
+            + "WHERE ad.customerId = ?\n"
             + "GROUP BY appName, envName\n"
             + "ORDER BY appName, envName\n",
         rs -> {

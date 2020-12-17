@@ -45,6 +45,7 @@ class CommonImporter {
   ImportContext importCommonData(CommonPublicationData2 data) {
     long appId = importDAO.importApplication(data);
     long environmentId = importDAO.importEnvironment(data);
+    importDAO.upsertApplicationDescriptor(data, appId, environmentId);
     long jvmId = importDAO.importJvm(data, appId, environmentId);
     return ImportContext.builder()
         .customerId(data.getCustomerId())

@@ -92,4 +92,13 @@ public interface ImportDAO {
    */
   void importInvocations(
       ImportContext importContext, long recordingIntervalStartedAtMillis, Set<String> invocations);
+
+  /**
+   * Upserts a row in application_descriptors
+   *
+   * @param data The uploaded common data
+   * @param appId The applicationId
+   * @param environmentId the environmentId
+   */
+  void upsertApplicationDescriptor(CommonPublicationData2 data, long appId, long environmentId);
 }

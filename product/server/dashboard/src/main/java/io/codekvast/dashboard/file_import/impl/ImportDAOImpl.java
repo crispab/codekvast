@@ -51,6 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -379,6 +380,19 @@ public class ImportDAOImpl implements ImportDAO {
         existingMethods);
 
     customerService.assertDatabaseSize(customerId);
+  }
+
+  @Override
+  public void upsertApplicationDescriptor(
+      CommonPublicationData2 data, long appId, long environmentId) {
+
+    jdbcTemplate.update(
+        new UpsertApplicationDescriptorStatement(
+            data.getCustomerId(),
+            appId,
+            environmentId,
+            data.getJvmStartedAtMillis(),
+            data.getPublishedAtMillis()));
   }
 
   private void doImportInvocations(
@@ -843,6 +857,37 @@ public class ImportDAOImpl implements ImportDAO {
       ps.setString(++column, "");
       ps.setString(++column, signature);
       ps.setTimestamp(++column, new Timestamp(invokedAtMillis));
+      return ps;
+    }
+  }
+
+  @RequiredArgsConstructor
+  private static class UpsertApplicationDescriptorStatement implements PreparedStatementCreator {
+
+    private final long customerId;
+    private final long appId;
+    private final long environmentId;
+    private final long jvmStartedAtMillis;
+    private final long publishedAtMillis;
+
+    @Override
+    public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+
+      String sql =
+          "INSERT INTO application_descriptors(customerId, applicationId, environmentId, collectedSince, collectedTo) "
+              + "VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE collectedTo = ? ";
+
+      val collectedFrom = Timestamp.from(Instant.ofEpochMilli(jvmStartedAtMillis));
+      val collectedTo = Timestamp.from(Instant.ofEpochMilli(publishedAtMillis));
+
+      PreparedStatement ps = con.prepareStatement(sql);
+      int column = 0;
+      ps.setLong(++column, customerId);
+      ps.setLong(++column, appId);
+      ps.setLong(++column, environmentId);
+      ps.setTimestamp(++column, collectedFrom);
+      ps.setTimestamp(++column, collectedTo); // insert
+      ps.setTimestamp(++column, collectedTo); // update
       return ps;
     }
   }
