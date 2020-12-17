@@ -62,6 +62,7 @@ import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -326,6 +327,7 @@ public class DashboardServiceImpl implements DashboardService {
   }
 
   private List<EnvironmentStatusDescriptor> getEnvironments(Long customerId) {
+    val startedAt = clock.instant();
     List<EnvironmentStatusDescriptor> result = new ArrayList<>();
     jdbcTemplate.query(
         "SELECT name, enabled, updatedBy, notes FROM environments WHERE customerId = ? ",
@@ -340,10 +342,17 @@ public class DashboardServiceImpl implements DashboardService {
         },
         customerId);
 
+    logger.debug(
+        "Fetched {} environments for customer {} in {}",
+        result.size(),
+        customerId,
+        Duration.between(startedAt, clock.instant()));
+
     return result;
   }
 
   private List<ApplicationDescriptor2> getApplications(Long customerId, PricePlan pricePlan) {
+    val startedAt = clock.instant();
     List<ApplicationDescriptor2> result = new ArrayList<>();
 
     jdbcTemplate.query(
@@ -368,6 +377,12 @@ public class DashboardServiceImpl implements DashboardService {
                   .build());
         },
         customerId);
+
+    logger.debug(
+        "Fetched {} applications for customer {} in {}",
+        result.size(),
+        customerId,
+        Duration.between(startedAt, clock.instant()));
 
     return result;
   }
@@ -403,6 +418,7 @@ public class DashboardServiceImpl implements DashboardService {
   }
 
   private List<AgentDescriptor> getAgents(Long customerId, int publishIntervalSeconds) {
+    val startedAt = clock.instant();
     List<AgentDescriptor> result = new ArrayList<>();
 
     jdbcTemplate.query(
@@ -448,6 +464,12 @@ public class DashboardServiceImpl implements DashboardService {
                   .build());
         },
         customerId);
+
+    logger.debug(
+        "Fetched {} agents for customer {} in {}",
+        result.size(),
+        customerId,
+        Duration.between(startedAt, clock.instant()));
 
     return result;
   }
