@@ -275,7 +275,7 @@ CREATE TABLE method_locations (
     customerId        BIGINT                                NOT NULL,
     methodId          BIGINT                                NOT NULL,
     location          VARCHAR(100)                          NOT NULL,
-    locationNoVersion VARCHAR(100) AS (REGEXP_REPLACE(`location`,
+    locationNoVersion VARCHAR(100) AS (REGEXP_REPLACE(location,
                                                       '-(\\d.*|DEV-SNAPSHOT-fat|SNAPSHOT)\\.jar',
                                                       '.jar')) STORED,
     annotation        VARCHAR(100)                          NULL,
@@ -393,11 +393,12 @@ CREATE TABLE truncated_signatures (
     id              BIGINT AUTO_INCREMENT PRIMARY KEY,
     customerId      BIGINT                              NOT NULL,
     signature       TEXT                                NOT NULL,
+    signatureHash   VARCHAR(60) AS (MD5(signature)) STORED,
     length          INTEGER                             NOT NULL,
     truncatedLength INTEGER                             NOT NULL,
     createdAt       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-    CONSTRAINT ix_truncated_signatures_identity UNIQUE (customerId, signature),
+    CONSTRAINT ix_truncated_signatures_identity UNIQUE (customerId, signatureHash, length),
     INDEX ix_truncated_signatures_customerId (customerId),
     CONSTRAINT ix_truncated_signatures_customerId FOREIGN KEY (customerId) REFERENCES customers (id) ON DELETE CASCADE
 );
@@ -435,35 +436,51 @@ CREATE TABLE users (
 
 -- Reference data -----------------------------------
 INSERT INTO price_plans (name)
-    VALUES ('test'),
-           ('demo');
+    VALUES
+        ('test'),
+        ('demo');
 
 INSERT INTO customers (id, name, externalId, licenseKey, plan, source)
-    VALUES (1, 'Codekvast Demo Customer', 'demo', '', 'demo', 'demo');
+    VALUES
+        (1, 'Codekvast Demo Customer', 'demo', '', 'demo', 'demo');
 
 INSERT INTO role_names (name)
-    VALUES ('ROLE_ADMIN'),
-           ('ROLE_CUSTOMER'),
-           ('ROLE_USER');
+    VALUES
+        ('ROLE_ADMIN'),
+        ('ROLE_CUSTOMER'),
+        ('ROLE_USER');
 
 INSERT IGNORE INTO customers(id, licenseKey, source, name, plan, notes)
-    VALUES (-1, UUID(), 'system',
-            'no-customer',
-            'demo',
-            'Owner of facts that are not related to any customer')
+    VALUES
+    (
+    -1,
+    UUID(),
+    'system',
+    'no-customer',
+    'demo',
+    'Owner of facts that are not related to any customer');
 
 INSERT INTO synthetic_signature_patterns (pattern, example)
-    VALUES ('.*\\$\\$.*',
-            'customer2.controllers.Events..se$crisp$signup4$controllers$Events$$allGuests(se.crisp.signup4.models.Event)'),
-           ('.*\\$\\w+\\$.*',
-            'controllers.Assets.play$api$http$HeaderNames$_setter_$LOCATION_$eq(java.lang.String)'),
-           ('.*\\.[A-Z0-9_]+\\(.*\\)$', 'controllers.customer1.application.Admin.CONTENT_MD5()'),
-           ('.*\\$[a-z]+\\(\\)$', 'controllers.customer1.application.XxxYyy.$amp()'),
-           ('.*\\.\\.anonfun\\..*',
-            'controllers.AssetsBuilder..anonfun.at.1..anonfun.apply.2..anonfun.7.apply()'),
-           ('.*\\.\\.EnhancerBySpringCGLIB\\.\\..*',
-            'customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)'),
-           ('.*\\.\\.FastClassBySpringCGLIB\\.\\..*',
-            'customer1.FooConfig..FastClassBySpringCGLIB..73e1cc5a.getIndex(org.springframework.cglib.core.Signature)'),
-           ('.*\\.canEqual\\(java\\.lang\\.Object\\)',
-            'io.codekvast.backoffice.facts.CollectionStarted.canEqual(java.lang.Object)');
+    VALUES
+    (
+    '.*\\$\\$.*',
+    'customer2.controllers.Events..se$crisp$signup4$controllers$Events$$allGuests(se.crisp.signup4.models.Event)'),
+    (
+    '.*\\$\\w+\\$.*',
+    'controllers.Assets.play$api$http$HeaderNames$_setter_$LOCATION_$eq(java.lang.String)'),
+    (
+    '.*\\.[A-Z0-9_]+\\(.*\\)$', 'controllers.customer1.application.Admin.CONTENT_MD5()'),
+    (
+    '.*\\$[a-z]+\\(\\)$', 'controllers.customer1.application.XxxYyy.$amp()'),
+    (
+    '.*\\.\\.anonfun\\..*',
+    'controllers.AssetsBuilder..anonfun.at.1..anonfun.apply.2..anonfun.7.apply()'),
+    (
+    '.*\\.\\.EnhancerBySpringCGLIB\\.\\..*',
+    'customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB$BIND_CALLBACKS(java.lang.Object)'),
+    (
+    '.*\\.\\.FastClassBySpringCGLIB\\.\\..*',
+    'customer1.FooConfig..FastClassBySpringCGLIB..73e1cc5a.getIndex(org.springframework.cglib.core.Signature)'),
+    (
+    '.*\\.canEqual\\(java\\.lang\\.Object\\)',
+    'io.codekvast.backoffice.facts.CollectionStarted.canEqual(java.lang.Object)');
