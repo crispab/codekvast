@@ -24,6 +24,7 @@ CREATE TABLE price_plans (
     id   BIGINT AUTO_INCREMENT
         PRIMARY KEY,
     name VARCHAR(40) NOT NULL,
+
     CONSTRAINT name
         UNIQUE (name)
 );
@@ -42,6 +43,7 @@ CREATE TABLE customers (
     notes               VARCHAR(255)                          NULL,
     collectionStartedAt TIMESTAMP                             NULL,
     trialPeriodEndsAt   TIMESTAMP                             NULL,
+
     CONSTRAINT ix_external_identity
         UNIQUE (source, externalId),
     CONSTRAINT licenseKey
@@ -61,6 +63,7 @@ CREATE TABLE agent_state (
     timestamp          TIMESTAMP DEFAULT CURRENT_TIMESTAMP()   NOT NULL ON UPDATE CURRENT_TIMESTAMP(),
     enabled            TINYINT(1)                              NOT NULL,
     garbage            TINYINT(1)                              NOT NULL,
+
     CONSTRAINT ix_agent_state_identity
         UNIQUE (customerId, jvmUuid),
     CONSTRAINT ix_agent_state_customerId
@@ -76,6 +79,7 @@ CREATE TABLE applications (
     customerId BIGINT                                NOT NULL,
     name       VARCHAR(255)                          NOT NULL,
     createdAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP(),
+
     CONSTRAINT ix_application_identity
         UNIQUE (customerId, name),
     CONSTRAINT ix_application_customerId
@@ -90,6 +94,7 @@ CREATE TABLE codebase_fingerprints (
     codeBaseFingerprint VARCHAR(200)                              NOT NULL,
     createdAt           TIMESTAMP    DEFAULT CURRENT_TIMESTAMP()  NOT NULL,
     publishedAt         TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3) NOT NULL ON UPDATE CURRENT_TIMESTAMP(3),
+
     CONSTRAINT ix_codebase_fingerprints_identity
         UNIQUE (customerId, applicationId, codeBaseFingerprint),
     CONSTRAINT ix_codebase_fingerprints_applicationId
@@ -98,8 +103,7 @@ CREATE TABLE codebase_fingerprints (
     CONSTRAINT ix_codebase_fingerprints_customerId
         FOREIGN KEY (customerId) REFERENCES customers (id)
             ON DELETE CASCADE
-)
-    CHARSET = latin1;
+);
 
 CREATE TABLE environments (
     id         BIGINT AUTO_INCREMENT
@@ -146,6 +150,7 @@ CREATE TABLE facts (
     data       VARCHAR(900)                          NOT NULL COMMENT 'JSON representation of a Java object of type type.',
     createdAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL,
     updatedAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP(),
+
     CONSTRAINT ix_facts_identity
         UNIQUE (customerId, type, data),
     CONSTRAINT ix_facts_customerId
@@ -162,6 +167,7 @@ CREATE TABLE heroku_details (
     tokenType    VARCHAR(50)                           NOT NULL COMMENT 'What type of token is this?',
     expiresAt    TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP() COMMENT 'When does the access token expire?',
     createdAt    TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL,
+
     CONSTRAINT customerId
         UNIQUE (customerId),
     CONSTRAINT ix_heroku_details_customerId
@@ -188,6 +194,7 @@ CREATE TABLE jvms (
     agentVersion        VARCHAR(40)                             NOT NULL,
     tags                VARCHAR(1000)                           NOT NULL,
     garbage             TINYINT(1)                              NOT NULL,
+
     CONSTRAINT uuid
         UNIQUE (uuid),
     CONSTRAINT ix_jvm_applicationId
@@ -222,6 +229,7 @@ CREATE TABLE methods (
     parameterTypes TEXT                                   NULL,
     returnType     TEXT                                   NULL,
     garbage        TINYINT(1) DEFAULT 0                   NULL,
+
     CONSTRAINT ix_method_customerId
         FOREIGN KEY (customerId) REFERENCES customers (id)
 );
@@ -238,6 +246,7 @@ CREATE TABLE invocations (
     createdAt        TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3)                                                                                                                          NOT NULL,
     lastSeenAtMillis BIGINT                                                                                                                                                             NULL,
     timestamp        TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3)                                                                                                                          NOT NULL ON UPDATE CURRENT_TIMESTAMP(3),
+
     CONSTRAINT ix_invocation_identity
         UNIQUE (customerId, applicationId, environmentId, methodId),
     CONSTRAINT ix_invocation_applicationId
@@ -271,6 +280,7 @@ CREATE TABLE method_locations (
                                                       '.jar')) STORED,
     annotation        VARCHAR(100)                          NULL,
     createdAt         TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP(),
+
     CONSTRAINT ix_method_location_identity
         UNIQUE (methodId, location),
     CONSTRAINT ix_method_location_customerId
@@ -305,6 +315,7 @@ CREATE TABLE packages (
     name       VARCHAR(256)                          NOT NULL,
     annotation VARCHAR(100)                          NULL,
     createdAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP(),
+
     CONSTRAINT ix_package_identity
         UNIQUE (customerId, name),
     CONSTRAINT ix_package_customerId
@@ -327,6 +338,7 @@ CREATE TABLE price_plan_overrides (
     publishIntervalSeconds INT                                   NULL,
     pollIntervalSeconds    INT                                   NULL,
     retryIntervalSeconds   INT                                   NULL,
+
     CONSTRAINT ix_pricePlan_customerId
         FOREIGN KEY (customerId) REFERENCES customers (id)
 );
@@ -341,6 +353,7 @@ CREATE TABLE role_names (
     id   BIGINT AUTO_INCREMENT
         PRIMARY KEY,
     name VARCHAR(25) NOT NULL,
+
     CONSTRAINT name
         UNIQUE (name)
 );
@@ -348,6 +361,7 @@ CREATE TABLE role_names (
 CREATE TABLE roles (
     roleName VARCHAR(25)  NOT NULL,
     email    VARCHAR(100) NOT NULL,
+
     CONSTRAINT ix_role_identity
         UNIQUE (roleName, email),
     CONSTRAINT ix_role_name
@@ -370,25 +384,23 @@ CREATE TABLE tokens (
     code             VARCHAR(32)   NOT NULL,
     token            VARCHAR(1000) NOT NULL,
     expiresAtSeconds MEDIUMTEXT    NOT NULL,
+
     CONSTRAINT code
         UNIQUE (code)
 );
 
 CREATE TABLE truncated_signatures (
-    id              BIGINT AUTO_INCREMENT
-        PRIMARY KEY,
-    customerId      BIGINT                                NOT NULL,
-    signature       TEXT                                  NOT NULL,
-    length          INT                                   NOT NULL,
-    truncatedLength INT                                   NOT NULL,
-    createdAt       TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL,
-    CONSTRAINT ix_truncated_signatures_identity
-        UNIQUE (customerId, signature) USING HASH,
-    CONSTRAINT ix_truncated_signatures_customerId
-        FOREIGN KEY (customerId) REFERENCES customers (id)
-            ON DELETE CASCADE
-)
-    CHARSET = latin1;
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customerId      BIGINT                              NOT NULL,
+    signature       TEXT                                NOT NULL,
+    length          INTEGER                             NOT NULL,
+    truncatedLength INTEGER                             NOT NULL,
+    createdAt       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+    CONSTRAINT ix_truncated_signatures_identity UNIQUE (customerId, signature),
+    INDEX ix_truncated_signatures_customerId (customerId),
+    CONSTRAINT ix_truncated_signatures_customerId FOREIGN KEY (customerId) REFERENCES customers (id) ON DELETE CASCADE
+);
 
 CREATE TABLE types (
     id         BIGINT AUTO_INCREMENT
@@ -397,6 +409,7 @@ CREATE TABLE types (
     name       VARCHAR(256)                          NOT NULL,
     annotation VARCHAR(100)                          NULL,
     createdAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP(),
+
     CONSTRAINT ix_type_identity
         UNIQUE (customerId, name),
     CONSTRAINT ix_type_customerId
@@ -413,6 +426,7 @@ CREATE TABLE users (
     lastLoginAt     TIMESTAMP    DEFAULT '0000-00-00 00:00:00' NOT NULL,
     lastLoginSource VARCHAR(100) DEFAULT 'none'                NULL,
     numberOfLogins  INT          DEFAULT 0                     NULL,
+
     CONSTRAINT ix_user_identity
         UNIQUE (customerId, email),
     CONSTRAINT ix_user_customerId
@@ -432,10 +446,11 @@ INSERT INTO role_names (name)
            ('ROLE_CUSTOMER'),
            ('ROLE_USER');
 
-INSERT IGNORE INTO customers(id, licenseKey, source, name, plan, notes) VALUE (-1, UUID(), 'system',
-                                                                               'no-customer',
-                                                                               'demo',
-                                                                               'Owner of facts that are not related to any customer')
+INSERT IGNORE INTO customers(id, licenseKey, source, name, plan, notes)
+    VALUES (-1, UUID(), 'system',
+            'no-customer',
+            'demo',
+            'Owner of facts that are not related to any customer')
 
 INSERT INTO synthetic_signature_patterns (pattern, example)
     VALUES ('.*\\$\\$.*',
