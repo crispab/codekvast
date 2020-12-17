@@ -1,6 +1,16 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CodekvastDashboardApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <module name="codekvast.product.server.dashboard.main" />
+    <extension name="net.ashald.envfile">
+      <option name="IS_ENABLED" value="false" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+      </ENTRIES>
+    </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboardApplication" />
     <option name="ACTIVE_PROFILES" value="dev,common-dev,dev-secrets,dev-webpack-dev-server" />
     <option name="VM_PARAMETERS" value="-ea -XX:+UseParallelGC" />
@@ -41,6 +51,10 @@
         <option name="enabled" value="true" />
         <option name="name" value="codekvast.agent-statistics.interval.seconds" />
         <option name="value" value="10" />
+      </param>
+      <param>
+        <option name="name" value="spring.flyway.baseline-on-migrate" />
+        <option name="value" value="true" />
       </param>
     </additionalParameters>
     <RunnerSettings />
