@@ -875,17 +875,17 @@ public class ImportDAOImpl implements ImportDAO {
 
       String sql =
           "INSERT INTO application_descriptors(customerId, applicationId, environmentId, collectedSince, collectedTo) "
-              + "VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE collectedTo = ? ";
+              + "VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE collectedTo = GREATEST(?, collectedTo)";
 
-      val collectedFrom = Timestamp.from(Instant.ofEpochMilli(jvmStartedAtMillis));
-      val collectedTo = Timestamp.from(Instant.ofEpochMilli(publishedAtMillis));
+      val collectedSince = new Timestamp(jvmStartedAtMillis);
+      val collectedTo = new Timestamp(publishedAtMillis);
 
       PreparedStatement ps = con.prepareStatement(sql);
       int column = 0;
       ps.setLong(++column, customerId);
       ps.setLong(++column, appId);
       ps.setLong(++column, environmentId);
-      ps.setTimestamp(++column, collectedFrom);
+      ps.setTimestamp(++column, collectedSince);
       ps.setTimestamp(++column, collectedTo); // insert
       ps.setTimestamp(++column, collectedTo); // update
       return ps;

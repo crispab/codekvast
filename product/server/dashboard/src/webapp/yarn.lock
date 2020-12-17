@@ -222,7 +222,7 @@
   resolved "https://registry.yarnpkg.com/@angular/language-service/-/language-service-11.0.4.tgz#0a9c01170be92378f217dea3263c4eb2f8411aaa"
   integrity sha512-KtQxVSlZi3SwZEN4E56KHkNTFEYa3FPZfLJFm6WD1dSobFyMwJgvztO08GWSaT4S0ht0NNRD2IRt0XzBYuZkag==
 
-"@angular/localize@^11.0.4":
+"@angular/localize@11.0.4":
   version "11.0.4"
   resolved "https://registry.yarnpkg.com/@angular/localize/-/localize-11.0.4.tgz#8f7a36685d97f26d52e3f19d9218e1e2e05a2bb2"
   integrity sha512-r0dWvwFvEqQJ/H94rr548S092Hq53RqyMANuFD09CpkWXS6yAWBfArB6mW77PARnicEC0zkbi5qMGACjtSyNtA==
