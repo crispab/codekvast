@@ -1,0 +1,18 @@
+micronaut:
+  application:
+    name: codekvast-intake
+  metrics:
+    enabled: true
+    export:
+      datadog:
+        enabled: false
+        apiKey: ${DATADOG_APIKEY}
+        step: PT1M
+datasources:
+  default:
+    url: jdbc:mariadb://localhost:3306/codekvast
+    driverClassName: org.mariadb.jdbc.Driver
+    username: codekvast
+    password: codekvast
+    dialect: MYSQL
+rabbitmq.uri: amqp://localhost:5672

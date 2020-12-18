@@ -5,6 +5,7 @@ ext {
     jacocoVersion = '0.8.6'
     kotlinVersion = '1.4.21'
     mariadbVersion = '10.4'
+    micronautVersion = '2.2.1'
     rabbitmqVersion = '3.8-management-alpine'
     seleniumVersion = '3.141.59'
     springBootVersion = '2.4.1'

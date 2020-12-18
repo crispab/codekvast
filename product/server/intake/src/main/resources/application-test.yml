@@ -1,0 +1,4 @@
+datasources:
+  default:
+    url: jdbc:tc:mariadb:10:///db
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver

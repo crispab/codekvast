@@ -1,14 +1,15 @@
 apply from: "$rootDir/gradle/kotlin.gradle"
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
 }
 
 compileKotlin {
     kotlinOptions {
         javaParameters = true
         jvmTarget = '1.8'
-        freeCompilerArgs = ["-Xjsr305=strict"]
+        freeCompilerArgs = ['-Xjsr305=strict']
     }
 }
 
@@ -16,7 +17,7 @@ compileTestKotlin {
     kotlinOptions {
         javaParameters = true
         jvmTarget = '1.8'
-        freeCompilerArgs = ["-Xjsr305=strict"]
+        freeCompilerArgs = ['-Xjsr305=strict']
     }
 }
 
