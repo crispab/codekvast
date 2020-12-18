@@ -2,50 +2,34 @@ package io.codekvast.javaagent.collector;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.codekvast.javaagent.InvocationRegistry;
 import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
-import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.util.SignatureUtils;
-import java.io.File;
-import java.io.IOException;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import lombok.val;
 import org.aspectj.lang.Signature;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-public class InvocationRegistryTest {
-
-  private static final String APP_NAME = "Invocations Registry Test";
-  private static final String APP_VERSION = "1.2.3-rc-2";
-
-  @TempDir File temporaryFolder;
+class InvocationRegistryTest {
 
   private Signature signature1;
   private Signature signature2;
+  private Signature signature3;
 
   @BeforeEach
-  public void beforeTest() throws IOException, NoSuchMethodException {
-    String codeBase =
-        new File(temporaryFolder, "codebase1").getAbsolutePath()
-            + ", "
-            + new File(temporaryFolder, "codebase2").getAbsolutePath();
-
-    AgentConfig config =
-        AgentConfigFactory.createSampleAgentConfig().toBuilder()
-            .appName(APP_NAME)
-            .appVersion(APP_VERSION)
-            .codeBase(codeBase)
-            .build();
-    InvocationRegistry.initialize(config);
+  public void beforeTest() throws NoSuchMethodException {
     signature1 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m1"));
     signature2 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m2"));
+    signature3 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m3"));
   }
 
   @AfterEach
@@ -54,41 +38,44 @@ public class InvocationRegistryTest {
   }
 
   @Test
-  public void should_handle_registrations_when_disabled() {
+  void should_handle_concurrent_registrations_when_disabled() throws InterruptedException {
     InvocationRegistry.initialize(null);
-    assertThat(InvocationRegistry.instance.isNullRegistry(), is(true));
-    InvocationRegistry.instance.registerMethodInvocation(signature1);
+    assertThat(InvocationRegistry.isNullRegistry(), is(true));
+    assertTrue(doExtremelyConcurrentRegistrationOf(signature1, signature2, signature3));
   }
 
   @Test
-  public void should_handle_concurrent_registrations() throws Exception {
-    doExtremelyConcurrentRegistrationOf(25, 1000, signature1, signature2, signature1, signature2);
+  void should_handle_concurrent_registrations_when_enabled() throws Exception {
+    InvocationRegistry.initialize(AgentConfigFactory.createSampleAgentConfig());
+    assertThat(InvocationRegistry.isNullRegistry(), is(false));
+    assertTrue(doExtremelyConcurrentRegistrationOf(signature1, signature2, signature3));
   }
 
-  private void doExtremelyConcurrentRegistrationOf(
-      int numThreads, final int numRegistrations, final Signature... signatures)
+  private boolean doExtremelyConcurrentRegistrationOf(final Signature... signatures)
       throws InterruptedException {
 
-    final CountDownLatch startingGun = new CountDownLatch(1);
-    final CountDownLatch finishLine = new CountDownLatch(numThreads * signatures.length);
+    val numThreads = 25;
+    val numRegistrations = 10_000;
+    val finishLine = new CountDownLatch(numThreads * numRegistrations);
+    val random = new Random();
+    val startingGun = new CountDownLatch(1);
 
-    for (final Signature signature : signatures) {
-      for (int i = 0; i < numThreads; i++) {
-        Thread t =
-            new Thread(
-                () -> {
-                  try {
-                    startingGun.await();
-                    for (int j = 0; j < numRegistrations; j++) {
-                      InvocationRegistry.instance.registerMethodInvocation(signature);
-                    }
-                  } catch (InterruptedException ignore) {
-                  } finally {
+    for (int i = 0; i < numThreads; i++) {
+      Thread t =
+          new Thread(
+              () -> {
+                try {
+                  int max = signatures.length;
+                  startingGun.await();
+                  for (int j = 0; j < numRegistrations; j++) {
+                    InvocationRegistry.registerMethodInvocation(signatures[random.nextInt(max)]);
                     finishLine.countDown();
                   }
-                });
-        t.start();
-      }
+                } catch (InterruptedException ignore) {
+                  Thread.currentThread().interrupt();
+                }
+              });
+      t.start();
     }
 
     Thread publisher =
@@ -98,9 +85,10 @@ public class InvocationRegistryTest {
               try {
                 startingGun.await();
                 while (true) {
-                  InvocationRegistry.instance.publishInvocationData(publisher1);
+                  InvocationRegistry.publishInvocationData(publisher1);
                 }
               } catch (InterruptedException | CodekvastPublishingException ignore) {
+                Thread.currentThread().interrupt();
               }
             });
     publisher.start();
@@ -108,6 +96,9 @@ public class InvocationRegistryTest {
     startingGun.countDown();
     finishLine.await();
     publisher.interrupt();
+    InvocationRegistry.initialize(null);
+
+    return true;
   }
 
   @SuppressWarnings({"unused", "WeakerAccess"})
@@ -115,6 +106,8 @@ public class InvocationRegistryTest {
     public void m1() {}
 
     public void m2() {}
+
+    public void m3() {}
   }
 
   private static class NullInvocationDataPublisher implements InvocationDataPublisher {

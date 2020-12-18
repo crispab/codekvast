@@ -24,7 +24,6 @@
           staging: 1
           prod:    2
         db_connections: 2
-        stickiness_enabled: false
         secrets:
           - name:      SPRING_MAIL_USERNAME
             valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/username"
@@ -40,7 +39,6 @@
           staging: 1
           prod:    2
         db_connections: 8
-        stickiness_enabled: false
         volumes:
           - name: intake
         mountPoints:
@@ -169,7 +167,7 @@
         unhealthy_threshold_count:     4
         deregistration_delay_timeout:  30
         state:                         present
-        stickiness_enabled:            "{{ item.stickiness_enabled }}"
+        stickiness_enabled:            "{{ item.stickiness_enabled | default(false) }}"
         stickiness_lb_cookie_duration: 60
         stickiness_type:               lb_cookie
         tags:                          "{{ common.tags }}"

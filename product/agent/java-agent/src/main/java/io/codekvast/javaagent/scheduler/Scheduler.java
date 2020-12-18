@@ -268,7 +268,7 @@ public class Scheduler implements Runnable {
       }
 
       try {
-        InvocationRegistry.instance.publishInvocationData(invocationDataPublisher);
+        InvocationRegistry.publishInvocationData(invocationDataPublisher);
         invocationDataPublisherState.scheduleNext();
       } catch (Exception e) {
         LogUtil.logException(logger, "Failed to publish invocation data", e);

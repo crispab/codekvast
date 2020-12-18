@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
 import org.aspectj.lang.Signature;
 
@@ -40,43 +41,11 @@ import org.aspectj.lang.Signature;
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("Singleton")
+@UtilityClass
 @Log
 public class InvocationRegistry {
 
-  @SuppressWarnings("StaticInitializerReferencesSubClass")
-  public static InvocationRegistry instance = new NullInvocationRegistry();
-
-  // Toggle between two invocation sets to avoid synchronisation
-  private final Set<String>[] invocations;
-  private volatile int currentInvocationIndex = 0;
-
-  // Do all updates to the current set from a single worker thread
-  private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
-
-  private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
-
-  private InvocationRegistry() {
-    //noinspection unchecked
-    this.invocations = new Set[] {new HashSet<String>(), new HashSet<String>()};
-    startWorker();
-  }
-
-  private void startWorker() {
-    if (!isNullRegistry()) {
-      Thread worker =
-          CodekvastThreadFactory.builder()
-              .name("registry")
-              .build()
-              .newThread(new InvocationsAdder());
-      worker.start();
-    }
-  }
-
-  @SuppressWarnings("MethodReturnAlwaysConstant")
-  public boolean isNullRegistry() {
-    return false;
-  }
+  private static InvocationReceiver receiver = new NullInvocationReceiver();
 
   /**
    * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be
@@ -85,12 +54,7 @@ public class InvocationRegistry {
    * @param config The agent configuration. May be null, in which case the registry is disabled.
    */
   public static void initialize(AgentConfig config) {
-    if (config == null) {
-      instance = new NullInvocationRegistry();
-      return;
-    }
-
-    InvocationRegistry.instance = new InvocationRegistry();
+    receiver = config == null ? new NullInvocationReceiver() : new RealInvocationReceiver();
   }
 
   /**
@@ -100,64 +64,35 @@ public class InvocationRegistry {
    *
    * @param signature The captured method invocation signature.
    */
-  public void registerMethodInvocation(Signature signature) {
-    String sig = SignatureUtils.signatureToString(signature);
-
-    /*
-     HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
-     a background worker thread.
-    */
-    if (!invocations[currentInvocationIndex].contains(sig)) {
-      queue.add(sig);
-    }
+  public static void registerMethodInvocation(Signature signature) {
+    receiver.registerMethodInvocation(signature);
   }
 
-  public void publishInvocationData(@NonNull InvocationDataPublisher publisher)
+  public static void publishInvocationData(@NonNull InvocationDataPublisher publisher)
       throws CodekvastPublishingException {
-    long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
-    int oldIndex = currentInvocationIndex;
-
-    toggleInvocationsIndex();
-
-    try {
-      // Give the InvocationAdder time to see the new currentInvocationIndex so that we
-      // avoid ConcurrentModificationException.
-      Thread.sleep(10L);
-
-      publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
-    } catch (InterruptedException ignored) {
-      // Do nothing here
-      Thread.currentThread().interrupt();
-    } finally {
-      invocations[oldIndex].clear();
-    }
+    receiver.publishInvocationData(publisher);
   }
 
-  private synchronized void toggleInvocationsIndex() {
-    recordingIntervalStartedAtMillis = System.currentTimeMillis();
-    currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
+  public static boolean isNullRegistry() {
+    return receiver.isNullRegistry();
   }
 
-  private class InvocationsAdder implements Runnable {
-    @Override
-    public void run() {
-      while (true) {
-        try {
-          invocations[currentInvocationIndex].add(queue.take());
-        } catch (InterruptedException e) {
-          logger.fine("Interrupted");
-          Thread.currentThread().interrupt();
-          return;
-        }
-      }
-    }
+  /** @author olle.hallin@crisp.se */
+  public static interface InvocationReceiver {
+
+    @SuppressWarnings("MethodReturnAlwaysConstant")
+    boolean isNullRegistry();
+
+    void registerMethodInvocation(Signature signature);
+
+    void publishInvocationData(@NonNull InvocationDataPublisher publisher)
+        throws CodekvastPublishingException;
   }
 
-  @SuppressWarnings("MethodReturnAlwaysConstant")
-  private static class NullInvocationRegistry extends InvocationRegistry {
-    private NullInvocationRegistry() {
-      super();
-    }
+  /** @author olle.hallin@crisp.se */
+  static class NullInvocationReceiver implements InvocationReceiver {
+
+    NullInvocationReceiver() {}
 
     @Override
     public void registerMethodInvocation(Signature signature) {
@@ -165,8 +100,118 @@ public class InvocationRegistry {
     }
 
     @Override
+    public void publishInvocationData(@NonNull InvocationDataPublisher publisher) {
+      // No operation
+    }
+
+    @Override
     public boolean isNullRegistry() {
       return true;
+    }
+  }
+
+  /**
+   * This is the target of the method execution recording aspects.
+   *
+   * <p>It holds data about method invocations and methods for publishing the data.
+   *
+   * @author olle.hallin@crisp.se
+   */
+  @SuppressWarnings("Singleton")
+  @Log
+  public static class RealInvocationReceiver implements InvocationReceiver {
+    // Toggle between two invocation sets to avoid synchronisation
+    private final Set<String>[] invocations;
+    private volatile int currentInvocationIndex = 0;
+
+    // Do all updates to the current set from a single worker thread
+    private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+
+    private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
+
+    RealInvocationReceiver() {
+      //noinspection unchecked
+      this.invocations = new Set[] {new HashSet<String>(), new HashSet<String>()};
+      startWorker();
+    }
+
+    private void startWorker() {
+      if (!isNullRegistry()) {
+        Thread worker =
+            CodekvastThreadFactory.builder()
+                .name("registry")
+                .build()
+                .newThread(new InvocationsAdder());
+        worker.start();
+      }
+    }
+
+    @Override
+    @SuppressWarnings("MethodReturnAlwaysConstant")
+    public boolean isNullRegistry() {
+      return false;
+    }
+
+    /**
+     * Record this method invocation in the current recording interval.
+     *
+     * <p>Thread-safe.
+     *
+     * @param signature The captured method invocation signature.
+     */
+    @Override
+    public void registerMethodInvocation(Signature signature) {
+      String sig = SignatureUtils.signatureToString(signature);
+
+      /*
+       HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
+       a background worker thread.
+      */
+      if (!invocations[currentInvocationIndex].contains(sig)) {
+        queue.add(sig);
+      }
+    }
+
+    @Override
+    public void publishInvocationData(@NonNull InvocationDataPublisher publisher)
+        throws CodekvastPublishingException {
+      long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
+      int oldIndex = currentInvocationIndex;
+
+      toggleInvocationsIndex();
+
+      try {
+        // Give the InvocationAdder time to see the new currentInvocationIndex so that we
+        // avoid ConcurrentModificationException.
+        Thread.sleep(10L);
+
+        publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
+      } catch (InterruptedException ignored) {
+        // Do nothing here
+        Thread.currentThread().interrupt();
+      } finally {
+        invocations[oldIndex].clear();
+      }
+    }
+
+    private synchronized void toggleInvocationsIndex() {
+      recordingIntervalStartedAtMillis = System.currentTimeMillis();
+      currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
+    }
+
+    private class InvocationsAdder implements Runnable {
+      @Override
+      public void run() {
+        while (!Thread.currentThread().isInterrupted()) {
+          try {
+            invocations[currentInvocationIndex].add(queue.take());
+          } catch (InterruptedException e) {
+            logger.fine("Interrupted");
+            Thread.currentThread().interrupt();
+            return;
+          }
+        }
+      }
     }
   }
 }
