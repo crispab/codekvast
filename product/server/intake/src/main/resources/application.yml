@@ -6,7 +6,6 @@ micronaut:
     export:
       datadog:
         enabled: false
-        apiKey: ${DATADOG_APIKEY}
         step: PT1M
 datasources:
   default:

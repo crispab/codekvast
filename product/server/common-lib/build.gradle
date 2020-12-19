@@ -1,0 +1,17 @@
+description = "Common library of utilities that can be used from any library or application"
+
+apply from: "$rootDir/gradle/java-11.gradle"
+apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
+apply from: "$rootDir/gradle/license.gradle"
+apply plugin: 'java-library'
+
+archivesBaseName = "codekvast-common-lib"
+
+dependencies {
+    implementation slf4jApi
+    implementation logback
+    runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.5'
+
+    testImplementation testFrameworks
+    testRuntimeOnly logback
+}
