@@ -84,6 +84,6 @@
         <module name="codekvast.product.server.intake.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8" />
+    <bytecodeTargetLevel target="11" />
   </component>
 </project>
