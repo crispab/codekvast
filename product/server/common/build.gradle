@@ -20,6 +20,8 @@ dependencies {
     api 'javax.validation:validation-api:2.0.1.Final'
     api 'org.springframework.boot:spring-boot-starter-security'
 
+    implementation project(':product:server:common-lib')
+
     implementation slf4jApi
     implementation 'com.github.ben-manes.caffeine:caffeine:2.8.8'
     implementation 'com.github.seratch:jslack:3.4.2'
@@ -37,7 +39,6 @@ dependencies {
 
     runtimeOnly 'com.fasterxml.jackson.module:jackson-module-kotlin'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
-    runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.5'
     runtimeOnly 'org.springframework.boot:spring-boot-starter-validation'
 
     testImplementation testFrameworks

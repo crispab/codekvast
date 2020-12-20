@@ -39,7 +39,6 @@ import java.net.InetAddress
  *
  * @author olle.hallin@crisp.se
  */
-@Suppress("unused")
 class HostnamePropertyDefiner : PropertyDefinerBase() {
     override fun getPropertyValue(): String = InetAddress.getLocalHost().hostName.substringBefore('.')
 }

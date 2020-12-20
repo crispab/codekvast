@@ -1,4 +1,5 @@
 apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
+apply plugin: 'kotlin-kapt'
 apply plugin: 'io.micronaut.application'
 
 description = 'The Codekvast Intake server'
@@ -38,7 +39,6 @@ dependencies {
 
 
     runtimeOnly 'ch.qos.logback:logback-classic'
-    runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.5'
     runtimeOnly 'com.fasterxml.jackson.module:jackson-module-kotlin'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
