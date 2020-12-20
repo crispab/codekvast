@@ -4,14 +4,14 @@ apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'java-library'
 
-archivesBaseName = "codekvast-common-lib"
+archivesBaseName = 'codekvast-common-lib'
 
 dependencies {
-    api logback
+    implementation logback
     runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.5'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testImplementation junit5Framework
+    testRuntimeOnly junit5Engine
 }
 
 test {

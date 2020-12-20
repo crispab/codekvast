@@ -22,7 +22,7 @@
 package io.codekvast.dashboard.agent
 
 import io.codekvast.common.customer.LicenseViolationException
-import io.codekvast.common.util.LoggingUtils.humanReadableByteCount
+import io.codekvast.common.lib.logging.LoggingUtils.humanReadableByteCount
 import io.codekvast.dashboard.model.PublicationType
 import io.codekvast.dashboard.model.PublicationType.CODEBASE
 import io.codekvast.dashboard.model.PublicationType.INVOCATIONS

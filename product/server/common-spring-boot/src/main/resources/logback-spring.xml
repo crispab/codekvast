@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <!-- Pick up the hostname -->
-  <define name="HOSTNAME" class="io.codekvast.common_lib.logback.HostnamePropertyDefiner"/>
+  <define name="HOSTNAME" class="io.codekvast.common.lib.logback.HostnamePropertyDefiner"/>
 
   <!-- Add properties that are recognized by Datadog -->
   <property scope="context" name="ddsource" value="java"/>

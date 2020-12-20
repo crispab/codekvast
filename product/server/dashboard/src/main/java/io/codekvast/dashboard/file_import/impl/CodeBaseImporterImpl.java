@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
-import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
+import static io.codekvast.common.lib.logging.LoggingUtils.humanReadableDuration;
 
 import io.codekvast.common.aspects.Restartable;
 import io.codekvast.common.lock.Lock;

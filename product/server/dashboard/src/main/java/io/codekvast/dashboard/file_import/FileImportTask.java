@@ -21,10 +21,10 @@
  */
 package io.codekvast.dashboard.file_import;
 
+import io.codekvast.common.lib.logging.LoggingUtils;
 import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockTemplate;
 import io.codekvast.common.thread.NamedThreadTemplate;
-import io.codekvast.common.util.LoggingUtils;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.AgentMetricsService;
 import java.io.File;

@@ -1,4 +1,4 @@
-package io.codekvast.common_lib.logback
+package io.codekvast.common.lib.logback
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test

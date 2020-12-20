@@ -21,7 +21,7 @@
  */
 package io.codekvast.common.aspects;
 
-import static io.codekvast.common.util.LoggingUtils.humanReadableDuration;
+import static io.codekvast.common.lib.logging.LoggingUtils.humanReadableDuration;
 
 import java.time.Instant;
 import java.util.Random;

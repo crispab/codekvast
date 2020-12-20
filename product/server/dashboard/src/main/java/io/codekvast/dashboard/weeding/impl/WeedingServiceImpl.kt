@@ -26,7 +26,7 @@ import io.codekvast.common.customer.CustomerData
 import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.lock.Lock
 import io.codekvast.common.lock.LockTemplate
-import io.codekvast.common.util.LoggingUtils.humanReadableDuration
+import io.codekvast.common.lib.logging.LoggingUtils.humanReadableDuration
 import io.codekvast.dashboard.metrics.AgentMetricsService
 import io.codekvast.dashboard.weeding.WeedingService
 import org.slf4j.LoggerFactory

@@ -28,7 +28,7 @@ import io.codekvast.backoffice.rules.RuleEngine
 import io.codekvast.backoffice.service.MailSender
 import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.messaging.model.CodekvastEvent
-import io.codekvast.common.util.LoggingUtils
+import io.codekvast.common.lib.logging.LoggingUtils
 import org.kie.api.KieServices
 import org.kie.api.event.rule.ObjectDeletedEvent
 import org.kie.api.event.rule.ObjectInsertedEvent

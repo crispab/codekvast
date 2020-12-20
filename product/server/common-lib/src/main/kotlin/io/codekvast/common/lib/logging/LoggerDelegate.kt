@@ -19,26 +19,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common_lib.logback
+package io.codekvast.common.lib.logging
 
-import ch.qos.logback.core.PropertyDefinerBase
-import java.net.InetAddress
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.companionObject
 
 /**
- * A Logback property definer that makes the basename of localhost available in logback*.xml
- *
- * Example:
- *
- * <pre>{@code
- *   <configuration>
- *     <define name="hostname" class="io.codekvast.common_lib.logback.HostnamePropertyDefiner"/>
- *     <property scope="context" name="host" value="${hostname}" />
- *     ...
- *   </configuration>
- * }</pre>
- *
  * @author olle.hallin@crisp.se
  */
-class HostnamePropertyDefiner : PropertyDefinerBase() {
-    override fun getPropertyValue(): String = InetAddress.getLocalHost().hostName.substringBefore('.')
+class LoggerDelegate<in R : Any> : ReadOnlyProperty<R, Logger> {
+  override fun getValue(thisRef: R, property: KProperty<*>): Logger =
+    cache.getOrPut(thisRef.javaClass) { getLoggerFor(thisRef.javaClass) }
+
+  companion object {
+    private val cache = ConcurrentHashMap<Class<*>, Logger>()
+
+    private fun <T : Any> getLoggerFor(javaClass: Class<T>): Logger {
+      val clazz = javaClass.enclosingClass?.takeIf { it.kotlin.companionObject?.java == javaClass }
+        ?: javaClass
+      // Strip off $$EnhancerByCGLIB$$nnnnnn
+      return LoggerFactory.getLogger(clazz.name.replace(Regex("\\$\\$.*$"), ""))
+    }
+  }
 }
+

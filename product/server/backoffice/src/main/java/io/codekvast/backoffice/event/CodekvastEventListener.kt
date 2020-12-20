@@ -26,7 +26,7 @@ import io.codekvast.common.messaging.AbstractCodekvastEventListener
 import io.codekvast.common.messaging.impl.MessageIdRepository
 import io.codekvast.common.messaging.model.CodekvastEvent
 import io.codekvast.common.metrics.CommonMetricsService
-import io.codekvast.common.util.LoggerDelegate
+import io.codekvast.common.lib.logging.LoggerDelegate
 import org.springframework.stereotype.Component
 import java.time.Clock
 
