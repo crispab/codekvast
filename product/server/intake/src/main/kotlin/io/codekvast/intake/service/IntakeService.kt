@@ -19,18 +19,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake
+package io.codekvast.intake.service
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan
-import org.springframework.boot.runApplication
-import org.springframework.context.annotation.ComponentScan
+import io.codekvast.intake.model.PublicationType
+import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
+import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
+import io.codekvast.javaagent.model.v2.GetConfigRequest2
+import io.codekvast.javaagent.model.v2.GetConfigResponse2
+import java.io.InputStream
 
-@SpringBootApplication
-@ConfigurationPropertiesScan
-@ComponentScan(basePackages = ["io.codekvast"])
-class CodekvastIntakeApplication
+/**
+ * @author olle.hallin@crisp.se
+ */
+interface IntakeService {
+    fun getConfig1(request: GetConfigRequest1): GetConfigResponse1
 
-fun main(args: Array<String>) {
-    runApplication<CodekvastIntakeApplication>(*args)
+    fun getConfig2(request: GetConfigRequest2): GetConfigResponse2
+
+    fun savePublication(
+        publicationType: PublicationType,
+        licenseKey: String,
+        fingerprint: String,
+        publicationSize: Int,
+        inputStream: InputStream
+    )
 }

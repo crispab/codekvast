@@ -19,18 +19,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake
+package io.codekvast.intake.model
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan
-import org.springframework.boot.runApplication
-import org.springframework.context.annotation.ComponentScan
+/**
+ * The types of publications that can be uploaded from an agent.
+ *
+ * @author olle.hallin@crisp.se
+ */
+enum class PublicationType {
+    CODEBASE, INVOCATIONS;
 
-@SpringBootApplication
-@ConfigurationPropertiesScan
-@ComponentScan(basePackages = ["io.codekvast"])
-class CodekvastIntakeApplication
-
-fun main(args: Array<String>) {
-    runApplication<CodekvastIntakeApplication>(*args)
+    override fun toString(): String {
+        return name.toLowerCase()
+    }
 }

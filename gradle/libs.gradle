@@ -3,10 +3,9 @@ ext {
     droolsVersion = '7.47.0.Final'
     gsonVersion = '2.8.6'
     jacocoVersion = '0.8.6'
-    junit5Version = '5.4.2'
+    junit5Version = '5.7.0'
     kotlinVersion = '1.4.21'
     mariadbVersion = '10.4'
-    micronautVersion = '2.2.1'
     mockitoVersion = '3.6.28'
     rabbitmqVersion = '3.8-management-alpine'
     seleniumVersion = '3.141.59'
@@ -35,8 +34,11 @@ ext {
             "org.junit.jupiter:junit-jupiter:$junit5Version",
             "org.mockito:mockito-core:$mockitoVersion",
             "org.mockito:mockito-junit-jupiter:$mockitoVersion",
+            "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
             'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     ]
 
-    junit5Engine = "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
+    junit5Engine = [
+            "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
+    ]
 }

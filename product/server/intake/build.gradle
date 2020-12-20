@@ -1,55 +1,109 @@
+apply from: "$rootDir/gradle/spring-boot-app.gradle"
+apply from: "$rootDir/gradle/spring-boot-jdbc.gradle"
+apply from: "$rootDir/gradle/spring-boot-web.gradle"
 apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
-apply plugin: 'kotlin-kapt'
-apply plugin: 'io.micronaut.application'
+apply from: "$rootDir/gradle/google-jib.gradle"
 
-description = 'The Codekvast Intake server'
+description = 'The Codekvast Intake'
 applicationName = 'codekvast-intake'
 archivesBaseName = 'codekvast-intake'
 version = codekvastVersion
 mainClassName = 'io.codekvast.intake.CodekvastIntakeApplicationKt'
 
-micronaut {
-    version(micronautVersion)
-    runtime('netty')
-    testRuntime('junit5')
-    processing {
-        incremental(true)
-        annotations("io.codekvast.intake.*")
-    }
+//apply from: "$projectDir/src/integrationTest/build.gradle"
+
+configurations {
+    codekvastagent
 }
 
 dependencies {
-    kapt 'io.micronaut.data:micronaut-data-processor'
+    implementation project(':product:agent:agent-model')
+    implementation project(':product:server:common-spring-boot')
+    implementation "com.google.code.gson:gson:$gsonVersion"
 
-    implementation 'io.micronaut.kotlin:micronaut-kotlin-extension-functions'
-    implementation 'io.micronaut.kotlin:micronaut-kotlin-runtime'
-    implementation 'io.micronaut:micronaut-runtime'
-    implementation 'javax.annotation:javax.annotation-api'
+    runtimeOnly project(':product:server:db-migration')
 
-    implementation project(':product:server:common-lib')
-//    implementation 'io.micronaut.beanvalidation:micronaut-hibernate-validator'
-//    implementation 'io.micronaut.data:micronaut-data-jdbc'
-//    implementation 'io.micronaut.flyway:micronaut-flyway'
-//    implementation 'io.micronaut.micrometer:micronaut-micrometer-core'
-//    implementation 'io.micronaut.micrometer:micronaut-micrometer-registry-datadog'
-//    implementation 'io.micronaut.rabbitmq:micronaut-rabbitmq'
-//    implementation 'io.micronaut.sql:micronaut-jdbc-hikari'
-//    implementation 'io.micronaut:micronaut-http-client'
-//    implementation 'io.micronaut:micronaut-management'
-//    implementation 'io.micronaut:micronaut-validation'
+    testImplementation junit5Framework
 
-
-    runtimeOnly 'ch.qos.logback:logback-classic'
-    runtimeOnly 'com.fasterxml.jackson.module:jackson-module-kotlin'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-
-    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'io.micronaut.test:micronaut-test-junit5:' + micronautVersion
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testRuntimeOnly 'org.testcontainers:mariadb:' + testcontainersVersion
+    codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
 }
 
-test {
-    useJUnitPlatform()
+run {
+    dependsOn startDockerContainers
+    jvmArgs = ['-enableassertions',]
+    args = [
+            "--logging.file.name=$buildDir/${applicationName}.log",
+            '--spring.profiles.active=dev'
+    ]
+}
+
+bootRun {
+    dependsOn startDockerContainers
+    jvmArgs = run.jvmArgs
+    args = run.args
+}
+
+//--- Packaging ------------------------------------------------------------------------------------------------------------------
+bootJar {
+    launchScript {
+        properties([
+                'initInfoProvides'        : applicationName,
+                'initInfoShortDescription': 'Codekvast Intake',
+                'initInfoDescription'     : 'Codekvast Intake is the interface to the java agents',
+        ])
+    }
+}
+
+task generateCodekvastConfig {
+    group "Build"
+    description "Generates a codekvast.conf for test"
+
+    def configFile = file("$buildDir/codekvast.conf")
+
+    inputs.files file("build.gradle")
+    outputs.file configFile
+
+    doLast {
+        configFile.parentFile.mkdirs()
+        configFile.text = """# Run Codekvast against Codekvast Intake
+appName = $archivesBaseName
+appVersion = $codekvastDisplayVersion
+# aspectjOptions = -verbose -showWeaveInfo
+codeBase = build/libs/$archivesBaseName-$version-all.jar
+methodVisibility = all
+packages = io.codekvast
+excludePackages = io.codekvast.common.aspects
+bridgeAspectjMessagesToJUL = false
+environment = Gradle
+
+# serverUrl = https://api-staging.codekvast.io
+httpProxyHost =   
+httpProxyPort = 4711
+"""
+    }
+}
+
+processResources.dependsOn generateCodekvastConfig
+
+task launchIntakeWithCodekvastAgentAttached(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:agent:java-agent:shadowJar", startDockerContainers]) {
+    def javaVersion = sdkmanJavaVersion_11
+
+    description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
+    group "Application"
+
+    executable "${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}/bin/java"
+    args "-XX:+ExitOnOutOfMemoryError"
+    args "-enableassertions"
+    args "-Xms10m"
+    args "-Xmx100m"
+    // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5011"
+    args "-javaagent:${configurations.codekvastagent.asPath}"
+    args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
+
+    args "-jar", "build/libs/${archivesBaseName}-${version}-all.jar"
+    args "--logging.level.root=INFO"
+    args "--logging.level.io.codekvast=INFO"
+    args "--logging.file.name=$buildDir/${applicationName}.log"
+
+    args "--spring.profiles.active=dev,stress-test"
 }

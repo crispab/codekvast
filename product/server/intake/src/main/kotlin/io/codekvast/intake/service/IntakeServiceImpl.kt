@@ -19,18 +19,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake
+package io.codekvast.intake.service
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan
-import org.springframework.boot.runApplication
-import org.springframework.context.annotation.ComponentScan
+import io.codekvast.intake.model.PublicationType
+import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
+import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
+import io.codekvast.javaagent.model.v2.GetConfigRequest2
+import io.codekvast.javaagent.model.v2.GetConfigResponse2
+import org.springframework.stereotype.Service
+import java.io.InputStream
 
-@SpringBootApplication
-@ConfigurationPropertiesScan
-@ComponentScan(basePackages = ["io.codekvast"])
-class CodekvastIntakeApplication
 
-fun main(args: Array<String>) {
-    runApplication<CodekvastIntakeApplication>(*args)
+/**
+ * @author olle.hallin@crisp.se
+ */
+@Service
+class IntakeServiceImpl : IntakeService {
+    override fun getConfig1(request: GetConfigRequest1): GetConfigResponse1 {
+        TODO("Not yet implemented")
+    }
+
+    override fun getConfig2(request: GetConfigRequest2): GetConfigResponse2 {
+        TODO("Not yet implemented")
+    }
+
+    override fun savePublication(
+        publicationType: PublicationType,
+        licenseKey: String,
+        fingerprint: String,
+        publicationSize: Int,
+        inputStream: InputStream
+    ) {
+        TODO("Not yet implemented")
+    }
 }

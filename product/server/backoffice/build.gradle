@@ -16,7 +16,6 @@ configurations {
   codekvastagent
 }
 
-
 dependencies {
   implementation project(':product:server:common-spring-boot')
   implementation "org.drools:drools-compiler:$droolsVersion"
