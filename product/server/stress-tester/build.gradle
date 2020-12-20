@@ -10,7 +10,7 @@ version = codekvastVersion
 mainClassName = 'io.codekvast.stress_tester.StressTesterApplication'
 
 dependencies {
-    implementation project(':product:server:common')
+    implementation project(':product:server:common-spring-boot')
 
     runtimeOnly project(':product:server:db-migration')
 }
