@@ -20,7 +20,7 @@ configurations {
 
 dependencies {
   implementation project(':product:agent:agent-model')
-  implementation project(':product:server:common-spring-boot')
+  implementation project(':product:server:common')
   implementation project(':product:server:db-migration')
   implementation "com.google.code.gson:gson:$gsonVersion"
   // implementation 'org.springframework.retry:spring-retry:1.3.0'

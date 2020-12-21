@@ -6,7 +6,7 @@ apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'java-library'
 apply plugin: 'org.unbroken-dome.test-sets'
 
-archivesBaseName = 'codekvast-common-spring-boot'
+archivesBaseName = 'codekvast-common'
 
 testSets {
     integrationTest
@@ -19,9 +19,9 @@ dependencies {
     api 'io.micrometer:micrometer-registry-datadog'
     api 'javax.validation:validation-api:2.0.1.Final'
     api 'org.springframework.boot:spring-boot-starter-security'
-    api project(':product:server:common-lib')
 
     implementation slf4jApi
+    implementation logback
     implementation 'com.github.ben-manes.caffeine:caffeine:2.8.8'
     implementation 'com.github.seratch:jslack:3.4.2'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
@@ -38,6 +38,7 @@ dependencies {
 
     runtimeOnly 'com.fasterxml.jackson.module:jackson-module-kotlin'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1' // Needed by io.jsonwebtoken:jjwt
+    runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.5'
     runtimeOnly 'org.springframework.boot:spring-boot-starter-validation'
 
     testImplementation testFrameworks
@@ -45,3 +46,4 @@ dependencies {
 
     integrationTestImplementation sourceSets.test.output
 }
+

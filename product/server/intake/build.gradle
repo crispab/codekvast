@@ -18,7 +18,7 @@ configurations {
 
 dependencies {
     implementation project(':product:agent:agent-model')
-    implementation project(':product:server:common-spring-boot')
+    implementation project(':product:server:common')
     implementation "com.google.code.gson:gson:$gsonVersion"
 
     runtimeOnly project(':product:server:db-migration')
