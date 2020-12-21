@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.lib.logging
+package io.codekvast.common.logging
 
 import java.time.Duration
 import java.time.Instant

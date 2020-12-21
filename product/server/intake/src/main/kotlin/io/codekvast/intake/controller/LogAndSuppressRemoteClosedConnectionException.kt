@@ -21,7 +21,7 @@
  */
 package io.codekvast.intake.controller
 
-import io.codekvast.common.lib.logging.LoggerDelegate
+import io.codekvast.common.logging.LoggerDelegate
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.GenericFilterBean
 import org.springframework.web.util.NestedServletException

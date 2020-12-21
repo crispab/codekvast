@@ -21,7 +21,7 @@
  */
 package io.codekvast.login.http;
 
-import static io.codekvast.common.lib.logging.LoggingUtils.humanReadableDuration;
+import static io.codekvast.common.logging.LoggingUtils.humanReadableDuration;
 
 import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;

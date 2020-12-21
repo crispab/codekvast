@@ -22,7 +22,7 @@
 package io.codekvast.backoffice.service.impl
 
 import io.codekvast.backoffice.service.MailSender
-import io.codekvast.common.lib.logging.LoggerDelegate
+import io.codekvast.common.logging.LoggerDelegate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 

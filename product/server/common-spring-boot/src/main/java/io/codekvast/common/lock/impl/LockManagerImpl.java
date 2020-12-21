@@ -21,7 +21,7 @@
  */
 package io.codekvast.common.lock.impl;
 
-import static io.codekvast.common.lib.logging.LoggingUtils.humanReadableDuration;
+import static io.codekvast.common.logging.LoggingUtils.humanReadableDuration;
 
 import io.codekvast.common.lock.Lock;
 import io.codekvast.common.lock.LockManager;

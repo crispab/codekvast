@@ -21,8 +21,8 @@
  */
 package io.codekvast.intake.controller
 
-import io.codekvast.common.lib.logging.LoggerDelegate
-import io.codekvast.common.lib.logging.LoggingUtils.humanReadableByteCount
+import io.codekvast.common.logging.LoggerDelegate
+import io.codekvast.common.logging.LoggingUtils.humanReadableByteCount
 import io.codekvast.intake.model.PublicationType
 import io.codekvast.intake.model.PublicationType.CODEBASE
 import io.codekvast.intake.model.PublicationType.INVOCATIONS

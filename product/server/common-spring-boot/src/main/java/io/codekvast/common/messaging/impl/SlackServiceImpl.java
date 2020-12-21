@@ -21,7 +21,7 @@
  */
 package io.codekvast.common.messaging.impl;
 
-import static io.codekvast.common.lib.logging.LoggingUtils.humanReadableDuration;
+import static io.codekvast.common.logging.LoggingUtils.humanReadableDuration;
 
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.webhook.Payload;

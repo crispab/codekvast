@@ -22,7 +22,7 @@
 package io.codekvast.backoffice.http
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings
-import io.codekvast.common.lib.logging.LoggerDelegate
+import io.codekvast.common.logging.LoggerDelegate
 import lombok.RequiredArgsConstructor
 import lombok.extern.slf4j.Slf4j
 import org.springframework.web.bind.annotation.ControllerAdvice

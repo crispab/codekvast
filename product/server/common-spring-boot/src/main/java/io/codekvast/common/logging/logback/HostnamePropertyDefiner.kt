@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.lib.logback
+package io.codekvast.common.logging.logback
 
 import ch.qos.logback.core.PropertyDefinerBase
 import java.net.InetAddress
@@ -31,7 +31,7 @@ import java.net.InetAddress
  *
  * <pre>{@code
  *   <configuration>
- *     <define name="hostname" class="io.codekvast.common.lib.logback.HostnamePropertyDefiner"/>
+ *     <define name="hostname" class="io.codekvast.common.logging.logback.HostnamePropertyDefiner"/>
  *     <property scope="context" name="host" value="${hostname}" />
  *     ...
  *   </configuration>

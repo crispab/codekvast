@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.agent.impl;
 
-import static io.codekvast.common.lib.logging.LoggingUtils.humanReadableByteCount;
+import static io.codekvast.common.logging.LoggingUtils.humanReadableByteCount;
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 
 import io.codekvast.common.aspects.Restartable;

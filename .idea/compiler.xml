@@ -49,6 +49,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="codekvast.product.server.common" target="11" />
       <module name="codekvast.product.server.common.integrationTest" target="11" />
       <module name="codekvast.product.server.common.main" target="11" />
       <module name="codekvast.product.server.common.test" target="11" />

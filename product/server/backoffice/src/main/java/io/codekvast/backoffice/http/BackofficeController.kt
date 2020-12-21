@@ -21,7 +21,7 @@
  */
 package io.codekvast.backoffice.http
 
-import io.codekvast.common.lib.logging.LoggerDelegate
+import io.codekvast.common.logging.LoggerDelegate
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model

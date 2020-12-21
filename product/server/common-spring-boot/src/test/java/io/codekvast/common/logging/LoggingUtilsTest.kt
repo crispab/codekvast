@@ -1,7 +1,7 @@
-package io.codekvast.common.lib.logging
+package io.codekvast.common.logging
 
-import io.codekvast.common.lib.logging.LoggingUtils.humanReadableByteCount
-import io.codekvast.common.lib.logging.LoggingUtils.humanReadableDuration
+import io.codekvast.common.logging.LoggingUtils.humanReadableByteCount
+import io.codekvast.common.logging.LoggingUtils.humanReadableDuration
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
