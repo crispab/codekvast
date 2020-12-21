@@ -19,37 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.service
-
-import io.codekvast.intake.model.PublicationType
-import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
-import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
-import io.codekvast.javaagent.model.v2.GetConfigRequest2
-import io.codekvast.javaagent.model.v2.GetConfigResponse2
-import org.springframework.stereotype.Service
-import java.io.InputStream
-
+package io.codekvast.intake.metrics
 
 /**
+ * Statistics for the number of agents that sends data to Codekvast.
+ *
  * @author olle.hallin@crisp.se
  */
-@Service
-class IntakeServiceImpl : IntakeService {
-    override fun getConfig1(request: GetConfigRequest1): GetConfigResponse1 {
-        TODO("Not yet implemented")
-    }
-
-    override fun getConfig2(request: GetConfigRequest2): GetConfigResponse2 {
-        TODO("Not yet implemented")
-    }
-
-    override fun savePublication(
-        publicationType: PublicationType,
-        licenseKey: String,
-        fingerprint: String,
-        publicationSize: Int,
-        inputStream: InputStream
-    ) {
-        TODO("Not yet implemented")
-    }
-}
+data class IntakeStatistics(
+    /** The number of disabled agents.  */
+    val numDisabled: Int,
+    /** The number of enabled but dead agents.  */
+    val numDead: Int,
+    /** The number of alive agents.  */
+    val numAlive: Int
+)
