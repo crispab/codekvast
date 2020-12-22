@@ -11,12 +11,12 @@
         <module name="codekvast.product.server.dashboard.test" />
         <module name="codekvast.product.server.intake.test" />
         <module name="codekvast.product.system-test.test" />
-        <module name="codekvast.product.server.common-spring-boot.integrationTest" />
-        <module name="codekvast.product.server.common-spring-boot.test" />
         <module name="codekvast.product.agent.java-agent.integrationTest" />
         <module name="codekvast.sample.sample-lib.test" />
         <module name="codekvast.sample.sample-gradle-application.test" />
+        <module name="codekvast.product.server.common.integrationTest" />
         <module name="codekvast.product.server.dashboard.integrationTest" />
+        <module name="codekvast.product.server.common.test" />
         <module name="codekvast.product.server.login.test" />
         <module name="codekvast.product.server.stress-tester.test" />
         <module name="codekvast.sample.sample-spring-boot-executable-jar.main" />
@@ -39,8 +39,8 @@
         <module name="codekvast.product.agent.agent-model.main" />
         <module name="codekvast.product.system-test.main" />
         <module name="codekvast.product.server.dashboard.main" />
+        <module name="codekvast.product.server.common.main" />
         <module name="codekvast.product.server.login.main" />
-        <module name="codekvast.product.server.common-spring-boot.main" />
         <module name="codekvast.sample.sample-lib.main" />
         <module name="codekvast.product.server.stress-tester.main" />
         <module name="codekvast.product.server.backoffice.main" />
@@ -50,9 +50,11 @@
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="codekvast.product.server.common-lib" target="11" />
-      <module name="codekvast.product.server.common.integrationTest" target="11" />
-      <module name="codekvast.product.server.common.main" target="11" />
-      <module name="codekvast.product.server.common.test" target="11" />
+      <module name="codekvast.product.server.common-lib.main" target="11" />
+      <module name="codekvast.product.server.common-lib.test" target="11" />
+      <module name="codekvast.product.server.common-spring-boot.integrationTest" target="11" />
+      <module name="codekvast.product.server.common-spring-boot.main" target="11" />
+      <module name="codekvast.product.server.common-spring-boot.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

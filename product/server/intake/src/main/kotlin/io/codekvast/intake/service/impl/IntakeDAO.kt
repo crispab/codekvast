@@ -21,7 +21,7 @@
  */
 package io.codekvast.intake.service.impl
 
-import io.codekvast.intake.metrics.IntakeStatistics
+import io.codekvast.intake.metrics.AgentStatistics
 import java.time.Instant
 import java.util.*
 
@@ -111,5 +111,5 @@ interface IntakeDAO {
      * alive.
      * @return Agent statistics
      */
-    fun getAgentStatistics(nextPollExpectedAfter: Instant): IntakeStatistics
+    fun getAgentStatistics(nextPollExpectedAfter: Instant): AgentStatistics
 }

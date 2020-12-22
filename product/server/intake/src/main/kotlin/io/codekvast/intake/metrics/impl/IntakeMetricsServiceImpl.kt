@@ -22,7 +22,7 @@
 package io.codekvast.intake.metrics.impl
 
 import io.codekvast.intake.metrics.IntakeMetricsService
-import io.codekvast.intake.metrics.IntakeStatistics
+import io.codekvast.intake.metrics.AgentStatistics
 import io.codekvast.intake.model.PublicationType
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
@@ -73,7 +73,7 @@ class IntakeMetricsServiceImpl(private val meterRegistry: MeterRegistry) : Intak
         }
     }
 
-    override fun gaugeAgents(statistics: IntakeStatistics) {
+    override fun gaugeAgents(statistics: AgentStatistics) {
         disabledAgentsGauge.set(statistics.numDisabled)
         deadAgentsGauge.set(statistics.numDead)
         aliveAgentsGauge.set(statistics.numAlive)

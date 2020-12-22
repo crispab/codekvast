@@ -19,162 +19,158 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.service.impl;
+package io.codekvast.intake.service.impl
 
-import io.codekvast.dashboard.metrics.AgentStatistics;
-import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import io.codekvast.common.logging.LoggerDelegate
+import io.codekvast.intake.metrics.AgentStatistics
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.stereotype.Repository
+import java.sql.Timestamp
+import java.time.Duration
+import java.time.Instant
+import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
-/** @author olle.hallin@crisp.se */
+/** @author olle.hallin@crisp.se
+ */
 @Repository
-@RequiredArgsConstructor
-@Slf4j
-public class IntakeDAOImpl implements IntakeDAO {
+class IntakeDAOImpl(private val jdbcTemplate: JdbcTemplate) : IntakeDAO {
 
-  private static final String ENVIRONMENTS_CACHE = "environments";
+    val logger by LoggerDelegate()
 
-  private final JdbcTemplate jdbcTemplate;
-
-  @Override
-  public void writeLockAgentStateForCustomer(long customerId) {
-    Instant startedAt = Instant.now();
-    List<Long> ids =
-        jdbcTemplate.queryForList(
+    override fun writeLockAgentStateForCustomer(customerId: Long) {
+        val startedAt = Instant.now()
+        val ids = jdbcTemplate.queryForList(
             "SELECT id FROM agent_state WHERE customerId = ? AND garbage = FALSE ORDER BY customerId, jvmUuid "
-                + "LOCK IN SHARE MODE WAIT 30",
-            Long.class,
-            customerId);
-    logger.info( // TODO: change to debug
-        "Locked {} agent_state rows belonging to customer {} in {}",
-        ids.size(),
-        customerId,
-        Duration.between(startedAt, Instant.now()));
-  }
+                    + "LOCK IN SHARE MODE WAIT 30",
+            Long::class.java,
+            customerId
+        )
 
-  @Override
-  public void markDeadAgentsAsGarbage(
-      long customerId, String thisJvmUuid, Instant nextPollExpectedBefore) {
-    // Mark all agents that have not polled recently as garbage
-    int updated =
-        jdbcTemplate.update(
+        logger.info( // TODO: change to debug
+            "Locked {} agent_state rows belonging to customer {} in {}",
+            ids.size,
+            customerId,
+            Duration.between(startedAt, Instant.now())
+        )
+    }
+
+    override fun markDeadAgentsAsGarbage(
+        customerId: Long, thisJvmUuid: String, nextPollExpectedBefore: Instant
+    ) {
+        // Mark all agents that have not polled recently as garbage
+        val updated = jdbcTemplate.update(
             "UPDATE agent_state SET garbage = TRUE "
-                + "WHERE customerId = ? AND jvmUuid != ? AND garbage = FALSE AND nextPollExpectedAt < ? ",
+                    + "WHERE customerId = ? AND jvmUuid != ? AND garbage = FALSE AND nextPollExpectedAt < ? ",
             customerId,
             thisJvmUuid,
-            Timestamp.from(nextPollExpectedBefore));
-    if (updated > 0) {
-      logger.info("Detected {} dead agents for customer {}", updated, customerId);
+            Timestamp.from(nextPollExpectedBefore)
+        )
+        if (updated > 0) {
+            logger.info("Detected {} dead agents for customer {}", updated, customerId)
+        }
     }
-  }
 
-  @Override
-  public void setAgentTimestamps(
-      long customerId, String thisJvmUuid, Instant thisPollAt, Instant nextExpectedPollAt) {
-
-    Timestamp thisPollAtTimestamp = Timestamp.from(thisPollAt);
-    Timestamp nextExpectedPollTimestamp = Timestamp.from(nextExpectedPollAt);
-
-    int updated =
-        jdbcTemplate.update(
+    override fun setAgentTimestamps(
+        customerId: Long, thisJvmUuid: String, thisPollAt: Instant, nextExpectedPollAt: Instant
+    ) {
+        val thisPollAtTimestamp = Timestamp.from(thisPollAt)
+        val nextExpectedPollTimestamp = Timestamp.from(nextExpectedPollAt)
+        val updated = jdbcTemplate.update(
             "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = FALSE WHERE customerId = ? AND jvmUuid = ? ",
             thisPollAtTimestamp,
             nextExpectedPollTimestamp,
             customerId,
-            thisJvmUuid);
-    if (updated == 0) {
-      jdbcTemplate.update(
-          "INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?, TRUE, FALSE)",
-          customerId,
-          thisJvmUuid,
-          thisPollAtTimestamp,
-          nextExpectedPollTimestamp);
-
-      logger.info("The agent {}:'{}' has started", customerId, thisJvmUuid);
-    } else {
-      logger.debug("The agent {}:'{}' has polled", customerId, thisJvmUuid);
+            thisJvmUuid
+        )
+        if (updated == 0) {
+            jdbcTemplate.update(
+                "INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?, TRUE, FALSE)",
+                customerId,
+                thisJvmUuid,
+                thisPollAtTimestamp,
+                nextExpectedPollTimestamp
+            )
+            logger.info("The agent {}:'{}' has started", customerId, thisJvmUuid)
+        } else {
+            logger.debug("The agent {}:'{}' has polled", customerId, thisJvmUuid)
+        }
     }
-  }
 
-  @Override
-  public int getNumOtherEnabledAliveAgents(
-      long customerId, String thisJvmUuid, Instant nextPollExpectedAfter) {
-    return jdbcTemplate.queryForObject(
-        "SELECT COUNT(1) FROM agent_state "
-            + "WHERE enabled = TRUE AND garbage = FALSE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
-        Integer.class,
-        customerId,
-        Timestamp.from(nextPollExpectedAfter),
-        thisJvmUuid);
-  }
-
-  @Override
-  @Cacheable(ENVIRONMENTS_CACHE)
-  public boolean isEnvironmentEnabled(long customerId, String thisJvmUuid) {
-    // At the first poll from a new environment, no data has yet been published. The environment is
-    // part of the common publication data.
-    List<Boolean> list =
-        jdbcTemplate.queryForList(
-            "SELECT enabled FROM environments e, jvms j "
-                + "WHERE e.customerId = ? AND e.id = j.environmentId AND j.uuid = ? ",
-            Boolean.class,
+    override fun getNumOtherEnabledAliveAgents(
+        customerId: Long, thisJvmUuid: String, nextPollExpectedAfter: Instant
+    ): Int {
+        return jdbcTemplate.queryForObject(
+            "SELECT COUNT(1) FROM agent_state "
+                    + "WHERE enabled = TRUE AND garbage = FALSE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
+            Int::class.java,
             customerId,
-            thisJvmUuid);
-    // If this is the first poll, return true. Or else nothing will be published.
-    return list.isEmpty() || list.get(0);
-  }
+            Timestamp.from(nextPollExpectedAfter),
+            thisJvmUuid
+        )
+    }
 
-  @Override
-  @Cacheable(ENVIRONMENTS_CACHE)
-  public Optional<String> getEnvironmentName(String jvmUuid) {
-    List<String> names =
-        jdbcTemplate.queryForList(
+    @Cacheable(ENVIRONMENTS_CACHE)
+    override fun isEnvironmentEnabled(customerId: Long, thisJvmUuid: String): Boolean {
+        // At the first poll from a new environment, no data has yet been published. The environment is
+        // part of the common publication data.
+        val list = jdbcTemplate.queryForList(
+            "SELECT enabled FROM environments e, jvms j "
+                    + "WHERE e.customerId = ? AND e.id = j.environmentId AND j.uuid = ? ",
+            Boolean::class.java,
+            customerId,
+            thisJvmUuid
+        )
+        // If this is the first poll, return true. Or else nothing will be published.
+        return list.isEmpty() || list[0]
+    }
+
+    @Cacheable(ENVIRONMENTS_CACHE)
+    override fun getEnvironmentName(jvmUuid: String): Optional<String> {
+        val names = jdbcTemplate.queryForList(
             "SELECT name FROM environments e, jvms j "
-                + "WHERE e.id = j.environmentId AND j.uuid = ? ",
-            String.class,
-            jvmUuid);
-    // If this is the first poll, return empty.
-    return names.isEmpty() ? Optional.empty() : Optional.of(names.get(0));
-  }
+                    + "WHERE e.id = j.environmentId AND j.uuid = ? ",
+            String::class.java,
+            jvmUuid
+        )
+        // If this is the first poll, return empty.
+        return if (names.isEmpty()) Optional.empty() else Optional.of(
+            names[0]
+        )
+    }
 
-  @Override
-  public void updateAgentEnabledState(long customerId, String thisJvmUuid, boolean enabled) {
-    jdbcTemplate.update(
-        "UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ? ",
-        enabled,
-        customerId,
-        thisJvmUuid);
-  }
+    override fun updateAgentEnabledState(customerId: Long, thisJvmUuid: String, enabled: Boolean) {
+        jdbcTemplate.update(
+            "UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ? ",
+            enabled,
+            customerId,
+            thisJvmUuid
+        )
+    }
 
-  @Override
-  public AgentStatistics getAgentStatistics(Instant nextPollExpectedAfter) {
-    AtomicInteger numDisabled = new AtomicInteger();
-    AtomicInteger numDead = new AtomicInteger();
-    AtomicInteger numAlive = new AtomicInteger();
+    override fun getAgentStatistics(nextPollExpectedAfter: Instant): AgentStatistics {
+        val numDisabled = AtomicInteger()
+        val numDead = AtomicInteger()
+        val numAlive = AtomicInteger()
+        jdbcTemplate.query(
+            "SELECT enabled, nextPollExpectedAt FROM agent_state WHERE garbage = FALSE"
+        ) { rs ->
+            val enabled: Boolean = rs.getBoolean("enabled")
+            val nextPollExpectedAt: Instant = rs.getTimestamp("nextPollExpectedAt").toInstant()
+            val alive = enabled && nextPollExpectedAt.isAfter(nextPollExpectedAfter)
+            numDisabled.addAndGet(if (!enabled) 1 else 0)
+            numDead.addAndGet(if (enabled && !alive) 1 else 0)
+            numAlive.addAndGet(if (alive) 1 else 0)
+        }
+        return AgentStatistics(
+            numDisabled = numDisabled.get(),
+            numDead = numDead.get(),
+            numAlive = numAlive.get()
+        )
+    }
 
-    jdbcTemplate.query(
-        "SELECT enabled, nextPollExpectedAt FROM agent_state WHERE garbage = FALSE",
-        rs -> {
-          boolean enabled = rs.getBoolean("enabled");
-          Instant nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt").toInstant();
-          boolean alive = enabled && nextPollExpectedAt.isAfter(nextPollExpectedAfter);
-
-          numDisabled.addAndGet(!enabled ? 1 : 0);
-          numDead.addAndGet(enabled && !alive ? 1 : 0);
-          numAlive.addAndGet(alive ? 1 : 0);
-        });
-    return AgentStatistics.builder()
-        .numDisabled(numDisabled.get())
-        .numDead(numDead.get())
-        .numAlive(numAlive.get())
-        .build();
-  }
+    companion object {
+        private const val ENVIRONMENTS_CACHE = "environments"
+    }
 }

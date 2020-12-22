@@ -1,0 +1,7 @@
+# This profile is activated when deploying to AWS Fargate
+codekvast:
+  intake:
+    fileImportQueuePath: /codekvast/queue
+spring:
+  profiles:
+    include: common-fargate

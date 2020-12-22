@@ -1,0 +1,9 @@
+codekvast:
+  intake:
+    deleteImportedFiles:                      true
+    fileImportIntervalSeconds:                60
+    fileImportQueuePath:                      /tmp/codekvast
+spring:
+  application.name:    Codekvast Intake
+  profiles:
+    include: common

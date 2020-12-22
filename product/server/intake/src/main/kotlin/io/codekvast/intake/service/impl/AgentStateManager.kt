@@ -19,18 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.metrics
+package io.codekvast.intake.service.impl
+
+import io.codekvast.common.customer.CustomerData
 
 /**
- * Statistics for the number of agents that sends data to Codekvast.
+ * Manages agent state, making sure not too many agents are enabled at the same time.
  *
  * @author olle.hallin@crisp.se
  */
-data class IntakeStatistics(
-    /** The number of disabled agents.  */
-    val numDisabled: Int,
-    /** The number of enabled but dead agents.  */
-    val numDead: Int,
-    /** The number of alive agents.  */
-    val numAlive: Int
-)
+interface AgentStateManager {
+
+    /**
+     * Checks whether a certain agent may proceed with uploading publications.
+     */
+    fun updateAgentState(
+        customerData: CustomerData, jvmUuid: String, appName: String, environment: String
+    ): Boolean
+}

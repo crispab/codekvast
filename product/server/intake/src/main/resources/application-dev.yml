@@ -1,0 +1,11 @@
+server:
+  port: 8083
+management:
+  server:
+    port: 9083
+spring:
+  profiles:
+    include: common-dev
+codekvast:
+  intake:
+    file-import-queue-path: not-used
