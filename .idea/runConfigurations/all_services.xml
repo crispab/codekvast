@@ -1,9 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="all-services" type="CompoundRunConfigurationType">
+    <toRun name="CodekvastLoginApplication" type="SpringBootApplicationConfigurationType" />
+    <toRun name="npm start dashboard" type="js.build_tools.npm" />
+    <toRun name="CodekvastIntakeApplication" type="SpringBootApplicationConfigurationType" />
     <toRun name="CodekvastDashboardApplication" type="SpringBootApplicationConfigurationType" />
     <toRun name="CodekvastBackofficeApplication" type="SpringBootApplicationConfigurationType" />
-    <toRun name="npm start dashboard" type="js.build_tools.npm" />
-    <toRun name="CodekvastLoginApplication" type="SpringBootApplicationConfigurationType" />
     <method v="2" />
   </configuration>
 </component>

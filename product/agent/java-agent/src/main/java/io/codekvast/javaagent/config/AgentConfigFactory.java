@@ -54,7 +54,7 @@ public class AgentConfigFactory {
   private static final String DEFAULT_PACKAGES = "missing-packages";
   private static final int DEFAULT_SCHEDULER_INITIAL_DELAY_MILLIS = 10_000;
   private static final int DEFAULT_SCHEDULER_INTERVAL_MILLIS = 10_000;
-  private static final String DEFAULT_SERVER_URL = "http://localhost:8081";
+  private static final String DEFAULT_SERVER_URL = "http://localhost:8083";
 
   private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
   private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
