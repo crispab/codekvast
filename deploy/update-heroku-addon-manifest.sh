@@ -19,8 +19,8 @@ if [[ ! -f ${secrets} ]]; then
     exit 1
 fi
 
-declare herokuApiPassword=$(yq read ${secrets} secrets.codekvast.heroku.provision.api.password)
-declare herokuApiSsoSalt=$(yq read ${secrets} secrets.codekvast.heroku.provision.api.ssoSalt)
+declare herokuApiPassword=$(yq eval '.secrets.codekvast.heroku.provision.api.password' ${secrets})
+declare herokuApiSsoSalt=$(yq eval '.secrets.codekvast.heroku.provision.api.ssoSalt' ${secrets})
 
 if [[ -z "$herokuApiPassword" ]]; then
     echo "Cannot find secrets.codekvast.heroku.provision.api.password in ${secrets}" 1>&2

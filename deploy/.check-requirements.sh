@@ -28,4 +28,4 @@ fi
 
 cd $(dirname $0)
 export AWS_PROFILE=codekvast
-export AWS_REGION=$(yq read playbooks/vars/common.yml aws_region)
+export AWS_REGION=$(yq eval '.aws_region' playbooks/vars/common.yml)

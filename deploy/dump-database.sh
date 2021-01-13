@@ -27,7 +27,7 @@ if [[ ! -d ${targetDirectory} ]]; then
 fi
 
 declare host=db-${srcEnv}.codekvast.io
-declare password=$(yq read playbooks/vars/secrets.yml secrets.mariadb.${srcEnv}.root_password)
+declare password=$(yq eval ".secrets.mariadb.${srcEnv}.root_password" playbooks/vars/secrets.yml )
 declare startedAtSecond=$(date +"%s")
 declare targetFile=${targetDirectory}/${dumpFile}
 echo "mysqldump --host=${host} --user=${username} --password=XXX --single-transaction --databases codekvast > $targetFile"

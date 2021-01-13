@@ -40,7 +40,7 @@ jib {
         image = "azul/zulu-openjdk-alpine:${getOpenJdkVersion()}"
     }
     to {
-        image = "${getAwsAccount()}.dkr.ecr.eu-central-1.amazonaws.com/codekvast/${archivesBaseName}"
+        image = "${getAwsAccount()}.dkr.ecr.${getAwsRegion()}.amazonaws.com/codekvast/${archivesBaseName}"
         credHelper = 'ecr-login'
         tags = [codekvastDisplayVersion, 'latest']
     }
@@ -70,10 +70,14 @@ def getOpenJdkVersion() {
     return matcher.group(1)
 }
 
+def getAwsRegion() {
+    return "yq eval .aws_region $rootDir/deploy/playbooks/vars/common.yml".execute().in.text.trim()
+}
+
 def getAwsAccount() {
-    return "yq read $rootDir/deploy/playbooks/vars/common.yml aws_account".execute().in.text.trim()
+    return "yq eval .aws_account $rootDir/deploy/playbooks/vars/common.yml".execute().in.text.trim()
 }
 
 def getCodekvastLicenseKey() {
-    return "yq read $rootDir/deploy/playbooks/vars/secrets.yml secrets.codekvast.agent.licenseKey".execute().in.text.trim()
+    return "yq eval .secrets.codekvast.agent.licenseKey $rootDir/deploy/playbooks/vars/secrets.yml".execute().in.text.trim()
 }
