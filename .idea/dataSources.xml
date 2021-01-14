@@ -10,23 +10,11 @@
         <property name="autoReconnect" value="true" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="codekvast@staging" uuid="14b18f70-8dc6-4aa7-a9f1-4e4eed2f67f2">
-      <driver-ref>mysql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://db-staging.codekvast.io:3306/codekvast</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="codekvast@prod (codekvast)" read-only="true" uuid="954eda93-2b95-4c3c-be3a-c1e662fe311c">
       <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mariadb://db-prod.codekvast.io:3306/codekvast</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="codekvast@staging (root)" uuid="77fc0c19-bb81-474d-a026-0d0553c2dcd9">
-      <driver-ref>mysql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://db-staging.codekvast.io:3306/codekvast</jdbc-url>
     </data-source>
     <data-source source="LOCAL" name="codekvast@prod (root)" read-only="true" uuid="361fe1a8-d8fd-4dcb-9333-45505b8e643e">
       <driver-ref>mariadb</driver-ref>
