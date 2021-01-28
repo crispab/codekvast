@@ -3,7 +3,7 @@
 ## 1.4.1
 
 1. codekvast-javaagent now uses aspectweaver 1.9.6
-2. Upgraded to Kotlin 1.4.21, Spring Boot 2.4.1, Angular 11
+2. Upgraded to Kotlin 1.4.21, Spring Boot 2.4.2, Angular 11
 4. Bug fixes
 5. dbHealthIndicator now runs in a separate connection pool
 
