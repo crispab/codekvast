@@ -23,7 +23,6 @@ idea.project.vcs = 'Git'
 subprojects {
     buildscript { repositories { jcenter() } }
 
-    apply plugin: 'eclipse'
     apply plugin: 'idea'
 
     def gitHead = Grgit.open(dir: rootDir).head()
