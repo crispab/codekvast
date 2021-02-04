@@ -48,13 +48,6 @@
         <module name="codekvast.product.agent.java-agent.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
-      <module name="codekvast.product.server.common-lib" target="11" />
-      <module name="codekvast.product.server.common-lib.main" target="11" />
-      <module name="codekvast.product.server.common-lib.test" target="11" />
-      <module name="codekvast.product.server.common-spring-boot.integrationTest" target="11" />
-      <module name="codekvast.product.server.common-spring-boot.main" target="11" />
-      <module name="codekvast.product.server.common-spring-boot.test" target="11" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8" />
   </component>
 </project>

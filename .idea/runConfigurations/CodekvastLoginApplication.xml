@@ -42,7 +42,6 @@
     </additionalParameters>
     <RunnerSettings />
     <method v="2">
-      <option name="Gradle.BeforeRunTask" enabled="true" tasks="startDockerContainers" externalProjectPath="$PROJECT_DIR$/product/server/login" vmOptions="" scriptParameters="" />
       <option name="Make" enabled="true" />
     </method>
   </configuration>
