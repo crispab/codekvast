@@ -1,6 +1,0 @@
-applicationType: default
-defaultPackage: io.codekvast.intake
-testFramework: junit
-sourceLanguage: kotlin
-buildTool: gradle
-features: [annotation-api, app-name, data, data-jdbc, flyway, gradle, hibernate-validator, http-client, jdbc-hikari, jib, junit, kotlin, kotlin-application, kotlin-extension-functions, logback, management, mariadb, micrometer, micrometer-datadog, netty-server, openapi, rabbitmq, readme, testcontainers, yaml]
