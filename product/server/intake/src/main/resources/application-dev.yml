@@ -6,6 +6,3 @@ management:
 spring:
   profiles:
     include: common-dev
-codekvast:
-  intake:
-    file-import-queue-path: not-used

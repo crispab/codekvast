@@ -22,14 +22,14 @@
 package io.codekvast.intake.service.impl
 
 import io.codekvast.common.aspects.Restartable
-import io.codekvast.common.customer.CustomerData
 import io.codekvast.common.customer.CustomerService
-import io.codekvast.common.customer.PricePlan
 import io.codekvast.common.logging.LoggerDelegate
+import io.codekvast.common.logging.LoggingUtils.humanReadableByteCount
 import io.codekvast.common.messaging.CorrelationIdHolder
 import io.codekvast.intake.bootstrap.CodekvastIntakeSettings
 import io.codekvast.intake.metrics.IntakeMetricsService
 import io.codekvast.intake.model.PublicationType
+import io.codekvast.intake.model.PublicationType.*
 import io.codekvast.intake.service.IntakeService
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
@@ -38,8 +38,10 @@ import io.codekvast.javaagent.model.v2.GetConfigResponse2
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
-import java.lang.Exception
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.*
 import java.util.regex.Pattern
 import java.util.stream.Collectors
@@ -57,14 +59,14 @@ class IntakeServiceImpl(
     private val metricsService: IntakeMetricsService
 ) : IntakeService {
 
-    val UNKNOWN_ENVIRONMENT = "<UNKNOWN>"
-    val CORRELATION_ID_PATTERN = buildCorrelationIdPattern()
+    val unknownEnvironment = "<UNKNOWN>"
+    val correlationIdPattern = buildCorrelationIdPattern()
 
     val logger by LoggerDelegate()
 
     private fun buildCorrelationIdPattern(): Pattern {
         val publicationTypes: String =
-            Arrays.stream(PublicationType.values())
+            Arrays.stream(values())
                 .map(PublicationType::toString)
                 .collect(Collectors.joining("|", "(", ")"))
         return Pattern.compile("""$publicationTypes-([0-9]+)-([a-fA-F0-9_-]+)\.ser$""")
@@ -73,7 +75,7 @@ class IntakeServiceImpl(
     @Transactional(rollbackFor = [Exception::class])
     @Restartable
     override fun getConfig1(request: GetConfigRequest1): GetConfigResponse1 {
-        val environment = intakeDAO.getEnvironmentName(request.jvmUuid).orElse(UNKNOWN_ENVIRONMENT)
+        val environment = intakeDAO.getEnvironmentName(request.jvmUuid).orElse(unknownEnvironment)
         val request2 = GetConfigRequest2.fromFormat1(request, environment)
         return GetConfigResponse2.toFormat1(getConfig2(request2))
     }
@@ -115,7 +117,15 @@ class IntakeServiceImpl(
         publicationSize: Int,
         inputStream: InputStream
     ): File {
-        TODO("Not yet implemented")
+        inputStream.use {
+            val customerData = customerService.getCustomerDataByLicenseKey(licenseKey)
+            if (publicationType == CODEBASE) {
+                customerService.assertPublicationSize(customerData, publicationSize)
+            }
+            return doSaveInputStream(
+                publicationType, customerData.customerId, codebaseFingerprint, inputStream
+            )
+        }
     }
 
     override fun generatePublicationFile(
@@ -129,7 +139,7 @@ class IntakeServiceImpl(
 
     override fun getPublicationTypeFromPublicationFile(publicationFile: File): Optional<PublicationType> {
         val fileName = publicationFile.name
-        val matcher = CORRELATION_ID_PATTERN.matcher(fileName)
+        val matcher = correlationIdPattern.matcher(fileName)
         if (matcher.matches()) {
             return Optional.of(
                 PublicationType.valueOf(
@@ -143,7 +153,7 @@ class IntakeServiceImpl(
 
     override fun getCorrelationIdFromPublicationFile(publicationFile: File): String {
         val fileName = publicationFile.name
-        val matcher = CORRELATION_ID_PATTERN.matcher(fileName)
+        val matcher = correlationIdPattern.matcher(fileName)
         if (matcher.matches()) {
             return matcher.group(3)
         }
@@ -152,5 +162,39 @@ class IntakeServiceImpl(
             fileName
         )
         return CorrelationIdHolder.generateNew()
+    }
+
+    private fun doSaveInputStream(
+        publicationType: PublicationType,
+        customerId: Long,
+        codebaseFingerprint: String,
+        inputStream: InputStream
+    ): File {
+        createDirectory(settings.fileImportQueuePath)
+        val result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get())
+
+        // Hide the file from the FileImportTask until it is complete.
+        val tmpPath = result.toPath().resolveSibling(result.name + ".tmp")
+        Files.copy(inputStream, tmpPath)
+        Files.move(tmpPath, result.toPath(), StandardCopyOption.ATOMIC_MOVE)
+        logger.info(
+            "Saved {} ({}), fingerprint = {}",
+            result.name,
+            humanReadableByteCount(result.length()),
+            codebaseFingerprint
+        )
+        metricsService.gaugePhysicalPublicationSize(publicationType, result.length())
+        return result
+    }
+
+    private fun createDirectory(directory: File) {
+        if (!directory.isDirectory) {
+            logger.debug("Creating {}", directory)
+            directory.mkdirs()
+            if (!directory.isDirectory) {
+                throw IOException("Could not create directory $directory")
+            }
+            logger.info("Created {}", directory)
+        }
     }
 }
