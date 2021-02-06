@@ -1,9 +1,9 @@
-package io.codekvast.intake.controller
+package io.codekvast.intake.agent.controller
 
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
 import io.codekvast.intake.model.LicenseViolationException
-import io.codekvast.intake.service.IntakeService
+import io.codekvast.intake.agent.service.AgentService
 import io.codekvast.javaagent.model.Endpoints
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
@@ -21,14 +21,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 
-class IntakeControllerTest {
+class AgentControllerTest {
     private lateinit var mockMvc: MockMvc
     private val gson = Gson()
-    private val intakeService: IntakeService = mock()
+    private val agentService: AgentService = mock()
 
     @BeforeEach
     fun setup() {
-        val intakeController = IntakeController(intakeService)
+        val intakeController = AgentController(agentService)
 
         mockMvc = MockMvcBuilders.standaloneSetup(intakeController)
             .setMessageConverters(GsonHttpMessageConverter(), StringHttpMessageConverter())
@@ -90,7 +90,7 @@ class IntakeControllerTest {
     @Test
     @Throws(Exception::class)
     fun pollConfig2_should_reject_invalid_licenseKey() {
-        whenever(intakeService.getConfig2(any()))
+        whenever(agentService.getConfig2(any()))
             .thenThrow(LicenseViolationException("foobar"))
 
         mockMvc
@@ -105,7 +105,7 @@ class IntakeControllerTest {
     @Test
     @Throws(Exception::class)
     fun pollConfig1_should_accept_valid_request_with_accept_application_json_1() {
-        whenever(intakeService.getConfig1(any()))
+        whenever(agentService.getConfig1(any()))
             .thenReturn(
                 GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build()
             )
@@ -123,7 +123,7 @@ class IntakeControllerTest {
     @Test
     @Throws(Exception::class)
     fun pollConfig2_should_accept_valid_request_with_accept_application_json_2() {
-        whenever(intakeService.getConfig2(any()))
+        whenever(agentService.getConfig2(any()))
             .thenReturn(
                 GetConfigResponse2.sample().toBuilder().codeBasePublisherName("foobar").build()
             )
@@ -141,7 +141,7 @@ class IntakeControllerTest {
     @Test
     @Throws(Exception::class)
     fun pollConfig2_should_accept_valid_request_with_accept_application_json_utf8() {
-        whenever(intakeService.getConfig2(any()))
+        whenever(agentService.getConfig2(any()))
             .thenReturn(
                 GetConfigResponse2.sample().toBuilder().codeBasePublisherName("foobar").build()
             )
@@ -208,7 +208,7 @@ class IntakeControllerTest {
             )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().string("OK"))
-        verify(intakeService)
+        verify(agentService)
             .savePublication(
                 eq(publicationType),
                 eq(licenseKey),

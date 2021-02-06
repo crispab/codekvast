@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.service.impl
+package io.codekvast.intake.agent.service.impl
 
 import io.codekvast.common.aspects.Restartable
 import io.codekvast.common.customer.CustomerService
@@ -30,7 +30,7 @@ import io.codekvast.intake.bootstrap.CodekvastIntakeSettings
 import io.codekvast.intake.metrics.IntakeMetricsService
 import io.codekvast.intake.model.PublicationType
 import io.codekvast.intake.model.PublicationType.*
-import io.codekvast.intake.service.IntakeService
+import io.codekvast.intake.agent.service.AgentService
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
 import io.codekvast.javaagent.model.v2.GetConfigRequest2
@@ -51,13 +51,13 @@ import java.util.stream.Collectors
  * @author olle.hallin@crisp.se
  */
 @Service
-class IntakeServiceImpl(
+class AgentServiceImpl(
     private val settings: CodekvastIntakeSettings,
     private val customerService: CustomerService,
     private val intakeDAO: IntakeDAO,
     private val agentStateManager: AgentStateManager,
     private val metricsService: IntakeMetricsService
-) : IntakeService {
+) : AgentService {
 
     val unknownEnvironment = "<UNKNOWN>"
     val correlationIdPattern = buildCorrelationIdPattern()

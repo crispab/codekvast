@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.service
+package io.codekvast.intake.agent.service
 
 import io.codekvast.intake.model.PublicationType
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
@@ -33,7 +33,7 @@ import java.util.*
 /**
  * @author olle.hallin@crisp.se
  */
-interface IntakeService {
+interface AgentService {
     /**
      * What config parameters should this javaagent use?
      *

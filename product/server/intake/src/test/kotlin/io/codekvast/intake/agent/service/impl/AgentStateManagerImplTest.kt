@@ -1,4 +1,4 @@
-package io.codekvast.intake.service.impl
+package io.codekvast.intake.agent.service.impl
 
 import com.nhaarman.mockitokotlin2.whenever
 import io.codekvast.common.customer.CustomerData

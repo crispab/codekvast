@@ -1,4 +1,4 @@
-package io.codekvast.intake.service.impl
+package io.codekvast.intake.agent.service.impl
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -9,7 +9,7 @@ import io.codekvast.common.messaging.CorrelationIdHolder
 import io.codekvast.intake.bootstrap.CodekvastIntakeSettings
 import io.codekvast.intake.metrics.IntakeMetricsService
 import io.codekvast.intake.model.PublicationType.*
-import io.codekvast.intake.service.IntakeService
+import io.codekvast.intake.agent.service.AgentService
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
@@ -28,7 +28,7 @@ import java.io.InputStream
 import java.lang.Exception
 import java.util.*
 
-internal class IntakeServiceImplTest {
+internal class AgentServiceImplTest {
     @TempDir
     internal lateinit var temporaryFolder: File
 
@@ -42,7 +42,7 @@ internal class IntakeServiceImplTest {
     private lateinit var intakeMetricsService: IntakeMetricsService
 
     private val customerData = CustomerData.sample()
-    private lateinit var service: IntakeService
+    private lateinit var service: AgentService
 
     @BeforeEach
     fun beforeTest() {
@@ -52,7 +52,7 @@ internal class IntakeServiceImplTest {
         whenever(customerService.getCustomerDataByLicenseKey(ArgumentMatchers.anyString()))
             .thenReturn(customerData)
 
-        service = IntakeServiceImpl(
+        service = AgentServiceImpl(
             settings,
             customerService,
             intakeDAO,

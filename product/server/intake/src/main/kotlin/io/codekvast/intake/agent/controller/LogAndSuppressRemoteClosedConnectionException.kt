@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.controller
+package io.codekvast.intake.agent.controller
 
 import io.codekvast.common.logging.LoggerDelegate
 import org.springframework.stereotype.Component

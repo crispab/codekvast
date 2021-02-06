@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.service.impl
+package io.codekvast.intake.agent.service.impl
 
 import io.codekvast.common.customer.CustomerData
 import io.codekvast.common.customer.CustomerService

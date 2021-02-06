@@ -19,21 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.service.impl
-
-import io.codekvast.common.customer.CustomerData
-
 /**
- * Manages agent state, making sure not too many agents are enabled at the same time.
- *
- * @author olle.hallin@crisp.se
+ * This package contains stuff dealing with Codekvasts agents; responding to config polls and
+ * receiving and storing publication files in the file system where the file import task can find
+ * them.
  */
-interface AgentStateManager {
-
-    /**
-     * Checks whether a certain agent may proceed with uploading publications.
-     */
-    fun updateAgentState(
-        customerData: CustomerData, jvmUuid: String, appName: String, environment: String
-    ): Boolean
-}
+package io.codekvast.intake.agent;

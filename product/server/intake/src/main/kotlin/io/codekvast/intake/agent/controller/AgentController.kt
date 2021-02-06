@@ -19,14 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.controller
+package io.codekvast.intake.agent.controller
 
 import io.codekvast.common.logging.LoggerDelegate
 import io.codekvast.common.logging.LoggingUtils.humanReadableByteCount
 import io.codekvast.intake.model.PublicationType
 import io.codekvast.intake.model.PublicationType.CODEBASE
 import io.codekvast.intake.model.PublicationType.INVOCATIONS
-import io.codekvast.intake.service.IntakeService
+import io.codekvast.intake.agent.service.AgentService
 import io.codekvast.javaagent.model.Endpoints.Agent.*
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
@@ -47,7 +47,7 @@ import javax.validation.Valid
  */
 @RestController
 @RequestMapping(consumes = [MULTIPART_FORM_DATA_VALUE], produces = [TEXT_PLAIN_VALUE])
-class IntakeController @Inject constructor(private val intakeService: IntakeService) {
+class AgentController @Inject constructor(private val agentService: AgentService) {
 
     private val logger by LoggerDelegate()
 
@@ -66,7 +66,7 @@ class IntakeController @Inject constructor(private val intakeService: IntakeServ
     fun getConfig1(@Valid @RequestBody request: GetConfigRequest1): GetConfigResponse1 {
         logger.debug("Received {}", request)
 
-        val response = intakeService.getConfig1(request)
+        val response = agentService.getConfig1(request)
 
         logger.debug("Responds with {}", response)
         return response
@@ -81,7 +81,7 @@ class IntakeController @Inject constructor(private val intakeService: IntakeServ
     fun getConfig2(@Valid @RequestBody request: GetConfigRequest2): GetConfigResponse2 {
         logger.debug("Received {}", request)
 
-        val response = intakeService.getConfig2(request)
+        val response = agentService.getConfig2(request)
 
         logger.debug("Responds with {}", response)
         return response
@@ -129,7 +129,7 @@ class IntakeController @Inject constructor(private val intakeService: IntakeServ
             humanReadableByteCount(file.size)
         )
 
-        intakeService.savePublication(
+        agentService.savePublication(
             publicationType,
             licenseKey,
             fingerprint,
