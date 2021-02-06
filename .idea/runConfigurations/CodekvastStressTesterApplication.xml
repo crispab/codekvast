@@ -15,6 +15,7 @@
     <option name="ACTIVE_PROFILES" value="dev,common-dev" />
     <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
     <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="SHORTEN_COMMAND_LINE" value="NONE" />
     <additionalParameters>
       <param>
         <option name="enabled" value="true" />

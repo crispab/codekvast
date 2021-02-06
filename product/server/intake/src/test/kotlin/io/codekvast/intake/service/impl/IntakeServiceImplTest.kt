@@ -30,7 +30,7 @@ import java.util.*
 
 internal class IntakeServiceImplTest {
     @TempDir
-    private lateinit var temporaryFolder: File
+    internal lateinit var temporaryFolder: File
 
     @Mock
     private lateinit var customerService: CustomerService

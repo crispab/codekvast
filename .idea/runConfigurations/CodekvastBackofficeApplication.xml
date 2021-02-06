@@ -22,6 +22,7 @@
     <option name="VM_PARAMETERS" value="-ea -XX:+UseParallelGC -Xms10m -Xmx100m -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=&quot;/tmp/codekvast-backoffice.hprof&quot;" />
     <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
     <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="SHORTEN_COMMAND_LINE" value="NONE" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <additionalParameters>
