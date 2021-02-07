@@ -8,6 +8,13 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.16/6dc192c7f93ec1853f70d59d8a6dcf94eb42866/lombok-1.18.16.jar" />
         </processorPath>
+        <module name="codekvast.sample.sample-spring-boot-executable-jar.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.18/481f5bfed3ae29f656eedfe9e98c8365b8ba5c57/lombok-1.18.18.jar" />
+        </processorPath>
         <module name="codekvast.product.server.dashboard.test" />
         <module name="codekvast.product.server.intake.test" />
         <module name="codekvast.product.system-test.test" />
@@ -19,7 +26,6 @@
         <module name="codekvast.product.server.common.test" />
         <module name="codekvast.product.server.login.test" />
         <module name="codekvast.product.server.stress-tester.test" />
-        <module name="codekvast.sample.sample-spring-boot-executable-jar.main" />
         <module name="codekvast.product.server.backoffice.integrationTest" />
         <module name="codekvast.product.agent.java-agent.test" />
         <module name="codekvast.product.server.backoffice.test" />
@@ -31,7 +37,7 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.4.2/176690129454b18c05ecd6f2f6bfb1b0fa4ee3ac/spring-boot-configuration-processor-2.4.2.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.16/6dc192c7f93ec1853f70d59d8a6dcf94eb42866/lombok-1.18.16.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.18/481f5bfed3ae29f656eedfe9e98c8365b8ba5c57/lombok-1.18.18.jar" />
         </processorPath>
         <module name="codekvast.sample.sample-gradle-application.main" />
         <module name="codekvast.product.server.db-migration.main" />

@@ -19,8 +19,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/** REST API offered to the Codekvast Agent. */
+package io.codekvast.intake.file_import.impl;
 
-// TODO: remove the io.codekvast.dashboard.agent package when codekvast-intake has been deployed to
-//   production
-package io.codekvast.dashboard.agent;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+
+/** @author olle.hallin@crisp.se */
+@Value
+@Builder
+class SyntheticSignaturePattern {
+  @NonNull private final Long id;
+  @NonNull private final String pattern;
+}

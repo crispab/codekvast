@@ -19,8 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/** REST API offered to the Codekvast Agent. */
+package io.codekvast.intake.file_import
 
-// TODO: remove the io.codekvast.dashboard.agent package when codekvast-intake has been deployed to
-//   production
-package io.codekvast.dashboard.agent;
+import io.codekvast.javaagent.model.v2.InvocationDataPublication2
+
+/** @author olle.hallin@crisp.se
+ */
+interface InvocationDataImporter {
+    /**
+     * Imports an InvocationDataPublication2
+     *
+     * @param publication The publication to import.
+     * @return true iff the publication was handled.
+     */
+    fun importPublication(publication: InvocationDataPublication2): Boolean
+}

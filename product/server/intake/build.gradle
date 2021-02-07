@@ -19,9 +19,8 @@ configurations {
 dependencies {
     implementation project(':product:agent:agent-model')
     implementation project(':product:server:common')
+    implementation project(':product:server:db-migration')
     implementation "com.google.code.gson:gson:$gsonVersion"
-
-    runtimeOnly project(':product:server:db-migration')
 
     testImplementation junit5Framework
 

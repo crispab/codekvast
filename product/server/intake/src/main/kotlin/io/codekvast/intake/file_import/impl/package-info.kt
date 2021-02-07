@@ -19,8 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/** REST API offered to the Codekvast Agent. */
-
-// TODO: remove the io.codekvast.dashboard.agent package when codekvast-intake has been deployed to
-//   production
-package io.codekvast.dashboard.agent;
+/**
+ * Implementations of the file import stuff.
+ *
+ * @author olle.hallin@crisp.se
+ */
+package io.codekvast.intake.file_import.impl

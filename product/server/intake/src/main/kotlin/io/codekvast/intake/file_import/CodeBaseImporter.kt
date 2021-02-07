@@ -19,8 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/** REST API offered to the Codekvast Agent. */
+package io.codekvast.intake.file_import
 
-// TODO: remove the io.codekvast.dashboard.agent package when codekvast-intake has been deployed to
-//   production
-package io.codekvast.dashboard.agent;
+import kotlin.Throws
+import io.codekvast.javaagent.model.v3.CodeBasePublication3
+import java.lang.Exception
+
+/** @author olle.hallin@crisp.se
+ */
+interface CodeBaseImporter {
+    /**
+     * Imports a CodeBasePublication3
+     *
+     * @param publication The publication to import.
+     * @return true iff the publication was handled
+     */
+    fun importPublication(publication: CodeBasePublication3): Boolean
+}

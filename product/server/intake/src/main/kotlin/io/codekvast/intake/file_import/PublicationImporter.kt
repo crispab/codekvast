@@ -19,8 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/** REST API offered to the Codekvast Agent. */
+package io.codekvast.intake.file_import
 
-// TODO: remove the io.codekvast.dashboard.agent package when codekvast-intake has been deployed to
-//   production
-package io.codekvast.dashboard.agent;
+import java.io.File
+
+/** @author olle.hallin@crisp.se
+ */
+interface PublicationImporter {
+    /**
+     * De-serializes and handles a publication. Does never throw any exceptions.
+     *
+     * @param file The file that contains the serialized publication.
+     * @return true iff the contained object was handled.
+     */
+    fun importPublicationFile(file: File?): Boolean
+}
