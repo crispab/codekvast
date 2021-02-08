@@ -71,7 +71,7 @@ class FileImportTask(
         fixedRateString = "\${codekvast.intake.fileImportIntervalSeconds}000"
     )
     fun importPublicationFiles() {
-        NamedThreadTemplate().doInNamedThread("FileImportTask", this::processQueue)
+        NamedThreadTemplate().doInNamedThread("import", this::processQueue)
     }
 
     private fun processQueue() {

@@ -15,6 +15,13 @@
     <option name="ACTIVE_PROFILES" value="dev,common-dev,dev-secrets" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="SHORTEN_COMMAND_LINE" value="NONE" />
+    <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="codekvast.intake.fileImportIntervalSeconds" />
+        <option name="value" value="10" />
+      </param>
+    </additionalParameters>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

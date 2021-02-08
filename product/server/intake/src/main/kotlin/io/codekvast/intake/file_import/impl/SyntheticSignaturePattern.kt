@@ -19,16 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.file_import.impl;
+package io.codekvast.intake.file_import.impl
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-
-/** @author olle.hallin@crisp.se */
-@Value
-@Builder
-class SyntheticSignaturePattern {
-  @NonNull private final Long id;
-  @NonNull private final String pattern;
-}
+/** @author olle.hallin@crisp.se
+ */
+data class SyntheticSignaturePattern(val id: Long, val pattern: String)

@@ -26,6 +26,7 @@ import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.logging.LoggerDelegate
 import io.codekvast.common.messaging.EventService
 import io.codekvast.common.messaging.model.AgentPolledEvent
+import io.codekvast.common.thread.NamedThreadTemplate
 import io.codekvast.intake.bootstrap.CodekvastIntakeSettings
 import io.codekvast.intake.metrics.IntakeMetricsService
 import org.springframework.scheduling.annotation.Scheduled
@@ -51,10 +52,12 @@ class AgentStateManagerImpl(
     )
     @Transactional(readOnly = true)
     fun countAgents() {
-        val statistics =
-            intakeDAO.getAgentStatistics(Instant.now().minusSeconds(10))
-        logger.debug("Collected {}", statistics)
-        intakeMetricsService.gaugeAgents(statistics)
+        NamedThreadTemplate().doInNamedThread("metrics") {
+            val statistics =
+                intakeDAO.getAgentStatistics(Instant.now().minusSeconds(10))
+            logger.debug("Collected {}", statistics)
+            intakeMetricsService.gaugeAgents(statistics)
+        }
     }
 
     @Transactional(rollbackFor = [Exception::class])
