@@ -46,7 +46,7 @@ public class CodeBaseEntry3 implements Serializable {
   /** The signature. */
   @NonNull private final String signature;
 
-  public static <R> CodeBaseEntry3 fromFormat2(CodeBaseEntry2 codeBaseEntry2) {
+  public static CodeBaseEntry3 fromFormat2(CodeBaseEntry2 codeBaseEntry2) {
     return CodeBaseEntry3.builder()
         .methodSignature(MethodSignature3.fromFormat2(codeBaseEntry2.getMethodSignature()))
         .signature(codeBaseEntry2.getSignature())

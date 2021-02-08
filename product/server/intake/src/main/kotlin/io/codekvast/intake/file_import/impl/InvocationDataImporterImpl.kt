@@ -19,100 +19,89 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.intake.file_import.impl;
+package io.codekvast.intake.file_import.impl
 
-import static io.codekvast.common.logging.LoggingUtils.humanReadableDuration;
+import io.codekvast.common.aspects.Restartable
+import io.codekvast.common.lock.Lock
+import io.codekvast.common.lock.LockTemplate
+import io.codekvast.common.logging.LoggerDelegate
+import io.codekvast.common.logging.LoggingUtils.humanReadableDuration
+import io.codekvast.common.messaging.EventService
+import io.codekvast.common.messaging.model.InvocationDataReceivedEvent
+import io.codekvast.intake.file_import.InvocationDataImporter
+import io.codekvast.intake.metrics.IntakeMetricsService
+import io.codekvast.intake.model.PublicationType.INVOCATIONS
+import io.codekvast.javaagent.model.v2.CommonPublicationData2
+import io.codekvast.javaagent.model.v2.InvocationDataPublication2
+import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import java.time.Clock
+import java.time.Duration
+import java.time.Instant
+import java.util.stream.Collectors
 
-import io.codekvast.common.aspects.Restartable;
-import io.codekvast.common.lock.Lock;
-import io.codekvast.common.lock.LockTemplate;
-import io.codekvast.common.messaging.EventService;
-import io.codekvast.common.messaging.model.InvocationDataReceivedEvent;
-import io.codekvast.dashboard.file_import.InvocationDataImporter;
-import io.codekvast.dashboard.file_import.impl.CommonImporter.ImportContext;
-import io.codekvast.dashboard.metrics.AgentMetricsService;
-import io.codekvast.dashboard.model.PublicationType;
-import io.codekvast.javaagent.model.v2.CommonPublicationData2;
-import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Set;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-/** @author olle.hallin@crisp.se */
+/** @author olle.hallin@crisp.se
+ */
 @Component
-@Slf4j
-@RequiredArgsConstructor
-public class InvocationDataImporterImpl implements InvocationDataImporter {
+class InvocationDataImporterImpl(
+    private val commonImporter: CommonImporter,
+    private val importDAO: ImportDAO,
+    private val syntheticSignatureService: SyntheticSignatureService,
+    private val metricsService: IntakeMetricsService,
+    private val eventService: EventService,
+    private val lockTemplate: LockTemplate,
+    private val clock: Clock
+) : InvocationDataImporter {
 
-  private final CommonImporter commonImporter;
-  private final ImportDAO importDAO;
-  private final SyntheticSignatureService syntheticSignatureService;
-  private final AgentMetricsService metricsService;
-  private final EventService eventService;
-  private final LockTemplate lockTemplate;
-  private final Clock clock;
+    private val logger by LoggerDelegate()
 
-  @Override
-  @Transactional(rollbackFor = Exception.class)
-  @Restartable
-  public boolean importPublication(InvocationDataPublication2 publication) throws Exception {
-    logger.debug("Importing {}", publication);
+    @Transactional(rollbackFor = [Exception::class])
+    @Restartable
+    override fun importPublication(publication: InvocationDataPublication2): Boolean {
+        logger.debug("Importing {}", publication)
+        val data = publication.commonData
+        val invocations = publication.invocations.stream()
+            .filter { !syntheticSignatureService.isSyntheticMethod(it) }
+            .collect(Collectors.toSet())
+        val ignoredSyntheticSignatures = publication.invocations.size - invocations.size
+        val duration = lockTemplate.doWithLockOrThrow(Lock.forCustomer(data.customerId)) {
+            doImportInvocations(
+                publication.recordingIntervalStartedAtMillis, data, invocations
+            )
+        }
+        logger.info(
+            "Imported {} in {} (ignoring {} synthetic signatures)",
+            publication,
+            humanReadableDuration(duration),
+            ignoredSyntheticSignatures
+        )
+        metricsService.recordImportedPublication(
+            INVOCATIONS, invocations.size, ignoredSyntheticSignatures, duration
+        )
+        return true
+    }
 
-    CommonPublicationData2 data = publication.getCommonData();
-
-    Set<String> invocations =
-        publication.getInvocations().stream()
-            .filter(i -> !syntheticSignatureService.isSyntheticMethod(i))
-            .collect(Collectors.toSet());
-
-    int ignoredSyntheticSignatures = publication.getInvocations().size() - invocations.size();
-
-    Duration duration =
-        lockTemplate.doWithLockOrThrow(
-            Lock.forCustomer(data.getCustomerId()),
-            () ->
-                doImportInvocations(
-                    publication.getRecordingIntervalStartedAtMillis(), data, invocations));
-
-    logger.info(
-        "Imported {} in {} (ignoring {} synthetic signatures)",
-        publication,
-        humanReadableDuration(duration),
-        ignoredSyntheticSignatures);
-
-    metricsService.recordImportedPublication(
-        PublicationType.INVOCATIONS, invocations.size(), ignoredSyntheticSignatures, duration);
-
-    return true;
-  }
-
-  private Duration doImportInvocations(
-      long recordingIntervalStartedAtMillis, CommonPublicationData2 data, Set<String> invocations) {
-    Instant startedAt = clock.instant();
-
-    ImportContext importContext = commonImporter.importCommonData(data);
-
-    importDAO.importInvocations(importContext, recordingIntervalStartedAtMillis, invocations);
-
-    eventService.send(
-        InvocationDataReceivedEvent.builder()
-            .customerId(data.getCustomerId())
-            .appName(data.getAppName())
-            .appVersion(data.getAppVersion())
-            .agentVersion(data.getAgentVersion())
-            .environment(data.getEnvironment())
-            .hostname(data.getHostname())
-            .size(invocations.size())
-            .receivedAt(Instant.ofEpochMilli(data.getPublishedAtMillis()))
-            .trialPeriodEndsAt(importContext.getTrialPeriodEndsAt())
-            .build());
-
-    return Duration.between(startedAt, clock.instant());
-  }
+    private fun doImportInvocations(
+        recordingIntervalStartedAtMillis: Long,
+        data: CommonPublicationData2,
+        invocations: Set<String>
+    ): Duration {
+        val startedAt = clock.instant()
+        val importContext: CommonImporter.ImportContext = commonImporter.importCommonData(data)
+        importDAO.importInvocations(importContext, recordingIntervalStartedAtMillis, invocations)
+        eventService.send(
+            InvocationDataReceivedEvent.builder()
+                .customerId(data.customerId)
+                .appName(data.appName)
+                .appVersion(data.appVersion)
+                .agentVersion(data.agentVersion)
+                .environment(data.environment)
+                .hostname(data.hostname)
+                .size(invocations.size)
+                .receivedAt(Instant.ofEpochMilli(data.publishedAtMillis))
+                .trialPeriodEndsAt(importContext.trialPeriodEndsAt)
+                .build()
+        )
+        return Duration.between(startedAt, clock.instant())
+    }
 }

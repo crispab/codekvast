@@ -32,5 +32,5 @@ interface PublicationImporter {
      * @param file The file that contains the serialized publication.
      * @return true iff the contained object was handled.
      */
-    fun importPublicationFile(file: File?): Boolean
+    fun importPublicationFile(file: File): Boolean
 }
