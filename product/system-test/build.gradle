@@ -1,6 +1,7 @@
 // --- End-to-end system test -----------------------------------------------------------------------------------
 
 import groovy.sql.Sql
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 import java.sql.Driver
 import java.sql.DriverManager
@@ -13,7 +14,7 @@ apply plugin: 'com.energizedwork.webdriver-binaries'
 
 dependencyManagement {
     imports {
-        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        mavenBom SpringBootPlugin.BOM_COORDINATES
     }
 }
 
@@ -30,12 +31,14 @@ ext.rabbitmqUrl = "amqp://codekvast:codekvast@localhost:$rabbitmqPort/codekvast"
 ext.endpointFiles = [
     'backoffice': file("build/backofficeEndpoint.txt"),
     'dashboard': file("build/dashboardEndpoint.txt"),
+    'intake': file("build/intakeEndpoint.txt"),
     'login'    : file("build/loginEndpoint.txt")
 ]
 
 ext.bootJars = [
     'backoffice': tasks.getByPath(':product:server:backoffice:bootJar').outputs.files,
     'dashboard': tasks.getByPath(':product:server:dashboard:bootJar').outputs.files,
+    'intake': tasks.getByPath(':product:server:intake:bootJar').outputs.files,
     'login'    : tasks.getByPath(':product:server:login:bootJar').outputs.files
 ]
 
@@ -58,6 +61,14 @@ ext.launchCommands = [
         "--spring.rabbitmq.addresses=$rabbitmqUrl " +
         "--spring.profiles.active=dev,system-test " +
         "--logging.file.name=${buildDir}/system-test-dashboard.log ",
+
+    'intake': "$java -jar ${bootJars['intake'].asPath} " +
+        "--server.port=${allocateFreePort()} " +
+        "--management.server.port=${allocateFreePort()} " +
+        "--spring.datasource.url=$jdbcUrl " +
+        "--spring.rabbitmq.addresses=$rabbitmqUrl " +
+        "--spring.profiles.active=dev,system-test " +
+        "--logging.file.name=${buildDir}/system-test-intake.log ",
 
     'login'    : "$java -jar ${bootJars['login'].asPath} " +
         "--server.port=${allocateFreePort()} " +
@@ -230,7 +241,7 @@ task psSystemTestEnvironment {
         def anyMissing = false
         endpointFiles.each { service, file ->
             def endpoint = getEndpoint(service)
-            logger.lifecycle("{} @ {}", service, endpoint)
+            logger.lifecycle("{}@{}", service, endpoint)
             if (endpoint.isEmpty()) {
                 anyMissing = true
             } else {
@@ -251,7 +262,7 @@ task startSystemTestEnvironment {
 }
 
 test {
-    description 'Runs end-to-end tests against Codekvast Dashboard and Codekvast Login with MariaDB in a Docker container'
+    description 'Runs end-to-end tests against the Codekvast services with MariaDB in a Docker container'
     shouldRunAfter ':product:server:dashboard:integrationTest'
 
     def foundChromeBinary = locateChromeBinary()
@@ -317,7 +328,7 @@ private void launchAppsAndWaitForReady() {
     }
 
     sleep 5000
-    logger.lifecycle("Waiting for ${notReady.collect { "codekvast-$it @ " + getEndpoint(it) }.join(", ")} to become ready...")
+    logger.lifecycle("Waiting for ${notReady.collect { "codekvast-$it@" + getEndpoint(it) }.join(", ")} to become ready...")
 
     int attempt = 1
     int maxAttempts = 60
