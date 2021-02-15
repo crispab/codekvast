@@ -28,9 +28,9 @@ class AgentControllerTest {
 
     @BeforeEach
     fun setup() {
-        val intakeController = AgentController(agentService)
+        val agentController = AgentController(agentService)
 
-        mockMvc = MockMvcBuilders.standaloneSetup(intakeController)
+        mockMvc = MockMvcBuilders.standaloneSetup(agentController)
             .setMessageConverters(GsonHttpMessageConverter(), StringHttpMessageConverter())
             .addFilters<StandaloneMockMvcBuilder>(LogAndSuppressRemoteClosedConnectionException())
             .build()

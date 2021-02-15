@@ -40,9 +40,13 @@ class SyntheticSignatureService(
 ) {
 
     private val fallbackSyntheticSignaturePattern = Pattern.compile(
-        """.*(\$\$.*|\$\w+\$.*|\.[A-Z0-9_]+\(.*\)$|\$[a-z]+\(\)$|
-            |\.\.anonfun\..*|\.\.(Enhancer|FastClass)BySpringCGLIB\.\..*
-            |\.canEqual\(java\.lang\.Object\))""".trimMargin()
+        ".*(\\$\\$.*" +
+                "|\\$\\w+\\$.*" +
+                "|\\.[A-Z0-9_]+\\(.*\\)$" +
+                "|\\$[a-z]+\\(\\)$" +
+                "|\\.\\.anonfun\\..*" +
+                "|\\.\\.(Enhancer|FastClass)BySpringCGLIB\\.\\..*" +
+                "|\\.canEqual\\(java\\.lang\\.Object\\))"
     )
 
     val logger by LoggerDelegate()
