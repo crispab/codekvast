@@ -21,8 +21,8 @@
  */
 package io.codekvast.common.lock;
 
-/** An exception that is thrown when a lock cannot be acquired within the timeout. */
-public class LockTimeoutException extends Exception {
+/** A runtime exception that is thrown when a lock cannot be acquired within the timeout. */
+public class LockTimeoutException extends RuntimeException {
 
   public LockTimeoutException(String message) {
     super(message);

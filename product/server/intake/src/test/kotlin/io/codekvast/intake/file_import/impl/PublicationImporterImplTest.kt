@@ -59,12 +59,11 @@ internal class PublicationImporterImplTest {
             .thenReturn(
                 Optional.of(
                     Lock.forPublication(
-                        File(
-                            "/intake/queue/invocations-29-683ce793-8bb8-4dc9-a494-cb2543aa7964.ser"
-                        )
+                        File("/intake/queue/invocations-29-683ce793-8bb8-4dc9-a494-cb2543aa7964.ser")
                     )
                 )
             )
+
         publicationImporter = PublicationImporterImpl(
             codeBaseImporter,
             invocationDataImporter,
@@ -77,7 +76,7 @@ internal class PublicationImporterImplTest {
     @Test
     fun should_import_CodeBasePublication3() {
         // given
-        val file = File(javaClass.getResource("/sample-publications/codebase-v2.ser").toURI())
+        val file = getResourceAsFile("/sample-publications/codebase-v2.ser")
         whenever(codeBaseImporter.importPublication(any()))
             .thenReturn(true)
 
@@ -95,7 +94,7 @@ internal class PublicationImporterImplTest {
     @Test
     fun should_retry_CodeBasePublication3_when_DuplicateKeyException() {
         // given
-        val file = File(javaClass.getResource("/sample-publications/codebase-v2.ser").toURI())
+        val file = getResourceAsFile("/sample-publications/codebase-v2.ser")
         whenever(codeBaseImporter.importPublication(any()))
             .thenThrow(DuplicateKeyException("Thrown by mock"))
 
@@ -112,10 +111,7 @@ internal class PublicationImporterImplTest {
     @Test
     fun should_swallow_CodeBasePublication2_when_InvalidClassException() {
         // given
-        val file = File(
-            javaClass.getResource("/sample-publications/codebase-v2-bad-serialVersionUID.ser")
-                .toURI()
-        )
+        val file = getResourceAsFile("/sample-publications/codebase-v2-bad-serialVersionUID.ser")
 
         // when
         val handled = publicationImporter.importPublicationFile(file)
@@ -128,7 +124,7 @@ internal class PublicationImporterImplTest {
     @Test
     fun should_import_InvocationDataPublication2() {
         // given
-        val file = File(javaClass.getResource("/sample-publications/invocations-v2.ser").toURI())
+        val file = getResourceAsFile("/sample-publications/invocations-v2.ser")
         whenever(invocationDataImporter.importPublication(any()))
             .thenReturn(true)
 
@@ -145,7 +141,7 @@ internal class PublicationImporterImplTest {
     @Test
     fun should_not_process_locked_file() {
         // given
-        val file = File(javaClass.getResource("/sample-publications/invocations-v2.ser").toURI())
+        val file = getResourceAsFile("/sample-publications/invocations-v2.ser")
         whenever(lockManager.acquireLock(any())).thenReturn(Optional.empty())
 
         // when
@@ -159,7 +155,7 @@ internal class PublicationImporterImplTest {
     @Test
     fun should_retry_InvocationDataPublication2_when_DuplicateKeyException() {
         // given
-        val file = File(javaClass.getResource("/sample-publications/invocations-v2.ser").toURI())
+        val file = getResourceAsFile("/sample-publications/invocations-v2.ser")
         whenever(invocationDataImporter.importPublication(any()))
             .thenThrow(DuplicateKeyException("Thrown by mock"))
 
@@ -176,7 +172,7 @@ internal class PublicationImporterImplTest {
     @Test
     fun should_retry_InvocationDataPublication2_when_LockTimeoutException() {
         // given
-        val file = File(javaClass.getResource("/sample-publications/invocations-v2.ser").toURI())
+        val file = getResourceAsFile("/sample-publications/invocations-v2.ser")
         whenever(invocationDataImporter.importPublication(any()))
             .thenThrow(LockTimeoutException("Thrown by mock"))
 
@@ -211,7 +207,7 @@ internal class PublicationImporterImplTest {
     @Test
     fun should_handle_invalid_content() {
         // given
-        val file = File(javaClass.getResource("/sample-publications/invocations-v2.ser").toURI())
+        val file = getResourceAsFile("/sample-publications/invocations-v2.ser")
         whenever(validator.validate(any<Any>()))
             .thenReturn(setOf(mock()))
 
@@ -223,4 +219,6 @@ internal class PublicationImporterImplTest {
         verify(validator).validate(ArgumentMatchers.any<Any>())
         verifyNoMoreInteractions(codeBaseImporter, invocationDataImporter, validator)
     }
+
+    private fun getResourceAsFile(path: String) = File(javaClass.getResource(path).toURI())
 }
