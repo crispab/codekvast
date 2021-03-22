@@ -14,6 +14,7 @@ logging:
     io.codekvast: DEBUG
     org.springframework.cache: DEBUG
     com.github.benmanes.caffeine: DEBUG
+    org.springframework.boot.actuate: INFO
 
 spring:
   datasource:

@@ -4,6 +4,7 @@ logging:
   level:
     io.codekvast:                               INFO
     io.micrometer.datadog.DatadogMeterRegistry: OFF
+    org.springframework.boot.actuate:           INFO
 
 management:
   server.port:         9080

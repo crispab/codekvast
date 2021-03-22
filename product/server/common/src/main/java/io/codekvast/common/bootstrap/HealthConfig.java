@@ -23,6 +23,7 @@ package io.codekvast.common.bootstrap;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.micrometer.core.instrument.MeterRegistry;
 import javax.sql.DataSource;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.context.annotation.Bean;
@@ -36,18 +37,20 @@ public class HealthConfig {
   private static final String DB_HEALTH_INDICATOR_BEAN_NAME = "dbHealthIndicator";
 
   @Bean(DB_HEALTH_INDICATOR_BEAN_NAME)
-  public DataSourceHealthIndicator dbHealthIndicator(DataSource dataSource) {
+  public DataSourceHealthIndicator dbHealthIndicator(
+      DataSource dataSource, MeterRegistry meterRegistry) {
     return new DataSourceHealthIndicator(
-        cloneDataSource((HikariDataSource) dataSource), "SELECT 1 FROM DUAL");
+        cloneDataSource((HikariDataSource) dataSource, meterRegistry), "SELECT 1 FROM DUAL");
   }
 
-  private DataSource cloneDataSource(HikariDataSource dataSource) {
+  private DataSource cloneDataSource(HikariDataSource dataSource, MeterRegistry meterRegistry) {
     HikariConfig clone = new HikariConfig();
 
     dataSource.copyStateTo(clone);
     clone.setMinimumIdle(1);
     clone.setMaximumPoolSize(1);
     clone.setPoolName(dataSource.getPoolName().replace("-1", "-health"));
+    clone.setMetricRegistry(meterRegistry);
     return new HikariDataSource(clone);
   }
 }
