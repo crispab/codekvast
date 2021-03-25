@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,12 +76,13 @@ public class FileImportTask {
 
   @SneakyThrows
   private void processQueue() {
-    List<File> queue =
-        lockTemplate.doWithLock(
-            Lock.forTask("fileImport", 10), this::collectFilesInQueue, Collections::emptyList);
+    lockTemplate.doWithLock(Lock.forTask("fileImport", 120), this::doProcessQueue);
+  }
+
+  private void doProcessQueue() {
+    List<File> queue = collectFilesInQueue();
 
     int queueLength = queue.size();
-
     if (queueLength > 0) {
       logger.info("Importing {} new publication files", queueLength);
 

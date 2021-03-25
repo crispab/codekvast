@@ -54,7 +54,6 @@ class FileImportTask(
     private val metricsService: IntakeMetricsService,
     private val lockTemplate: LockTemplate
 ) {
-
     private val logger by LoggerDelegate()
 
     @PostConstruct
@@ -75,12 +74,11 @@ class FileImportTask(
     }
 
     private fun processQueue() {
-        val queue: List<File> = lockTemplate.doWithLock(
-            Lock.forTask("fileImport", 10),
-            this::collectFilesInQueue,
-            ::emptyList
-        )
+        lockTemplate.doWithLock(Lock.forTask("fileImport", 120), this::doProcessQueue)
+    }
 
+    private fun doProcessQueue() {
+        val queue: List<File> = collectFilesInQueue();
         val queueLength = queue.size
         if (queueLength > 0) {
             logger.info("Importing {} new publication files", queueLength)
