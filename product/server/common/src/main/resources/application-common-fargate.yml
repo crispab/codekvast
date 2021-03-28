@@ -29,6 +29,9 @@ server:
       prefix: stdout
       suffix: ''
       rotate: false
+    threads:
+      io: 10
+      worker: 100
 spring:
   main:
     banner-mode:        off
