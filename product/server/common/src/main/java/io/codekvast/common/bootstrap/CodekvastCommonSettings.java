@@ -21,6 +21,7 @@
  */
 package io.codekvast.common.bootstrap;
 
+import io.codekvast.common.logging.LoggingUtils;
 import java.net.InetAddress;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -87,6 +88,13 @@ public class CodekvastCommonSettings {
 
   @PostConstruct
   public void logStartup() {
+    Runtime rt = Runtime.getRuntime();
+    logger.info(
+        "Runtime: Number of processors={}, free memory={}, total memory={}, max memory={}",
+        rt.availableProcessors(),
+        LoggingUtils.humanReadableByteCount(rt.freeMemory()),
+        LoggingUtils.humanReadableByteCount(rt.totalMemory()),
+        LoggingUtils.humanReadableByteCount(rt.maxMemory()));
     logger.info("{} started", this);
   }
 
