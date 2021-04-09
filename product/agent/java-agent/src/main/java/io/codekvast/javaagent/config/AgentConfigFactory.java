@@ -49,7 +49,7 @@ public class AgentConfigFactory {
   private static final int DEFAULT_HTTP_PROXY_PORT = 3128;
   private static final String DEFAULT_HTTP_PROXY_USERNAME = null;
   private static final int DEFAULT_HTTP_READ_TIMEOUT_SECONDS = 10;
-  private static final int DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS = 3;
+  private static final int DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS = 30;
   private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
   private static final String DEFAULT_PACKAGES = "missing-packages";
   private static final int DEFAULT_SCHEDULER_INITIAL_DELAY_MILLIS = 10_000;
