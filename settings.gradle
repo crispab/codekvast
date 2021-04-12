@@ -11,6 +11,7 @@ include ':product:server:dashboard'
 include ':product:server:db-migration'
 include ':product:server:intake'
 include ':product:server:login'
+include ':product:server:s3-uploader'
 include ':product:server:stress-tester'
 include ':product:system-test'
 

@@ -84,12 +84,32 @@
           - name:  CODEKVAST_LOGIN_HEROKU_CODEKVAST_URL
             value: "https://api{{ dns_suffix }}"
 
+    s3-uploader:
+      secrets:
+        - name: S3_API_KEY
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/api_key"
+        - name: S3_SECRET_KEY
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/secret_key"
+      envvars:
+        - name: AWS_REGION
+          value: "{{ aws_region }}"
+        - name: S3_BUCKET
+          value: "io.codekvast.heap-dumps"
+        - name: SCAN_PATH
+          value: /dumps
+        - name: SCAN_INTERVAL_SECONDS
+          value: 10
+
     common:
       tags:
         Owner: Codekvast
         Env:   "{{ env }}"
         LaunchType: Fargate
-
+      volumes:
+        - name: dumps
+      mountPoints:
+        - containerPath: "{{ s3-uploader.envvars['SCAN_PATH'] }}"
+          sourceVolume:  dumps
       secrets:
         - name:      SPRING_DATASOURCE_PASSWORD
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb/application_password"
@@ -268,9 +288,19 @@
         profile: codekvast
         region:  "{{ aws_region }}"
         state:   present
-      loop: "{{ services }}"
+      loop: "{{ services + [{ name: s3-uploader }] }}"
       loop_control:
         label: "{{ item.name }}"
+      tags: once
+
+    - name:       Create S3 buckets for heap dumps
+      s3_bucket:
+        profile: codekvast
+        region:  "{{ aws_region }}"
+        name:    "{{ s3-uploader.envvars['S3_BUCKET'] }}"
+        ttl: "7d"
+        tags:
+          Owner: Codekvast
       tags: once
 
     - name: Define ECS cluster
@@ -292,7 +322,7 @@
         network_mode:       awsvpc
         state:              present
         execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/Codekvast-ECS-task"
-        volumes:            "{{ item.volumes | default(omit)  }}"
+        volumes:            "{{ item.volumes + common.volumes  }}"
         containers:
           - name:      log-router
             image:     906394416424.dkr.ecr.{{ aws_region }}.amazonaws.com/aws-for-fluent-bit:latest
@@ -308,7 +338,7 @@
             essential:   true
             secrets:     "{{ common.secrets + item.secrets }}"
             environment: "{{ common.envvars + item.envvars + computed.envvars}}"
-            mountPoints: "{{ item.mountPoints | default(omit) }}"
+            mountPoints: "{{ item.mountPoints + common.mountPoints }}"
             portMappings:
               - containerPort: 8080
                 hostPort:      8080
@@ -320,6 +350,24 @@
                 Name:           datadog
                 Host:           http-intake.logs.datadoghq.com
                 dd_service:     "codekvast-{{ item.name }}"
+                dd_tags:        "Env:{{ env }}"
+                TLS:            "on"
+                provider:       ecs
+              secretOptions:
+                - name:      apikey
+                  valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/apiKey"
+          - name:        "codekvast-s3-uploader"
+            image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/s3-uploader:latest"
+            essential:   false
+            secrets:     "{{ s3-uploader.secrets }}"
+            environment: "{{ s3-uploader.envvars }}"
+            mountPoints: "{{ common.mountPoints }}"
+            logConfiguration:
+              logDriver: awsfirelens
+              options:
+                Name:           datadog
+                Host:           http-intake.logs.datadoghq.com
+                dd_service:     "codekvast-s3-uploader"
                 dd_tags:        "Env:{{ env }}"
                 TLS:            "on"
                 provider:       ecs

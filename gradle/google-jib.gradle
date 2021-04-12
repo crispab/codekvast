@@ -47,6 +47,8 @@ jib {
     container {
         jvmFlags = [
                 '-XX:+ExitOnOutOfMemoryError',
+                '-XX:+HeapDumpOnOutOfMemoryError',
+                '-XX:HeapDumpPath=/dumps/${archivesBaseName}-`date --iso-8601=minutes`.hprof',
 //                '-XX:-UseContainerSupport',
 //                '-Xmx300m',
                 '-Dcodekvast.configuration=/app/codekvast-agent.properties',
