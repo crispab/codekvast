@@ -84,21 +84,9 @@
           - name:  CODEKVAST_LOGIN_HEROKU_CODEKVAST_URL
             value: "https://api{{ dns_suffix }}"
 
-    s3-uploader:
-      secrets:
-        - name: S3_API_KEY
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/api_key"
-        - name: S3_SECRET_KEY
-          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/secret_key"
-      envvars:
-        - name: AWS_REGION
-          value: "{{ aws_region }}"
-        - name: S3_BUCKET
-          value: "io.codekvast.heap-dumps"
-        - name: SCAN_PATH
-          value: /dumps
-        - name: SCAN_INTERVAL_SECONDS
-          value: 10
+    s3_uploader:
+      s3_bucket: io.codekvast.heap-dumps
+      containerPath: /dumps
 
     common:
       tags:
@@ -108,7 +96,7 @@
       volumes:
         - name: dumps
       mountPoints:
-        - containerPath: "{{ s3-uploader.envvars['SCAN_PATH'] }}"
+        - containerPath: "{{ s3_uploader.containerPath }}"
           sourceVolume:  dumps
       secrets:
         - name:      SPRING_DATASOURCE_PASSWORD
@@ -297,8 +285,8 @@
       s3_bucket:
         profile: codekvast
         region:  "{{ aws_region }}"
-        name:    "{{ s3-uploader.envvars['S3_BUCKET'] }}"
-        ttl: "7d"
+        name:    "{{ s3_uploader.s3_bucket }}"
+        # TODO: ttl: "7d"
         tags:
           Owner: Codekvast
       tags: once
@@ -359,8 +347,20 @@
           - name:        "codekvast-s3-uploader"
             image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/s3-uploader:latest"
             essential:   false
-            secrets:     "{{ s3-uploader.secrets }}"
-            environment: "{{ s3-uploader.envvars }}"
+            secrets:
+              - name: S3_API_KEY
+                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/api_key"
+              - name: S3_SECRET_KEY
+                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/secret_key"
+            envvars:
+              - name: AWS_REGION
+                value: "{{ aws_region }}"
+              - name: S3_BUCKET
+                value: "{{ s3_uploader.s3_bucket }}"
+              - name: SCAN_PATH
+                value: "{{ s3_uploader.containerPath }}"
+              - name: SCAN_INTERVAL_SECONDS
+                value: 10
             mountPoints: "{{ common.mountPoints }}"
             logConfiguration:
               logDriver: awsfirelens
