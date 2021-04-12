@@ -276,12 +276,12 @@
         profile: codekvast
         region:  "{{ aws_region }}"
         state:   present
-      loop: "{{ services + [{ name: s3-uploader }] }}"
+      loop: "{{ services + [{'name': 's3-uploader'}] }}"
       loop_control:
         label: "{{ item.name }}"
       tags: once
 
-    - name:       Create S3 buckets for heap dumps
+    - name:       "Create the S3 bucket {{ s3_uploader.s3_bucket }}"
       s3_bucket:
         profile: codekvast
         region:  "{{ aws_region }}"
@@ -348,9 +348,9 @@
             image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/s3-uploader:latest"
             essential:   false
             secrets:
-              - name: S3_API_KEY
+              - name: AWS_ACCESS_KEY_ID
                 valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/api_key"
-              - name: S3_SECRET_KEY
+              - name: AWS_SECRET_ACCESS_KEY
                 valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/secret_key"
             envvars:
               - name: AWS_REGION
@@ -360,7 +360,7 @@
               - name: SCAN_PATH
                 value: "{{ s3_uploader.containerPath }}"
               - name: SCAN_INTERVAL_SECONDS
-                value: 10
+                value: 5
             mountPoints: "{{ common.mountPoints }}"
             logConfiguration:
               logDriver: awsfirelens

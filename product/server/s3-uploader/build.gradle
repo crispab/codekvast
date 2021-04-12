@@ -8,4 +8,9 @@ archivesBaseName = 'codekvast-s3-uploader'
 version = codekvastVersion
 mainClassName = 'io.codekvast.s3_uploader.CodekvastS3UploaderApplication'
 dependencies {
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.993')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation slf4jApi
+    runtime logback
+    runtime 'javax.xml.bind:jaxb-api:2.3.1'
 }
