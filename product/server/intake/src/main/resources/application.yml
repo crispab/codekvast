@@ -7,3 +7,7 @@ spring:
   application.name:    Codekvast Intake
   profiles:
     include: common
+  servlet:
+    multipart:
+      max-file-size:    100MB
+      max-request-size: 100MB

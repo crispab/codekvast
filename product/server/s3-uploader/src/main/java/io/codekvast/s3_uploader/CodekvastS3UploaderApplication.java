@@ -29,8 +29,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Stream;
@@ -44,7 +45,8 @@ public class CodekvastS3UploaderApplication extends TimerTask {
   private static final Integer SCAN_INTERVAL_SECONDS =
       Integer.parseInt(System.getenv("SCAN_INTERVAL_SECONDS"));
 
-  private final Set<File> alreadyHandledFiles = new HashSet<>();
+  private static final String SUFFIX = ".hprof";
+  private final Map<File, FileStatus> fileStatuses = new HashMap<>();
   private final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
 
   @Override
@@ -60,13 +62,29 @@ public class CodekvastS3UploaderApplication extends TimerTask {
 
   private void handlePath(Path path) {
     var file = path.toFile();
-    if (file.isFile() && file.getName().endsWith(".hprof") && alreadyHandledFiles.add(file)) {
-      uploadFileToS3(file);
+    if (file.isFile() && file.getName().endsWith(SUFFIX)) {
+      FileStatus oldStatus = fileStatuses.get(file);
+      FileStatus newStatus = FileStatus.of(file);
+      if (oldStatus == null) {
+        logger.debug("Found {}, waiting for silence", file);
+        fileStatuses.put(file, newStatus);
+      } else if (oldStatus.isUploaded()) {
+        logger.debug("{} is already uploaded", file);
+      } else if (!newStatus.equals(oldStatus)) {
+        logger.debug("{} is still being written: {} -> {}", file, oldStatus, newStatus);
+        fileStatuses.put(file, newStatus);
+      } else {
+        logger.debug("{} is not growing anymore", file);
+        if (uploadFileToS3(file)) {
+          fileStatuses.put(file, newStatus.toBuilder().uploaded(true).build());
+        }
+      }
     }
   }
 
-  private void uploadFileToS3(File file) {
-    val key = file.getName();
+  private boolean uploadFileToS3(File file) {
+    val timestamp = Instant.now().truncatedTo(ChronoUnit.SECONDS).toString();
+    val key = file.getName().replace(SUFFIX, String.format("-%s.%s", timestamp, SUFFIX));
     try {
       val startedAt = Instant.now();
 
@@ -84,9 +102,11 @@ public class CodekvastS3UploaderApplication extends TimerTask {
       } else {
         logger.warn("Failed to delete {}", file);
       }
+      return true;
     } catch (Exception e) {
       logger.error(String.format("Failed to put %s to s3://%s/%s", file, S3_BUCKET, key), e);
     }
+    return false;
   }
 
   public static void main(String[] args) {
