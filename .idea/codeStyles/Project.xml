@@ -62,6 +62,9 @@
     <editorconfig>
       <option name="ENABLED" value="false" />
     </editorconfig>
+    <yaml>
+      <option name="ALIGN_VALUES_PROPERTIES" value="1" />
+    </yaml>
     <codeStyleSettings language="CSS">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />

@@ -11,15 +11,15 @@
     - vars/common.yml
 
   vars:
-    env:        staging
-    dns_suffix: "{{ ('-staging', '')[env == 'prod'] }}.codekvast.io"
-    server_url: "https://api{{ dns_suffix }}"
-    force: false
+    env:               staging
+    dns_suffix:        "{{ ('-staging', '')[env == 'prod'] }}.codekvast.io"
+    server_url:        "https://api{{ dns_suffix }}"
+    force:             false
     heap_dumps_bucket: "io.codekvast.heap-dumps"
-    heap_dumps_path: "/dumps"  # also see google-jib.gradle
+    heap_dumps_path:   "/dumps"  # also see google-jib.gradle
 
     services:
-      - name:               backoffice
+      - name:           backoffice
         cnames:
           - backoffice
         replicas:
@@ -31,9 +31,9 @@
             valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/username"
           - name:      SPRING_MAIL_PASSWORD
             valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/mail/password"
-        envvars: []
+        envvars: [ ]
 
-      - name:               dashboard
+      - name:           dashboard
         cnames:
           - api
           - dashboard
@@ -46,7 +46,7 @@
         mountPoints:
           - containerPath: /intake/queue
             sourceVolume:  intake
-        secrets: []
+        secrets: [ ]
         envvars:
           - name:  CODEKVAST_DASHBOARD_FILE_IMPORT_QUEUE_PATH
             value: /intake/queue
@@ -57,7 +57,7 @@
         replicas:
           staging: 1
           prod:    2
-        db_connections: 2
+        db_connections:     2
         stickiness_enabled: true
         secrets:
           - name:      CODEKVAST_LOGIN_CIPHER_SECRET
@@ -88,8 +88,8 @@
 
     common:
       tags:
-        Owner: Codekvast
-        Env:   "{{ env }}"
+        Owner:      Codekvast
+        Env:        "{{ env }}"
         LaunchType: Fargate
       volumes:
         - name: dumps
@@ -97,10 +97,14 @@
         - containerPath: "{{ heap_dumps_path }}"
           sourceVolume:  dumps
       secrets:
+        - name:      AWS_ACCESS_KEY_ID
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/api_key"
+        - name:      AWS_SECRET_ACCESS_KEY
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/secret_key"
         - name:      SPRING_DATASOURCE_PASSWORD
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/mariadb/application_password"
-        - name:       SPRING_RABBITMQ_ADDRESSES
-          valueFrom:  "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/rabbitmq/url"
+        - name:      SPRING_RABBITMQ_ADDRESSES
+          valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/rabbitmq/url"
         - name:      CODEKVAST_COMMON_JWT_SECRET
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/{{ env }}/jwt_secret"
         - name:      CODEKVAST_COMMON_SLACK_WEBHOOK_TOKEN
@@ -110,6 +114,8 @@
         - name:      MANAGEMENT_METRICS_EXPORT_DATADOG_APPLICATION_KEY
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/applicationKey"
       envvars:
+        - name:  AWS_REGION
+          value: "{{ aws_region }}"
         - name:  CODEKVAST_ENVIRONMENT
           value: "{{ env }}"
         - name:  CODEKVAST_SERVER_URL
@@ -120,9 +126,9 @@
           value: "https://dashboard{{ dns_suffix }}"
         - name:  CODEKVAST_COMMON_LOGIN_BASE_URL
           value: "https://login{{ dns_suffix }}"
-        - name: CODEKVAST_COMMON_HEAP_DUMPS_PATH
+        - name:  CODEKVAST_COMMON_HEAP_DUMPS_PATH
           value: "{{ heap_dumps_path }}"
-        - name: CODEKVAST_COMMON_HEAP_DUMPS_BUCKET
+        - name:  CODEKVAST_COMMON_HEAP_DUMPS_BUCKET
           value: "{{ heap_dumps_bucket }}"
         - name:  SPRING_DATASOURCE_URL
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
@@ -140,15 +146,15 @@
         filters:
           "tag:Owner": "Codekvast"
           "tag:Env":   "{{ env }}"
-      tags: [once, service]
+      tags: [ once, service ]
       register: vpc_info
 
     - set_fact: vpc_id="{{ vpc_info.vpcs[0].vpc_id }}"
-      tags: [once, service]
+      tags: [ once, service ]
 
     - debug: var=vpc_id
       when:  _debug is defined and _debug
-      tags: [once, service]
+      tags: [ once, service ]
 
     - name:     Find EC2 subnets
       ec2_vpc_subnet_info:
@@ -158,7 +164,7 @@
           "tag:Owner": "Codekvast"
           "tag:Env":   "{{ env }}"
       register: subnet_info
-      tags: [once, service]
+      tags: [ once, service ]
 
     - name: Create ALB target groups
       elb_target_group:
@@ -283,7 +289,7 @@
         label: "{{ item.name }}"
       tags: once
 
-    - name:       "Create the S3 bucket {{ heap_dumps_bucket }}"
+    - name: "Create the S3 bucket {{ heap_dumps_bucket }}"
       s3_bucket:
         profile: codekvast
         region:  "{{ aws_region }}"
@@ -337,12 +343,12 @@
             logConfiguration:
               logDriver: awsfirelens
               options:
-                Name:           datadog
-                Host:           http-intake.logs.datadoghq.com
-                dd_service:     "codekvast-{{ item.name }}"
-                dd_tags:        "Env:{{ env }}"
-                TLS:            "on"
-                provider:       ecs
+                Name:       datadog
+                Host:       http-intake.logs.datadoghq.com
+                dd_service: "codekvast-{{ item.name }}"
+                dd_tags:    "Env:{{ env }}"
+                TLS:        "on"
+                provider:   ecs
               secretOptions:
                 - name:      apikey
                   valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/apiKey"
@@ -365,9 +371,9 @@
               value: "{{ item.name }}{{ dns_suffix }}"
             - name:  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
               value: "{{ item.db_connections }}"
-            - name: MANAGEMENT_METRICS_TAGS_SERVICE
+            - name:  MANAGEMENT_METRICS_TAGS_SERVICE
               value: "codekvast-{{ item.name }}"
-            - name: MANAGEMENT_METRICS_TAGS_ENV
+            - name:  MANAGEMENT_METRICS_TAGS_ENV
               value: "{{ env }}"
       loop:     "{{ services }}"
       loop_control:
@@ -392,7 +398,7 @@
             containerName:  "codekvast-{{ item.name }}"
             containerPort:  8080
         name:                              "{{ item.name }}"
-        force_new_deployment: "{{ force }}"
+        force_new_deployment:              "{{ force }}"
         health_check_grace_period_seconds: 300
         network_configuration:
           assign_public_ip: yes

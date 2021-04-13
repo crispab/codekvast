@@ -21,7 +21,6 @@
  */
 package io.codekvast.common.dump_management;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.logging.LoggingUtils;
@@ -35,6 +34,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -54,7 +54,6 @@ public class HeapDumpUploader {
 
   private static final String SUFFIX = ".hprof";
   private final Map<File, FileStatus> fileStatuses = new HashMap<>();
-  private final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
 
   @Scheduled(
       initialDelay = 10_000L,
@@ -66,6 +65,13 @@ public class HeapDumpUploader {
       stream.forEach(this::handlePath);
     } catch (IOException e) {
       logger.warn("Failed to scan {}: {}", path, e.toString());
+    }
+  }
+
+  @PostConstruct
+  public void validateS3Credentials() {
+    if (!"dev".equals(settings.getEnvironment())) {
+      val s3 = AmazonS3ClientBuilder.defaultClient();
     }
   }
 
@@ -97,6 +103,7 @@ public class HeapDumpUploader {
     val startedAt = Instant.now();
 
     try {
+      val s3 = AmazonS3ClientBuilder.defaultClient();
       s3.putObject(bucket, key, file);
 
       logger.info(
