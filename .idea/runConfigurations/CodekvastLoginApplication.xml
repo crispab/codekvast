@@ -23,6 +23,7 @@
     <option name="PROGRAM_PARAMETERS" value="--project.codekvastDisplayVersion=dev" />
     <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
     <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="SHORTEN_COMMAND_LINE" value="NONE" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <additionalParameters>
@@ -40,6 +41,10 @@
         <option name="value" value="debug" />
       </param>
     </additionalParameters>
+    <envs>
+      <env name="AWS_PROFILE" value="codekvast" />
+      <env name="AWS_REGION" value="eu-central-1" />
+    </envs>
     <RunnerSettings />
     <method v="2">
       <option name="Make" enabled="true" />

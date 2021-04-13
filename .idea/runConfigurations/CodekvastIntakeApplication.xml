@@ -13,7 +13,7 @@
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.intake.CodekvastIntakeApplication" />
     <option name="ACTIVE_PROFILES" value="dev,common-dev,dev-secrets" />
-    <option name="VM_PARAMETERS" value="-XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/codekvast/heap-dumps/codekvast-intake.hprof" />
+    <option name="VM_PARAMETERS" value="-XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/codekvast/heap-dumps/codekvast-intake.hprof -Xmx40m" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="SHORTEN_COMMAND_LINE" value="NONE" />
     <additionalParameters>
@@ -23,6 +23,10 @@
         <option name="value" value="10" />
       </param>
     </additionalParameters>
+    <envs>
+      <env name="AWS_PROFILE" value="codekvast" />
+      <env name="AWS_REGION" value="eu-central-1" />
+    </envs>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

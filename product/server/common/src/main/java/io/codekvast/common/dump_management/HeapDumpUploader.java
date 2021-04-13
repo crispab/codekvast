@@ -21,12 +21,15 @@
  */
 package io.codekvast.common.dump_management;
 
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
+
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.logging.LoggingUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -101,10 +104,11 @@ public class HeapDumpUploader {
             + "/"
             + file.getName().replace(SUFFIX, String.format("-%s%s", timestamp, SUFFIX));
     val startedAt = Instant.now();
-
     try {
+      val renamed =
+          Files.move(file.toPath(), Path.of(file.getPath() + ".uploading"), ATOMIC_MOVE).toFile();
       val s3 = AmazonS3ClientBuilder.defaultClient();
-      s3.putObject(bucket, key, file);
+      s3.putObject(bucket, key, renamed);
 
       logger.info(
           "Uploaded {} ({}) to s3://{}/{} in {}",
@@ -116,8 +120,10 @@ public class HeapDumpUploader {
       if (file.delete()) {
         logger.info("Deleted {}", file);
       } else {
-        logger.error("Failed to delete {}", file);
+        logger.debug("Failed to delete {}. Perhaps deleted by other instance?", file);
       }
+    } catch (NoSuchFileException e) {
+      logger.debug("Some other instance has already processed {}", file);
     } catch (Exception e) {
       logger.error(String.format("Failed to put %s to s3://%s/%s", file, bucket, key), e);
     }

@@ -58,6 +58,10 @@
         <option name="value" value="true" />
       </param>
     </additionalParameters>
+    <envs>
+      <env name="AWS_PROFILE" value="codekvast" />
+      <env name="AWS_REGION" value="eu-central-1" />
+    </envs>
     <RunnerSettings />
     <method v="2">
       <option name="Make" enabled="true" />

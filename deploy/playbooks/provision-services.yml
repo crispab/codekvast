@@ -318,7 +318,7 @@
         network_mode:       awsvpc
         state:              present
         execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/Codekvast-ECS-task"
-        volumes:            "{{ item.volumes + common.volumes  }}"
+        volumes:            "{{ item.volumes|default([]) + common.volumes  }}"
         containers:
           - name:      log-router
             image:     906394416424.dkr.ecr.{{ aws_region }}.amazonaws.com/aws-for-fluent-bit:latest
@@ -334,7 +334,7 @@
             essential:   true
             secrets:     "{{ common.secrets + item.secrets }}"
             environment: "{{ common.envvars + item.envvars + computed.envvars}}"
-            mountPoints: "{{ item.mountPoints + common.mountPoints }}"
+            mountPoints: "{{ item.mountPoints|default([]) + common.mountPoints }}"
             portMappings:
               - containerPort: 8080
                 hostPort:      8080
