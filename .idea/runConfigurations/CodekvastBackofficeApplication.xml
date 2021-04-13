@@ -19,7 +19,7 @@
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.backoffice.CodekvastBackofficeApplication" />
     <option name="ACTIVE_PROFILES" value="dev,common-dev,dev-secrets,no-mail-sender" />
-    <option name="VM_PARAMETERS" value="-ea -XX:+UseParallelGC -Xms10m -Xmx100m -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=&quot;/tmp/codekvast-backoffice.hprof&quot;" />
+    <option name="VM_PARAMETERS" value="-ea -XX:+UseParallelGC -Xms10m -Xmx100m -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=&quot;/tmp/codekvast/heap-dumps/codekvast-backoffice.hprof&quot;" />
     <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="SHORTEN_COMMAND_LINE" value="NONE" />
@@ -36,6 +36,10 @@
         <option name="value" value="debug" />
       </param>
     </additionalParameters>
+    <envs>
+      <env name="AWS_PROFILE" value="codekvast" />
+      <env name="AWS_REGION" value="eu-central-1" />
+    </envs>
     <RunnerSettings />
     <method v="2">
       <option name="Make" enabled="true" />

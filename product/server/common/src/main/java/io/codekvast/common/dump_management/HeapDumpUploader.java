@@ -56,8 +56,8 @@ public class HeapDumpUploader {
   private final Map<File, FileStatus> fileStatuses = new HashMap<>();
 
   @Scheduled(
-      initialDelay = 10_000L,
-      fixedRateString = "${codekvast.common.dumpUploaderInterval.seconds:60}000")
+      initialDelayString = "PT${codekvast.common.heapDumpUploaderDelay}",
+      fixedDelayString = "PT${codekvast.common.heapDumpUploaderInterval}")
   public void scanForHeapDumps() {
     String path = settings.getHeapDumpsPath();
     logger.trace("Scanning for .hprof files in {}...", path);

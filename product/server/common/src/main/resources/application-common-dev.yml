@@ -1,19 +1,21 @@
 codekvast:
   common:
-    dashboardBaseUrl:                         http://localhost:8081
-    dnsCname:                                 localhost
-    environment:                              dev
-    jwtSecret:                                secret
-    loginBaseUrl:                             http://localhost:8080
+    dashboardBaseUrl:         http://localhost:8081
+    dnsCname:                 localhost
+    environment:              dev
+    jwtSecret:                secret
+    loginBaseUrl:             http://localhost:8080
     slackWebhookToken:
+    heapDumpUploaderDelay:    5s
+    heapDumpUploaderInterval: 5s
 
 logging:
   file:
     name: build/application.log
   level:
-    io.codekvast: DEBUG
-    org.springframework.cache: DEBUG
-    com.github.benmanes.caffeine: DEBUG
+    io.codekvast:                     DEBUG
+    org.springframework.cache:        DEBUG
+    com.github.benmanes.caffeine:     DEBUG
     org.springframework.boot.actuate: INFO
 
 spring:
@@ -29,13 +31,13 @@ spring:
 server:
   undertow:
     accesslog:
-      dir:     build
-      prefix:  access.
+      dir:    build
+      prefix: access.
 
 management:
   metrics:
     tags:
-      host:    localhost
-      env:     dev
+      host: localhost
+      env:  dev
     web.server.request.autotime.enabled: true
     export.datadog.enabled:              false

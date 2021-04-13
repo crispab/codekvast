@@ -1,5 +1,8 @@
 # This profile is activated when deployed to AWS ECS Fargate.
-
+codekvast:
+  common:
+    heapDumpUploaderDelay:    60s
+    heapDumpUploaderInterval: 60s
 logging:
   level:
     io.codekvast:                               INFO
@@ -7,7 +10,7 @@ logging:
     org.springframework.boot.actuate:           INFO
 
 management:
-  server.port:         9080
+  server.port: 9080
   endpoint:
     beans.enabled:      false
     conditions.enabled: false
@@ -21,17 +24,17 @@ management:
       jmx:
         enabled: false
 server:
-  port:                    8080
+  port: 8080
   undertow:
     accesslog:
       enabled: true
-      dir: /dev
-      prefix: stdout
-      suffix: ''
-      rotate: false
+      dir:     /dev
+      prefix:  stdout
+      suffix:  ''
+      rotate:  false
     threads:
-      io: 10
+      io:     10
       worker: 100
 spring:
   main:
-    banner-mode:        off
+    banner-mode: off
