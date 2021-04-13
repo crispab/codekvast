@@ -25,7 +25,7 @@ CREATE TABLE price_plans (
         PRIMARY KEY,
     name VARCHAR(40) NOT NULL,
 
-    CONSTRAINT name
+    CONSTRAINT ix_price_plans_name
         UNIQUE (name)
 );
 
@@ -44,11 +44,11 @@ CREATE TABLE customers (
     collectionStartedAt TIMESTAMP                             NULL,
     trialPeriodEndsAt   TIMESTAMP                             NULL,
 
-    CONSTRAINT ix_external_identity
+    CONSTRAINT ix_customers_identity
         UNIQUE (source, externalId),
-    CONSTRAINT licenseKey
+    CONSTRAINT ix_customers_licenseKey
         UNIQUE (licenseKey),
-    CONSTRAINT ix_customer_planName
+    CONSTRAINT ix_customers_plan
         FOREIGN KEY (plan) REFERENCES price_plans (name)
 );
 
@@ -67,11 +67,9 @@ CREATE TABLE agent_state (
     CONSTRAINT ix_agent_state_identity
         UNIQUE (customerId, jvmUuid),
     CONSTRAINT ix_agent_state_customerId
-        FOREIGN KEY (customerId) REFERENCES customers (id)
+        FOREIGN KEY (customerId) REFERENCES customers (id),
+    INDEX ix_agent_state_garbage (garbage)
 );
-
-CREATE INDEX ix_agent_state_garbage
-    ON agent_state (garbage);
 
 CREATE TABLE applications (
     id         BIGINT AUTO_INCREMENT
@@ -168,7 +166,7 @@ CREATE TABLE heroku_details (
     expiresAt    TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP() COMMENT 'When does the access token expire?',
     createdAt    TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL,
 
-    CONSTRAINT customerId
+    CONSTRAINT ix_heroku_details_identity
         UNIQUE (customerId),
     CONSTRAINT ix_heroku_details_customerId
         FOREIGN KEY (customerId) REFERENCES customers (id)
@@ -195,21 +193,17 @@ CREATE TABLE jvms (
     tags                VARCHAR(1000)                           NOT NULL,
     garbage             TINYINT(1)                              NOT NULL,
 
-    CONSTRAINT uuid
+    CONSTRAINT ix_jvm_uuid
         UNIQUE (uuid),
     CONSTRAINT ix_jvm_applicationId
         FOREIGN KEY (applicationId) REFERENCES applications (id),
     CONSTRAINT ix_jvm_customerId
         FOREIGN KEY (customerId) REFERENCES customers (id),
     CONSTRAINT ix_jvm_environmentId
-        FOREIGN KEY (environmentId) REFERENCES environments (id)
+        FOREIGN KEY (environmentId) REFERENCES environments (id),
+    INDEX ix_jvm_garbage (garbage),
+    INDEX ix_jvms_codeBaseFingerprint (codeBaseFingerprint)
 );
-
-CREATE INDEX ix_jvm_garbage
-    ON jvms (garbage);
-
-CREATE INDEX ix_jvms_codeBaseFingerprint
-    ON jvms (codeBaseFingerprint);
 
 CREATE TABLE methods (
     id             BIGINT AUTO_INCREMENT
@@ -230,8 +224,16 @@ CREATE TABLE methods (
     returnType     TEXT                                   NULL,
     garbage        TINYINT(1) DEFAULT 0                   NULL,
 
-    CONSTRAINT ix_method_customerId
-        FOREIGN KEY (customerId) REFERENCES customers (id)
+    CONSTRAINT ix_methods_customerId
+        FOREIGN KEY (customerId) REFERENCES customers (id),
+    INDEX ix_methods_declaring_type
+        (declaringType),
+    INDEX ix_methods_package
+        (packageName),
+    INDEX ix_methods_signature
+        (signature),
+    INDEX ix_methods_garbage
+        (garbage)
 );
 
 CREATE TABLE invocations (
@@ -247,27 +249,25 @@ CREATE TABLE invocations (
     lastSeenAtMillis BIGINT                                                                                                                                                             NULL,
     timestamp        TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3)                                                                                                                          NOT NULL ON UPDATE CURRENT_TIMESTAMP(3),
 
-    CONSTRAINT ix_invocation_identity
+    CONSTRAINT ix_invocations_identity
         UNIQUE (customerId, applicationId, environmentId, methodId),
-    CONSTRAINT ix_invocation_applicationId
+    CONSTRAINT ix_invocations_applicationId
         FOREIGN KEY (applicationId) REFERENCES applications (id)
             ON DELETE CASCADE,
-    CONSTRAINT ix_invocation_customerId
+    CONSTRAINT ix_invocations_customerId
         FOREIGN KEY (customerId) REFERENCES customers (id)
             ON DELETE CASCADE,
-    CONSTRAINT ix_invocation_environmentId
+    CONSTRAINT ix_invocations_environmentId
         FOREIGN KEY (environmentId) REFERENCES environments (id)
             ON DELETE CASCADE,
-    CONSTRAINT ix_invocation_methodId
+    CONSTRAINT ix_invocations_methodId
         FOREIGN KEY (methodId) REFERENCES methods (id)
-            ON DELETE CASCADE
+            ON DELETE CASCADE,
+    INDEX ix_invocations_customerId_status
+        (customerId, status),
+    INDEX ix_invocations_lastSeenAtMillis
+        (lastSeenAtMillis)
 );
-
-CREATE INDEX ix_invocation_customerId_status
-    ON invocations (customerId, status);
-
-CREATE INDEX ix_invocation_lastSeenAtMillis
-    ON invocations (lastSeenAtMillis);
 
 CREATE TABLE method_locations (
     id                BIGINT AUTO_INCREMENT
@@ -281,32 +281,18 @@ CREATE TABLE method_locations (
     annotation        VARCHAR(100)                          NULL,
     createdAt         TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP(),
 
-    CONSTRAINT ix_method_location_identity
+    CONSTRAINT ix_method_locations_identity
         UNIQUE (methodId, location),
-    CONSTRAINT ix_method_location_customerId
+    CONSTRAINT ix_method_locations_customerId
         FOREIGN KEY (customerId) REFERENCES customers (id),
-    CONSTRAINT ix_method_location_methodId
+    CONSTRAINT ix_method_locations_methodId
         FOREIGN KEY (methodId) REFERENCES methods (id)
-            ON DELETE CASCADE
+            ON DELETE CASCADE,
+    INDEX ix_method_locations_location
+        (location),
+    INDEX ix_method_locations_locationNoVersion
+        (locationNoVersion)
 );
-
-CREATE INDEX ix_method_location_location
-    ON method_locations (location);
-
-CREATE INDEX ix_method_location_locationNoVersion
-    ON method_locations (locationNoVersion);
-
-CREATE INDEX ix_method_declaring_type
-    ON methods (declaringType);
-
-CREATE INDEX ix_method_package
-    ON methods (packageName);
-
-CREATE INDEX ix_method_signature
-    ON methods (signature);
-
-CREATE INDEX ix_methods_garbage
-    ON methods (garbage);
 
 CREATE TABLE packages (
     id         BIGINT AUTO_INCREMENT
@@ -316,9 +302,9 @@ CREATE TABLE packages (
     annotation VARCHAR(100)                          NULL,
     createdAt  TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP(),
 
-    CONSTRAINT ix_package_identity
+    CONSTRAINT ix_packages_identity
         UNIQUE (customerId, name),
-    CONSTRAINT ix_package_customerId
+    CONSTRAINT ix_packages_customerId
         FOREIGN KEY (customerId) REFERENCES customers (id)
             ON DELETE CASCADE
 );
@@ -339,7 +325,7 @@ CREATE TABLE price_plan_overrides (
     pollIntervalSeconds    INT                                   NULL,
     retryIntervalSeconds   INT                                   NULL,
 
-    CONSTRAINT ix_pricePlan_customerId
+    CONSTRAINT ix_price_plan_overrides_customerId
         FOREIGN KEY (customerId) REFERENCES customers (id)
 );
 
@@ -354,7 +340,7 @@ CREATE TABLE role_names (
         PRIMARY KEY,
     name VARCHAR(25) NOT NULL,
 
-    CONSTRAINT name
+    CONSTRAINT ix_role_names_name
         UNIQUE (name)
 );
 
@@ -362,9 +348,9 @@ CREATE TABLE roles (
     roleName VARCHAR(25)  NOT NULL,
     email    VARCHAR(100) NOT NULL,
 
-    CONSTRAINT ix_role_identity
+    CONSTRAINT ix_roles_identity
         UNIQUE (roleName, email),
-    CONSTRAINT ix_role_name
+    CONSTRAINT ix_roles_name
         FOREIGN KEY (roleName) REFERENCES role_names (name)
 );
 
@@ -374,7 +360,7 @@ CREATE TABLE synthetic_signature_patterns (
     pattern      VARCHAR(255) NOT NULL COMMENT 'Parsed by java.util.regexp.Pattern',
     example      VARCHAR(255) NOT NULL COMMENT 'To use in tests',
     errorMessage VARCHAR(255) NULL COMMENT 'as returned by java.util.regexp.Pattern.compile()',
-    CONSTRAINT pattern
+    CONSTRAINT ix_synthetic_signature_patterns_pattern
         UNIQUE (pattern)
 );
 
@@ -385,7 +371,7 @@ CREATE TABLE tokens (
     token            VARCHAR(1000) NOT NULL,
     expiresAtSeconds MEDIUMTEXT    NOT NULL,
 
-    CONSTRAINT code
+    CONSTRAINT ix_tokens_code
         UNIQUE (code)
 );
 

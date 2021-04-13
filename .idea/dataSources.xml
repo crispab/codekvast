@@ -31,5 +31,17 @@
         <property name="autoReconnect" value="true" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="codekvast@staging (codekvast)" read-only="true" uuid="b179d16b-51b6-4118-a6dc-1161b208ff8f">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://db-staging.codekvast.io:3306/codekvast</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="codekvast@staging (root)" read-only="true" uuid="70403078-259f-4352-bca6-40de0acbd8f5">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://db-staging.codekvast.io:3306/codekvast</jdbc-url>
+    </data-source>
   </component>
 </project>
