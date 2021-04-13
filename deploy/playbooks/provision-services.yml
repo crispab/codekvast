@@ -15,6 +15,8 @@
     dns_suffix: "{{ ('-staging', '')[env == 'prod'] }}.codekvast.io"
     server_url: "https://api{{ dns_suffix }}"
     force: false
+    heap_dumps_bucket: "io.codekvast.heap-dumps"
+    heap_dumps_path: "/dumps"  # also see google-jib.gradle
 
     services:
       - name:               backoffice
@@ -84,10 +86,6 @@
           - name:  CODEKVAST_LOGIN_HEROKU_CODEKVAST_URL
             value: "https://api{{ dns_suffix }}"
 
-    s3_uploader:
-      s3_bucket: io.codekvast.heap-dumps
-      containerPath: /dumps
-
     common:
       tags:
         Owner: Codekvast
@@ -96,7 +94,7 @@
       volumes:
         - name: dumps
       mountPoints:
-        - containerPath: "{{ s3_uploader.containerPath }}"
+        - containerPath: "{{ heap_dumps_path }}"
           sourceVolume:  dumps
       secrets:
         - name:      SPRING_DATASOURCE_PASSWORD
@@ -122,6 +120,10 @@
           value: "https://dashboard{{ dns_suffix }}"
         - name:  CODEKVAST_COMMON_LOGIN_BASE_URL
           value: "https://login{{ dns_suffix }}"
+        - name: CODEKVAST_COMMON_HEAP_DUMPS_PATH
+          value: "{{ heap_dumps_path }}"
+        - name: CODEKVAST_COMMON_HEAP_DUMPS_BUCKET
+          value: "{{ heap_dumps_bucket }}"
         - name:  SPRING_DATASOURCE_URL
           value: "jdbc:mariadb://db-{{ env }}.codekvast.io/codekvast"
     rds:
@@ -281,11 +283,11 @@
         label: "{{ item.name }}"
       tags: once
 
-    - name:       "Create the S3 bucket {{ s3_uploader.s3_bucket }}"
+    - name:       "Create the S3 bucket {{ heap_dumps_bucket }}"
       s3_bucket:
         profile: codekvast
         region:  "{{ aws_region }}"
-        name:    "{{ s3_uploader.s3_bucket }}"
+        name:    "{{ heap_dumps_bucket }}"
         # TODO: ttl: "7d"
         tags:
           Owner: Codekvast
@@ -338,36 +340,6 @@
                 Name:           datadog
                 Host:           http-intake.logs.datadoghq.com
                 dd_service:     "codekvast-{{ item.name }}"
-                dd_tags:        "Env:{{ env }}"
-                TLS:            "on"
-                provider:       ecs
-              secretOptions:
-                - name:      apikey
-                  valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/apiKey"
-          - name:        "codekvast-s3-uploader"
-            image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/s3-uploader:latest"
-            essential:   false
-            secrets:
-              - name: AWS_ACCESS_KEY_ID
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/api_key"
-              - name: AWS_SECRET_ACCESS_KEY
-                valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/secret_key"
-            envvars:
-              - name: AWS_REGION
-                value: "{{ aws_region }}"
-              - name: S3_BUCKET
-                value: "{{ s3_uploader.s3_bucket }}"
-              - name: SCAN_PATH
-                value: "{{ s3_uploader.containerPath }}"
-              - name: SCAN_INTERVAL_SECONDS
-                value: 5
-            mountPoints: "{{ common.mountPoints }}"
-            logConfiguration:
-              logDriver: awsfirelens
-              options:
-                Name:           datadog
-                Host:           http-intake.logs.datadoghq.com
-                dd_service:     "codekvast-s3-uploader"
                 dd_tags:        "Env:{{ env }}"
                 TLS:            "on"
                 provider:       ecs

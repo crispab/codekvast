@@ -19,10 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.s3_uploader;
+package io.codekvast.common.dump_management;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import io.codekvast.common.logging.LoggingUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,31 +34,38 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+/**
+ * A scheduled task that finds heap dumps (.hprof files) in a certain path and uploads them to S3.
+ *
+ * <p>See also google-jib.gradle
+ */
+@Component
+@RequiredArgsConstructor
 @Slf4j
-public class CodekvastS3UploaderApplication extends TimerTask {
-  private static final String S3_BUCKET = System.getenv("S3_BUCKET");
-  private static final String SCAN_PATH = System.getenv("SCAN_PATH");
-  private static final Integer SCAN_INTERVAL_SECONDS =
-      Integer.parseInt(System.getenv("SCAN_INTERVAL_SECONDS"));
+public class HeapDumpUploader {
+  private final CodekvastCommonSettings settings;
 
   private static final String SUFFIX = ".hprof";
   private final Map<File, FileStatus> fileStatuses = new HashMap<>();
   private final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
 
-  @Override
-  public void run() {
-    logger.trace("Scanning {} for .hprof files...", SCAN_PATH);
-
-    try (Stream<Path> stream = Files.walk(Path.of(SCAN_PATH))) {
+  @Scheduled(
+      initialDelay = 10_000L,
+      fixedRateString = "${codekvast.common.dumpUploaderInterval.seconds:60}000")
+  public void scanForHeapDumps() {
+    String path = settings.getHeapDumpsPath();
+    logger.trace("Scanning for .hprof files in {}...", path);
+    try (Stream<Path> stream = Files.walk(Path.of(path))) {
       stream.forEach(this::handlePath);
     } catch (IOException e) {
-      logger.debug("Failed to scan {}: {}", SCAN_PATH, e.toString());
+      logger.warn("Failed to scan {}: {}", path, e.toString());
     }
   }
 
@@ -79,18 +88,22 @@ public class CodekvastS3UploaderApplication extends TimerTask {
   }
 
   private void uploadFileToS3(File file) {
+    val bucket = settings.getHeapDumpsBucket();
     val timestamp = Instant.now().truncatedTo(ChronoUnit.SECONDS).toString();
-    val key = file.getName().replace(SUFFIX, String.format("-%s%s", timestamp, SUFFIX));
-    try {
-      val startedAt = Instant.now();
+    val key =
+        settings.getEnvironment()
+            + "/"
+            + file.getName().replace(SUFFIX, String.format("-%s%s", timestamp, SUFFIX));
+    val startedAt = Instant.now();
 
-      s3.putObject(S3_BUCKET, key, file);
+    try {
+      s3.putObject(bucket, key, file);
 
       logger.info(
-          "Uploaded {} ({} bytes) to s3://{}/{} in {}",
+          "Uploaded {} ({}) to s3://{}/{} in {}",
           file,
-          file.length(),
-          S3_BUCKET,
+          LoggingUtils.humanReadableByteCount(file.length()),
+          bucket,
           key,
           Duration.between(startedAt, Instant.now()));
       if (file.delete()) {
@@ -99,13 +112,7 @@ public class CodekvastS3UploaderApplication extends TimerTask {
         logger.error("Failed to delete {}", file);
       }
     } catch (Exception e) {
-      logger.error(String.format("Failed to put %s to s3://%s/%s", file, S3_BUCKET, key), e);
+      logger.error(String.format("Failed to put %s to s3://%s/%s", file, bucket, key), e);
     }
-  }
-
-  public static void main(String[] args) {
-    Timer timer = new Timer(false);
-    timer.scheduleAtFixedRate(
-        new CodekvastS3UploaderApplication(), 0L, SCAN_INTERVAL_SECONDS * 1000L);
   }
 }

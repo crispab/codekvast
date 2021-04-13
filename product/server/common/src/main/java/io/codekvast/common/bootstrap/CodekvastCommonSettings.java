@@ -86,6 +86,12 @@ public class CodekvastCommonSettings {
   /** What is the support email? */
   @Default private String supportEmail = "support@codekvast.io";
 
+  /** Where do the JVM put heap dumps on OutOfMemoryError? See also google-jib.xml */
+  @Default private String heapDumpsPath = "/tmp/codekvast/heap-dumps";
+
+  /** Which S3 bucket shall receive the heap dumps? */
+  @Default private String heapDumpsBucket = "io.codekvast.heap-dumps";
+
   @PostConstruct
   public void logStartup() {
     Runtime rt = Runtime.getRuntime();

@@ -48,7 +48,7 @@ jib {
         jvmFlags = [
                 '-XX:+ExitOnOutOfMemoryError',
                 '-XX:+HeapDumpOnOutOfMemoryError',
-                '-XX:HeapDumpPath=/dumps/${archivesBaseName}.hprof',
+                '-XX:HeapDumpPath=/dumps/${archivesBaseName}.hprof', // See provision-services.yml
 //                '-XX:-UseContainerSupport',
 //                '-Xmx300m',
                 '-Dcodekvast.configuration=/app/codekvast-agent.properties',
