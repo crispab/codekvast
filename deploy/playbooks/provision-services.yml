@@ -312,9 +312,19 @@
         profile: codekvast
         region:  "{{ aws_region }}"
         name:    "{{ heap_dumps_bucket }}"
-        # TODO: ttl: "7d"
         tags:
           Owner: Codekvast
+      tags: once
+
+    - name: "Set up a lifecycle rule for the S3 bucket {{ heap_dumps_bucket }}"
+      s3_lifecycle:
+        profile:         codekvast
+        region:          "{{ aws_region }}"
+        rule_id:         "Expire old heap dumps"
+        name:            "{{ heap_dumps_bucket }}"
+        expiration_days: 14
+        status:          enabled
+        state:           present
       tags: once
 
     - name: Define ECS cluster
@@ -338,15 +348,6 @@
         execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/Codekvast-ECS-task"
         volumes:            "{{ item.volumes|default([]) + common.volumes  }}"
         containers:
-          - name:      log-router
-            image:     906394416424.dkr.ecr.{{ aws_region }}.amazonaws.com/aws-for-fluent-bit:latest
-            essential: true
-            firelensConfiguration:
-              type: fluentbit
-              options:
-                enable-ecs-log-metadata: "true"
-                config-file-type:        file
-                config-file-value:       /fluent-bit/configs/parse-json.conf
           - name:        "codekvast-{{ item.name }}"
             image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item.name }}:latest"
             essential:   true
@@ -370,6 +371,15 @@
               secretOptions:
                 - name:      apikey
                   valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/apiKey"
+          - name:      log-router
+            image:     906394416424.dkr.ecr.{{ aws_region }}.amazonaws.com/aws-for-fluent-bit:latest
+            essential: true
+            firelensConfiguration:
+              type: fluentbit
+              options:
+                enable-ecs-log-metadata: "true"
+                config-file-type:        file
+                config-file-value:       /fluent-bit/configs/parse-json.conf
           - name:  "datadog-agent"
             image: "datadog/agent:latest"
             secrets:
