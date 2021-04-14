@@ -71,7 +71,7 @@ public class FileImportTask {
       initialDelayString = "${codekvast.dashboard.fileImportInitialDelaySeconds:5}000",
       fixedRateString = "${codekvast.dashboard.fileImportIntervalSeconds}000")
   public void importPublicationFiles() {
-    new NamedThreadTemplate().doInNamedThread("FileImportTask", this::processQueue);
+    new NamedThreadTemplate().doInNamedThread("FileImport", this::processQueue);
   }
 
   @SneakyThrows

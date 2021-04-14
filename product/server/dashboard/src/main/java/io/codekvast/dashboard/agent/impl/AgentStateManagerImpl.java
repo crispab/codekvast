@@ -25,6 +25,7 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.messaging.EventService;
 import io.codekvast.common.messaging.model.AgentPolledEvent;
+import io.codekvast.common.thread.NamedThreadTemplate;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.metrics.AgentMetricsService;
 import io.codekvast.dashboard.metrics.AgentStatistics;
@@ -50,13 +51,19 @@ public class AgentStateManagerImpl implements AgentStateManager {
   private final AgentMetricsService agentMetricsService;
 
   @Scheduled(
-      initialDelayString = "${codekvast.agent-statistics.delay.seconds:60}000",
-      fixedRateString = "${codekvast.agent-statistics.interval.seconds:60}000")
+      initialDelayString = "${codekvast.dashboard.agent-statistics.delay.seconds:60}000",
+      fixedRateString = "${codekvast.dashboard.agent-statistics.interval.seconds:60}000")
   @Transactional(readOnly = true)
   void countAgents() {
-    AgentStatistics statistics = agentDAO.getAgentStatistics(Instant.now().minusSeconds(10));
-    logger.debug("Collected {}", statistics);
-    agentMetricsService.gaugeAgents(statistics);
+    new NamedThreadTemplate()
+        .doInNamedThread(
+            "metrics",
+            () -> {
+              AgentStatistics statistics =
+                  agentDAO.getAgentStatistics(Instant.now().minusSeconds(10));
+              logger.debug("Collected {}", statistics);
+              agentMetricsService.gaugeAgents(statistics);
+            });
   }
 
   @Override

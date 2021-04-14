@@ -2,6 +2,9 @@
 codekvast:
   dashboard:
     fileImportQueuePath: /codekvast/queue
+    agent-statistics.delay.seconds: 31536000 # one year
+    fileImportInitialDelaySeconds: 31536000 # one year
+
 spring:
   profiles:
     include: common-fargate

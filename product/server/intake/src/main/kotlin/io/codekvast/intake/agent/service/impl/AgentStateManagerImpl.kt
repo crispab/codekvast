@@ -47,8 +47,8 @@ class AgentStateManagerImpl(
     val logger by LoggerDelegate()
 
     @Scheduled(
-        initialDelayString = "\${codekvast.agent-statistics.delay.seconds:60}000",
-        fixedRateString = "\${codekvast.agent-statistics.interval.seconds:60}000"
+        initialDelayString = "\${codekvast.intake.agent-statistics.delay.seconds:60}000",
+        fixedRateString = "\${codekvast.intake.agent-statistics.interval.seconds:60}000"
     )
     @Transactional(readOnly = true)
     fun countAgents() {
