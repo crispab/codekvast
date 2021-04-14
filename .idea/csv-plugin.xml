@@ -17,6 +17,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/product/server/common/src/main/java/io/codekvast/common/dump_management/HeapDumpUploader.java">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/product/server/db-migration/src/main/resources/db/migration/V1__baseline.sql">
           <value>
             <Attribute>

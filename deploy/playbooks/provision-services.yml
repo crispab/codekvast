@@ -39,16 +39,9 @@
         replicas:
           staging: 1
           prod:    2
-        db_connections: 2
-        volumes:
-          - name: intake
-        mountPoints:
-          - containerPath: /intake/queue
-            sourceVolume:  intake
+        db_connections: 4
         secrets: [ ]
-        envvars:
-          - name:  CODEKVAST_DASHBOARD_FILE_IMPORT_QUEUE_PATH
-            value: /intake/queue
+        envvars: [ ]
 
       - name:           intake
         cnames:
@@ -57,7 +50,7 @@
         replicas:
           staging: 1
           prod:    2
-        db_connections: 8
+        db_connections: 6
         volumes:
           - name: intake
         mountPoints:
