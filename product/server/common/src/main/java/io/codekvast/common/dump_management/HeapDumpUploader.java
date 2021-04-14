@@ -26,6 +26,8 @@ import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.logging.LoggingUtils;
+import io.codekvast.common.messaging.SlackService;
+import io.codekvast.common.messaging.SlackService.Channel;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,6 +56,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class HeapDumpUploader {
   private final CodekvastCommonSettings settings;
+  private final SlackService slackService;
 
   private static final String SUFFIX = ".hprof";
   private final Map<File, FileStatus> fileStatuses = new HashMap<>();
@@ -110,13 +113,18 @@ public class HeapDumpUploader {
       val s3 = AmazonS3ClientBuilder.defaultClient();
       s3.putObject(bucket, key, renamed);
 
-      logger.info(
-          "Uploaded {} ({}) to s3://{}/{} in {}",
-          file,
-          LoggingUtils.humanReadableByteCount(file.length()),
-          bucket,
-          key,
-          Duration.between(startedAt, Instant.now()));
+      val message =
+          String.format(
+              "Uploaded %s (%s) to s3://%s/%s in %s",
+              file,
+              LoggingUtils.humanReadableByteCount(file.length()),
+              bucket,
+              key,
+              Duration.between(startedAt, Instant.now()).toString());
+
+      logger.info(message);
+      slackService.sendNotification(message, Channel.ALARMS);
+
       if (file.delete()) {
         logger.info("Deleted {}", file);
       } else {

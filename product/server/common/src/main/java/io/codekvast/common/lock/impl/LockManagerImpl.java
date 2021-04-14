@@ -106,7 +106,7 @@ public class LockManagerImpl implements LockManager {
         logger.debug("Task for '{}' is already running", lock.key());
       }
     } catch (SQLException e) {
-      logger.warn("Failed to acquire lock " + lock, e);
+      logger.warn("Failed to acquire " + lock, e);
     } finally {
       doClose(connection);
     }
