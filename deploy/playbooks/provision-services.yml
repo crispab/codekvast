@@ -419,6 +419,9 @@
         region:                            "{{ aws_region }}"
         cluster:                           "codekvast-{{ env }}"
         desired_count:                     "{{ item.replicas[env] }}"
+        deployment_configuration:
+          minimum_healthy_percent: 50
+          maximum_percent:         150
         launch_type:                       FARGATE
         task_definition:                   "codekvast-{{ item.name }}"
         load_balancers:
@@ -427,7 +430,7 @@
             containerPort:  8080
         name:                              "{{ item.name }}"
         force_new_deployment:              "{{ force }}"
-        health_check_grace_period_seconds: 300
+        health_check_grace_period_seconds: 200
         network_configuration:
           assign_public_ip: yes
           subnets:          "{{ subnet_info.subnets|map(attribute='id')|list }}"
