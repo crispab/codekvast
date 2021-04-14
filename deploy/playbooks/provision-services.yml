@@ -35,8 +35,25 @@
 
       - name:           dashboard
         cnames:
-          - api
           - dashboard
+        replicas:
+          staging: 1
+          prod:    2
+        db_connections: 2
+        volumes:
+          - name: intake
+        mountPoints:
+          - containerPath: /intake/queue
+            sourceVolume:  intake
+        secrets: [ ]
+        envvars:
+          - name:  CODEKVAST_DASHBOARD_FILE_IMPORT_QUEUE_PATH
+            value: /intake/queue
+
+      - name:           intake
+        cnames:
+          - api
+          - intake
         replicas:
           staging: 1
           prod:    2
@@ -48,7 +65,7 @@
             sourceVolume:  intake
         secrets: [ ]
         envvars:
-          - name:  CODEKVAST_DASHBOARD_FILE_IMPORT_QUEUE_PATH
+          - name:  CODEKVAST_INTAKE_FILE_IMPORT_QUEUE_PATH
             value: /intake/queue
 
       - name:               login
@@ -233,12 +250,20 @@
                 Priority: '1'
                 Actions:
                   - Type:            forward
-                    TargetGroupName: "codekvast-{{ env }}-dashboard"
+                    TargetGroupName: "codekvast-{{ env }}-intake"
+              - Conditions:
+                  - Field: host-header
+                    Values:
+                      - "intake{{ dns_suffix }}"
+                Priority: '2'
+                Actions:
+                  - Type:            forward
+                    TargetGroupName: "codekvast-{{ env }}-intake"
               - Conditions:
                   - Field: host-header
                     Values:
                       - "dashboard{{ dns_suffix }}"
-                Priority: '2'
+                Priority: '3'
                 Actions:
                   - Type:            forward
                     TargetGroupName: "codekvast-{{ env }}-dashboard"
@@ -246,7 +271,7 @@
                   - Field: host-header
                     Values:
                       - "backoffice{{ dns_suffix }}"
-                Priority: '3'
+                Priority: '4'
                 Actions:
                   - Type:            forward
                     TargetGroupName: "codekvast-{{ env }}-backoffice"
@@ -284,7 +309,7 @@
         profile: codekvast
         region:  "{{ aws_region }}"
         state:   present
-      loop: "{{ services + [{'name': 's3-uploader'}] }}"
+      loop: "{{ services }}"
       loop_control:
         label: "{{ item.name }}"
       tags: once
