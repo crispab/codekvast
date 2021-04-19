@@ -1,5 +1,7 @@
 # Codekvast Release Notes
 
+## 1.4.2
+
 ## 1.4.1
 
 1. codekvast-javaagent now uses aspectweaver 1.9.6

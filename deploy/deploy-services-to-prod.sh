@@ -5,6 +5,6 @@
 
 source $(dirname $0)/.check-requirements.sh
 
-for svc in backoffice dashboard login; do
+for svc in ${allServices}; do
   aws ecs update-service --cluster=codekvast-prod --service=${svc} --force-new-deployment | jq .service.taskDefinition | xargs
 done

@@ -90,6 +90,8 @@ Here's the ToDo-list for post-release stuff:
     * Write a news flash about the new version
     * Update src/jbake/content/pages/getting-started.adoc
     * Update src/jbake/content/pages/heroku-add-on.md
+    * Preview, commit and push
+    * ./publish-site.sh
     * Copy heroku-add-on.md to https://devcenter.heroku.com/admin/articles/4065/edit (without the front matter).
 
 ----------------------------------------------------------------------------------------------------------------------------------------
