@@ -61,12 +61,20 @@ public class HeapDumpUploader {
   private static final String SUFFIX = ".hprof";
   private final Map<File, FileStatus> fileStatuses = new HashMap<>();
 
+  private boolean firstTime = true;
+
   @Scheduled(
-      initialDelayString = "PT${codekvast.common.heapDumpUploaderDelay}",
-      fixedDelayString = "PT${codekvast.common.heapDumpUploaderInterval}")
+      initialDelayString = "${codekvast.common.heapDumpUploaderDelaySeconds}000",
+      fixedDelayString = "${codekvast.common.heapDumpUploaderIntervalSeconds}000")
   public void scanForHeapDumps() {
     String path = settings.getHeapDumpsPath();
-    logger.trace("Scanning for .hprof files in {}...", path);
+    if (firstTime) {
+      logger.info("Scanning for {} files in {} ...", SUFFIX, path);
+    } else {
+      logger.trace("Scanning for {} files in {} ...", SUFFIX, path);
+    }
+    firstTime = false;
+
     try (Stream<Path> stream = Files.walk(Path.of(path))) {
       stream.forEach(this::handlePath);
     } catch (IOException e) {
@@ -77,7 +85,13 @@ public class HeapDumpUploader {
   @PostConstruct
   public void validateS3Credentials() {
     if (!"dev".equals(settings.getEnvironment())) {
-      val s3 = AmazonS3ClientBuilder.defaultClient();
+      try {
+        logger.debug("Validating S3 credentials...");
+        val s3 = AmazonS3ClientBuilder.defaultClient();
+        logger.debug("Validated S3 credentials for region '{}'", s3.getRegionName());
+      } catch (Exception e) {
+        logger.warn("Failed to validate S3 credentials, will not be able to upload heap dumps", e);
+      }
     }
   }
 
@@ -96,6 +110,8 @@ public class HeapDumpUploader {
         logger.debug("{} is not growing anymore, uploading it to S3...", file);
         uploadFileToS3(file);
       }
+    } else {
+      logger.debug("Ignoring {}", file); // TODO: logger.trace
     }
   }
 

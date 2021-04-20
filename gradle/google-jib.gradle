@@ -50,8 +50,8 @@ jib {
                 '-XX:+HeapDumpOnOutOfMemoryError',
                 "-XX:HeapDumpPath=/dumps/${archivesBaseName}.hprof".toString(), // See provision-services.yml
                 '-XX:-UseContainerSupport',
-                '-Xms300m',
-                '-Xmx300m',
+                '-Xms200M',
+                '-Xmx200M',
                 '-Dcodekvast.configuration=/app/codekvast-agent.properties',
                 "-javaagent:/app/agent/codekvast-javaagent-${codekvastVersion}.jar".toString(),
                 '-Dspring.devtools.restart.enabled=false'

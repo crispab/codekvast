@@ -1,8 +1,8 @@
 # This profile is activated when deployed to AWS ECS Fargate.
 codekvast:
   common:
-    heapDumpUploaderDelay:    60s
-    heapDumpUploaderInterval: 60s
+    heapDumpUploaderDelaySeconds:    60
+    heapDumpUploaderIntervalSeconds: 60
 logging:
   level:
     io.codekvast:                               INFO

@@ -1,13 +1,13 @@
 codekvast:
   common:
-    dashboardBaseUrl:         http://localhost:8081
-    dnsCname:                 localhost
-    environment:              dev
-    jwtSecret:                secret
-    loginBaseUrl:             http://localhost:8080
+    dashboardBaseUrl:                http://localhost:8081
+    dnsCname:                        localhost
+    environment:                     dev
+    jwtSecret:                       secret
+    loginBaseUrl:                    http://localhost:8080
     slackWebhookToken:
-    heapDumpUploaderDelay:    5s
-    heapDumpUploaderInterval: 5s
+    heapDumpUploaderDelaySeconds:    5
+    heapDumpUploaderIntervalSeconds: 5
 
 logging:
   file:

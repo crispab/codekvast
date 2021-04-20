@@ -23,7 +23,6 @@ package io.codekvast.common.bootstrap;
 
 import io.codekvast.common.logging.LoggingUtils;
 import java.net.InetAddress;
-import java.time.Duration;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
@@ -93,7 +92,10 @@ public class CodekvastCommonSettings {
   /** Which S3 bucket shall receive the heap dumps? */
   @Default private String heapDumpsBucket = "io.codekvast.heap-dumps";
 
-  @Default private Duration heapDumpUploaderInterval = Duration.ofSeconds(60);
+  // For logging only
+  @Default private Integer heapDumpUploaderDelaySeconds = 60;
+  // For logging only
+  @Default private Integer heapDumpUploaderIntervalSeconds = 60;
 
   @PostConstruct
   public void logStartup() {
