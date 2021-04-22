@@ -48,10 +48,10 @@ jib {
         jvmFlags = [
                 '-XX:+ExitOnOutOfMemoryError',
                 '-XX:+HeapDumpOnOutOfMemoryError',
-                "-XX:HeapDumpPath=/dumps/${archivesBaseName}.hprof".toString(), // See provision-services.yml
-                '-XX:-UseContainerSupport',
-                '-Xms200M',
-                '-Xmx200M',
+                "-XX:HeapDumpPath=/codekvast/dumps/codekvast-${archivesBaseName}.hprof".toString(), // See provision-services.yml
+                // '-XX:-UseContainerSupport',
+                '-Xms150M',
+                '-Xmx150M',
                 '-Dcodekvast.configuration=/app/codekvast-agent.properties',
                 "-javaagent:/app/agent/codekvast-javaagent-${codekvastVersion}.jar".toString(),
                 '-Dspring.devtools.restart.enabled=false'

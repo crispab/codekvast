@@ -16,7 +16,7 @@
     server_url:        "https://api{{ dns_suffix }}"
     force:             false
     heap_dumps_bucket: "io.codekvast.heap-dumps"
-    heap_dumps_path:   "/dumps"  # also see google-jib.gradle
+    heap_dumps_path:   "/codekvast/dumps"  # also see google-jib.gradle
 
     services:
       - name:           backoffice
@@ -51,15 +51,10 @@
           staging: 1
           prod:    2
         db_connections: 6
-        volumes:
-          - name: intake
-        mountPoints:
-          - containerPath: /intake/queue
-            sourceVolume:  intake
         secrets: [ ]
         envvars:
           - name:  CODEKVAST_INTAKE_FILE_IMPORT_QUEUE_PATH
-            value: /intake/queue
+            value: /codekvast/intake
 
       - name:               login
         cnames:
@@ -101,11 +96,6 @@
         Owner:      Codekvast
         Env:        "{{ env }}"
         LaunchType: Fargate
-      volumes:
-        - name: dumps
-      mountPoints:
-        - containerPath: "{{ heap_dumps_path }}"
-          sourceVolume:  dumps
       secrets:
         - name:      AWS_ACCESS_KEY_ID
           valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/s3/api_key"
@@ -148,6 +138,14 @@
         Env:   "{{ env }}"
         RDS:   "true"
 
+    deployment_configuration:
+      prod:
+        minimum_healthy_percent: 50
+        maximum_percent:         150
+      staging:
+        minimum_healthy_percent: 100
+        maximum_percent:         200
+
   tasks:
     - name:     Find VPC id
       ec2_vpc_net_info:
@@ -174,7 +172,24 @@
           "tag:Owner": "Codekvast"
           "tag:Env":   "{{ env }}"
       register: subnet_info
-      tags: [ once, service ]
+      tags: [ once, efs, service ]
+
+    - debug: var=subnet_info
+      when:  _debug is defined and _debug
+      tags: [ once, efs, service ]
+
+    - name: Find EC2 backend security group
+      ec2_group_info:
+        profile: codekvast
+        region:  "{{ aws_region }}"
+        filters:
+           group_name: "codekvast-{{ env }}-backend"
+      register: sg_backend
+      tags: [ once, efs, service ]
+
+    - debug: var=sg_backend
+      when:  _debug is defined and _debug
+      tags: [ once, efs, service ]
 
     - name: Create ALB target groups
       elb_target_group:
@@ -335,6 +350,37 @@
         state:   present
       tags: once
 
+    - name: Define an EFS volume
+      efs:
+        profile: codekvast
+        region:  "{{ aws_region }}"
+        name:    "codekvast-{{ env }}"
+        state:   present
+        targets:
+          - subnet_id: "{{ subnet_info.subnets[0].id }}"
+            security_groups:
+              - "{{ sg_backend.security_groups[0].group_id }}"
+          - subnet_id: "{{ subnet_info.subnets[1].id }}"
+            security_groups:
+              - "{{ sg_backend.security_groups[0].group_id }}"
+        tags:
+          Name:  "codekvast-{{ env }}"
+          Owner: Codekvast
+          Env:   "{{ env }}"
+      tags: [ once, efs ]
+
+    - name:     Lookup EFS volume
+      efs_info:
+        profile: codekvast
+        region:  "{{ aws_region }}"
+        name:    "codekvast-{{ env }}"
+      register: efs_info
+      tags: [ once, service, efs ]
+
+    - debug: var=efs_info
+      when:  _debug is defined and _debug
+      tags: [ once, service, efs ]
+
     - name:     Define the ECS tasks
       ecs_taskdefinition:
         profile:            codekvast
@@ -346,14 +392,19 @@
         network_mode:       awsvpc
         state:              present
         execution_role_arn: "arn:aws:iam::{{ aws_account }}:role/Codekvast-ECS-task"
-        volumes:            "{{ item.volumes|default([]) + common.volumes  }}"
+        volumes:
+          - name: "codekvast-{{ env }}"
+            efsVolumeConfiguration:
+              fileSystemId: "{{ efs_info.efs[0].file_system_id }}"
         containers:
           - name:        "codekvast-{{ item.name }}"
             image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item.name }}:latest"
             essential:   true
             secrets:     "{{ common.secrets + item.secrets }}"
             environment: "{{ common.envvars + item.envvars + computed.envvars}}"
-            mountPoints: "{{ item.mountPoints|default([]) + common.mountPoints }}"
+            mountPoints:
+              - containerPath: /codekvast
+                sourceVolume:  "codekvast-{{ env }}"
             portMappings:
               - containerPort: 8080
                 hostPort:      8080
@@ -407,7 +458,7 @@
       loop_control:
         label: "codekvast-{{ item.name }}"
       register: ecs_taskdefs
-      tags:     service
+      tags: [ service, efs ]
 
     - debug: var=ecs_taskdefs
       tags:  service
@@ -419,9 +470,7 @@
         region:                            "{{ aws_region }}"
         cluster:                           "codekvast-{{ env }}"
         desired_count:                     "{{ item.replicas[env] }}"
-        deployment_configuration:
-          minimum_healthy_percent: 50
-          maximum_percent:         150
+        deployment_configuration:          "{{ deployment_configuration[env] }}"
         launch_type:                       FARGATE
         task_definition:                   "codekvast-{{ item.name }}"
         load_balancers:

@@ -89,6 +89,10 @@
             from_port: 22
             to_port:   65535
             cidr_ip:   "{{ my_ip.content }}/32"
+          - proto:     tcp
+            ports:
+              - 2049
+            cidr_ip:   "{{ cidr_base[env] }}.0.0/16"
         tags:        "{{ common_tags }}"
       register: sg_backend
 
