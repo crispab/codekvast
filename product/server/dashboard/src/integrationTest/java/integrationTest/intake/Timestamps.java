@@ -1,4 +1,4 @@
-package integrationTest.dashboard;
+package integrationTest.intake;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;

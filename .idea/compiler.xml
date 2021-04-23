@@ -17,6 +17,7 @@
         <module name="codekvast.product.server.common.integrationTest" />
         <module name="codekvast.product.server.dashboard.integrationTest" />
         <module name="codekvast.product.server.common.test" />
+        <module name="codekvast.product.server.intake.integrationTest" />
         <module name="codekvast.product.server.login.test" />
         <module name="codekvast.product.server.stress-tester.test" />
         <module name="codekvast.sample.sample-spring-boot-executable-jar.main" />

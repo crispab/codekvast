@@ -3,4 +3,4 @@
  *
  * @author olle.hallin@crisp.se
  */
-package integrationTest.dashboard;
+package integrationTest.intake;

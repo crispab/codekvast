@@ -1,4 +1,4 @@
-package integrationTest.dashboard;
+package integrationTest.intake;
 
 import static io.codekvast.javaagent.model.v2.SignatureStatus2.INVOKED;
 import static io.codekvast.javaagent.model.v2.SignatureStatus2.NOT_INVOKED;
@@ -9,10 +9,7 @@ import static java.time.temporal.ChronoUnit.HOURS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assume.assumeTrue;
@@ -27,21 +24,13 @@ import io.codekvast.common.lock.LockManager;
 import io.codekvast.common.messaging.DuplicateMessageIdException;
 import io.codekvast.common.messaging.impl.MessageIdRepository;
 import io.codekvast.common.metrics.CommonMetricsService;
-import io.codekvast.dashboard.CodekvastDashboardApplication;
-import io.codekvast.dashboard.agent.AgentService;
-import io.codekvast.dashboard.agent.impl.AgentDAO;
-import io.codekvast.dashboard.dashboard.DashboardService;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsFormData;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
-import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse2;
-import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor1;
-import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
-import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
-import io.codekvast.dashboard.file_import.CodeBaseImporter;
-import io.codekvast.dashboard.file_import.InvocationDataImporter;
-import io.codekvast.dashboard.file_import.PublicationImporter;
-import io.codekvast.dashboard.weeding.WeedingTask;
 import io.codekvast.database.DatabaseLimits;
+import io.codekvast.intake.CodekvastIntakeApplication;
+import io.codekvast.intake.agent.service.AgentService;
+import io.codekvast.intake.agent.service.impl.IntakeDAO;
+import io.codekvast.intake.file_import.CodeBaseImporter;
+import io.codekvast.intake.file_import.InvocationDataImporter;
+import io.codekvast.intake.file_import.PublicationImporter;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
@@ -82,7 +71,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -98,13 +86,13 @@ import org.testcontainers.containers.RabbitMQContainer;
 @SuppressWarnings({"SpringAutowiredFieldsWarningInspection", "ClassWithTooManyFields"})
 @SpringBootTest(
     classes = {
-      CodekvastDashboardApplication.class,
-      DashboardIntegrationTest.LockContentionTestHelper.class
+      CodekvastIntakeApplication.class,
+      IntakeIntegrationTest.LockContentionTestHelper.class
     },
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationTest")
 @Transactional
-public class DashboardIntegrationTest {
+public class IntakeIntegrationTest {
 
   private static final String DATABASE = "codekvast";
   private static final String USERNAME = "codekvastUser";
@@ -146,19 +134,15 @@ public class DashboardIntegrationTest {
 
   @Inject private CustomerService customerService;
 
-  @Inject private DashboardService dashboardService;
-
   @Inject private AgentService agentService;
 
-  @Inject private AgentDAO agentDAO;
+  @Inject private IntakeDAO intakeDAO;
 
   @Inject private PublicationImporter publicationImporter;
 
   @Inject private CodeBaseImporter codeBaseImporter;
 
   @Inject private InvocationDataImporter invocationDataImporter;
-
-  @Inject private WeedingTask weedingTask;
 
   @Inject private LockManager lockManager;
 
@@ -508,7 +492,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_codeBasePublication3() throws Exception {
+  public void should_import_codeBasePublication3() {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -555,69 +539,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_codeBasePublication3_twice_with_one_method_removed() throws Exception {
-    // given
-    assertThat(countRowsInTable("applications"), is(0));
-    assertThat(countRowsInTable("environments"), is(0));
-    assertThat(countRowsInTable("jvms"), is(0));
-    assertThat(countRowsInTable("packages"), is(0));
-    assertThat(countRowsInTable("types"), is(0));
-    assertThat(countRowsInTable("methods"), is(0));
-    assertThat(countRowsInTable("invocations"), is(0));
-
-    CodeBaseEntry3 entry1 = CodeBaseEntry3.sampleCodeBaseEntry();
-    CodeBaseEntry3 entry2 =
-        CodeBaseEntry3.sampleCodeBaseEntry().toBuilder()
-            .signature(entry1.getSignature() + "2")
-            .build();
-
-    CodeBasePublication3 publication1 =
-        CodeBasePublication3.builder()
-            .commonData(
-                CommonPublicationData2.sampleCommonPublicationData().toBuilder()
-                    .codeBaseFingerprint("fingerprint1")
-                    .build())
-            .entries(asList(entry1, entry2))
-            .build();
-
-    // when
-    codeBaseImporter.importPublication(publication1);
-
-    // then
-    assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
-    assertThat(countRowsInTable("methods WHERE signature = ?", entry2.getSignature()), is(1));
-    assertThat(countRowsInTable("invocations"), is(2));
-
-    // given
-    CodeBasePublication3 publication2 =
-        CodeBasePublication3.builder()
-            .commonData(
-                CommonPublicationData2.sampleCommonPublicationData().toBuilder()
-                    .codeBaseFingerprint("fingerprint2")
-                    .build())
-            .entries(asList(entry1))
-            .build();
-
-    // when
-    Thread.sleep(10); // Make sure Instant.now() yields a different value
-    codeBaseImporter.importPublication(publication2);
-
-    // then
-    assertThat(countRowsInTable("methods WHERE signature = ?", entry1.getSignature()), is(1));
-    assertThat(countRowsInTable("invocations"), is(1));
-
-    // The method row is still there immediately after a codebase import
-    assertThat(countRowsInTable("methods WHERE signature = ?", entry2.getSignature()), is(1));
-
-    // when
-    weedingTask.performDataWeeding();
-
-    // then
-    assertThat(countRowsInTable("methods WHERE signature = ?", entry2.getSignature()), is(0));
-  }
-
-  @Test
-  public void should_ignore_already_imported_codeBasePublication3() throws Exception {
+  public void should_ignore_already_imported_codeBasePublication3() {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -681,7 +603,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_codeBasePublication3_with_too_long_signature_entry() throws Exception {
+  public void should_import_codeBasePublication3_with_too_long_signature_entry() {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -751,7 +673,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_invocationDataPublication_then_codeBasePublication() throws Exception {
+  public void should_import_invocationDataPublication_then_codeBasePublication() {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -841,8 +763,7 @@ public class DashboardIntegrationTest {
   }
 
   @Test
-  public void should_import_codeBasePublication_then_invocationDataPublication_twice()
-      throws Exception {
+  public void should_import_codeBasePublication_then_invocationDataPublication_twice() {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -915,41 +836,10 @@ public class DashboardIntegrationTest {
 
     // given
     setSecurityContextCustomerId(commonData.getCustomerId());
-
-    // when
-    GetMethodsFormData methodsFormData = dashboardService.getMethodsFormData();
-
-    // then
-    assertThat(
-        methodsFormData,
-        is(
-            GetMethodsFormData.builder()
-                .application(commonData.getAppName())
-                .environment(commonData.getEnvironment())
-                .location("location")
-                .retentionPeriodDays(30)
-                .build()));
-
-    // when
-    GetMethodsResponse2 methodsResponse =
-        dashboardService.getMethods2(
-            GetMethodsRequest.defaults().toBuilder()
-                .signature(signature1.substring(0, 3).toUpperCase())
-                .minCollectedDays(0)
-                .build());
-
-    // then
-    assertThat(methodsResponse.getNumMethods(), is(2));
-    assertThat(methodsResponse.getMethods().size(), is(2));
-    assertThat(methodsResponse.getMethods().get(0).getSignature(), is(signature1));
-    assertThat(
-        methodsResponse.getMethods().get(0).getLastInvokedAtMillis(), is(intervalStartedAtMillis2));
-    assertThat(methodsResponse.getMethods().get(1).getSignature(), is(signature2));
-    assertThat(methodsResponse.getMethods().get(1).getLastInvokedAtMillis(), is(0L));
   }
 
   @Test
-  public void should_import_invocationDataPublication() throws Exception {
+  public void should_import_invocationDataPublication() {
     // given
     assertThat(countRowsInTable("applications"), is(0));
     assertThat(countRowsInTable("environments"), is(0));
@@ -987,48 +877,6 @@ public class DashboardIntegrationTest {
     assertThat(countRowsInTable("invocations WHERE status = ?", INVOKED.name()), is(1));
   }
 
-  @Test
-  public void should_query_unknown_signature_correctly() {
-    // given
-    setSecurityContextCustomerId(1L);
-
-    // when find exact signature
-    GetMethodsResponse2 response =
-        dashboardService.getMethods2(
-            GetMethodsRequest.defaults().toBuilder().signature("foobar").build());
-
-    // then
-    assertThat(response.getMethods(), hasSize(0));
-  }
-
-  @Test
-  public void should_query_by_known_id() {
-    // given
-    // generateQueryTestData();
-
-    // List<Long> validIds = jdbcTemplate.query("SELECT id FROM methods", (rs, rowNum) ->
-    // rs.getLong(1));
-
-    // when
-    // Optional<MethodDescriptor1> result = dashboardService.getMethodById(validIds.get(0));
-
-    // then
-    // assertThat(result.isPresent(), is(true));
-  }
-
-  @Test
-  public void should_query_by_unknown_id() {
-    // given
-    // generateQueryTestData();
-    setSecurityContextCustomerId(1L);
-
-    // when
-    Optional<MethodDescriptor1> result = dashboardService.getMethodById(-1L);
-
-    // then
-    assertThat(result.isPresent(), is(false));
-  }
-
   private void setSecurityContextCustomerId(Long customerId) {
     if (customerId == null) {
       SecurityContextHolder.clearContext();
@@ -1047,7 +895,7 @@ public class DashboardIntegrationTest {
 
     // when
     GetConfigResponse1 response =
-        agentService.getConfig(
+        agentService.getConfig1(
             GetConfigRequest1.sample().toBuilder()
                 .jvmUuid("uuid1")
                 .licenseKey("")
@@ -1072,7 +920,7 @@ public class DashboardIntegrationTest {
 
     // when
     GetConfigResponse2 response =
-        agentService.getConfig(
+        agentService.getConfig2(
             GetConfigRequest2.sample().toBuilder()
                 .jvmUuid("uuid1")
                 .licenseKey("")
@@ -1097,7 +945,7 @@ public class DashboardIntegrationTest {
 
     // when
     GetConfigResponse2 response =
-        agentService.getConfig(
+        agentService.getConfig2(
             GetConfigRequest2.sample().toBuilder()
                 .jvmUuid("uuid2")
                 .licenseKey("")
@@ -1116,167 +964,31 @@ public class DashboardIntegrationTest {
   @Test
   @Sql(scripts = "/sql/base-data.sql")
   public void should_recognize_enabled_agent_environment() {
-    assertThat(agentDAO.isEnvironmentEnabled(1L, "uuid3"), is(true));
+    assertThat(intakeDAO.isEnvironmentEnabled(1L, "uuid3"), is(true));
   }
 
   @Test
   @Sql(scripts = "/sql/base-data.sql")
   public void should_recognize_disabled_agent_environment() {
-    assertThat(agentDAO.isEnvironmentEnabled(1L, "uuid4"), is(false));
+    assertThat(intakeDAO.isEnvironmentEnabled(1L, "uuid4"), is(false));
   }
 
   @Test
   @Sql(scripts = "/sql/base-data.sql")
   public void should_treat_unknown_agent_environment_as_enabled() {
-    assertThat(agentDAO.isEnvironmentEnabled(4711L, "foobar"), is(true));
+    assertThat(intakeDAO.isEnvironmentEnabled(4711L, "foobar"), is(true));
   }
 
   @Test
   @Sql(scripts = "/sql/base-data.sql")
   public void unknown_agent_environment_should_have_null_name() {
-    assertThat(agentDAO.getEnvironmentName("foobar"), is(Optional.empty()));
+    assertThat(intakeDAO.getEnvironmentName("foobar"), is(Optional.empty()));
   }
 
   @Test
   @Sql(scripts = "/sql/base-data.sql")
   public void should_get_known_agent_environment_name() {
-    assertThat(agentDAO.getEnvironmentName("uuid1"), is(Optional.of("env1")));
-  }
-
-  @Test
-  @Sql(scripts = "/sql/base-data.sql")
-  public void should_getStatus_correctly() {
-    // given
-    Timestamps timestamps = new Timestamps(jdbcTemplate).invoke();
-    setSecurityContextCustomerId(1L);
-
-    // when
-    GetStatusResponse status = dashboardService.getStatus();
-
-    // then
-    assertThat(status.getPricePlan(), is("DEMO"));
-    assertThat(
-        status.getCollectionResolutionSeconds(),
-        is(PricePlanDefaults.DEMO.getPublishIntervalSeconds()));
-    assertThat(status.getMaxNumberOfAgents(), is(PricePlanDefaults.DEMO.getMaxNumberOfAgents()));
-    assertThat(status.getMaxNumberOfMethods(), is(100));
-
-    assertThat(status.getNumAgents(), is(4));
-    assertThat(status.getNumLiveAgents(), is(2));
-    assertThat(status.getNumLiveEnabledAgents(), is(1));
-
-    assertThat(
-        status.getAgents().get(0),
-        is(
-            AgentDescriptor.builder()
-                .agentId(1L)
-                .agentAlive(true)
-                .agentLiveAndEnabled(true)
-                .agentVersion("agentVersion1")
-                .appName("app1")
-                .appVersion("v1")
-                .environment("env1")
-                .excludePackages("com.foobar.excluded1")
-                .hostname("hostname1")
-                .jvmId(1L)
-                .methodVisibility("public")
-                .nextPollExpectedAtMillis(cutMillis(timestamps.getInOneMinute()))
-                .nextPublicationExpectedAtMillis(
-                    cutMillis(
-                        Timestamp.from(
-                            timestamps
-                                .getTenMinutesAgo()
-                                .toInstant()
-                                .plusSeconds(PricePlanDefaults.DEMO.getPublishIntervalSeconds()))))
-                .packages("com.foobar1")
-                .pollReceivedAtMillis(cutMillis(timestamps.getTenMinutesAgo()))
-                .publishedAtMillis(cutMillis(timestamps.getTwoMinutesAgo()))
-                .startedAtMillis(cutMillis(timestamps.getAlmostThreeDaysAgo()))
-                .tags("tag1=t1,tag2=t2")
-                .build()));
-
-    assertThat(status.getNumMethods(), is(10));
-
-    assertThat(status.getCollectedSinceMillis(), is(nullValue()));
-  }
-
-  @Test
-  @Sql(scripts = "/sql/base-data.sql")
-  public void should_getFilterData_for_known_customerId() {
-    // given
-    setSecurityContextCustomerId(1L);
-
-    // when
-    GetMethodsFormData getMethodsFormData = dashboardService.getMethodsFormData();
-
-    // then
-    assertThat(getMethodsFormData.getApplications(), contains("app1", "app2", "app3", "app4"));
-    assertThat(getMethodsFormData.getEnvironments(), contains("env1", "env2", "env3", "env4"));
-    assertThat(getMethodsFormData.getLocations(), contains("loc1", "loc2", "loc3"));
-  }
-
-  @Test(expected = AuthenticationException.class)
-  @Sql(scripts = "/sql/base-data.sql")
-  public void should_not_getFilterData_for_unknown_customerId() {
-    // given
-    setSecurityContextCustomerId(17L);
-
-    // when
-    dashboardService.getMethodsFormData();
-
-    // then
-    // kaboom!
-  }
-
-  @Test
-  @Sql(scripts = {"/sql/base-data.sql", "/sql/garbage-data.sql"})
-  public void should_perform_dataWeeding() {
-
-    // given
-    assertThat(countRowsInTable("invocations"), is(2));
-    assertThat(countRowsInTable("applications"), is(5));
-    assertThat(countRowsInTable("environments"), is(6));
-    assertThat(countRowsInTable("method_locations"), is(6));
-    assertThat(countRowsInTable("methods"), is(10));
-    assertThat(countRowsInTable("jvms"), is(5));
-    assertThat(countRowsInTable("agent_state"), is(5));
-
-    // when
-    weedingTask.performDataWeeding();
-
-    // then
-    assertThat(countRowsInTable("invocations"), is(1));
-    assertThat(countRowsInTable("applications"), is(4));
-    assertThat(countRowsInTable("environments"), is(5));
-    assertThat(countRowsInTable("method_locations"), is(3));
-    assertThat(countRowsInTable("methods"), is(1));
-    assertThat(countRowsInTable("jvms"), is(4));
-    assertThat(countRowsInTable("agent_state"), is(4));
-  }
-
-  @Test
-  @Sql(scripts = {"/sql/base-data.sql", "/sql/weedable-data.sql"})
-  public void should_find_weeding_candidates() {
-
-    // given
-    assertThat(countRowsInTable("applications"), not(is(0)));
-    assertThat(countRowsInTable("environments"), not(is(0)));
-    assertThat(countRowsInTable("methods"), not(is(0)));
-    assertThat(countRowsInTable("method_locations"), not(is(0)));
-    assertThat(countRowsInTable("jvms"), is(4));
-    assertThat(countRowsInTable("agent_state"), is(4));
-
-    // when
-    weedingTask.performDataWeeding();
-
-    // then
-    assertThat(countRowsInTable("invocations"), is(0));
-    assertThat(countRowsInTable("applications"), is(0));
-    assertThat(countRowsInTable("environments"), is(1));
-    assertThat(countRowsInTable("methods"), is(0));
-    assertThat(countRowsInTable("method_locations"), is(0));
-    assertThat(countRowsInTable("jvms"), is(0));
-    assertThat(countRowsInTable("agent_state"), is(0));
+    assertThat(intakeDAO.getEnvironmentName("uuid1"), is(Optional.of("env1")));
   }
 
   @Test
@@ -1411,10 +1123,6 @@ public class DashboardIntegrationTest {
                 .invocationDataPublisherName("http")
                 .invocationDataPublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
                 .build()));
-  }
-
-  private long cutMillis(Timestamp timestamp) {
-    return Instant.ofEpochMilli(timestamp.getTime()).getEpochSecond() * 1000L;
   }
 
   private int countRowsInTable(String tableName, Object... args) {
