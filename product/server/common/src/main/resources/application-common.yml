@@ -19,8 +19,7 @@ management:
         loadBalancer:
           show-details: "ALWAYS"
           cache.time-to-live: 10s
-          include: '*'
-          exclude: rabbit
+          include: db
   metrics:
     web.server.request.autotime.enabled: true
     export.datadog.enabled: false

@@ -118,8 +118,6 @@ public class HeapDumpUploader {
         logger.debug("{} is not growing anymore, uploading it to S3...", file);
         uploadFileToS3(file);
       }
-    } else {
-      logger.debug("Ignoring {}", file); // TODO: logger.trace
     }
   }
 
