@@ -7,3 +7,7 @@ aws_region: "eu-central-1"
 ssl_certificates:
   us-east-1:    'arn:aws:acm:us-east-1:186662504461:certificate/fd917905-50f9-41b2-9252-3c1d28c8b3d7'
   eu-central-1: 'arn:aws:acm:eu-central-1:186662504461:certificate/799dfa2a-92bd-4a9b-abf8-b551c2d4cad8'
+
+cidr_base:
+  prod:    "10.0"
+  staging: "10.1"

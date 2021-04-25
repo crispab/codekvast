@@ -12,9 +12,6 @@
 
   vars:
     env: staging
-    cidr_base:
-      prod:    "10.0"
-      staging: "10.1"
     aws_common_tags:
       Owner:    Codekvast
       Env:      "{{ env }}"

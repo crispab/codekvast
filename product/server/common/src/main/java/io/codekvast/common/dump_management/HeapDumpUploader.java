@@ -84,6 +84,14 @@ public class HeapDumpUploader {
 
   @PostConstruct
   public void validateS3Credentials() {
+    val dumpPath = new File(settings.getHeapDumpsPath());
+    if (!dumpPath.isDirectory()) {
+      val created = dumpPath.mkdirs();
+      if (created) {
+        logger.info("Created {}", dumpPath);
+      }
+    }
+
     if (!"dev".equals(settings.getEnvironment())) {
       try {
         logger.debug("Validating S3 credentials...");
@@ -110,8 +118,6 @@ public class HeapDumpUploader {
         logger.debug("{} is not growing anymore, uploading it to S3...", file);
         uploadFileToS3(file);
       }
-    } else {
-      logger.debug("Ignoring {}", file); // TODO: logger.trace
     }
   }
 
