@@ -50,6 +50,7 @@ public class HealthCheckLoggingAspect {
       "execution(* org.springframework.boot.actuate.health.HealthEndpointWebExtension.health(org.springframework.boot.actuate.endpoint.http.ApiVersion, org.springframework.boot.actuate.endpoint.SecurityContext, java.lang.String...))")
   public Object logHealthCheckCall(ProceedingJoinPoint pjp) throws Throwable {
     Instant startedAt = Instant.now();
+    logger.debug("Invoking health checks ...");
     try {
       Object result = pjp.proceed();
       Duration duration = Duration.between(startedAt, Instant.now());
