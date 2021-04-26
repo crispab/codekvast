@@ -17,6 +17,10 @@
     force:             false
     heap_dumps_bucket: "io.codekvast.heap-dumps"
     heap_dumps_path:   "/codekvast/dumps"  # also see google-jib.gradle
+    default:
+      taskdefinition:
+        cpu:    256
+        memory: 1024
 
     services:
       - name:           backoffice
@@ -47,9 +51,6 @@
         cnames:
           - api
           - intake
-        taskdefinition:
-          cpu:    512
-          memory: 1024
         replicas:
           staging: 1
           prod:    2
@@ -62,6 +63,8 @@
       - name:               login
         cnames:
           - login
+        taskdefinition:
+          memory: 512
         replicas:
           staging: 1
           prod:    2
@@ -388,8 +391,8 @@
       ecs_taskdefinition:
         profile:            codekvast
         region:             "{{ aws_region }}"
-        cpu:                "{{ item.taskdefinition.cpu | default(256) }}"
-        memory:             "{{ item.taskdefinition.memory | default(512) }}"
+        cpu:                "{{ item.taskdefinition.cpu | default(default.taskdefinition.cpu) }}"
+        memory:             "{{ item.taskdefinition.memory | default(default.taskdefinition.memory) }}"
         family:             "codekvast-{{ item.name }}"
         launch_type:        FARGATE
         network_mode:       awsvpc
@@ -402,10 +405,9 @@
         containers:
           - name:        "codekvast-{{ item.name }}"
             image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item.name }}:latest"
-            # memory:      300
             essential:   true
             secrets:     "{{ common.secrets + item.secrets }}"
-            environment: "{{ common.envvars + item.envvars + computed.envvars}}"
+            environment: "{{ common.envvars + item.envvars + computed.envvars }}"
             mountPoints:
               - containerPath: /codekvast
                 sourceVolume:  "codekvast-{{ env }}"
@@ -426,6 +428,7 @@
               secretOptions:
                 - name:      apikey
                   valueFrom: "arn:aws:ssm:{{ aws_region }}:{{ aws_account }}:parameter/codekvast/datadog/apiKey"
+
           - name:      log-router
             image:     906394416424.dkr.ecr.{{ aws_region }}.amazonaws.com/aws-for-fluent-bit:latest
             essential: true
@@ -435,6 +438,7 @@
                 enable-ecs-log-metadata: "true"
                 config-file-type:        file
                 config-file-value:       /fluent-bit/configs/parse-json.conf
+
           - name:  "datadog-agent"
             image: "datadog/agent:latest"
             secrets:
