@@ -49,7 +49,7 @@ jib {
                 '-XX:+ExitOnOutOfMemoryError',
                 '-XX:+HeapDumpOnOutOfMemoryError',
                 "-XX:HeapDumpPath=/codekvast/dumps/${archivesBaseName}.hprof".toString(), // See provision-services.yml
-                '-XX:-UseContainerSupport',
+                // '-XX:-UseContainerSupport',
                 // '-Xms200M',
                 // '-Xmx200M',
                 '-Dcodekvast.configuration=/app/codekvast-agent.properties',
