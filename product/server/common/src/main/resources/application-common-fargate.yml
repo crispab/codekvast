@@ -5,20 +5,13 @@ codekvast:
     heapDumpUploaderIntervalSeconds: 60
 logging:
   level:
-    io.codekvast:                               INFO
+    io.codekvast:                               DEBUG # TODO: set back to INFO when restart problems are isolated
     io.micrometer.datadog.DatadogMeterRegistry: OFF
     org.springframework.boot.actuate:           INFO
 
 management:
   server:
     port: 9080
-    undertow: # TODO: remove once debugged Fargate restarts
-      accesslog:
-        enabled: true
-        dir:     /dev
-        prefix:  stdout
-        suffix:  ''
-        rotate:  false
   endpoint:
     beans.enabled:      false
     conditions.enabled: false
