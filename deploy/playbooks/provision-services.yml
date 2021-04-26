@@ -178,12 +178,12 @@
       when:  _debug is defined and _debug
       tags: [ once, efs, service ]
 
-    - name: Find EC2 backend security group
+    - name:     Find EC2 backend security group
       ec2_group_info:
         profile: codekvast
         region:  "{{ aws_region }}"
         filters:
-           group_name: "codekvast-{{ env }}-backend"
+          group_name: "codekvast-{{ env }}-backend"
       register: sg_backend
       tags: [ once, efs, service ]
 
@@ -399,6 +399,7 @@
         containers:
           - name:        "codekvast-{{ item.name }}"
             image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item.name }}:latest"
+            memory:      300
             essential:   true
             secrets:     "{{ common.secrets + item.secrets }}"
             environment: "{{ common.envvars + item.envvars + computed.envvars}}"
