@@ -19,7 +19,7 @@ management:
         loadBalancer:
           show-details: "ALWAYS"
           cache.time-to-live: 10s
-          include: db
+          include: ping
   metrics:
     web.server.request.autotime.enabled: true
     export.datadog.enabled: false

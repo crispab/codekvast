@@ -34,7 +34,7 @@ server:
       suffix:  ''
       rotate:  false
     threads:
-      io:     10
+      io:     100
       worker: 100
 spring:
   main:

@@ -47,6 +47,9 @@
         cnames:
           - api
           - intake
+        taskdefinition:
+          cpu:    512
+          memory: 1024
         replicas:
           staging: 1
           prod:    2
@@ -385,8 +388,8 @@
       ecs_taskdefinition:
         profile:            codekvast
         region:             "{{ aws_region }}"
-        cpu:                "256"
-        memory:             "512"
+        cpu:                "{{ item.taskdefinition.cpu | default(256) }}"
+        memory:             "{{ item.taskdefinition.memory | default(512) }}"
         family:             "codekvast-{{ item.name }}"
         launch_type:        FARGATE
         network_mode:       awsvpc
@@ -399,7 +402,7 @@
         containers:
           - name:        "codekvast-{{ item.name }}"
             image:       "{{ aws_account }}.dkr.ecr.{{ aws_region}}.amazonaws.com/codekvast/{{ item.name }}:latest"
-            memory:      300
+            # memory:      300
             essential:   true
             secrets:     "{{ common.secrets + item.secrets }}"
             environment: "{{ common.envvars + item.envvars + computed.envvars}}"
@@ -480,7 +483,7 @@
             containerPort:  8080
         name:                              "{{ item.name }}"
         force_new_deployment:              "{{ force }}"
-        health_check_grace_period_seconds: 200
+        health_check_grace_period_seconds: 300
         network_configuration:
           assign_public_ip: yes
           subnets:          "{{ subnet_info.subnets|map(attribute='id')|list }}"
