@@ -10,7 +10,15 @@ logging:
     org.springframework.boot.actuate:           INFO
 
 management:
-  server.port: 9080
+  server:
+    port: 9080
+    undertow: # TODO: remove once debugged Fargate restarts
+      accesslog:
+        enabled: true
+        dir:     /dev
+        prefix:  stdout
+        suffix:  ''
+        rotate:  false
   endpoint:
     beans.enabled:      false
     conditions.enabled: false

@@ -31,10 +31,18 @@ spring:
 server:
   undertow:
     accesslog:
+      enabled: true
       dir:    build
       prefix: access.
+      rotate: true
 
 management:
+  undertow:
+    accesslog:
+      enabled: true
+      dir:    build
+      prefix: management_access.
+      rotate: true
   metrics:
     tags:
       host: localhost
