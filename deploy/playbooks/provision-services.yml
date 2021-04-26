@@ -202,11 +202,11 @@
         health_check_protocol:         http
         health_check_port:             "9080"
         health_check_path:             /management/health/loadBalancer
-        health_check_interval:         60
+        health_check_interval:         10
         health_check_timeout:          5
-        healthy_threshold_count:       2
-        unhealthy_threshold_count:     4
-        deregistration_delay_timeout:  30
+        healthy_threshold_count:       1
+        unhealthy_threshold_count:     12
+        deregistration_delay_timeout:  10
         state:                         present
         stickiness_enabled:            "{{ item.stickiness_enabled | default(false) }}"
         stickiness_lb_cookie_duration: 60
