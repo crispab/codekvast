@@ -6,7 +6,7 @@ codekvast:
 logging:
   level:
     io.codekvast:                                         INFO
-    io.codekvast.common.aspects.HealthCheckLoggingAspect: DEBUG
+    # io.codekvast.common.aspects.HealthCheckLoggingAspect: DEBUG
     io.micrometer.datadog.DatadogMeterRegistry:           OFF
     org.springframework.boot.actuate:                     INFO
 
