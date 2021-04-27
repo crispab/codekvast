@@ -49,9 +49,9 @@ jib {
                 '-XX:+ExitOnOutOfMemoryError',
                 '-XX:+HeapDumpOnOutOfMemoryError',
                 "-XX:HeapDumpPath=/codekvast/dumps/${archivesBaseName}.hprof".toString(), // See provision-services.yml
-                // '-XX:-UseContainerSupport',
-                // '-Xms200M',
-                // '-Xmx200M',
+                '-XX:-UseContainerSupport',
+                '-Xms250m', // TODO: calculate heap size using numbers from provision-services.yml
+                '-Xmx250m',
                 '-Dcodekvast.configuration=/app/codekvast-agent.properties',
                 "-javaagent:/app/agent/codekvast-javaagent-${codekvastVersion}.jar".toString(),
                 '-Dspring.devtools.restart.enabled=false'

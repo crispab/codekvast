@@ -63,8 +63,6 @@
       - name:               login
         cnames:
           - login
-        taskdefinition:
-          memory: 512
         replicas:
           staging: 1
           prod:    2
