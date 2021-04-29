@@ -96,7 +96,7 @@ public class DashboardServiceImpl implements DashboardService {
         "latestCollectedSince", clock.instant().minus(request.getMinCollectedDays(), DAYS));
     params.addValue("now", new Timestamp(clock.millis()));
     params.addValue("customerId", customerId);
-    String whereClause = "i.customerId = :customerId";
+    String whereClause = "i.customerId = :customerId AND m.modifiers NOT LIKE '%abstract%'";
 
     String normalizedSignature = request.getNormalizedSignature();
     if (!normalizedSignature.equals("%")) {

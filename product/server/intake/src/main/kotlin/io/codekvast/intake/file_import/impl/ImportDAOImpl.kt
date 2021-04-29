@@ -888,7 +888,7 @@ class ImportDAOImpl(
         override fun createPreparedStatement(con: Connection): PreparedStatement {
             val sql =
                 ("INSERT INTO application_descriptors(customerId, applicationId, environmentId, collectedSince, collectedTo) "
-                        + "VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE collectedTo = GREATEST(?, collectedTo)")
+                        + "VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE collectedSince = LEAST(?, collectedSince), collectedTo = GREATEST(?, collectedTo)")
             val collectedSince = Timestamp(jvmStartedAtMillis)
             val collectedTo = Timestamp(publishedAtMillis)
             val ps: PreparedStatement = con.prepareStatement(sql)
@@ -896,8 +896,9 @@ class ImportDAOImpl(
             ps.setLong(++column, customerId)
             ps.setLong(++column, appId)
             ps.setLong(++column, environmentId)
-            ps.setTimestamp(++column, collectedSince)
+            ps.setTimestamp(++column, collectedSince) // insert
             ps.setTimestamp(++column, collectedTo) // insert
+            ps.setTimestamp(++column, collectedSince) // update
             ps.setTimestamp(++column, collectedTo) // update
             return ps
         }

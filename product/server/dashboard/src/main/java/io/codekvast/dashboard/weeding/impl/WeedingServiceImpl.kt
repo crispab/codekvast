@@ -27,7 +27,7 @@ import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.lock.Lock
 import io.codekvast.common.lock.LockTemplate
 import io.codekvast.common.logging.LoggingUtils.humanReadableDuration
-import io.codekvast.dashboard.metrics.AgentMetricsService
+import io.codekvast.dashboard.metrics.WeedingMetricsService
 import io.codekvast.dashboard.weeding.WeedingService
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
@@ -48,7 +48,8 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                                              private val customerService: CustomerService,
                                              private val clock: Clock,
                                              private val lockTemplate: LockTemplate,
-                                             private val agentMetricsService: AgentMetricsService) : WeedingService {
+                                             private val weedingMetricsService: WeedingMetricsService
+) : WeedingService {
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
@@ -113,7 +114,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         } else {
             logger.debug("Found nothing to delete")
         }
-        agentMetricsService.countWeededRows(deletedRows)
+        weedingMetricsService.countWeededRows(deletedRows)
     }
 
     private fun countRows(table: String) = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM $table", Int::class.java)!!
