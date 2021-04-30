@@ -6,6 +6,7 @@ testSets {
 
 dependencies {
     integrationTestImplementation 'org.springframework.amqp:spring-rabbit'
+    integrationTestImplementation testcontainers
 }
 
 integrationTest {

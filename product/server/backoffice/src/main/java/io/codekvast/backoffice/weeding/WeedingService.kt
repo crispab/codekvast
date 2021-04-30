@@ -19,9 +19,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.codekvast.backoffice.weeding
+
 /**
- * Implementations of weeding services.
- *
  * @author olle.hallin@crisp.se
  */
-package io.codekvast.dashboard.weeding.impl;
+interface WeedingService {
+    /**
+     * Performs data weeding. It removes redundant data from the database, to keep it from growing unbounded.
+     */
+    fun performDataWeeding()
+
+    /**
+     * Finds dead agents and JVMs which are older than the retention period, and sets their garbage flag to true.
+     */
+    fun findWeedingCandidates()
+}

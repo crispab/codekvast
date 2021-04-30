@@ -19,14 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.metrics;
+package io.codekvast.backoffice.metrics.impl
 
-/**
- * Wrapper for agent metrics.
- *
- * @author olle.hallin@crisp.se
+import io.codekvast.backoffice.metrics.BackofficeMetricsService
+import io.micrometer.core.instrument.MeterRegistry
+import org.springframework.stereotype.Service
+import javax.inject.Inject
+
+/** @author olle.hallin@crisp.se
  */
-public interface WeedingMetricsService {
-  /** Count how many rows were deleted by the weeding service */
-  void countWeededRows(int deletedRows);
+@Service
+class BackofficeMetricsServiceImpl
+@Inject constructor(private val meterRegistry: MeterRegistry) : BackofficeMetricsService {
+
+    override fun countWeededRows(deletedRows: Int) {
+        meterRegistry.counter("codekvast.weeder.deleted_rows").increment(deletedRows.toDouble())
+    }
+
 }
