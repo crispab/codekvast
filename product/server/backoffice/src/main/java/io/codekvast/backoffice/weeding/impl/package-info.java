@@ -20,8 +20,8 @@
  * THE SOFTWARE.
  */
 /**
- * Classes that deal with data weeding, the act of removing redundant collected data.
+ * Implementations of weeding services.
  *
  * @author olle.hallin@crisp.se
  */
-package io.codekvast.dashboard.weeding;
+package io.codekvast.backoffice.weeding.impl;

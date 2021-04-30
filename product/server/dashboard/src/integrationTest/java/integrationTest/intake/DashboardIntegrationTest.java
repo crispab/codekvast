@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assume.assumeTrue;
@@ -26,7 +25,6 @@ import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse2;
 import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor1;
 import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
 import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
-import io.codekvast.dashboard.weeding.WeedingTask;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -112,8 +110,6 @@ public class DashboardIntegrationTest {
   @Inject private CustomerService customerService;
 
   @Inject private DashboardService dashboardService;
-
-  @Inject private WeedingTask weedingTask;
 
   @Inject private LockManager lockManager;
 
@@ -530,57 +526,6 @@ public class DashboardIntegrationTest {
 
     // then
     // kaboom!
-  }
-
-  @Test
-  @Sql(scripts = {"/sql/base-data.sql", "/sql/garbage-data.sql"})
-  public void should_perform_dataWeeding() {
-
-    // given
-    assertThat(countRowsInTable("invocations"), is(2));
-    assertThat(countRowsInTable("applications"), is(5));
-    assertThat(countRowsInTable("environments"), is(6));
-    assertThat(countRowsInTable("method_locations"), is(6));
-    assertThat(countRowsInTable("methods"), is(10));
-    assertThat(countRowsInTable("jvms"), is(5));
-    assertThat(countRowsInTable("agent_state"), is(5));
-
-    // when
-    weedingTask.performDataWeeding();
-
-    // then
-    assertThat(countRowsInTable("invocations"), is(1));
-    assertThat(countRowsInTable("applications"), is(4));
-    assertThat(countRowsInTable("environments"), is(5));
-    assertThat(countRowsInTable("method_locations"), is(3));
-    assertThat(countRowsInTable("methods"), is(1));
-    assertThat(countRowsInTable("jvms"), is(4));
-    assertThat(countRowsInTable("agent_state"), is(4));
-  }
-
-  @Test
-  @Sql(scripts = {"/sql/base-data.sql", "/sql/weedable-data.sql"})
-  public void should_find_weeding_candidates() {
-
-    // given
-    assertThat(countRowsInTable("applications"), not(is(0)));
-    assertThat(countRowsInTable("environments"), not(is(0)));
-    assertThat(countRowsInTable("methods"), not(is(0)));
-    assertThat(countRowsInTable("method_locations"), not(is(0)));
-    assertThat(countRowsInTable("jvms"), is(4));
-    assertThat(countRowsInTable("agent_state"), is(4));
-
-    // when
-    weedingTask.performDataWeeding();
-
-    // then
-    assertThat(countRowsInTable("invocations"), is(0));
-    assertThat(countRowsInTable("applications"), is(0));
-    assertThat(countRowsInTable("environments"), is(1));
-    assertThat(countRowsInTable("methods"), is(0));
-    assertThat(countRowsInTable("method_locations"), is(0));
-    assertThat(countRowsInTable("jvms"), is(0));
-    assertThat(countRowsInTable("agent_state"), is(0));
   }
 
   @Test

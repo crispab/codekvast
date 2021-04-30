@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.weeding.impl
+package io.codekvast.backoffice.weeding.impl
 
 import io.codekvast.common.aspects.Restartable
 import io.codekvast.common.customer.CustomerData
@@ -27,8 +27,8 @@ import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.lock.Lock
 import io.codekvast.common.lock.LockTemplate
 import io.codekvast.common.logging.LoggingUtils.humanReadableDuration
-import io.codekvast.dashboard.metrics.WeedingMetricsService
-import io.codekvast.dashboard.weeding.WeedingService
+import io.codekvast.backoffice.metrics.BackofficeMetricsService
+import io.codekvast.backoffice.weeding.WeedingService
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
@@ -48,7 +48,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
                                              private val customerService: CustomerService,
                                              private val clock: Clock,
                                              private val lockTemplate: LockTemplate,
-                                             private val weedingMetricsService: WeedingMetricsService
+                                             private val backofficeMetricsService: BackofficeMetricsService
 ) : WeedingService {
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
@@ -114,7 +114,7 @@ class WeedingServiceImpl @Inject constructor(private val jdbcTemplate: JdbcTempl
         } else {
             logger.debug("Found nothing to delete")
         }
-        weedingMetricsService.countWeededRows(deletedRows)
+        backofficeMetricsService.countWeededRows(deletedRows)
     }
 
     private fun countRows(table: String) = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM $table", Int::class.java)!!

@@ -104,9 +104,5 @@ class IntakeMetricsServiceImpl(private val meterRegistry: MeterRegistry) : Intak
         meterRegistry.counter("codekvast.agent.polls").increment()
     }
 
-    override fun countWeededRows(deletedRows: Int) {
-        meterRegistry.counter("codekvast.weeder.deleted_rows").increment(deletedRows.toDouble())
-    }
-
     private fun getTags(type: PublicationType) = Tags.of("type", type.toString())
 }

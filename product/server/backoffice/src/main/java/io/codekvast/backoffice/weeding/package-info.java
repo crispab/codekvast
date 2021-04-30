@@ -19,22 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.metrics.impl;
-
-import io.codekvast.dashboard.metrics.WeedingMetricsService;
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-/** @author olle.hallin@crisp.se */
-@Service
-@RequiredArgsConstructor
-public class WeedingMetricsServiceImpl implements WeedingMetricsService {
-
-  private final MeterRegistry meterRegistry;
-
-  @Override
-  public void countWeededRows(int deletedRows) {
-    meterRegistry.counter("codekvast.weeder.deleted_rows").increment(deletedRows);
-  }
-}
+/**
+ * Classes that deal with data weeding, the act of removing redundant collected data.
+ *
+ * @author olle.hallin@crisp.se
+ */
+package io.codekvast.backoffice.weeding;

@@ -19,19 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.weeding
+package io.codekvast.backoffice.metrics
 
 /**
+ * Wrapper for backoffice metrics.
+ *
  * @author olle.hallin@crisp.se
  */
-interface WeedingService {
-    /**
-     * Performs data weeding. It removes redundant data from the database, to keep it from growing unbounded.
-     */
-    fun performDataWeeding()
-
-    /**
-     * Finds dead agents and JVMs which are older than the retention period, and sets their garbage flag to true.
-     */
-    fun findWeedingCandidates()
+interface BackofficeMetricsService {
+    /** Count how many rows were deleted by the weeding service  */
+    fun countWeededRows(deletedRows: Int)
 }

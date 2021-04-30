@@ -69,7 +69,4 @@ interface IntakeMetricsService {
 
     /** Count that an agent has polled  */
     fun countAgentPoll()
-
-    /** Count how many rows were deleted by the weeding service  */
-    fun countWeededRows(deletedRows: Int)
 }

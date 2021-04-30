@@ -19,23 +19,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.metrics;
+package io.codekvast.backoffice.weeding
 
-import lombok.Builder;
-import lombok.Value;
+import io.codekvast.common.lock.Lock
+import io.codekvast.common.lock.LockTemplate
+import io.codekvast.common.thread.NamedThreadTemplate
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
+import javax.inject.Inject
 
 /**
- * Statistics for the number of agents that report to Codekvast.
+ * Periodically performs data weeding, i.e., remove redundant data that does not affect what a customer sees.
  *
  * @author olle.hallin@crisp.se
  */
-@Value
-@Builder
-public class AgentStatistics {
-  /** The number of disabled agents. */
-  int numDisabled;
-  /** The number of enabled but dead agents. */
-  int numDead;
-  /** The number of alive agents. */
-  int numAlive;
+@Component
+class WeedingTask
+@Inject constructor(private val lockTemplate: LockTemplate,
+                    private val weedingService: WeedingService
+) {
+
+    /**
+     * A scheduled task that invokes the data weeding service.
+     */
+    @Scheduled(initialDelayString = "\${codekvast.backoffice.dataWeedingInitialDelaySeconds:600}000",
+            fixedDelayString = "\${codekvast.backoffice.dataWeedingIntervalSeconds:3600}000")
+    fun performDataWeeding() {
+        NamedThreadTemplate().doInNamedThread("Weeder") {
+            lockTemplate.doWithLock(Lock.forTask("weeder", 10)) {
+                weedingService.findWeedingCandidates()
+                weedingService.performDataWeeding()
+            }
+        }
+    }
+
 }

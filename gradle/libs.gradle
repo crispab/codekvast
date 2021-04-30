@@ -11,7 +11,7 @@ ext {
     seleniumVersion = '3.141.59'
     springBootVersion = '2.4.2'
     springfoxVersion = '2.9.2'
-    testcontainersVersion = '1.15.1'
+    testcontainersVersion = '1.15.3'
     wiremockVersion = '2.27.2'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
@@ -40,5 +40,11 @@ ext {
 
     junit5Engine = [
             "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
+    ]
+
+    testcontainers = [
+            "org.testcontainers:mariadb:$testcontainersVersion",
+            "org.testcontainers:rabbitmq:$testcontainersVersion",
+            "org.testcontainers:junit-jupiter:$testcontainersVersion"
     ]
 }
