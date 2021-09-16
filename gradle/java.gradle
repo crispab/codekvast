@@ -45,7 +45,7 @@ jar {
 }
 
 googleJavaFormat {
-    toolVersion = '1.9'
+    toolVersion = '1.10.0'
 }
 
 lombok {
@@ -100,7 +100,8 @@ task coverageReport(type: JacocoReport) {
     }
 
 }
-build.dependsOn coverageReport
+
+// build.dependsOn coverageReport
 
 javadoc {
     title "Codekvast version $codekvastDisplayVersion"

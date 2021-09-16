@@ -23,5 +23,5 @@ dependencies {
     classpath 'org.kordamp.gradle:markdown-gradle-plugin:2.2.0'
     classpath 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
     classpath 'org.springframework.boot:spring-boot-gradle-plugin:' + springBootVersion
-    classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:3.0.1'
+    classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:4.0.0'
 }

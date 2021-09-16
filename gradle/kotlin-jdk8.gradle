@@ -20,4 +20,3 @@ compileTestKotlin {
         freeCompilerArgs = ['-Xjsr305=strict']
     }
 }
-

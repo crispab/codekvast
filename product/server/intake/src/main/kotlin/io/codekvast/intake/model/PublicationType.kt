@@ -30,6 +30,6 @@ enum class PublicationType {
     CODEBASE, INVOCATIONS;
 
     override fun toString(): String {
-        return name.toLowerCase()
+        return name.lowercase()
     }
 }
