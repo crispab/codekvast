@@ -1,6 +1,8 @@
 # Codekvast Release Notes
 
 ## 1.4.2
+1. Added support for using the Java agent with Java 16
+2. Moved database weeding to codekvast-backoffice
 
 ## 1.4.1
 

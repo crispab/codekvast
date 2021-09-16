@@ -4,6 +4,14 @@ testSets {
     integrationTest
 }
 
+compileIntegrationTestKotlin {
+    kotlinOptions {
+        javaParameters = true
+        jvmTarget = '11'
+        freeCompilerArgs = ['-Xjsr305=strict']
+    }
+}
+
 dependencies {
     integrationTestImplementation 'org.springframework.amqp:spring-rabbit'
     integrationTestImplementation "org.testcontainers:mariadb:$testcontainersVersion"

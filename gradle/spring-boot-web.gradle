@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------------------------------------------------------
 
 // We will never use embedded Tomcat...
-configurations.compile {
+configurations.implementation {
     exclude module: 'spring-boot-starter-tomcat'
 }
 

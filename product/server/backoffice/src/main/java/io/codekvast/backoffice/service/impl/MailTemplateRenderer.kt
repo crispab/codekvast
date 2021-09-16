@@ -70,7 +70,7 @@ class MailTemplateRenderer(
   }
 
   private fun getTemplateName(template: MailSender.Template): String {
-    return String.format("mail/%s", template.name.toLowerCase())
+    return String.format("mail/%s", template.name.lowercase())
   }
 
   class CodekvastFormatter : Mustache.Formatter {
