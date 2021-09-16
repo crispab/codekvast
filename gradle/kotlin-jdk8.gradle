@@ -8,7 +8,7 @@ dependencies {
 compileKotlin {
     kotlinOptions {
         javaParameters = true
-        jvmTarget = '1.8'
+        jvmTarget = '11'
         freeCompilerArgs = ['-Xjsr305=strict']
     }
 }
@@ -16,7 +16,7 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions {
         javaParameters = true
-        jvmTarget = '1.8'
+        jvmTarget = '11'
         freeCompilerArgs = ['-Xjsr305=strict']
     }
 }

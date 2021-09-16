@@ -1,4 +1,4 @@
-def kotlinVersion = '1.4.21'
+def kotlinVersion = '1.5.30'
 def springBootVersion = '2.4.2'
 
 repositories {
