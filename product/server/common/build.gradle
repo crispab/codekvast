@@ -42,6 +42,7 @@ dependencies {
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'
     // Needed by io.jsonwebtoken:jjwt and com.amazonaws:aws-java-sdk-s3
     runtimeOnly 'net.logstash.logback:logstash-logback-encoder:6.6'
+    runtimeOnly 'net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.9.0'
     runtimeOnly 'org.springframework.boot:spring-boot-starter-validation'
 
     testImplementation testFrameworks

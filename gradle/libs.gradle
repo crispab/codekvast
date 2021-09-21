@@ -5,6 +5,7 @@ ext {
     jacocoVersion = '0.8.7'
     junit5Version = '5.7.0'
     kotlinVersion = '1.5.30'
+    logbackVersion = '1.2.3'
     mariadbVersion = '10.4'
     mockitoVersion = '3.7.7'
     rabbitmqVersion = '3.8-management-alpine'
@@ -16,7 +17,11 @@ ext {
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
     aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
-    logback = 'ch.qos.logback:logback-classic:1.2.3'
+    logback = [
+            "ch.qos.logback:logback-classic:$logbackVersion",
+            "ch.qos.logback:logback-access:$logbackVersion"
+    ]
+
     mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.7.1'
     slf4jApi = 'org.slf4j:slf4j-api:1.7.30'
     testFrameworks = [
