@@ -51,6 +51,7 @@ class BackofficeIntegrationTest {
             .withUser("admin", "secret")!!
 
         @BeforeAll
+        @JvmStatic
         fun beforeTest() {
             System.setProperty("spring.datasource.url", mariaDB.jdbcUrl)
             System.setProperty("spring.datasource.username", USERNAME)
@@ -70,6 +71,7 @@ class BackofficeIntegrationTest {
     lateinit var jdbcTemplate: JdbcTemplate
 
     @Test
+    @Sql(scripts = ["/sql/base-data.sql"])
     fun should_send_mail() {
         val recipient = System.getenv("RUN_MAIL_TESTS_SEND_TO")
         assumeTrue(recipient != null)
