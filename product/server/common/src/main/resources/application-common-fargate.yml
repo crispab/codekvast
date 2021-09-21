@@ -28,12 +28,6 @@ management:
 server:
   port: 8080
   undertow:
-    accesslog:
-      enabled: true
-      dir:     /dev
-      prefix:  stdout
-      suffix:  ''
-      rotate:  false
     threads:
       io:     100
       worker: 100
