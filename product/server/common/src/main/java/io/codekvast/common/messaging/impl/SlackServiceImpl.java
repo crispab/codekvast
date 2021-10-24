@@ -22,6 +22,7 @@
 package io.codekvast.common.messaging.impl;
 
 import static io.codekvast.common.logging.LoggingUtils.humanReadableDuration;
+import static java.time.temporal.ChronoUnit.MILLIS;
 
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.webhook.Payload;
@@ -96,7 +97,10 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     String ch = channel.name().toLowerCase().replace("_", "-");
     @SuppressWarnings("deprecation")
     Payload payload =
-        Payload.builder().text(String.format("%s: %s", Instant.now(), text)).channel(ch).build();
+        Payload.builder()
+            .text(String.format("%s: %s", Instant.now().truncatedTo(MILLIS), text))
+            .channel(ch)
+            .build();
 
     String url = getSlackWebhookUrl(settings);
     if (url != null) {

@@ -42,7 +42,7 @@ class WeedingTask
     /**
      * A scheduled task that invokes the data weeding service.
      */
-    @Scheduled(initialDelayString = "\${codekvast.backoffice.dataWeedingInitialDelaySeconds:600}000",
+    @Scheduled(initialDelayString = "\${codekvast.backoffice.dataWeedingInitialDelaySeconds:60}000",
             fixedDelayString = "\${codekvast.backoffice.dataWeedingIntervalSeconds:3600}000")
     fun performDataWeeding() {
         NamedThreadTemplate().doInNamedThread("Weeder") {
