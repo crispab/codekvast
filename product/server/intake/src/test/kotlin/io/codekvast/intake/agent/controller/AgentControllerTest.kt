@@ -17,7 +17,9 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 
@@ -41,10 +43,10 @@ class AgentControllerTest {
     fun pollConfig2_should_reject_invalid_method() {
         mockMvc
             .perform(
-                MockMvcRequestBuilders.get(Endpoints.Agent.V2_POLL_CONFIG)
+                get(Endpoints.Agent.V2_POLL_CONFIG)
                     .contentType(MediaType.APPLICATION_JSON)
             )
-            .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed)
+            .andExpect(status().isMethodNotAllowed)
     }
 
     @Test
@@ -52,10 +54,10 @@ class AgentControllerTest {
     fun pollConfig2_should_reject_invalid_media_type() {
         mockMvc
             .perform(
-                MockMvcRequestBuilders.post(Endpoints.Agent.V2_POLL_CONFIG)
+                post(Endpoints.Agent.V2_POLL_CONFIG)
                     .contentType(MediaType.TEXT_PLAIN)
             )
-            .andExpect(MockMvcResultMatchers.status().isUnsupportedMediaType)
+            .andExpect(status().isUnsupportedMediaType)
     }
 
     @Test
@@ -63,12 +65,13 @@ class AgentControllerTest {
     fun pollConfig2_should_reject_invalid_json() {
         mockMvc
             .perform(
-                MockMvcRequestBuilders.post(Endpoints.Agent.V2_POLL_CONFIG).content("invalid json")
+                post(Endpoints.Agent.V2_POLL_CONFIG)
+                    .content("invalid json")
                     .contentType(
                         MediaType.APPLICATION_JSON
                     )
             )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(status().isBadRequest)
     }
 
     @Test
@@ -76,7 +79,7 @@ class AgentControllerTest {
     fun pollConfig2_should_reject_invalid_request() {
         mockMvc
             .perform(
-                MockMvcRequestBuilders.post(Endpoints.Agent.V2_POLL_CONFIG)
+                post(Endpoints.Agent.V2_POLL_CONFIG)
                     .content(
                         gson.toJson(
                             GetConfigRequest2.sample().toBuilder().appName("").build()
@@ -84,7 +87,7 @@ class AgentControllerTest {
                     )
                     .contentType(MediaType.APPLICATION_JSON)
             )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(status().isBadRequest)
     }
 
     @Test
@@ -95,11 +98,11 @@ class AgentControllerTest {
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders.post(Endpoints.Agent.V2_POLL_CONFIG)
+                post(Endpoints.Agent.V2_POLL_CONFIG)
                     .content(gson.toJson(GetConfigRequest2.sample()))
                     .contentType(MediaType.APPLICATION_JSON)
             )
-            .andExpect(MockMvcResultMatchers.status().isForbidden)
+            .andExpect(status().isForbidden)
     }
 
     @Test
@@ -111,13 +114,13 @@ class AgentControllerTest {
             )
         mockMvc
             .perform(
-                MockMvcRequestBuilders.post(Endpoints.Agent.V1_POLL_CONFIG)
+                post(Endpoints.Agent.V1_POLL_CONFIG)
                     .content(gson.toJson(GetConfigRequest1.sample()))
                     .contentType(MediaType.APPLICATION_JSON)
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.codeBasePublisherName").value("foobar"))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"))
     }
 
     @Test
@@ -129,13 +132,13 @@ class AgentControllerTest {
             )
         mockMvc
             .perform(
-                MockMvcRequestBuilders.post(Endpoints.Agent.V2_POLL_CONFIG)
+                post(Endpoints.Agent.V2_POLL_CONFIG)
                     .content(gson.toJson(GetConfigRequest2.sample()))
                     .contentType(MediaType.APPLICATION_JSON)
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.codeBasePublisherName").value("foobar"))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"))
     }
 
     @Test
@@ -147,13 +150,13 @@ class AgentControllerTest {
             )
         mockMvc
             .perform(
-                MockMvcRequestBuilders.post(Endpoints.Agent.V2_POLL_CONFIG)
+                post(Endpoints.Agent.V2_POLL_CONFIG)
                     .content(gson.toJson(GetConfigRequest2.sample()))
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.codeBasePublisherName").value("foobar"))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"))
     }
 
     @Test
@@ -200,14 +203,14 @@ class AgentControllerTest {
         )
         mockMvc
             .perform(
-                MockMvcRequestBuilders.multipart(endpoint)
+                multipart(endpoint)
                     .file(multipartFile)
                     .param(Endpoints.Agent.PARAM_LICENSE_KEY, licenseKey)
                     .param(Endpoints.Agent.PARAM_FINGERPRINT, fingerprint)
                     .param(Endpoints.Agent.PARAM_PUBLICATION_SIZE, publicationSize.toString() + "")
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().string("OK"))
+            .andExpect(status().isOk)
+            .andExpect(content().string("OK"))
         verify(agentService)
             .savePublication(
                 eq(publicationType),

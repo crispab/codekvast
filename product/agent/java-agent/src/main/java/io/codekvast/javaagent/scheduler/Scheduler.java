@@ -105,7 +105,7 @@ public class Scheduler implements Runnable {
         config.getSchedulerInitialDelayMillis(),
         config.getSchedulerIntervalMillis(),
         TimeUnit.MILLISECONDS);
-    logger.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
+    logger.info("Codekvast agent started; pulling dynamic config from " + config.getServerUrl());
     return this;
   }
 
@@ -134,14 +134,14 @@ public class Scheduler implements Runnable {
     }
     logger.info(
         String.format(
-            "Codekvast scheduler stopped in %d ms", systemClock.currentTimeMillis() - startedAt));
+            "Codekvast agent stopped in %d ms", systemClock.currentTimeMillis() - startedAt));
   }
 
   @Override
   public void run() {
     synchronized (executor) {
       if (executor.isShutdown()) {
-        logger.fine("Codekvast scheduler is shutting down");
+        logger.fine("Codekvast agent is shutting down");
         return;
       }
 
@@ -166,7 +166,7 @@ public class Scheduler implements Runnable {
         publishInvocationDataIfNeeded();
       } catch (Throwable t) {
         //noinspection UseOfSystemOutOrSystemErr
-        System.err.println("Codekvast scheduler failure: " + t);
+        System.err.println("Codekvast agent failure: " + t);
       }
     }
   }

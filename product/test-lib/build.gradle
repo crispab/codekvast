@@ -1,0 +1,10 @@
+apply from: "$rootDir/gradle/java-8.gradle"
+apply from: "$rootDir/gradle/license.gradle"
+
+description = "Test utilities shared between Codekvast Agent and Server"
+archivesBaseName = "codekvast-test-lib"
+version = codekvastVersion
+
+dependencies {
+    implementation testFrameworks
+}

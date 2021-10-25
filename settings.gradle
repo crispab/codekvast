@@ -13,6 +13,7 @@ include ':product:server:intake'
 include ':product:server:login'
 include ':product:server:stress-tester'
 include ':product:system-test'
+include ':product:test-lib'
 
 include ':tools'
 
