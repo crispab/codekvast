@@ -27,7 +27,7 @@
     "core-js": "3.6.4",
     "ngx-clipboard": "12.3.0",
     "ngx-cookie": "4.0.2",
-    "rxjs": "6.5.5",
+    "rxjs": "6.6.7",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
   },
