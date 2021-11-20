@@ -38,10 +38,10 @@ import org.hamcrest.Matcher;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @CaptureSystemOutput} is a JUnit JUpiter extension for capturing output to {@code
+ * {@code @CaptureSystemOutput} is a JUnit Jupiter extension for capturing output to {@code
  * System.out} and {@code System.err} with expectations supported via Hamcrest matchers.
  *
- * <h4>Example Usage</h4>
+ * <p>Example Usage
  *
  * <pre style="code">
  * {@literal @}Test
