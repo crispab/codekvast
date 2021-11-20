@@ -40,7 +40,7 @@ public class CodekvastThreadFactory implements ThreadFactory {
   @Override
   public Thread newThread(Runnable r) {
     Thread thread = new Thread(r);
-    thread.setName("Codekvast " + name);
+    thread.setName("Codekvast agent " + name);
     thread.setPriority(thread.getPriority() + relativePriority);
     thread.setDaemon(true);
     return thread;

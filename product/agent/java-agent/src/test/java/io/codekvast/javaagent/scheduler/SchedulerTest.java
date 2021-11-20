@@ -15,23 +15,19 @@ import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
-import io.codekvast.javaagent.publishing.impl.JulAwareOutputCapture;
 import io.codekvast.javaagent.publishing.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.javaagent.publishing.impl.NoOpInvocationDataPublisherImpl;
+import io.codekvast.junit5.extensions.CaptureSystemOutput;
+import io.codekvast.junit5.extensions.CaptureSystemOutput.OutputCapture;
 import java.io.IOException;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.system.OutputCaptureRule;
 
 /** @author olle.hallin@crisp.se */
-@EnableRuleMigrationSupport
-public class SchedulerTest {
-
-  @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
+@CaptureSystemOutput
+class SchedulerTest {
 
   @Mock private ConfigPoller configPollerMock;
 
@@ -86,16 +82,17 @@ public class SchedulerTest {
   }
 
   @Test
-  public void should_handle_shutdown_before_first_poll() {
+  void should_handle_shutdown_before_first_poll(OutputCapture outputCapture) {
     scheduler.shutdown();
     verifyNoMoreInteractions(configPollerMock);
-    output.expect(containsString("Codekvast scheduler stopped in 0 ms"));
+    outputCapture.flush();
+    outputCapture.expect(containsString("Codekvast agent stoppedx in 0 ms"));
     assertThat(codeBasePublisher.getSequenceNumber(), is(0));
     assertThat(invocationDataPublisher.getSequenceNumber(), is(0));
   }
 
   @Test
-  public void should_handle_shutdown_after_being_started() throws Exception {
+  void should_handle_shutdown_after_being_started() throws Exception {
     // given
     when(configPollerMock.doPoll()).thenReturn(configResponse);
 
@@ -113,7 +110,7 @@ public class SchedulerTest {
   }
 
   @Test
-  public void should_schedule_correctly() throws Exception {
+  void should_schedule_correctly() throws Exception {
     // given
     when(configPollerMock.doPoll())
         .thenReturn(
@@ -204,13 +201,13 @@ public class SchedulerTest {
   }
 
   @Test
-  public void should_handle_initial_poll_exceptions() throws Exception {
+  void should_handle_initial_poll_exceptions() throws Exception {
     when(configPollerMock.doPoll()).thenThrow(new IOException("Mock: No contact with server"));
     scheduler.run();
   }
 
   @Test
-  public void should_retry_with_exponential_back_off() {
+  void should_retry_with_exponential_back_off() {
     // given
     Scheduler.SchedulerState state =
         new Scheduler.SchedulerState("poller", systemClockMock).initialize(10, 10);

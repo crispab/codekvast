@@ -10,6 +10,7 @@
         </processorPath>
         <module name="codekvast.product.server.dashboard.test" />
         <module name="codekvast.product.server.intake.test" />
+        <module name="codekvast.product.test-lib.test" />
         <module name="codekvast.product.system-test.test" />
         <module name="codekvast.product.agent.java-agent.integrationTest" />
         <module name="codekvast.sample.sample-lib.test" />
@@ -43,6 +44,7 @@
         <module name="codekvast.product.server.common.main" />
         <module name="codekvast.product.server.login.main" />
         <module name="codekvast.sample.sample-lib.main" />
+        <module name="codekvast.product.test-lib.main" />
         <module name="codekvast.product.server.stress-tester.main" />
         <module name="codekvast.product.server.backoffice.main" />
         <module name="codekvast.product.server.intake.main" />

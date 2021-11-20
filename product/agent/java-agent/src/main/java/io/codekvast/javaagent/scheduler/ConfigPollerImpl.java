@@ -39,7 +39,7 @@ public class ConfigPollerImpl implements ConfigPoller {
   private final AgentConfig config;
   private final GetConfigRequest2 requestTemplate;
 
-  private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+  private static final MediaType JSON = MediaType.parse("application/json");
 
   private final Gson gson = new Gson();
 
