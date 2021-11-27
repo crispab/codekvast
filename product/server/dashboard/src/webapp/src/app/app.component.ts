@@ -40,18 +40,18 @@ export class AppComponent implements OnInit {
                 this.setLoggedInState();
             }))
             .subscribe(url => {
-                let feature = this.titleCasePipe.transform(url.substr(1));
+                const feature = this.titleCasePipe.transform(url.substr(1));
                 this.titleService.setTitle('Codekvast ' + feature);
             });
         // @formatter:on
         this.api.getServerSettings().subscribe(settings => this.configService.setServerSettings(settings));
     }
 
-    getVersion(): String {
+    getVersion(): string {
         return this.configService.getVersion();
     }
 
-    getServerVersion(): String {
+    getServerVersion(): string {
         return this.configService.getServerSettings().serverVersion;
     }
 
@@ -77,19 +77,19 @@ export class AppComponent implements OnInit {
     }
 
     private setLoggedInState() {
-        let token = this.cookieService.get('sessionToken') || '';
-        let navData = this.cookieService.get('navData') || '';
+        const token = this.cookieService.get('sessionToken') || '';
+        const navData = this.cookieService.get('navData') || '';
 
-        let parts = token.split('\.');
+        const parts = token.split('\.');
         if (parts.length >= 2) {
             // header = parts[0]
-            let payload = JSON.parse(atob(parts[1]));
+            const payload = JSON.parse(atob(parts[1]));
             console.log('[ck dashboard] appComponent sessionToken payload=%o', payload);
             // signature = parts[2]
 
             let sourceApp = 'codekvast-login';
             if (payload.source === 'heroku' && navData && navData.length > 2) {
-                let args = JSON.parse(atob(navData));
+                const args = JSON.parse(atob(navData));
                 console.log('[ck dashboard] appComponent navData=%o', args);
                 sourceApp = args.app || args.appname;
                 this.showHerokuIntegrationMenu = true;
@@ -123,7 +123,7 @@ export class AppComponent implements OnInit {
     }
 
     private updateGoogleAnalytics(url: string) {
-        let ga = window['ga'];
+        const ga = window['ga'];
 
         if (!this.googleAnalyticsInitialized) {
             console.log('[ck dashboard] Initializing GoogleAnalytics');

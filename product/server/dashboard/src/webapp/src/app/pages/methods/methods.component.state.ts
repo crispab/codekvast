@@ -39,7 +39,7 @@ export class MethodsComponentState {
 
   constructor(private api: DashboardApiService, private stateService: StateService) {
     this.searchState = this.stateService.getState(SearchState.KEY, () => new SearchState());
-    this.settings = this.stateService.getState(ClientSettings.KEY, () => new ClientSettings())
+    this.settings = this.stateService.getState(ClientSettings.KEY, () => new ClientSettings());
   }
 
   initialize() {
@@ -76,7 +76,7 @@ export class MethodsComponentState {
   }
 
   rowIconClasses(id: number) {
-    let visible = this.selectedMethod && this.selectedMethod.id === id;
+    const visible = this.selectedMethod && this.selectedMethod.id === id;
     return {
       fas: visible,
       'fa-ellipsis-h': visible
@@ -130,35 +130,35 @@ export class MethodsComponentState {
     if (!this.data || !this.data.methods) {
       return false;
     }
-    return this.data.methods.find((m: Method) => Method.hasAnnotation(m)) !== undefined
+    return this.data.methods.find((m: Method) => Method.hasAnnotation(m)) !== undefined;
   }
 
   getInvokedBefore(): Date {
-    let d = new Date();
+    const d = new Date();
     d.setDate(d.getDate() - this.searchState.includeIfNotInvokedInDays);
     return d;
   }
 
   getFilteredApplications() {
-    let regExp = new RegExp(this.searchState.applications, 'i');
+    const regExp = new RegExp(this.searchState.applications, 'i');
     return this.applications.filter(a => regExp.test(a));
   }
 
   getFilteredEnvironments() {
-    let regExp = new RegExp(this.searchState.environments, 'i');
+    const regExp = new RegExp(this.searchState.environments, 'i');
     return this.environments.filter(e => regExp.test(e));
   }
 
   getFilteredLocations() {
-    let regExp = new RegExp(this.searchState.locations, 'i');
+    const regExp = new RegExp(this.searchState.locations, 'i');
     return this.locations.filter(l => regExp.test(l));
   }
 
-  isSearchDisabled(): Boolean {
+  isSearchDisabled(): boolean {
     return this.searching
-        || this.getFilteredApplications().length == 0
-        || this.getFilteredEnvironments().length == 0
-        || (this.locations.length > 0 && this.getFilteredLocations().length == 0);
+        || this.getFilteredApplications().length === 0
+        || this.getFilteredEnvironments().length === 0
+        || (this.locations.length > 0 && this.getFilteredLocations().length === 0);
   }
 
   search() {
@@ -180,7 +180,7 @@ export class MethodsComponentState {
       if (this.data.methods.length === 1) {
         this.selectMethod(this.data.methods[0]);
       } else if (this.selectedMethod) {
-        let previouslySelected = this.data.methods.find(m => m.id === this.selectedMethod.id);
+        const previouslySelected = this.data.methods.find(m => m.id === this.selectedMethod.id);
         this.selectMethod(previouslySelected);
       } else {
         this.selectMethod(null);

@@ -23,6 +23,7 @@
   - curl
   - git
   - git-crypt
+  - ng-common
   - node-rimraf
   - nodejs
   - yarn

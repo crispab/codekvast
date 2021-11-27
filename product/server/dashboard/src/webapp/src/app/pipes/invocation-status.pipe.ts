@@ -8,9 +8,7 @@ export class InvocationStatusPipe implements PipeTransform {
             return this.prettyPrint(value);
         }
         if (Array.isArray(value)) {
-            return value.sort().map((v: any) => {
-                return typeof v === 'string' ? this.prettyPrint(v) : v == null ? null : v.toString();
-            }).join(', ');
+            return value.sort().map((v: any) => typeof v === 'string' ? this.prettyPrint(v) : v == null ? null : v.toString()).join(', ');
         }
         return value == null ? null : value.toString();
     }

@@ -30,7 +30,7 @@ describe('MethodsComponent', () => {
                        }, {
                            provide: DashboardApiService,
                            useValue: {
-                               getMethodsFormData: function () {
+                               getMethodsFormData() {
                                    return new Observable<MethodsFormData>();
                                }
                            } as DashboardApiService

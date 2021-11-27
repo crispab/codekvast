@@ -40,7 +40,7 @@ task frontendTest(type: Exec) {
 check.dependsOn frontendTest
 
 task frontendLint(type: Exec) {
-  description "Runs tslint on all TypeScript sources"
+  description "Runs eslint on all TypeScript sources"
   group "Frontend Development"
 
   dependsOn frontendInstall
@@ -48,6 +48,7 @@ task frontendLint(type: Exec) {
 
   def timestampFile = file("$buildDir/${name}.timestamp")
 
+  inputs.files file('src/webapp/.eslintrc.json')
   inputs.files file('src/webapp/angular.json')
   inputs.files file('src/webapp/package.json')
   inputs.files file('src/webapp/tsconfig.json')

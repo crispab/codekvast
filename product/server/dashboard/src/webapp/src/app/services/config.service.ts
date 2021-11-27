@@ -16,7 +16,7 @@ export class ConfigService {
         this.version = environment.codekvastVersion;
     }
 
-    getVersion(): String {
+    getVersion(): string {
         return this.version;
     }
 

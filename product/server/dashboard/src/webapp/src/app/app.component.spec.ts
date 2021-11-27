@@ -9,8 +9,8 @@ import {StateService} from './services/state.service';
 import {from} from 'rxjs';
 
 describe('AppComponent', () => {
-    let fakeApiService = {getServerSettings: () => from([{serverVersion: 'some-server-version'}])};
-    let fakeCookieService = {get: () => ''};
+    const fakeApiService = {getServerSettings: () => from([{serverVersion: 'some-server-version'}])};
+    const fakeCookieService = {get: () => ''};
 
     beforeEach(waitForAsync(() => {
 

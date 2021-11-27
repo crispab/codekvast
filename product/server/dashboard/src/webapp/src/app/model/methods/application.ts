@@ -3,6 +3,6 @@ export class Application {
     invokedAtMillis: number;
     name: string;
     startedAtMillis: number;
-    status: String;
+    status: string;
     version: string;
 }

@@ -53,28 +53,28 @@ export class AgePipe implements PipeTransform {
         let delimiter = '';
         let fields = 0;
         if (age > this.dayMillis) {
-            let days = Math.trunc(age / this.dayMillis);
+            const days = Math.trunc(age / this.dayMillis);
             age -= days * this.dayMillis;
             result += days + 'd';
             delimiter = ' ';
             fields = days >= 7 ? 2 : 1; // Don't show anything more if more than 7 days
         }
         if (fields < 2 && age > this.hourMillis) {
-            let hours = Math.trunc(age / this.hourMillis);
+            const hours = Math.trunc(age / this.hourMillis);
             result += delimiter + hours + 'h';
             age -= hours * this.hourMillis;
             delimiter = ' ';
             fields += 1;
         }
         if (fields < 2 && age > this.minuteMillis) {
-            let minutes = Math.trunc(age / this.minuteMillis);
+            const minutes = Math.trunc(age / this.minuteMillis);
             result += delimiter + minutes + 'm';
             age -= minutes * this.minuteMillis;
             delimiter = ' ';
             fields += 1;
         }
         if (fields < 2 && age > this.secondMillis) {
-            let seconds = Math.trunc(age / this.secondMillis);
+            const seconds = Math.trunc(age / this.secondMillis);
             result += delimiter + seconds + 's';
             // age -= seconds * this.secondMillis;
             // delimiter = ' ';

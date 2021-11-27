@@ -77,13 +77,13 @@ export class CollectionStatusComponentState {
   }
 
   communicationFailure() {
-    let now = this.agePipe.transform(new Date(), 'shortTime');
+    const now = this.agePipe.transform(new Date(), 'shortTime');
     return now + ': Communication failure';
   }
 
   getFilteredEnvironments() {
     if (this.data.environments) {
-      let envRegExp = new RegExp(this.searchState.environments, 'i');
+      const envRegExp = new RegExp(this.searchState.environments, 'i');
       return this.data.environments.filter(e => envRegExp.test(e.name));
     }
     return null;
@@ -91,8 +91,8 @@ export class CollectionStatusComponentState {
 
   getFilteredApplications() {
     if (this.data.applications) {
-      let appRegExp = new RegExp(this.searchState.applications, 'i');
-      let envRegExp = new RegExp(this.searchState.environments, 'i');
+      const appRegExp = new RegExp(this.searchState.applications, 'i');
+      const envRegExp = new RegExp(this.searchState.environments, 'i');
       return this.data.applications.filter(a => appRegExp.test(a.appName) && envRegExp.test(a.environment));
     }
     return null;
@@ -100,10 +100,10 @@ export class CollectionStatusComponentState {
 
   getFilteredAgents() {
     if (this.data.agents) {
-      let appRegExp = new RegExp(this.searchState.applications, 'i');
-      let versionRegExp = new RegExp(this.searchState.versions, 'i');
-      let envRegExp = new RegExp(this.searchState.environments, 'i');
-      let hostRegExp = new RegExp(this.searchState.hostnames, 'i');
+      const appRegExp = new RegExp(this.searchState.applications, 'i');
+      const versionRegExp = new RegExp(this.searchState.versions, 'i');
+      const envRegExp = new RegExp(this.searchState.environments, 'i');
+      const hostRegExp = new RegExp(this.searchState.hostnames, 'i');
       return this.data.agents.filter(a => appRegExp.test(a.appName)
           && versionRegExp.test(a.appVersion)
           && envRegExp.test(a.environment)

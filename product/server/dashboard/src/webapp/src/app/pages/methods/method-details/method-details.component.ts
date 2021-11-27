@@ -28,7 +28,7 @@ export class MethodDetailsComponent implements OnInit {
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(ClientSettings.KEY, () => new ClientSettings());
-        this.route.params.pipe(switchMap((params: Params) => this.api.getMethodById(+params['id'])))
+        this.route.params.pipe(switchMap((params: Params) => this.api.getMethodById(+params.id)))
             .subscribe(method => {
                 this.method = method;
                 this.errorMessage = undefined;
@@ -48,7 +48,7 @@ export class MethodDetailsComponent implements OnInit {
     }
 
     communicationFailure() {
-        let now = this.agePipe.transform(new Date(), this.settings.dateFormat);
+        const now = this.agePipe.transform(new Date(), this.settings.dateFormat);
         return now + ': Communication failure';
     }
 
@@ -57,7 +57,7 @@ export class MethodDetailsComponent implements OnInit {
     }
 
     probablyGoneClasses() {
-        let probablyGone = Method.isProbablyGone(this.method, MethodsComponent.PROBABLY_GONE_DAYS);
+        const probablyGone = Method.isProbablyGone(this.method, MethodsComponent.PROBABLY_GONE_DAYS);
         return {
             invisible: !probablyGone,
             rounded: probablyGone,

@@ -5,20 +5,20 @@ let pipe: AgePipe;
 let parentPipe: DatePipe;
 
 function getPastDate(days: number, hours: number, minutes: number, seconds: number): Date {
-    let secondMillis = 1000;
-    let minuteMillis = 60 * secondMillis;
-    let hourMillis = 60 * minuteMillis;
-    let dayMillis = 24 * hourMillis;
-    let now = new Date().getTime();
+    const secondMillis = 1000;
+    const minuteMillis = 60 * secondMillis;
+    const hourMillis = 60 * minuteMillis;
+    const dayMillis = 24 * hourMillis;
+    const now = new Date().getTime();
     return new Date(now - days * dayMillis - hours * hourMillis - minutes * minuteMillis - seconds * secondMillis);
 }
 
 function getFutureDate(days: number, hours: number, minutes: number, seconds: number): Date {
-    let secondMillis = 1000;
-    let minuteMillis = 60 * secondMillis;
-    let hourMillis = 60 * minuteMillis;
-    let dayMillis = 24 * hourMillis;
-    let now = new Date().getTime();
+    const secondMillis = 1000;
+    const minuteMillis = 60 * secondMillis;
+    const hourMillis = 60 * minuteMillis;
+    const dayMillis = 24 * hourMillis;
+    const now = new Date().getTime();
     return new Date(now + days * dayMillis + hours * hourMillis + minutes * minuteMillis + seconds * secondMillis);
 }
 
@@ -46,13 +46,13 @@ describe('AgePipe', () => {
     });
 
     it('Should delegate to parent when no pattern', () => {
-        let value = 'foobar';
+        const value = 'foobar';
         expect(pipe.transform(value)).toBe(parentPipe.transform(value));
     });
 
     it('Should delegate to parent when unrecognized pattern', () => {
-        let value = 'foobar';
-        let pattern = 'pattern';
+        const value = 'foobar';
+        const pattern = 'pattern';
         expect(pipe.transform(value, pattern)).toBe(parentPipe.transform(value, pattern));
     });
 

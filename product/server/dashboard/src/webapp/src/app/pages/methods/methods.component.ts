@@ -30,7 +30,7 @@ export class MethodsComponent implements OnInit {
     }
 
     communicationFailure() {
-        let now = this.agePipe.transform(new Date(), this.settings.dateFormat);
+        const now = this.agePipe.transform(new Date(), this.settings.dateFormat);
         return now + ': Communication failure';
     }
 
@@ -42,7 +42,7 @@ export class MethodsComponent implements OnInit {
     }
 
     signatureClasses(method: Method) {
-        let muted = method.trackedPercent < 100;
+        const muted = method.trackedPercent < 100;
         return {
             'text-muted': muted,
             'font-italic': muted,

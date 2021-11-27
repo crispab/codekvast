@@ -41,7 +41,7 @@ export class StateService {
     }
 
     setLoggedInAs(customerName: string, email: string, source: string, sourceApp: string) {
-        let authData = new AuthData(customerName, email, source, sourceApp);
+        const authData = new AuthData(customerName, email, source, sourceApp);
         this.loggedIn = true;
         this.authData.next(authData);
     }
@@ -56,7 +56,7 @@ export class StateService {
     isLoggedIn() {
         if (this.isNullOrUndefined(this.cookieService.get('sessionToken'))) {
             if (this.loggedIn) {
-                console.log('[ck dashboard] Detected that sessionToken cookie has disappeared')
+                console.log('[ck dashboard] Detected that sessionToken cookie has disappeared');
             }
             this.setLoggedOut();
         }

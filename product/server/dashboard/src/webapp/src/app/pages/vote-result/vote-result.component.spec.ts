@@ -9,8 +9,8 @@ describe('VoteResultComponent', () => {
     let component: VoteResultComponent;
     let fixture: ComponentFixture<VoteResultComponent>;
 
-    let locationStub: Partial<Location> = {back: function () {}};
-    let activatedRouteStub: Partial<ActivatedRoute> = {params: new Observable<Params>()};
+    const locationStub: Partial<Location> = {back() {}};
+    const activatedRouteStub: Partial<ActivatedRoute> = {params: new Observable<Params>()};
 
     beforeEach(waitForAsync(() => {
         // noinspection JSIgnoredPromiseFromCall

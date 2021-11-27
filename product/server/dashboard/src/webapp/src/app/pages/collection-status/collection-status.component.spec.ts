@@ -10,7 +10,7 @@ import {Observable} from 'rxjs';
 import {StatusData} from '../../model/status/status-data';
 
 @Component({
-    // tslint:disable-next-line:component-selector
+    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'ngb-progressbar',
     template: ''
 })
@@ -24,7 +24,7 @@ export class NgbProgressbarStubComponent {
     selector: 'app-settings-editor',
     template: ''
 })
-// tslint:disable-next-line:component-class-suffix
+// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class SettingsEditorComponentStub {
 };
 
@@ -42,7 +42,7 @@ describe('CollectionStatusComponent', () => {
                        }, {
                            provide: DashboardApiService,
                            useValue: {
-                               getStatus: function () {
+                               getStatus() {
                                    return new Observable<StatusData>();
                                }
                            } as DashboardApiService

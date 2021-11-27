@@ -45,7 +45,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
 
 
     progressBarType2(num: number, maxNum: number) {
-        let percent = this.toPercent(num, maxNum);
+        const percent = this.toPercent(num, maxNum);
         return this.progressBarType(percent);
     }
 
@@ -67,15 +67,15 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         if (this.state.data.numLiveEnabledAgents === this.state.data.numLiveAgents) {
             return `${this.state.data.numLiveEnabledAgents} ${this.getAgentsLabel()}`;
         }
-        let disabled = this.state.data.numLiveAgents - this.state.data.numLiveEnabledAgents;
+        const disabled = this.state.data.numLiveAgents - this.state.data.numLiveEnabledAgents;
         return `${this.state.data.numLiveAgents} ${this.getAgentsLabel()} (${disabled} suspended)`;
     }
 
     agentUploadExpectedAtClasses(agent: Agent) {
-        let invisible = !agent.agentAlive;
-        let overdue = !invisible && agent.nextPublicationExpectedAtMillis < new Date().getTime() - 30000;
+        const invisible = !agent.agentAlive;
+        const overdue = !invisible && agent.nextPublicationExpectedAtMillis < new Date().getTime() - 30000;
         return {
-            invisible: invisible,
+            invisible,
             'bg-warning': overdue,
             'text-white': overdue
         };

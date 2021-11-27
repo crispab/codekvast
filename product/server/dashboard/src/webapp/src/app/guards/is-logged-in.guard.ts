@@ -10,7 +10,7 @@ export class IsLoggedIn implements CanActivate {
     }
 
     canActivate() {
-        let sessionToken = this.cookieService.get('sessionToken');
+        const sessionToken = this.cookieService.get('sessionToken');
 
         if (sessionToken === null || sessionToken === undefined) {
             this.stateService.setLoggedOut();

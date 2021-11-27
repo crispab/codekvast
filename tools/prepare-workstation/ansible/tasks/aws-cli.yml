@@ -2,7 +2,6 @@
   package: name={{ item }} state=present
   with_items:
   - amazon-ecr-credential-helper
-  - aws-shell
   - awscli
   - python3-boto
   - python3-boto3

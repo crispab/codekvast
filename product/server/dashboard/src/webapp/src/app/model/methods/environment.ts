@@ -1,8 +1,8 @@
 export class Environment {
     collectedSinceMillis: number;
     collectedToMillis: number;
-    hostnames: String[];
+    hostnames: string[];
     invokedAtMillis: number;
-    name: String;
-    tags: String[];
+    name: string;
+    tags: string[];
 }

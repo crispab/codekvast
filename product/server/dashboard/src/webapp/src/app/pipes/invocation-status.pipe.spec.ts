@@ -1,6 +1,6 @@
 import {InvocationStatusPipe} from './invocation-status.pipe';
 
-let pipe = new InvocationStatusPipe();
+const pipe = new InvocationStatusPipe();
 
 describe('InvocationStatusPipe', () => {
 

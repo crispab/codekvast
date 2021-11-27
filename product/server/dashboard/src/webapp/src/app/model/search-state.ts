@@ -20,6 +20,6 @@ export class SearchState {
   }
 
   private isEmpty(s: string) {
-    return !s || s.trim().length === 0
+    return !s || s.trim().length === 0;
   }
 }

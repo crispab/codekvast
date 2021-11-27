@@ -6,7 +6,7 @@ import {Component, Input} from '@angular/core';
 @Component({
     selector: 'app-vote-for',
     template: ''
-}) // tslint:disable-next-line:component-class-suffix
+}) // eslint-disable-next-line @angular-eslint/component-class-suffix
 export class VoteComponentStub {
     @Input() feature: string;
 };

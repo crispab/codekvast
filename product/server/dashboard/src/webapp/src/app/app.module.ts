@@ -39,7 +39,7 @@ registerLocaleData(localeSv);
 
 function selectBestLocale() {
     let result = window.navigator.language;
-    let hyphen = result.indexOf('-');
+    const hyphen = result.indexOf('-');
     if (hyphen > 0) {
         result = result.substr(0, hyphen);
         console.log(`[ck dashboard] Stripping variant from window.navigator.language=${window.navigator.language}, using ${result}`);

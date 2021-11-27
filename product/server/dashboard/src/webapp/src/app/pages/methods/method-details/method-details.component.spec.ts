@@ -14,18 +14,18 @@ import {Method} from '../../../model/methods/method';
 @Component({
     selector: 'app-settings-editor',
     template: ''
-}) // tslint:disable-next-line:component-class-suffix
+}) // eslint-disable-next-line @angular-eslint/component-class-suffix
 export class SettingsEditorComponentStub {
 };
 
 describe('MethodDetailsComponent', () => {
     let component: MethodDetailsComponent;
     let fixture: ComponentFixture<MethodDetailsComponent>;
-    let locationStub: Partial<Location> = {
-        back: function () {
+    const locationStub: Partial<Location> = {
+        back() {
         }
     };
-    let activatedRouteStub: Partial<ActivatedRoute> = {params: new Observable<Params>()};
+    const activatedRouteStub: Partial<ActivatedRoute> = {params: new Observable<Params>()};
 
     beforeEach(waitForAsync(() => {
         // noinspection JSIgnoredPromiseFromCall
@@ -44,7 +44,7 @@ describe('MethodDetailsComponent', () => {
                        }, {
                            provide: DashboardApiService,
                            useValue: {
-                               getMethodById: function (id: number) {
+                               getMethodById(id: number) {
                                    console.log('getMethodById(%o)', id);
                                    return new Observable<Method>();
                                }

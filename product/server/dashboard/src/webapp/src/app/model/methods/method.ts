@@ -30,13 +30,13 @@ export class Method {
     }
 
     static stripArgumentsFromSignature(m: Method) {
-        let lparen = m.signature.indexOf('(');
+        const lparen = m.signature.indexOf('(');
         return m.signature.slice(0, lparen < 0 ? m.signature.length : lparen);
     }
 
     static isProbablyGone(m: Method, days: number) {
-        let lastReportAgeInMillis = new Date().getTime() - m.collectedToMillis;
-        let lastReportAgeInDays = lastReportAgeInMillis / 1000 / 60 / 60 / 24;
+        const lastReportAgeInMillis = new Date().getTime() - m.collectedToMillis;
+        const lastReportAgeInDays = lastReportAgeInMillis / 1000 / 60 / 60 / 24;
         return lastReportAgeInDays >= days;
     }
 
@@ -44,11 +44,11 @@ export class Method {
         return !this.isNullOrEmpty(m.methodAnnotation)
             || !this.isNullOrEmpty(m.methodLocationAnnotation)
             || !this.isNullOrEmpty(m.typeAnnotation)
-            || !this.isNullOrEmpty(m.packageAnnotation)
+            || !this.isNullOrEmpty(m.packageAnnotation);
     }
 
     private static isNullOrEmpty(s: string) {
-        return !s || s.trim().length === 0
+        return !s || s.trim().length === 0;
     }
 
 }

@@ -16,8 +16,8 @@ export class VoteResultComponent implements OnInit {
     ngOnInit(): void {
         this.route.params
             .subscribe((params: Params) => {
-                this.featureName = params['feature'];
-                this.vote = params['vote'];
+                this.featureName = params.feature;
+                this.vote = params.vote;
             });
     }
 
