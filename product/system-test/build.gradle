@@ -92,8 +92,8 @@ dependencies {
     testRuntimeOnly "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
     testRuntimeOnly "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
     testRuntimeOnly "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
-    testRuntimeOnly "com.squareup.okhttp3:okhttp:4.9.0"
-    testRuntimeOnly "com.squareup.okio:okio:2.9.0"
+    testRuntimeOnly "com.squareup.okhttp3:okhttp:4.9.2"
+    testRuntimeOnly "com.squareup.okio:okio:3.0.0"
 
     jdbc mariadbDriver
 }

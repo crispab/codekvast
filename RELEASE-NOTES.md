@@ -3,6 +3,8 @@
 ## 1.4.2
 1. Added support for using the Java agent with Java 16
 2. Moved database weeding to codekvast-backoffice
+3. Upgraded to Spring Boot 2.6.0
+4. Switched from springfox-swagger2 to springdoc-openapi-ui
 
 ## 1.4.1
 

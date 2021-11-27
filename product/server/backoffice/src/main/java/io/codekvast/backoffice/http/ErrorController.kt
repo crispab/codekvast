@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest
  */
 @Controller
 class ErrorController(errorAttributes: ErrorAttributes?) : AbstractErrorController(errorAttributes) {
-  override fun getErrorPath() = "/error"
 
   @GetMapping("/error")
   fun handleError(request: HttpServletRequest, model: Model): String {

@@ -1,18 +1,19 @@
 ext {
-    aspectjVersion = '1.9.6'
-    droolsVersion = '7.47.0.Final'
-    gsonVersion = '2.8.6'
+    aspectjVersion = '1.9.7'
+    commonsLang3Version = '3.12.0'
+    droolsVersion = '7.62.0.Final'
+    gsonVersion = '2.8.9'
     jacocoVersion = '0.8.7'
-    junit5Version = '5.7.0'
-    kotlinVersion = '1.5.30'
-    logbackVersion = '1.2.3'
+    junit5Version = '5.8.1'
+    kotlinVersion = '1.6.0'
+    logbackVersion = '1.2.7'
     mariadbVersion = '10.4'
-    mockitoVersion = '3.7.7'
+    mockitoVersion = '4.1.0'
+    openApiVersion = '1.5.12'
     rabbitmqVersion = '3.8-management-alpine'
-    seleniumVersion = '3.141.59'
-    springBootVersion = '2.4.2'
-    springfoxVersion = '2.9.2'
-    testcontainersVersion = '1.15.3'
+    seleniumVersion = '4.1.0'
+    springBootVersion = '2.6.0'
+    testcontainersVersion = '1.16.2'
     wiremockVersion = '2.27.2'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
@@ -22,10 +23,10 @@ ext {
             "ch.qos.logback:logback-access:$logbackVersion"
     ]
 
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.7.1'
-    slf4jApi = 'org.slf4j:slf4j-api:1.7.30'
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
+    slf4jApi = 'org.slf4j:slf4j-api:1.7.32'
     testFrameworks = [
-            'junit:junit:4.13.1',
+            'junit:junit:4.13.2',
             'org.junit.jupiter:junit-jupiter-migrationsupport',
             'org.hamcrest:hamcrest-core:2.2',
             'org.hamcrest:hamcrest-library:2.2',

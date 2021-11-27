@@ -143,7 +143,7 @@ class AgentServiceImpl(
         if (matcher.matches()) {
             return Optional.of(
                 PublicationType.valueOf(
-                    matcher.group(1).toUpperCase()
+                    matcher.group(1).uppercase()
                 )
             )
         }

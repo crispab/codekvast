@@ -37,11 +37,6 @@ public class ErrorController extends AbstractErrorController {
     super(errorAttributes);
   }
 
-  @Override
-  public String getErrorPath() {
-    return "/error";
-  }
-
   @GetMapping("/error")
   public String handleError(HttpServletRequest request, Model model) {
     HttpStatus status = getStatus(request);

@@ -13,9 +13,8 @@
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.intake.CodekvastIntakeApplication" />
     <option name="ACTIVE_PROFILES" value="dev,common-dev,dev-secrets" />
-    <option name="VM_PARAMETERS" value="-XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/codekvast/heap-dumps/codekvast-intake.hprof -Xmx40m" />
+    <option name="VM_PARAMETERS" value="-XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/codekvast/heap-dumps/codekvast-intake.hprof -Xmx400m" />
     <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="SHORTEN_COMMAND_LINE" value="NONE" />
     <additionalParameters>
       <param>
         <option name="enabled" value="true" />
