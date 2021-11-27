@@ -6,15 +6,16 @@ import io.codekvast.common.customer.CustomerData
 import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.customer.LicenseViolationException
 import io.codekvast.common.messaging.CorrelationIdHolder
+import io.codekvast.intake.agent.service.AgentService
 import io.codekvast.intake.bootstrap.CodekvastIntakeSettings
 import io.codekvast.intake.metrics.IntakeMetricsService
-import io.codekvast.intake.model.PublicationType.*
-import io.codekvast.intake.agent.service.AgentService
+import io.codekvast.intake.model.PublicationType.CODEBASE
+import io.codekvast.intake.model.PublicationType.INVOCATIONS
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -25,7 +26,6 @@ import org.mockito.MockitoAnnotations
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
-import java.lang.Exception
 import java.util.*
 
 internal class AgentServiceImplTest {
@@ -50,14 +50,14 @@ internal class AgentServiceImplTest {
         val settings = CodekvastIntakeSettings(fileImportQueuePath = temporaryFolder)
 
         whenever(customerService.getCustomerDataByLicenseKey(ArgumentMatchers.anyString()))
-            .thenReturn(customerData)
+                .thenReturn(customerData)
 
         service = AgentServiceImpl(
-            settings,
-            customerService,
-            intakeDAO,
-            mock(),
-            intakeMetricsService
+                settings,
+                customerService,
+                intakeDAO,
+                mock(),
+                intakeMetricsService
         )
     }
 
@@ -67,20 +67,20 @@ internal class AgentServiceImplTest {
         val publicationSize = 4711
 
         Mockito.doThrow(LicenseViolationException("stub"))
-            .`when`(customerService)
-            .assertPublicationSize(
-                ArgumentMatchers.any(CustomerData::class.java),
-                ArgumentMatchers.eq(publicationSize)
-            )
+                .`when`(customerService)
+                .assertPublicationSize(
+                        ArgumentMatchers.any(CustomerData::class.java),
+                        ArgumentMatchers.eq(publicationSize)
+                )
         val inputStream = Mockito.mock(InputStream::class.java)
         try {
             // when
             service.savePublication(
-                CODEBASE,
-                "key",
-                "fingerprint",
-                publicationSize,
-                inputStream
+                    CODEBASE,
+                    "key",
+                    "fingerprint",
+                    publicationSize,
+                    inputStream
             )
 
             // then
@@ -100,11 +100,11 @@ internal class AgentServiceImplTest {
 
         // when
         service.savePublication(
-            CODEBASE,
-            "key",
-            "fingerprint",
-            4711,
-            inputStream
+                CODEBASE,
+                "key",
+                "fingerprint",
+                4711,
+                inputStream
         )
 
         // then
@@ -119,26 +119,26 @@ internal class AgentServiceImplTest {
 
         // when
         val resultingFile: File = service.savePublication(
-            CODEBASE,
-            "key",
-            "fingerprint",
-            1000,
-            ByteArrayInputStream(contents.toByteArray())
+                CODEBASE,
+                "key",
+                "fingerprint",
+                1000,
+                ByteArrayInputStream(contents.toByteArray())
         )
 
         // then
         MatcherAssert.assertThat(resultingFile, CoreMatchers.notNullValue())
         MatcherAssert.assertThat(
-            service.getPublicationTypeFromPublicationFile(resultingFile),
-            `is`(Optional.of(CODEBASE))
+                service.getPublicationTypeFromPublicationFile(resultingFile),
+                `is`(Optional.of(CODEBASE))
         )
         MatcherAssert.assertThat(resultingFile.name, CoreMatchers.startsWith("codebase-"))
         MatcherAssert.assertThat(resultingFile.name, CoreMatchers.endsWith(".ser"))
         MatcherAssert.assertThat(resultingFile.exists(), `is`(true))
         MatcherAssert.assertThat(
-            resultingFile.length(), `is`(
+                resultingFile.length(), `is`(
                 contents.length.toLong()
-            )
+        )
         )
     }
 
@@ -150,11 +150,11 @@ internal class AgentServiceImplTest {
 
         // when
         val resultingFile: File = service.savePublication(
-            INVOCATIONS,
-            "key",
-            "fingerprint",
-            1000,
-            ByteArrayInputStream(contents.toByteArray())
+                INVOCATIONS,
+                "key",
+                "fingerprint",
+                1000,
+                ByteArrayInputStream(contents.toByteArray())
         )
 
         // then
@@ -163,9 +163,9 @@ internal class AgentServiceImplTest {
         MatcherAssert.assertThat(resultingFile.name, CoreMatchers.endsWith(".ser"))
         MatcherAssert.assertThat(resultingFile.exists(), `is`(true))
         MatcherAssert.assertThat(
-            resultingFile.length(), `is`(
+                resultingFile.length(), `is`(
                 contents.length.toLong()
-            )
+        )
         )
     }
 
@@ -176,9 +176,9 @@ internal class AgentServiceImplTest {
 
         // when
         val file: File = service.generatePublicationFile(
-            CODEBASE,
-            17L,
-            correlationId
+                CODEBASE,
+                17L,
+                correlationId
         )
 
         // then
@@ -199,6 +199,6 @@ internal class AgentServiceImplTest {
 
         // then
         Mockito.verify(intakeMetricsService, Mockito.times(1))
-            .countAgentPoll()
+                .countAgentPoll()
     }
 }

@@ -33,10 +33,10 @@ import javax.servlet.http.HttpServletRequest
 @Controller
 class ErrorController(errorAttributes: ErrorAttributes?) : AbstractErrorController(errorAttributes) {
 
-  @GetMapping("/error")
-  fun handleError(request: HttpServletRequest, model: Model): String {
-    model.addAttribute("title", "Error")
-    model.addAttribute("status", getStatus(request))
-    return "error"
-  }
+    @GetMapping("/error")
+    fun handleError(request: HttpServletRequest, model: Model): String {
+        model.addAttribute("title", "Error")
+        model.addAttribute("status", getStatus(request))
+        return "error"
+    }
 }

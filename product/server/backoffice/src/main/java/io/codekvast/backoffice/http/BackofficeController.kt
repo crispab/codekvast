@@ -32,12 +32,12 @@ import javax.servlet.http.HttpServletRequest
  */
 @Controller
 class BackofficeController {
-  val logger by LoggerDelegate()
+    val logger by LoggerDelegate()
 
-  @GetMapping("/", "/index", "/home")
-  fun index(request: HttpServletRequest, authentication: Authentication?, model: Model): String {
-    logger.debug("index(): Request.contextPath={}", request.contextPath)
-    model.addAttribute("title", "")
-    return "index"
-  }
+    @GetMapping("/", "/index", "/home")
+    fun index(request: HttpServletRequest, authentication: Authentication?, model: Model): String {
+        logger.debug("index(): Request.contextPath={}", request.contextPath)
+        model.addAttribute("title", "")
+        return "index"
+    }
 }

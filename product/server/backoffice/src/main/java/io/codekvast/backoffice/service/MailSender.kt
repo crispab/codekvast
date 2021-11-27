@@ -24,16 +24,16 @@ package io.codekvast.backoffice.service
 /** @author olle.hallin@crisp.se
  */
 interface MailSender {
-  /**
-   * Sends an email using a named template to a given email address.
-   *
-   * @param template The template to use.
-   * @param emailAddress The email address to send to.
-   * @param args The arguments to the template.
-   */
-  fun sendMail(template: Template, emailAddress: String, vararg args: Any)
+    /**
+     * Sends an email using a named template to a given email address.
+     *
+     * @param template The template to use.
+     * @param emailAddress The email address to send to.
+     * @param args The arguments to the template.
+     */
+    fun sendMail(template: Template, emailAddress: String, vararg args: Any)
 
-  enum class Template(val subject: String) {
-    WELCOME_TO_CODEKVAST("Welcome to Codekvast!");
-  }
+    enum class Template(val subject: String) {
+        WELCOME_TO_CODEKVAST("Welcome to Codekvast!");
+    }
 }

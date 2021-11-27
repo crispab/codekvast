@@ -38,23 +38,23 @@ import java.time.Instant
  */
 @Component
 class AgentStateManagerImpl(
-    private val settings: CodekvastIntakeSettings,
-    private val customerService: CustomerService,
-    private val eventService: EventService,
-    private val intakeDAO: IntakeDAO,
-    private val intakeMetricsService: IntakeMetricsService
+        private val settings: CodekvastIntakeSettings,
+        private val customerService: CustomerService,
+        private val eventService: EventService,
+        private val intakeDAO: IntakeDAO,
+        private val intakeMetricsService: IntakeMetricsService
 ) : AgentStateManager {
     val logger by LoggerDelegate()
 
     @Scheduled(
-        initialDelayString = "\${codekvast.intake.agent-statistics.delay.seconds:60}000",
-        fixedRateString = "\${codekvast.intake.agent-statistics.interval.seconds:60}000"
+            initialDelayString = "\${codekvast.intake.agent-statistics.delay.seconds:60}000",
+            fixedRateString = "\${codekvast.intake.agent-statistics.interval.seconds:60}000"
     )
     @Transactional(readOnly = true)
     fun countAgents() {
         NamedThreadTemplate().doInNamedThread("metrics") {
             val statistics =
-                intakeDAO.getAgentStatistics(Instant.now().minusSeconds(10))
+                    intakeDAO.getAgentStatistics(Instant.now().minusSeconds(10))
             logger.debug("Collected {}", statistics)
             intakeMetricsService.gaugeAgents(statistics)
         }
@@ -62,48 +62,48 @@ class AgentStateManagerImpl(
 
     @Transactional(rollbackFor = [Exception::class])
     override fun updateAgentState(
-        customerData: CustomerData, jvmUuid: String, appName: String, environment: String
+            customerData: CustomerData, jvmUuid: String, appName: String, environment: String
     ): Boolean {
         intakeDAO.writeLockAgentStateForCustomer(customerData.customerId)
         return doUpdateAgentState(customerData, jvmUuid, appName, environment)
     }
 
     private fun doUpdateAgentState(
-        customerData: CustomerData, jvmUuid: String, appName: String, environment: String
+            customerData: CustomerData, jvmUuid: String, appName: String, environment: String
     ): Boolean {
         val customerId = customerData.customerId
         val now = Instant.now()
 
         intakeDAO.markDeadAgentsAsGarbage(
-            customerId, jvmUuid, now.minusSeconds(settings.fileImportIntervalSeconds * 2L)
+                customerId, jvmUuid, now.minusSeconds(settings.fileImportIntervalSeconds * 2L)
         )
 
         intakeDAO.setAgentTimestamps(
-            customerId,
-            jvmUuid,
-            now,
-            now.plusSeconds(customerData.pricePlan.pollIntervalSeconds.toLong())
+                customerId,
+                jvmUuid,
+                now,
+                now.plusSeconds(customerData.pricePlan.pollIntervalSeconds.toLong())
         )
         val cd = customerService.registerAgentPoll(customerData, now)
         val numOtherEnabledAliveAgents: Int =
-            intakeDAO.getNumOtherEnabledAliveAgents(customerId, jvmUuid, now.minusSeconds(10))
+                intakeDAO.getNumOtherEnabledAliveAgents(customerId, jvmUuid, now.minusSeconds(10))
         val event = AgentPolledEvent.builder()
-            .afterTrialPeriod(cd.isTrialPeriodExpired(now))
-            .appName(appName)
-            .customerId(customerId)
-            .disabledEnvironment(!intakeDAO.isEnvironmentEnabled(customerId, jvmUuid))
-            .environment(environment)
-            .jvmUuid(jvmUuid)
-            .polledAt(now)
-            .tooManyLiveAgents(
-                numOtherEnabledAliveAgents >= customerData.pricePlan.maxNumberOfAgents
-            )
-            .trialPeriodEndsAt(cd.trialPeriodEndsAt)
-            .build()
+                .afterTrialPeriod(cd.isTrialPeriodExpired(now))
+                .appName(appName)
+                .customerId(customerId)
+                .disabledEnvironment(!intakeDAO.isEnvironmentEnabled(customerId, jvmUuid))
+                .environment(environment)
+                .jvmUuid(jvmUuid)
+                .polledAt(now)
+                .tooManyLiveAgents(
+                        numOtherEnabledAliveAgents >= customerData.pricePlan.maxNumberOfAgents
+                )
+                .trialPeriodEndsAt(cd.trialPeriodEndsAt)
+                .build()
         logger.debug(
-            "Agent {} is {}",
-            jvmUuid,
-            if (event.isAgentEnabled) "enabled" else "disabled"
+                "Agent {} is {}",
+                jvmUuid,
+                if (event.isAgentEnabled) "enabled" else "disabled"
         )
         eventService.send(event)
         intakeDAO.updateAgentEnabledState(customerId, jvmUuid, event.isAgentEnabled)

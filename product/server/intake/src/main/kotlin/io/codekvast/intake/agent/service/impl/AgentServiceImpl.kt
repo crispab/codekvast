@@ -26,11 +26,12 @@ import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.logging.LoggerDelegate
 import io.codekvast.common.logging.LoggingUtils.humanReadableByteCount
 import io.codekvast.common.messaging.CorrelationIdHolder
+import io.codekvast.intake.agent.service.AgentService
 import io.codekvast.intake.bootstrap.CodekvastIntakeSettings
 import io.codekvast.intake.metrics.IntakeMetricsService
 import io.codekvast.intake.model.PublicationType
-import io.codekvast.intake.model.PublicationType.*
-import io.codekvast.intake.agent.service.AgentService
+import io.codekvast.intake.model.PublicationType.CODEBASE
+import io.codekvast.intake.model.PublicationType.values
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
 import io.codekvast.javaagent.model.v2.GetConfigRequest2
@@ -52,11 +53,11 @@ import java.util.stream.Collectors
  */
 @Service
 class AgentServiceImpl(
-    private val settings: CodekvastIntakeSettings,
-    private val customerService: CustomerService,
-    private val intakeDAO: IntakeDAO,
-    private val agentStateManager: AgentStateManager,
-    private val metricsService: IntakeMetricsService
+        private val settings: CodekvastIntakeSettings,
+        private val customerService: CustomerService,
+        private val intakeDAO: IntakeDAO,
+        private val agentStateManager: AgentStateManager,
+        private val metricsService: IntakeMetricsService
 ) : AgentService {
 
     val unknownEnvironment = "<UNKNOWN>"
@@ -66,9 +67,9 @@ class AgentServiceImpl(
 
     private fun buildCorrelationIdPattern(): Pattern {
         val publicationTypes: String =
-            Arrays.stream(values())
-                .map(PublicationType::toString)
-                .collect(Collectors.joining("|", "(", ")"))
+                Arrays.stream(values())
+                        .map(PublicationType::toString)
+                        .collect(Collectors.joining("|", "(", ")"))
         return Pattern.compile("""$publicationTypes-([0-9]+)-([a-fA-F0-9_-]+)\.ser$""")
     }
 
@@ -88,34 +89,34 @@ class AgentServiceImpl(
         val customerData = customerService.getCustomerDataByLicenseKey(request.licenseKey)
 
         val isAgentEnabled: Boolean = agentStateManager.updateAgentState(
-            customerData, request.jvmUuid, request.appName, request.environment
+                customerData, request.jvmUuid, request.appName, request.environment
         )
 
         val publisherConfig = if (isAgentEnabled) "enabled=true" else "enabled=false"
         val pp = customerData.pricePlan
         return GetConfigResponse2.builder()
-            .codeBasePublisherCheckIntervalSeconds(pp.publishIntervalSeconds)
-            .codeBasePublisherConfig(publisherConfig)
-            .codeBasePublisherName("http")
-            .codeBasePublisherRetryIntervalSeconds(pp.retryIntervalSeconds)
-            .configPollIntervalSeconds(pp.pollIntervalSeconds)
-            .configPollRetryIntervalSeconds(pp.retryIntervalSeconds)
-            .customerId(customerData.customerId)
-            .invocationDataPublisherConfig(publisherConfig)
-            .invocationDataPublisherIntervalSeconds(pp.publishIntervalSeconds)
-            .invocationDataPublisherName("http")
-            .invocationDataPublisherRetryIntervalSeconds(pp.retryIntervalSeconds)
-            .build()
+                .codeBasePublisherCheckIntervalSeconds(pp.publishIntervalSeconds)
+                .codeBasePublisherConfig(publisherConfig)
+                .codeBasePublisherName("http")
+                .codeBasePublisherRetryIntervalSeconds(pp.retryIntervalSeconds)
+                .configPollIntervalSeconds(pp.pollIntervalSeconds)
+                .configPollRetryIntervalSeconds(pp.retryIntervalSeconds)
+                .customerId(customerData.customerId)
+                .invocationDataPublisherConfig(publisherConfig)
+                .invocationDataPublisherIntervalSeconds(pp.publishIntervalSeconds)
+                .invocationDataPublisherName("http")
+                .invocationDataPublisherRetryIntervalSeconds(pp.retryIntervalSeconds)
+                .build()
     }
 
     @Override
     @Transactional(readOnly = true)
     override fun savePublication(
-        publicationType: PublicationType,
-        licenseKey: String,
-        codebaseFingerprint: String,
-        publicationSize: Int,
-        inputStream: InputStream
+            publicationType: PublicationType,
+            licenseKey: String,
+            codebaseFingerprint: String,
+            publicationSize: Int,
+            inputStream: InputStream
     ): File {
         inputStream.use {
             val customerData = customerService.getCustomerDataByLicenseKey(licenseKey)
@@ -123,18 +124,18 @@ class AgentServiceImpl(
                 customerService.assertPublicationSize(customerData, publicationSize)
             }
             return doSaveInputStream(
-                publicationType, customerData.customerId, codebaseFingerprint, inputStream
+                    publicationType, customerData.customerId, codebaseFingerprint, inputStream
             )
         }
     }
 
     override fun generatePublicationFile(
-        publicationType: PublicationType,
-        customerId: Long,
-        correlationId: String
+            publicationType: PublicationType,
+            customerId: Long,
+            correlationId: String
     ): File = File(
-        settings.fileImportQueuePath,
-        String.format("%s-%d-%s.ser", publicationType, customerId, correlationId)
+            settings.fileImportQueuePath,
+            String.format("%s-%d-%s.ser", publicationType, customerId, correlationId)
     )
 
     override fun getPublicationTypeFromPublicationFile(publicationFile: File): Optional<PublicationType> {
@@ -142,9 +143,9 @@ class AgentServiceImpl(
         val matcher = correlationIdPattern.matcher(fileName)
         if (matcher.matches()) {
             return Optional.of(
-                PublicationType.valueOf(
-                    matcher.group(1).uppercase()
-                )
+                    PublicationType.valueOf(
+                            matcher.group(1).uppercase()
+                    )
             )
         }
         logger.warn("Could not parse publicationType from publication file name {}", fileName)
@@ -158,17 +159,17 @@ class AgentServiceImpl(
             return matcher.group(3)
         }
         logger.warn(
-            "Could not parse correlationId from publication file name {}, generating a new...",
-            fileName
+                "Could not parse correlationId from publication file name {}, generating a new...",
+                fileName
         )
         return CorrelationIdHolder.generateNew()
     }
 
     private fun doSaveInputStream(
-        publicationType: PublicationType,
-        customerId: Long,
-        codebaseFingerprint: String,
-        inputStream: InputStream
+            publicationType: PublicationType,
+            customerId: Long,
+            codebaseFingerprint: String,
+            inputStream: InputStream
     ): File {
         createDirectory(settings.fileImportQueuePath)
         val result = generatePublicationFile(publicationType, customerId, CorrelationIdHolder.get())
@@ -178,10 +179,10 @@ class AgentServiceImpl(
         Files.copy(inputStream, tmpPath)
         Files.move(tmpPath, result.toPath(), StandardCopyOption.ATOMIC_MOVE)
         logger.info(
-            "Saved {} ({}), fingerprint = {}",
-            result.name,
-            humanReadableByteCount(result.length()),
-            codebaseFingerprint
+                "Saved {} ({}), fingerprint = {}",
+                result.name,
+                humanReadableByteCount(result.length()),
+                codebaseFingerprint
         )
         metricsService.gaugePhysicalPublicationSize(publicationType, result.length())
         return result

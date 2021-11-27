@@ -34,56 +34,56 @@ import java.util.*
  */
 @Component
 class MailTemplateRenderer(
-  private val compiler: Mustache.Compiler,
-  private val customerService: CustomerService,
-  private val commonSettings: CodekvastCommonSettings) {
+        private val compiler: Mustache.Compiler,
+        private val customerService: CustomerService,
+        private val commonSettings: CodekvastCommonSettings) {
 
-  fun renderTemplate(template: MailSender.Template, vararg args: Any): String {
-    val templateSpecificData: Map<String, Any>
+    fun renderTemplate(template: MailSender.Template, vararg args: Any): String {
+        val templateSpecificData: Map<String, Any>
 
-    when (template) {
-      WELCOME_TO_CODEKVAST -> templateSpecificData = collectWelcomeToCodekvastData(args[0] as Long)
+        when (template) {
+            WELCOME_TO_CODEKVAST -> templateSpecificData = collectWelcomeToCodekvastData(args[0] as Long)
+        }
+
+        return compiler
+                .withFormatter(CodekvastFormatter())
+                .loadTemplate(getTemplateName(template))
+                .execute(collectCommonData() + templateSpecificData)
     }
 
-    return compiler
-      .withFormatter(CodekvastFormatter())
-      .loadTemplate(getTemplateName(template))
-      .execute(collectCommonData() + templateSpecificData)
-  }
+    private fun collectCommonData() = mutableMapOf(
+            "codekvastDisplayVersion" to commonSettings.displayVersion,
+            "homepageUrl" to commonSettings.homepageBaseUrl,
+            "loginUrl" to commonSettings.loginBaseUrl,
+            "supportEmail" to commonSettings.supportEmail)
 
-  private fun collectCommonData() = mutableMapOf(
-    "codekvastDisplayVersion" to commonSettings.displayVersion,
-    "homepageUrl" to commonSettings.homepageBaseUrl,
-    "loginUrl" to commonSettings.loginBaseUrl,
-    "supportEmail" to commonSettings.supportEmail)
-
-  private fun collectWelcomeToCodekvastData(customerId: Long): Map<String, Any> {
-    val customerData = customerService.getCustomerDataByCustomerId(customerId)
-    return mapOf(
-      "customerName" to customerData.displayName,
-      "pricePlan" to customerData.pricePlan,
-      "inTrialPeriod" to (customerData.collectionStartedAt != null && customerData.trialPeriodEndsAt != null),
-      "hasTrialPeriodDays" to (customerData.pricePlan.trialPeriodDays > 0),
-      "trialPeriodEndsAt" to customerData.trialPeriodEndsAt,
-      "trialPeriodStartedAt" to customerData.collectionStartedAt
-    )
-  }
-
-  private fun getTemplateName(template: MailSender.Template): String {
-    return String.format("mail/%s", template.name.lowercase())
-  }
-
-  class CodekvastFormatter : Mustache.Formatter {
-
-    override fun format(value: Any) = when (value) {
-      is Instant -> value.toString()
-        .replace("T", " ") // the 'T' between date and time
-        .replace("\\.[0-9]+Z$".toRegex(), " UTC")
-
-      is Int, is Long -> Formatter(Locale.ENGLISH).format("%,d", value).toString()
-
-      else -> value.toString()
+    private fun collectWelcomeToCodekvastData(customerId: Long): Map<String, Any> {
+        val customerData = customerService.getCustomerDataByCustomerId(customerId)
+        return mapOf(
+                "customerName" to customerData.displayName,
+                "pricePlan" to customerData.pricePlan,
+                "inTrialPeriod" to (customerData.collectionStartedAt != null && customerData.trialPeriodEndsAt != null),
+                "hasTrialPeriodDays" to (customerData.pricePlan.trialPeriodDays > 0),
+                "trialPeriodEndsAt" to customerData.trialPeriodEndsAt,
+                "trialPeriodStartedAt" to customerData.collectionStartedAt
+        )
     }
-  }
+
+    private fun getTemplateName(template: MailSender.Template): String {
+        return String.format("mail/%s", template.name.lowercase())
+    }
+
+    class CodekvastFormatter : Mustache.Formatter {
+
+        override fun format(value: Any) = when (value) {
+            is Instant -> value.toString()
+                    .replace("T", " ") // the 'T' between date and time
+                    .replace("\\.[0-9]+Z$".toRegex(), " UTC")
+
+            is Int, is Long -> Formatter(Locale.ENGLISH).format("%,d", value).toString()
+
+            else -> value.toString()
+        }
+    }
 
 }

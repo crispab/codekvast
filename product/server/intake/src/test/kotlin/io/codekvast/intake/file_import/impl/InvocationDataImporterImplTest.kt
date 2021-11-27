@@ -59,23 +59,23 @@ class InvocationDataImporterImplTest {
     fun should_ignore_synthetic_signatures() {
         // given
         val syntheticSignature =
-            "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB\$BIND_CALLBACKS(java.lang.Object)"
+                "customer1.FooConfig..EnhancerBySpringCGLIB..96aac875.CGLIB\$BIND_CALLBACKS(java.lang.Object)"
         val publication: InvocationDataPublication2 = InvocationDataPublication2.builder()
-            .commonData(CommonPublicationData2.sampleCommonPublicationData())
-            .recordingIntervalStartedAtMillis(now.toEpochMilli())
-            .invocations(HashSet(listOf("signature", syntheticSignature)))
-            .build()
+                .commonData(CommonPublicationData2.sampleCommonPublicationData())
+                .recordingIntervalStartedAtMillis(now.toEpochMilli())
+                .invocations(HashSet(listOf("signature", syntheticSignature)))
+                .build()
         whenever(syntheticSignatureService.isSyntheticMethod(syntheticSignature))
-            .thenReturn(true)
+                .thenReturn(true)
         whenever(lockTemplate.doWithLockOrThrow(any(), any<Callable<Any>>()))
-            .thenReturn(Duration.ofSeconds(1))
+                .thenReturn(Duration.ofSeconds(1))
 
         // when
         invocationDataImporter.importPublication(publication)
 
         // then
         verify(metricsService)
-            .recordImportedPublication(INVOCATIONS, 1, 1, Duration.ofSeconds(1))
+                .recordImportedPublication(INVOCATIONS, 1, 1, Duration.ofSeconds(1))
     }
 
 }

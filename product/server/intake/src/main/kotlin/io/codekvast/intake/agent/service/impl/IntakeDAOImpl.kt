@@ -42,30 +42,30 @@ class IntakeDAOImpl(private val jdbcTemplate: JdbcTemplate) : IntakeDAO {
     override fun writeLockAgentStateForCustomer(customerId: Long) {
         val startedAt = Instant.now()
         val ids = jdbcTemplate.queryForList(
-            "SELECT id FROM agent_state WHERE customerId = ? AND garbage = FALSE ORDER BY customerId, jvmUuid "
-                    + "LOCK IN SHARE MODE WAIT 30",
-            Long::class.java,
-            customerId
+                "SELECT id FROM agent_state WHERE customerId = ? AND garbage = FALSE ORDER BY customerId, jvmUuid "
+                        + "LOCK IN SHARE MODE WAIT 30",
+                Long::class.java,
+                customerId
         )
 
         logger.info( // TODO: change to debug
-            "Locked {} agent_state rows belonging to customer {} in {}",
-            ids.size,
-            customerId,
-            Duration.between(startedAt, Instant.now())
+                "Locked {} agent_state rows belonging to customer {} in {}",
+                ids.size,
+                customerId,
+                Duration.between(startedAt, Instant.now())
         )
     }
 
     override fun markDeadAgentsAsGarbage(
-        customerId: Long, thisJvmUuid: String, nextPollExpectedBefore: Instant
+            customerId: Long, thisJvmUuid: String, nextPollExpectedBefore: Instant
     ) {
         // Mark all agents that have not polled recently as garbage
         val updated = jdbcTemplate.update(
-            "UPDATE agent_state SET garbage = TRUE "
-                    + "WHERE customerId = ? AND jvmUuid != ? AND garbage = FALSE AND nextPollExpectedAt < ? ",
-            customerId,
-            thisJvmUuid,
-            Timestamp.from(nextPollExpectedBefore)
+                "UPDATE agent_state SET garbage = TRUE "
+                        + "WHERE customerId = ? AND jvmUuid != ? AND garbage = FALSE AND nextPollExpectedAt < ? ",
+                customerId,
+                thisJvmUuid,
+                Timestamp.from(nextPollExpectedBefore)
         )
         if (updated > 0) {
             logger.info("Detected {} dead agents for customer {}", updated, customerId)
@@ -73,24 +73,24 @@ class IntakeDAOImpl(private val jdbcTemplate: JdbcTemplate) : IntakeDAO {
     }
 
     override fun setAgentTimestamps(
-        customerId: Long, thisJvmUuid: String, thisPollAt: Instant, nextExpectedPollAt: Instant
+            customerId: Long, thisJvmUuid: String, thisPollAt: Instant, nextExpectedPollAt: Instant
     ) {
         val thisPollAtTimestamp = Timestamp.from(thisPollAt)
         val nextExpectedPollTimestamp = Timestamp.from(nextExpectedPollAt)
         val updated = jdbcTemplate.update(
-            "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = FALSE WHERE customerId = ? AND jvmUuid = ? ",
-            thisPollAtTimestamp,
-            nextExpectedPollTimestamp,
-            customerId,
-            thisJvmUuid
+                "UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, garbage = FALSE WHERE customerId = ? AND jvmUuid = ? ",
+                thisPollAtTimestamp,
+                nextExpectedPollTimestamp,
+                customerId,
+                thisJvmUuid
         )
         if (updated == 0) {
             jdbcTemplate.update(
-                "INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?, TRUE, FALSE)",
-                customerId,
-                thisJvmUuid,
-                thisPollAtTimestamp,
-                nextExpectedPollTimestamp
+                    "INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled, garbage) VALUES (?, ?, ?, ?, TRUE, FALSE)",
+                    customerId,
+                    thisJvmUuid,
+                    thisPollAtTimestamp,
+                    nextExpectedPollTimestamp
             )
             logger.info("The agent {}:'{}' has started", customerId, thisJvmUuid)
         } else {
@@ -99,15 +99,15 @@ class IntakeDAOImpl(private val jdbcTemplate: JdbcTemplate) : IntakeDAO {
     }
 
     override fun getNumOtherEnabledAliveAgents(
-        customerId: Long, thisJvmUuid: String, nextPollExpectedAfter: Instant
+            customerId: Long, thisJvmUuid: String, nextPollExpectedAfter: Instant
     ): Int {
         return jdbcTemplate.queryForObject(
-            "SELECT COUNT(1) FROM agent_state "
-                    + "WHERE enabled = TRUE AND garbage = FALSE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
-            Int::class.java,
-            customerId,
-            Timestamp.from(nextPollExpectedAfter),
-            thisJvmUuid
+                "SELECT COUNT(1) FROM agent_state "
+                        + "WHERE enabled = TRUE AND garbage = FALSE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
+                Int::class.java,
+                customerId,
+                Timestamp.from(nextPollExpectedAfter),
+                thisJvmUuid
         )
     }
 
@@ -116,11 +116,11 @@ class IntakeDAOImpl(private val jdbcTemplate: JdbcTemplate) : IntakeDAO {
         // At the first poll from a new environment, no data has yet been published. The environment is
         // part of the common publication data.
         val list = jdbcTemplate.queryForList(
-            "SELECT enabled FROM environments e, jvms j "
-                    + "WHERE e.customerId = ? AND e.id = j.environmentId AND j.uuid = ? ",
-            Boolean::class.java,
-            customerId,
-            thisJvmUuid
+                "SELECT enabled FROM environments e, jvms j "
+                        + "WHERE e.customerId = ? AND e.id = j.environmentId AND j.uuid = ? ",
+                Boolean::class.java,
+                customerId,
+                thisJvmUuid
         )
         // If this is the first poll, return true. Or else nothing will be published.
         return list.isEmpty() || list[0]
@@ -129,23 +129,23 @@ class IntakeDAOImpl(private val jdbcTemplate: JdbcTemplate) : IntakeDAO {
     @Cacheable(ENVIRONMENTS_CACHE)
     override fun getEnvironmentName(jvmUuid: String): Optional<String> {
         val names = jdbcTemplate.queryForList(
-            "SELECT name FROM environments e, jvms j "
-                    + "WHERE e.id = j.environmentId AND j.uuid = ? ",
-            String::class.java,
-            jvmUuid
+                "SELECT name FROM environments e, jvms j "
+                        + "WHERE e.id = j.environmentId AND j.uuid = ? ",
+                String::class.java,
+                jvmUuid
         )
         // If this is the first poll, return empty.
         return if (names.isEmpty()) Optional.empty() else Optional.of(
-            names[0]
+                names[0]
         )
     }
 
     override fun updateAgentEnabledState(customerId: Long, thisJvmUuid: String, enabled: Boolean) {
         jdbcTemplate.update(
-            "UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ? ",
-            enabled,
-            customerId,
-            thisJvmUuid
+                "UPDATE agent_state SET enabled = ? WHERE customerId = ? AND jvmUuid = ? ",
+                enabled,
+                customerId,
+                thisJvmUuid
         )
     }
 
@@ -154,7 +154,7 @@ class IntakeDAOImpl(private val jdbcTemplate: JdbcTemplate) : IntakeDAO {
         val numDead = AtomicInteger()
         val numAlive = AtomicInteger()
         jdbcTemplate.query(
-            "SELECT enabled, nextPollExpectedAt FROM agent_state WHERE garbage = FALSE"
+                "SELECT enabled, nextPollExpectedAt FROM agent_state WHERE garbage = FALSE"
         ) { rs ->
             val enabled: Boolean = rs.getBoolean("enabled")
             val nextPollExpectedAt: Instant = rs.getTimestamp("nextPollExpectedAt").toInstant()
@@ -164,9 +164,9 @@ class IntakeDAOImpl(private val jdbcTemplate: JdbcTemplate) : IntakeDAO {
             numAlive.addAndGet(if (alive) 1 else 0)
         }
         return AgentStatistics(
-            numDisabled = numDisabled.get(),
-            numDead = numDead.get(),
-            numAlive = numAlive.get()
+                numDisabled = numDisabled.get(),
+                numDead = numDead.get(),
+                numAlive = numAlive.get()
         )
     }
 

@@ -37,22 +37,22 @@ import org.springframework.web.bind.annotation.RequestHeader
 @Slf4j
 class ModelAttributes(val commonSettings: CodekvastCommonSettings) {
 
-  val logger by LoggerDelegate()
+    val logger by LoggerDelegate()
 
-  @ModelAttribute("settings")
-  fun getSettings() = commonSettings
+    @ModelAttribute("settings")
+    fun getSettings() = commonSettings
 
-  @ModelAttribute("cookieConsent")
-  fun getCookieConsent(
-    @CookieValue(name = "cookieConsent", defaultValue = "FALSE") cookieConsent: Boolean?): Boolean {
-    logger.trace("cookieConsent={}", cookieConsent)
-    return cookieConsent ?: false
-  }
+    @ModelAttribute("cookieConsent")
+    fun getCookieConsent(
+            @CookieValue(name = "cookieConsent", defaultValue = "FALSE") cookieConsent: Boolean?): Boolean {
+        logger.trace("cookieConsent={}", cookieConsent)
+        return cookieConsent ?: false
+    }
 
-  @ModelAttribute("cookieDomain")
-  fun cookieDomain(@RequestHeader("Host") requestHost: String): String {
-    logger.trace("requestHost={}", requestHost)
-    return if (requestHost.startsWith("localhost")) "localhost" else ".codekvast.io"
-  }
+    @ModelAttribute("cookieDomain")
+    fun cookieDomain(@RequestHeader("Host") requestHost: String): String {
+        logger.trace("requestHost={}", requestHost)
+        return if (requestHost.startsWith("localhost")) "localhost" else ".codekvast.io"
+    }
 
 }

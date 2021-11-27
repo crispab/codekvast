@@ -34,5 +34,5 @@ import org.springframework.validation.annotation.Validated
 @ConstructorBinding
 @Validated
 data class CodekvastBackofficeSettings(
-  val dummyPropertyToKeepKotlinHappy: Boolean = false
+        val dummyPropertyToKeepKotlinHappy: Boolean = false
 )

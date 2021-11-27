@@ -47,9 +47,9 @@ interface IntakeDAO {
      * considered alive.
      */
     fun markDeadAgentsAsGarbage(
-        customerId: Long,
-        thisJvmUuid: String,
-        nextPollExpectedBefore: Instant
+            customerId: Long,
+            thisJvmUuid: String,
+            nextPollExpectedBefore: Instant
     )
 
     /**
@@ -61,7 +61,7 @@ interface IntakeDAO {
      * @param nextExpectedPollAt The instant the agent is supposed to poll before.
      */
     fun setAgentTimestamps(
-        customerId: Long, thisJvmUuid: String, thisPollAt: Instant, nextExpectedPollAt: Instant
+            customerId: Long, thisJvmUuid: String, thisPollAt: Instant, nextExpectedPollAt: Instant
     )
 
     /**
@@ -73,7 +73,7 @@ interface IntakeDAO {
      * @return Number of alive agents (excluding this).
      */
     fun getNumOtherEnabledAliveAgents(
-        customerId: Long, thisJvmUuid: String, nextPollExpectedAfter: Instant
+            customerId: Long, thisJvmUuid: String, nextPollExpectedAfter: Instant
     ): Int
 
     /**

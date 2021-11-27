@@ -44,13 +44,13 @@ import java.util.stream.Collectors
  */
 @Component
 class InvocationDataImporterImpl(
-    private val commonImporter: CommonImporter,
-    private val importDAO: ImportDAO,
-    private val syntheticSignatureService: SyntheticSignatureService,
-    private val metricsService: IntakeMetricsService,
-    private val eventService: EventService,
-    private val lockTemplate: LockTemplate,
-    private val clock: Clock
+        private val commonImporter: CommonImporter,
+        private val importDAO: ImportDAO,
+        private val syntheticSignatureService: SyntheticSignatureService,
+        private val metricsService: IntakeMetricsService,
+        private val eventService: EventService,
+        private val lockTemplate: LockTemplate,
+        private val clock: Clock
 ) : InvocationDataImporter {
 
     private val logger by LoggerDelegate()
@@ -61,46 +61,46 @@ class InvocationDataImporterImpl(
         logger.debug("Importing {}", publication)
         val data = publication.commonData
         val invocations = publication.invocations.stream()
-            .filter { !syntheticSignatureService.isSyntheticMethod(it) }
-            .collect(Collectors.toSet())
+                .filter { !syntheticSignatureService.isSyntheticMethod(it) }
+                .collect(Collectors.toSet())
         val ignoredSyntheticSignatures = publication.invocations.size - invocations.size
         val duration = lockTemplate.doWithLockOrThrow(Lock.forCustomer(data.customerId)) {
             doImportInvocations(
-                publication.recordingIntervalStartedAtMillis, data, invocations
+                    publication.recordingIntervalStartedAtMillis, data, invocations
             )
         }
         logger.info(
-            "Imported {} in {} (ignoring {} synthetic signatures)",
-            publication,
-            humanReadableDuration(duration),
-            ignoredSyntheticSignatures
+                "Imported {} in {} (ignoring {} synthetic signatures)",
+                publication,
+                humanReadableDuration(duration),
+                ignoredSyntheticSignatures
         )
         metricsService.recordImportedPublication(
-            INVOCATIONS, invocations.size, ignoredSyntheticSignatures, duration
+                INVOCATIONS, invocations.size, ignoredSyntheticSignatures, duration
         )
         return true
     }
 
     private fun doImportInvocations(
-        recordingIntervalStartedAtMillis: Long,
-        data: CommonPublicationData2,
-        invocations: Set<String>
+            recordingIntervalStartedAtMillis: Long,
+            data: CommonPublicationData2,
+            invocations: Set<String>
     ): Duration {
         val startedAt = clock.instant()
         val importContext: CommonImporter.ImportContext = commonImporter.importCommonData(data)
         importDAO.importInvocations(importContext, recordingIntervalStartedAtMillis, invocations)
         eventService.send(
-            InvocationDataReceivedEvent.builder()
-                .customerId(data.customerId)
-                .appName(data.appName)
-                .appVersion(data.appVersion)
-                .agentVersion(data.agentVersion)
-                .environment(data.environment)
-                .hostname(data.hostname)
-                .size(invocations.size)
-                .receivedAt(Instant.ofEpochMilli(data.publishedAtMillis))
-                .trialPeriodEndsAt(importContext.trialPeriodEndsAt)
-                .build()
+                InvocationDataReceivedEvent.builder()
+                        .customerId(data.customerId)
+                        .appName(data.appName)
+                        .appVersion(data.appVersion)
+                        .agentVersion(data.agentVersion)
+                        .environment(data.environment)
+                        .hostname(data.hostname)
+                        .size(invocations.size)
+                        .receivedAt(Instant.ofEpochMilli(data.publishedAtMillis))
+                        .trialPeriodEndsAt(importContext.trialPeriodEndsAt)
+                        .build()
         )
         return Duration.between(startedAt, clock.instant())
     }

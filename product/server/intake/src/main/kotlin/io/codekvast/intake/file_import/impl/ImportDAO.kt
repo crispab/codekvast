@@ -55,9 +55,9 @@ interface ImportDAO {
      * @return The primary key of the inserted or updated jvms row.
      */
     fun importJvm(
-        commonData: CommonPublicationData2,
-        applicationId: Long,
-        environmentId: Long
+            commonData: CommonPublicationData2,
+            applicationId: Long,
+            environmentId: Long
     ): Long
 
     /**
@@ -68,8 +68,8 @@ interface ImportDAO {
      * @return true if-and-only-if this codebase has not been imported before.
      */
     fun importCodeBaseFingerprint(
-        data: CommonPublicationData2,
-        importContext: CommonImporter.ImportContext
+            data: CommonPublicationData2,
+            importContext: CommonImporter.ImportContext
     ): Boolean
 
     /**
@@ -81,9 +81,9 @@ interface ImportDAO {
      * @param entries The collection of code base entries to store.
      */
     fun importMethods(
-        data: CommonPublicationData2,
-        importContext: CommonImporter.ImportContext,
-        entries: Collection<CodeBaseEntry3>
+            data: CommonPublicationData2,
+            importContext: CommonImporter.ImportContext,
+            entries: Collection<CodeBaseEntry3>
     )
 
     /**
@@ -95,9 +95,9 @@ interface ImportDAO {
      * @param invocations The set of signatures that were invoked in this recording interval.
      */
     fun importInvocations(
-        importContext: CommonImporter.ImportContext,
-        recordingIntervalStartedAtMillis: Long,
-        invocations: Set<String>
+            importContext: CommonImporter.ImportContext,
+            recordingIntervalStartedAtMillis: Long,
+            invocations: Set<String>
     )
 
     /**

@@ -1,6 +1,6 @@
 package io.codekvast.common.logging.logback
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 class HostnamePropertyDefinerTest {

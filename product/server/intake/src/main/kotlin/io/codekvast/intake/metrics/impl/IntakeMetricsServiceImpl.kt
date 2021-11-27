@@ -21,8 +21,8 @@
  */
 package io.codekvast.intake.metrics.impl
 
-import io.codekvast.intake.metrics.IntakeMetricsService
 import io.codekvast.intake.metrics.AgentStatistics
+import io.codekvast.intake.metrics.IntakeMetricsService
 import io.codekvast.intake.model.PublicationType
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
@@ -44,11 +44,11 @@ class IntakeMetricsServiceImpl(private val meterRegistry: MeterRegistry) : Intak
     private val deadAgentsGauge: AtomicInteger = AtomicInteger(0)
     private val aliveAgentsGauge: AtomicInteger = AtomicInteger(0)
     private val publicationLogicalSizeGauges: MutableMap<PublicationType, AtomicInteger> =
-        EnumMap(PublicationType::class.java)
+            EnumMap(PublicationType::class.java)
     private val publicationPhysicalSizeGauges: MutableMap<PublicationType, AtomicLong> =
-        EnumMap(PublicationType::class.java)
+            EnumMap(PublicationType::class.java)
     private val ignoredSyntheticSignaturesGauges: MutableMap<PublicationType, AtomicInteger> =
-        EnumMap(PublicationType::class.java)
+            EnumMap(PublicationType::class.java)
 
     @PostConstruct
     fun createGauges() {
@@ -88,10 +88,10 @@ class IntakeMetricsServiceImpl(private val meterRegistry: MeterRegistry) : Intak
     }
 
     override fun recordImportedPublication(
-        type: PublicationType,
-        logicalSize: Int,
-        ignoredSyntheticSignatures: Int,
-        duration: Duration
+            type: PublicationType,
+            logicalSize: Int,
+            ignoredSyntheticSignatures: Int,
+            duration: Duration
     ) {
         val tags = getTags(type)
         publicationLogicalSizeGauges[type]!!.set(logicalSize)

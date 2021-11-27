@@ -49,25 +49,25 @@ import javax.annotation.PostConstruct
 @Slf4j
 @RequiredArgsConstructor
 class FileImportTask(
-    private val settings: CodekvastIntakeSettings,
-    private val publicationImporter: PublicationImporter,
-    private val metricsService: IntakeMetricsService,
-    private val lockTemplate: LockTemplate
+        private val settings: CodekvastIntakeSettings,
+        private val publicationImporter: PublicationImporter,
+        private val metricsService: IntakeMetricsService,
+        private val lockTemplate: LockTemplate
 ) {
     private val logger by LoggerDelegate()
 
     @PostConstruct
     fun postConstruct() {
         logger.info(
-            "Looking for files in {} every {} seconds",
-            settings.fileImportQueuePath,
-            settings.fileImportIntervalSeconds
+                "Looking for files in {} every {} seconds",
+                settings.fileImportQueuePath,
+                settings.fileImportIntervalSeconds
         )
     }
 
     @Scheduled(
-        initialDelayString = "\${codekvast.intake.fileImportInitialDelaySeconds:5}000",
-        fixedRateString = "\${codekvast.intake.fileImportIntervalSeconds}000"
+            initialDelayString = "\${codekvast.intake.fileImportInitialDelaySeconds:5}000",
+            fixedRateString = "\${codekvast.intake.fileImportIntervalSeconds}000"
     )
     fun importPublicationFiles() {
         NamedThreadTemplate().doInNamedThread("import", this::processQueue)
@@ -87,9 +87,9 @@ class FileImportTask(
             queue.forEach(this::doProcessFile)
 
             logger.info(
-                "Imported {} new publications files in {}",
-                queueLength,
-                LoggingUtils.humanReadableDuration(startedAt, Instant.now())
+                    "Imported {} new publications files in {}",
+                    queueLength,
+                    LoggingUtils.humanReadableDuration(startedAt, Instant.now())
             )
         }
     }
@@ -102,10 +102,10 @@ class FileImportTask(
 
         Files.list(queuePath.toPath()).use {
             val result = it
-                .peek { p -> logger.debug("Found {}", p) }
-                .map(Path::toFile)
-                .filter { file -> file.name.endsWith(".ser") }
-                .collect(Collectors.toList())
+                    .peek { p -> logger.debug("Found {}", p) }
+                    .map(Path::toFile)
+                    .filter { file -> file.name.endsWith(".ser") }
+                    .collect(Collectors.toList())
             metricsService.gaugePublicationQueueLength(result.size)
             return result
         }

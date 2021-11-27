@@ -34,33 +34,33 @@ import org.springframework.stereotype.Service
 @Service
 @Profile("!no-mail-sender")
 class MailSenderImpl(
-  private val javaMailSender: JavaMailSender,
-  private val mailTemplateRenderer: MailTemplateRenderer) : MailSender {
+        private val javaMailSender: JavaMailSender,
+        private val mailTemplateRenderer: MailTemplateRenderer) : MailSender {
 
-  val logger by LoggerDelegate()
+    val logger by LoggerDelegate()
 
-  override fun sendMail(template: MailSender.Template, emailAddress: String, vararg args: Any) {
-    val body = mailTemplateRenderer.renderTemplate(template, *args)
+    override fun sendMail(template: MailSender.Template, emailAddress: String, vararg args: Any) {
+        val body = mailTemplateRenderer.renderTemplate(template, *args)
 
-    val mimeMessage = javaMailSender.createMimeMessage().apply {
-      setHeader("Return-Path", "postmaster@codekvast.io")
+        val mimeMessage = javaMailSender.createMimeMessage().apply {
+            setHeader("Return-Path", "postmaster@codekvast.io")
+        }
+
+        MimeMessageHelper(mimeMessage, "UTF-8").apply {
+            setSubject(template.subject)
+            setFrom("no-reply@codekvast.io")
+            setTo(emailAddress)
+            setText(body, true)
+        }
+
+        try {
+            javaMailSender.send(mimeMessage)
+            logger.info("Sent mail with subject='{}' and body='{}' to {}", template.subject, body, emailAddress)
+        } catch (e: MailSendException) {
+            logger.warn(
+                    "Failed to send mail with subject='{}' and body='{}' to {}: {}",
+                    template.subject, body, emailAddress, e.toString())
+            // Do not rethrow. Avoid spamming the log with stack traces.
+        }
     }
-
-    MimeMessageHelper(mimeMessage, "UTF-8").apply {
-      setSubject(template.subject)
-      setFrom("no-reply@codekvast.io")
-      setTo(emailAddress)
-      setText(body, true)
-    }
-
-    try {
-      javaMailSender.send(mimeMessage)
-      logger.info("Sent mail with subject='{}' and body='{}' to {}", template.subject, body, emailAddress)
-    } catch (e: MailSendException) {
-      logger.warn(
-        "Failed to send mail with subject='{}' and body='{}' to {}: {}",
-        template.subject, body, emailAddress, e.toString())
-      // Do not rethrow. Avoid spamming the log with stack traces.
-    }
-  }
 }

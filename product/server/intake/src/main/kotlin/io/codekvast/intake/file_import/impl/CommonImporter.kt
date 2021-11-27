@@ -23,7 +23,6 @@ package io.codekvast.intake.file_import.impl
 
 import io.codekvast.common.customer.CustomerService
 import io.codekvast.javaagent.model.v2.CommonPublicationData2
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Component
 import java.time.Instant
 
@@ -34,8 +33,8 @@ import java.time.Instant
  */
 @Component
 class CommonImporter(
-    private val importDAO: ImportDAO,
-    private val customerService: CustomerService
+        private val importDAO: ImportDAO,
+        private val customerService: CustomerService
 ) {
 
     fun importCommonData(data: CommonPublicationData2): ImportContext {
@@ -45,24 +44,24 @@ class CommonImporter(
         val jvmId = importDAO.importJvm(data, appId, environmentId)
 
         return ImportContext(
-            customerId = data.customerId,
-            appId = appId,
-            environmentId = environmentId,
-            jvmId = jvmId,
-            publishedAtMillis = data.publishedAtMillis,
-            trialPeriodEndsAt = customerService
-                .getCustomerDataByCustomerId(data.customerId)
-                .trialPeriodEndsAt
+                customerId = data.customerId,
+                appId = appId,
+                environmentId = environmentId,
+                jvmId = jvmId,
+                publishedAtMillis = data.publishedAtMillis,
+                trialPeriodEndsAt = customerService
+                        .getCustomerDataByCustomerId(data.customerId)
+                        .trialPeriodEndsAt
         )
     }
 
     data class ImportContext(
-        val customerId: Long,
-        val appId: Long,
-        val environmentId: Long,
-        val jvmId: Long,
-        val publishedAtMillis: Long,
-        val trialPeriodEndsAt: Instant?
+            val customerId: Long,
+            val appId: Long,
+            val environmentId: Long,
+            val jvmId: Long,
+            val publishedAtMillis: Long,
+            val trialPeriodEndsAt: Instant?
     )
 
 }

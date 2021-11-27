@@ -21,9 +21,7 @@
  */
 package io.codekvast.intake.file_import
 
-import kotlin.Throws
 import io.codekvast.javaagent.model.v3.CodeBasePublication3
-import java.lang.Exception
 
 /** @author olle.hallin@crisp.se
  */

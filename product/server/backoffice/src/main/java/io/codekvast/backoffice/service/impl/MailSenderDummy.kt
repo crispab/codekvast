@@ -31,11 +31,11 @@ import org.springframework.stereotype.Service
 @Service
 @Profile("no-mail-sender")
 class MailSenderDummy(private val mailTemplateRenderer: MailTemplateRenderer) : MailSender {
-  val logger by LoggerDelegate()
+    val logger by LoggerDelegate()
 
-  override fun sendMail(template: MailSender.Template, emailAddress: String, vararg args: Any) {
-    logger.info("Would have sent '{}' to {}",
-      mailTemplateRenderer.renderTemplate(template, *args),
-      emailAddress)
-  }
+    override fun sendMail(template: MailSender.Template, emailAddress: String, vararg args: Any) {
+        logger.info("Would have sent '{}' to {}",
+                mailTemplateRenderer.renderTemplate(template, *args),
+                emailAddress)
+    }
 }

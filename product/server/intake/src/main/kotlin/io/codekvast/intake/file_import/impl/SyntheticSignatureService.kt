@@ -25,7 +25,6 @@ import io.codekvast.common.logging.LoggerDelegate
 import lombok.RequiredArgsConstructor
 import lombok.extern.slf4j.Slf4j
 import org.springframework.stereotype.Component
-import java.util.*
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 import java.util.stream.Collectors
@@ -36,17 +35,17 @@ import java.util.stream.Collectors
 @RequiredArgsConstructor
 @Slf4j
 class SyntheticSignatureService(
-    private val syntheticSignatureDAO: SyntheticSignatureDAO
+        private val syntheticSignatureDAO: SyntheticSignatureDAO
 ) {
 
     private val fallbackSyntheticSignaturePattern = Pattern.compile(
-        ".*(\\$\\$.*" +
-                "|\\$\\w+\\$.*" +
-                "|\\.[A-Z0-9_]+\\(.*\\)$" +
-                "|\\$[a-z]+\\(\\)$" +
-                "|\\.\\.anonfun\\..*" +
-                "|\\.\\.(Enhancer|FastClass)BySpringCGLIB\\.\\..*" +
-                "|\\.canEqual\\(java\\.lang\\.Object\\))"
+            ".*(\\$\\$.*" +
+                    "|\\$\\w+\\$.*" +
+                    "|\\.[A-Z0-9_]+\\(.*\\)$" +
+                    "|\\$[a-z]+\\(\\)$" +
+                    "|\\.\\.anonfun\\..*" +
+                    "|\\.\\.(Enhancer|FastClass)BySpringCGLIB\\.\\..*" +
+                    "|\\.canEqual\\(java\\.lang\\.Object\\))"
     )
 
     val logger by LoggerDelegate()
@@ -68,12 +67,12 @@ class SyntheticSignatureService(
                     fallbackSyntheticSignaturePattern
                 } else {
                     logger.debug(
-                        "Combining {} patterns retrieved from the database",
-                        validPatterns.size
+                            "Combining {} patterns retrieved from the database",
+                            validPatterns.size
                     )
                     val regexp = validPatterns.stream()
-                        .map(SyntheticSignaturePattern::pattern)
-                        .collect(Collectors.joining("|", "(", ")"))
+                            .map(SyntheticSignaturePattern::pattern)
+                            .collect(Collectors.joining("|", "(", ")"))
                     Pattern.compile(regexp)
                 }
                 patternHash = dbPatterns.hashCode()
@@ -82,7 +81,7 @@ class SyntheticSignatureService(
         }
 
     private fun validatePatterns(
-        patterns: List<SyntheticSignaturePattern>
+            patterns: List<SyntheticSignaturePattern>
     ): List<SyntheticSignaturePattern> {
         val result: MutableList<SyntheticSignaturePattern> = ArrayList(patterns)
         val iterator = result.iterator()
@@ -92,9 +91,9 @@ class SyntheticSignatureService(
                 Pattern.compile(pattern.pattern)
             } catch (e: PatternSyntaxException) {
                 logger.error(
-                    "Invalid pattern '{}': {}",
-                    pattern,
-                    e.message
+                        "Invalid pattern '{}': {}",
+                        pattern,
+                        e.message
                 )
                 syntheticSignatureDAO.rejectPattern(pattern, e.message!!)
                 iterator.remove()

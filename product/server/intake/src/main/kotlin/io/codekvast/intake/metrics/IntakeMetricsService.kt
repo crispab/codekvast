@@ -61,10 +61,10 @@ interface IntakeMetricsService {
      * @param duration The time it took to import it.
      */
     fun recordImportedPublication(
-        type: PublicationType,
-        logicalSize: Int,
-        ignoredSyntheticSignatures: Int,
-        duration: Duration
+            type: PublicationType,
+            logicalSize: Int,
+            ignoredSyntheticSignatures: Int,
+            duration: Duration
     )
 
     /** Count that an agent has polled  */

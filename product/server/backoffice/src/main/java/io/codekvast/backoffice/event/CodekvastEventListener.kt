@@ -22,11 +22,11 @@
 package io.codekvast.backoffice.event
 
 import io.codekvast.backoffice.rules.RuleEngine
+import io.codekvast.common.logging.LoggerDelegate
 import io.codekvast.common.messaging.AbstractCodekvastEventListener
 import io.codekvast.common.messaging.impl.MessageIdRepository
 import io.codekvast.common.messaging.model.CodekvastEvent
 import io.codekvast.common.metrics.CommonMetricsService
-import io.codekvast.common.logging.LoggerDelegate
 import org.springframework.stereotype.Component
 import java.time.Clock
 
@@ -34,17 +34,17 @@ import java.time.Clock
  */
 @Component
 class CodekvastEventListener(
-  messageIdRepository: MessageIdRepository,
-  metricsService: CommonMetricsService,
-  private val ruleEngine: RuleEngine,
-  clock: Clock)
-  : AbstractCodekvastEventListener("codekvast-backoffice", messageIdRepository, metricsService, clock) {
+        messageIdRepository: MessageIdRepository,
+        metricsService: CommonMetricsService,
+        private val ruleEngine: RuleEngine,
+        clock: Clock)
+    : AbstractCodekvastEventListener("codekvast-backoffice", messageIdRepository, metricsService, clock) {
 
-  val logger by LoggerDelegate()
+    val logger by LoggerDelegate()
 
-  override fun onCodekvastEvent(event: CodekvastEvent) {
-    logger.debug("Handling {}", event)
-    ruleEngine.handle(event)
-  }
+    override fun onCodekvastEvent(event: CodekvastEvent) {
+        logger.debug("Handling {}", event)
+        ruleEngine.handle(event)
+    }
 
 }

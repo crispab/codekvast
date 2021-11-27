@@ -49,12 +49,12 @@ class AgentStateManagerImplTest {
         MockitoAnnotations.openMocks(this)
 
         settings = CodekvastIntakeSettings(
-            fileImportQueuePath = temporaryFolder,
-            fileImportIntervalSeconds = 60
+                fileImportQueuePath = temporaryFolder,
+                fileImportIntervalSeconds = 60
         )
 
         agentStateManager = AgentStateManagerImpl(
-            settings, customerService, eventService, intakeDAO, intakeMetricsService
+                settings, customerService, eventService, intakeDAO, intakeMetricsService
         )
 
         setupCustomerData(null, null)
@@ -64,22 +64,22 @@ class AgentStateManagerImplTest {
     fun should_return_enabled_publishers_when_failed_to_acquire_lock() {
         // given
         whenever(
-            intakeDAO.getNumOtherEnabledAliveAgents(
-                eq(customerId),
-                eq(jvmUuid),
-                any()
-            )
+                intakeDAO.getNumOtherEnabledAliveAgents(
+                        eq(customerId),
+                        eq(jvmUuid),
+                        any()
+                )
         ).thenReturn(1)
         whenever(
-            intakeDAO.isEnvironmentEnabled(
-                eq(customerId),
-                eq(jvmUuid)
-            )
+                intakeDAO.isEnvironmentEnabled(
+                        eq(customerId),
+                        eq(jvmUuid)
+                )
         ).thenReturn(true)
 
         // when
         val response =
-            agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
+                agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
         assertThat(response, `is`(true))
     }
 
@@ -87,22 +87,22 @@ class AgentStateManagerImplTest {
     fun should_return_enabled_publishers_when_below_agent_limit_no_trial_period() {
         // given
         whenever(
-            intakeDAO.getNumOtherEnabledAliveAgents(
-                eq(customerId),
-                eq(jvmUuid),
-                any()
-            )
+                intakeDAO.getNumOtherEnabledAliveAgents(
+                        eq(customerId),
+                        eq(jvmUuid),
+                        any()
+                )
         ).thenReturn(1)
         whenever(
-            intakeDAO.isEnvironmentEnabled(
-                eq(customerId),
-                eq(jvmUuid)
-            )
+                intakeDAO.isEnvironmentEnabled(
+                        eq(customerId),
+                        eq(jvmUuid)
+                )
         ).thenReturn(true)
 
         // when
         val response =
-            agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
+                agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
 
         // then
         assertThat(response, `is`(true))
@@ -116,22 +116,22 @@ class AgentStateManagerImplTest {
         val now = Instant.now()
         setupCustomerData(now.minus(10, DAYS), now.plus(10, DAYS))
         whenever(
-            intakeDAO.getNumOtherEnabledAliveAgents(
-                eq(customerId),
-                eq(jvmUuid),
-                any()
-            )
+                intakeDAO.getNumOtherEnabledAliveAgents(
+                        eq(customerId),
+                        eq(jvmUuid),
+                        any()
+                )
         ).thenReturn(1)
         whenever(
-            intakeDAO.isEnvironmentEnabled(
-                eq(customerId),
-                eq(jvmUuid)
-            )
+                intakeDAO.isEnvironmentEnabled(
+                        eq(customerId),
+                        eq(jvmUuid)
+                )
         ).thenReturn(true)
 
         // when
         val response =
-            agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
+                agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
 
         // then
         assertThat(response, `is`(true))
@@ -144,22 +144,22 @@ class AgentStateManagerImplTest {
         val now: Instant = Instant.now()
         setupCustomerData(now.minus(10, DAYS), now.minus(1, DAYS))
         whenever(
-            intakeDAO.getNumOtherEnabledAliveAgents(
-                eq(customerId),
-                eq(jvmUuid),
-                any()
-            )
+                intakeDAO.getNumOtherEnabledAliveAgents(
+                        eq(customerId),
+                        eq(jvmUuid),
+                        any()
+                )
         ).thenReturn(1)
         whenever(
-            intakeDAO.isEnvironmentEnabled(
-                eq(customerId),
-                eq(jvmUuid)
-            )
+                intakeDAO.isEnvironmentEnabled(
+                        eq(customerId),
+                        eq(jvmUuid)
+                )
         ).thenReturn(true)
 
         // when
         val response =
-            agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
+                agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
 
         // then
         assertThat(response, `is`(false))
@@ -170,22 +170,22 @@ class AgentStateManagerImplTest {
     fun should_return_disabled_publishers_when_above_agent_limit_no_trial_period() {
         // given
         whenever(
-            intakeDAO.getNumOtherEnabledAliveAgents(
-                eq(customerId),
-                eq(jvmUuid),
-                any()
-            )
+                intakeDAO.getNumOtherEnabledAliveAgents(
+                        eq(customerId),
+                        eq(jvmUuid),
+                        any()
+                )
         ).thenReturn(10)
         whenever(
-            intakeDAO.isEnvironmentEnabled(
-                eq(customerId),
-                eq(jvmUuid)
-            )
+                intakeDAO.isEnvironmentEnabled(
+                        eq(customerId),
+                        eq(jvmUuid)
+                )
         ).thenReturn(true)
 
         // when
         val response =
-            agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
+                agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
 
         // then
         assertThat(response, `is`(false))
@@ -196,16 +196,16 @@ class AgentStateManagerImplTest {
     fun should_return_disabled_publishers_when_below_agent_limit_disabled_environment() {
         // given
         whenever(intakeDAO.getNumOtherEnabledAliveAgents(eq(customerId), eq(jvmUuid), any()))
-            .thenReturn(1)
+                .thenReturn(1)
 
         whenever(intakeDAO.isEnvironmentEnabled(eq(customerId), eq(jvmUuid)))
-            .thenReturn(false)
+                .thenReturn(false)
 
         whenever(intakeDAO.getEnvironmentName(eq(jvmUuid))).thenReturn(Optional.of("environment"))
 
         // when
         val response =
-            agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
+                agentStateManager.updateAgentState(customerData, jvmUuid, appName, environment)
 
         // then
         assertThat(response, `is`(false))
@@ -214,13 +214,13 @@ class AgentStateManagerImplTest {
 
     private fun setupCustomerData(collectionStartedAt: Instant?, trialPeriodEndsAt: Instant?) {
         customerData = CustomerData.builder()
-            .customerId(customerId)
-            .customerName("name")
-            .source("source")
-            .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
-            .collectionStartedAt(collectionStartedAt)
-            .trialPeriodEndsAt(trialPeriodEndsAt)
-            .build()
+                .customerId(customerId)
+                .customerName("name")
+                .source("source")
+                .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
+                .collectionStartedAt(collectionStartedAt)
+                .trialPeriodEndsAt(trialPeriodEndsAt)
+                .build()
         whenever(customerService.getCustomerDataByLicenseKey(any())).thenReturn(customerData)
         whenever(customerService.registerAgentPoll(any(), any())).thenReturn(customerData)
     }

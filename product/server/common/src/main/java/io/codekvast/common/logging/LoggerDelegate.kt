@@ -32,18 +32,18 @@ import kotlin.reflect.full.companionObject
  * @author olle.hallin@crisp.se
  */
 class LoggerDelegate<in R : Any> : ReadOnlyProperty<R, Logger> {
-  override fun getValue(thisRef: R, property: KProperty<*>): Logger =
-    cache.getOrPut(thisRef.javaClass) { getLoggerFor(thisRef.javaClass) }
+    override fun getValue(thisRef: R, property: KProperty<*>): Logger =
+            cache.getOrPut(thisRef.javaClass) { getLoggerFor(thisRef.javaClass) }
 
-  companion object {
-    private val cache = ConcurrentHashMap<Class<*>, Logger>()
+    companion object {
+        private val cache = ConcurrentHashMap<Class<*>, Logger>()
 
-    private fun <T : Any> getLoggerFor(javaClass: Class<T>): Logger {
-      val clazz = javaClass.enclosingClass?.takeIf { it.kotlin.companionObject?.java == javaClass }
-        ?: javaClass
-      // Strip off $$EnhancerByCGLIB$$nnnnnn
-      return LoggerFactory.getLogger(clazz.name.replace(Regex("\\$\\$.*$"), ""))
+        private fun <T : Any> getLoggerFor(javaClass: Class<T>): Logger {
+            val clazz = javaClass.enclosingClass?.takeIf { it.kotlin.companionObject?.java == javaClass }
+                    ?: javaClass
+            // Strip off $$EnhancerByCGLIB$$nnnnnn
+            return LoggerFactory.getLogger(clazz.name.replace(Regex("\\$\\$.*$"), ""))
+        }
     }
-  }
 }
 

@@ -23,10 +23,10 @@ package io.codekvast.intake.agent.controller
 
 import io.codekvast.common.logging.LoggerDelegate
 import io.codekvast.common.logging.LoggingUtils.humanReadableByteCount
+import io.codekvast.intake.agent.service.AgentService
 import io.codekvast.intake.model.PublicationType
 import io.codekvast.intake.model.PublicationType.CODEBASE
 import io.codekvast.intake.model.PublicationType.INVOCATIONS
-import io.codekvast.intake.agent.service.AgentService
 import io.codekvast.javaagent.model.Endpoints.Agent.*
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1
@@ -59,9 +59,9 @@ class AgentController @Inject constructor(private val agentService: AgentService
 
     @Suppress("DEPRECATION")
     @PostMapping(
-        value = [V1_POLL_CONFIG],
-        consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE],
-        produces = [APPLICATION_JSON_VALUE]
+            value = [V1_POLL_CONFIG],
+            consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE],
+            produces = [APPLICATION_JSON_VALUE]
     )
     fun getConfig1(@Valid @RequestBody request: GetConfigRequest1): GetConfigResponse1 {
         logger.debug("Received {}", request)
@@ -74,9 +74,9 @@ class AgentController @Inject constructor(private val agentService: AgentService
 
     @Suppress("DEPRECATION")
     @PostMapping(
-        value = [V2_POLL_CONFIG],
-        consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE],
-        produces = [APPLICATION_JSON_VALUE]
+            value = [V2_POLL_CONFIG],
+            consumes = [APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE],
+            produces = [APPLICATION_JSON_VALUE]
     )
     fun getConfig2(@Valid @RequestBody request: GetConfigRequest2): GetConfigResponse2 {
         logger.debug("Received {}", request)
@@ -89,10 +89,10 @@ class AgentController @Inject constructor(private val agentService: AgentService
 
     @PostMapping(value = [V2_UPLOAD_CODEBASE, V3_UPLOAD_CODEBASE])
     fun uploadCodeBase(
-        @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
-        @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
-        @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
-        @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile
+            @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
+            @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
+            @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
+            @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile
     ): String {
 
         saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file)
@@ -102,10 +102,10 @@ class AgentController @Inject constructor(private val agentService: AgentService
 
     @PostMapping(value = [V2_UPLOAD_INVOCATION_DATA])
     fun uploadInvocationData2(
-        @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
-        @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
-        @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
-        @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile
+            @RequestParam(PARAM_LICENSE_KEY) licenseKey: String,
+            @RequestParam(PARAM_FINGERPRINT) fingerprint: String,
+            @RequestParam(PARAM_PUBLICATION_SIZE) publicationSize: Int,
+            @RequestParam(PARAM_PUBLICATION_FILE) file: MultipartFile
     ): String {
 
         saveUploadedPublication(INVOCATIONS, licenseKey, fingerprint, publicationSize, file)
@@ -114,27 +114,27 @@ class AgentController @Inject constructor(private val agentService: AgentService
     }
 
     private fun saveUploadedPublication(
-        publicationType: PublicationType,
-        licenseKey: String,
-        fingerprint: String,
-        publicationSize: Int,
-        file: MultipartFile
+            publicationType: PublicationType,
+            licenseKey: String,
+            fingerprint: String,
+            publicationSize: Int,
+            file: MultipartFile
     ) {
 
         logger.info(
-            "Received {} ({} {}, {})",
-            file.originalFilename,
-            publicationSize,
-            publicationType,
-            humanReadableByteCount(file.size)
+                "Received {} ({} {}, {})",
+                file.originalFilename,
+                publicationSize,
+                publicationType,
+                humanReadableByteCount(file.size)
         )
 
         agentService.savePublication(
-            publicationType,
-            licenseKey,
-            fingerprint,
-            publicationSize,
-            file.inputStream
+                publicationType,
+                licenseKey,
+                fingerprint,
+                publicationSize,
+                file.inputStream
         )
     }
 

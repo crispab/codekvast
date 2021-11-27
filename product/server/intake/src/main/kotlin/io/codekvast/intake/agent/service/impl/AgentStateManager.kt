@@ -34,6 +34,6 @@ interface AgentStateManager {
      * Checks whether a certain agent may proceed with uploading publications.
      */
     fun updateAgentState(
-        customerData: CustomerData, jvmUuid: String, appName: String, environment: String
+            customerData: CustomerData, jvmUuid: String, appName: String, environment: String
     ): Boolean
 }

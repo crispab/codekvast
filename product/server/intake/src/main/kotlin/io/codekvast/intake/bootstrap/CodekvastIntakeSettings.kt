@@ -37,14 +37,14 @@ import javax.annotation.PostConstruct
 @Validated
 @ConstructorBinding
 data class CodekvastIntakeSettings(
-    /** The path to the agent publication queue  */
-    val fileImportQueuePath: File,
+        /** The path to the agent publication queue  */
+        val fileImportQueuePath: File,
 
-    /** How often to scan fileImportQueuePath for new files.  */
-    val fileImportIntervalSeconds: Int = 0,
+        /** How often to scan fileImportQueuePath for new files.  */
+        val fileImportIntervalSeconds: Int = 0,
 
-    /** Should imported files be deleted after successful import?  */
-    val deleteImportedFiles: Boolean = true
+        /** Should imported files be deleted after successful import?  */
+        val deleteImportedFiles: Boolean = true
 ) {
     val logger by LoggerDelegate()
 

@@ -42,18 +42,18 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 class SecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(httpSecurity: HttpSecurity) {
         httpSecurity
-            .csrf()
-            .ignoringAntMatchers(
-                "/management/**",
-                "/javaagent/**"
-            )
-            .and()
-            .authorizeRequests()
-            .antMatchers(
-                "/management/**",
-                "/javaagent/**"
-            )
-            .permitAll()
+                .csrf()
+                .ignoringAntMatchers(
+                        "/management/**",
+                        "/javaagent/**"
+                )
+                .and()
+                .authorizeRequests()
+                .antMatchers(
+                        "/management/**",
+                        "/javaagent/**"
+                )
+                .permitAll()
     }
 
 }

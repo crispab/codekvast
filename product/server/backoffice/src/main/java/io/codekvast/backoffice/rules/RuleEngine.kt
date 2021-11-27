@@ -30,10 +30,10 @@ import io.codekvast.common.messaging.model.CodekvastEvent
  */
 interface RuleEngine {
 
-  /**
-   * Handle an event
-   *
-   * @param event The event to handle.
-   */
-  fun handle(event: CodekvastEvent)
+    /**
+     * Handle an event
+     *
+     * @param event The event to handle.
+     */
+    fun handle(event: CodekvastEvent)
 }

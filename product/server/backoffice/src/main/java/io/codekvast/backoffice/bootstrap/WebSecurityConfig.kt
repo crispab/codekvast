@@ -32,23 +32,23 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 @EnableWebSecurity
 class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
-  override fun configure(http: HttpSecurity) {
-    http.csrf()
-      .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-      .ignoringAntMatchers("/management/**")
-      .and()
-      .authorizeRequests()
-      .antMatchers(
-        "/",
-        "/home",
-        "/index",
-        "/favicon.ico",
-        "/robots.txt",
-        "/management/**",
-        "/assets/**",
-        "/error")
-      .permitAll()
-      .anyRequest()
-      .authenticated()
-  }
+    override fun configure(http: HttpSecurity) {
+        http.csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringAntMatchers("/management/**")
+                .and()
+                .authorizeRequests()
+                .antMatchers(
+                        "/",
+                        "/home",
+                        "/index",
+                        "/favicon.ico",
+                        "/robots.txt",
+                        "/management/**",
+                        "/assets/**",
+                        "/error")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+    }
 }

@@ -26,7 +26,6 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.sql.ResultSet
 
 /** @author olle.hallin@crisp.se
  */
@@ -36,22 +35,22 @@ class SyntheticSignatureDAO(private val jdbcTemplate: JdbcTemplate) {
     @Transactional(readOnly = true)
     @Cacheable(SYNTHETIC_SIGNATURE_PATTERNS_CACHE)
     fun syntheticPatterns(): List<SyntheticSignaturePattern> =
-        jdbcTemplate.query(
-            "SELECT id, pattern FROM synthetic_signature_patterns WHERE errorMessage IS NULL"
-        ) { rs, index ->
-            SyntheticSignaturePattern(
-                id = rs.getLong("id"),
-                pattern = rs.getString("pattern")
-            )
-        }
+            jdbcTemplate.query(
+                    "SELECT id, pattern FROM synthetic_signature_patterns WHERE errorMessage IS NULL"
+            ) { rs, index ->
+                SyntheticSignaturePattern(
+                        id = rs.getLong("id"),
+                        pattern = rs.getString("pattern")
+                )
+            }
 
     @Transactional(rollbackFor = [Exception::class])
     @CacheEvict(SYNTHETIC_SIGNATURE_PATTERNS_CACHE)
     fun rejectPattern(pattern: SyntheticSignaturePattern, errorMessage: String) {
         jdbcTemplate.update(
-            "UPDATE synthetic_signature_patterns SET errorMessage = ? WHERE id = ? ",
-            errorMessage,
-            pattern.id
+                "UPDATE synthetic_signature_patterns SET errorMessage = ? WHERE id = ? ",
+                errorMessage,
+                pattern.id
         )
     }
 

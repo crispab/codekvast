@@ -34,13 +34,10 @@ import io.codekvast.intake.file_import.PublicationImporter
 import io.codekvast.javaagent.model.v2.CodeBasePublication2
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2
 import io.codekvast.javaagent.model.v3.CodeBaseEntry3
-import io.codekvast.javaagent.model.v3.CodeBaseEntry3.fromFormat2
 import io.codekvast.javaagent.model.v3.CodeBasePublication3
 import org.springframework.dao.DataAccessException
 import org.springframework.stereotype.Service
 import java.io.*
-import java.util.concurrent.Callable
-import java.util.function.Supplier
 import java.util.stream.Collectors
 import javax.validation.Validator
 
@@ -57,26 +54,26 @@ import javax.validation.Validator
  */
 @Service
 class PublicationImporterImpl(
-    private val codeBaseImporter: CodeBaseImporter,
-    private val invocationDataImporter: InvocationDataImporter,
-    private val validator: Validator,
-    private val agentService: AgentService,
-    private val lockTemplate: LockTemplate
+        private val codeBaseImporter: CodeBaseImporter,
+        private val invocationDataImporter: InvocationDataImporter,
+        private val validator: Validator,
+        private val agentService: AgentService,
+        private val lockTemplate: LockTemplate
 ) : PublicationImporter {
 
     val logger by LoggerDelegate()
 
     override fun importPublicationFile(file: File): Boolean {
         return lockTemplate.doWithLock(
-            Lock.forPublication(file),
-            { doImportPublicationFile(file) },
-            {
-                logger.info(
-                    "Processing of {} was already in progress in another transaction",
-                    file.name
-                )
-                false
-            })
+                Lock.forPublication(file),
+                { doImportPublicationFile(file) },
+                {
+                    logger.info(
+                            "Processing of {} was already in progress in another transaction",
+                            file.name
+                    )
+                    false
+                })
     }
 
     private fun doImportPublicationFile(file: File): Boolean {
@@ -88,25 +85,25 @@ class PublicationImporterImpl(
                 val startedAt = System.currentTimeMillis()
                 val obj: Any = ois.readObject()
                 logger.debug(
-                    "Deserialized a {} in {} ms",
-                    obj.javaClass.simpleName,
-                    System.currentTimeMillis() - startedAt
+                        "Deserialized a {} in {} ms",
+                        obj.javaClass.simpleName,
+                        System.currentTimeMillis() - startedAt
                 )
                 handled = !isValidObject(obj) || handlePublication(obj)
             }
         } catch (e: LockTimeoutException) {
             // A new attempt to process the file should be made in a new transaction.
             logger.warn(
-                "Could not import {}: {}. Will try again.",
-                file,
-                e.toString()
+                    "Could not import {}: {}. Will try again.",
+                    file,
+                    e.toString()
             )
             handled = false
         } catch (e: DataAccessException) {
             logger.warn(
-                "Could not import {}: {}. Will try again.",
-                file,
-                e.toString()
+                    "Could not import {}: {}. Will try again.",
+                    file,
+                    e.toString()
             )
             handled = false
         } catch (e: InvalidClassException) {
@@ -114,9 +111,9 @@ class PublicationImporterImpl(
             // The publication data is lost.
             // Prevent the file from being processed again.
             logger.error(
-                "Could not import {}: {}. Will not try again.",
-                file,
-                e.toString()
+                    "Could not import {}: {}. Will not try again.",
+                    file,
+                    e.toString()
             )
             handled = true
         } catch (e: LicenseViolationException) {
@@ -149,24 +146,24 @@ class PublicationImporterImpl(
 
     private fun toCodeBasePublication3(publication2: CodeBasePublication2): CodeBasePublication3 {
         return CodeBasePublication3.builder()
-            .commonData(publication2.commonData)
-            .entries(
-                publication2.entries.stream()
-                    .map(CodeBaseEntry3::fromFormat2)
-                    .collect(Collectors.toList())
-            )
-            .build()
+                .commonData(publication2.commonData)
+                .entries(
+                        publication2.entries.stream()
+                                .map(CodeBaseEntry3::fromFormat2)
+                                .collect(Collectors.toList())
+                )
+                .build()
     }
 
     private fun isValidObject(obj: Any): Boolean {
         val violations = validator.validate(obj)
         for (v in violations) {
             logger.error(
-                "Invalid {}: {}={}: {}",
-                obj.javaClass.simpleName,
-                v.propertyPath,
-                v.invalidValue,
-                v.message
+                    "Invalid {}: {}={}: {}",
+                    obj.javaClass.simpleName,
+                    v.propertyPath,
+                    v.invalidValue,
+                    v.message
             )
         }
         return violations.isEmpty()

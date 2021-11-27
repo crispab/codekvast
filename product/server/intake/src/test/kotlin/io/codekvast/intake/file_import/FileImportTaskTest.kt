@@ -7,7 +7,6 @@ import io.codekvast.common.lock.Lock
 import io.codekvast.common.lock.LockManager
 import io.codekvast.common.lock.LockTemplate
 import io.codekvast.intake.bootstrap.CodekvastIntakeSettings
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -20,7 +19,6 @@ import java.io.File
 import java.util.*
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import org.hamcrest.Matchers.`is` as is_
 
 /** @author olle.hallin@crisp.se
  */
@@ -38,13 +36,13 @@ class FileImportTaskTest {
     fun beforeTest() {
         MockitoAnnotations.openMocks(this)
         whenever(lockManager.acquireLock(ArgumentMatchers.any()))
-            .thenReturn(Optional.of(Lock.forTask("test", 60)))
+                .thenReturn(Optional.of(Lock.forTask("test", 60)))
     }
 
     private fun createFileImportTask(deleteImportedFiles: Boolean): FileImportTask {
         val settings = CodekvastIntakeSettings(
-            fileImportQueuePath = temporaryFolder,
-            deleteImportedFiles = deleteImportedFiles
+                fileImportQueuePath = temporaryFolder,
+                deleteImportedFiles = deleteImportedFiles
         )
         return FileImportTask(settings, importer, mock(), LockTemplate(lockManager))
     }

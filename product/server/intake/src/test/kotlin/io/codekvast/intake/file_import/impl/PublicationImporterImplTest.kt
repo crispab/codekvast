@@ -54,22 +54,22 @@ internal class PublicationImporterImplTest {
     fun beforeTest() {
         MockitoAnnotations.openMocks(this)
         whenever(agentService.getCorrelationIdFromPublicationFile(any()))
-            .thenReturn(CorrelationIdHolder.generateNew())
+                .thenReturn(CorrelationIdHolder.generateNew())
         whenever(lockManager.acquireLock(any()))
-            .thenReturn(
-                Optional.of(
-                    Lock.forPublication(
-                        File("/intake/queue/invocations-29-683ce793-8bb8-4dc9-a494-cb2543aa7964.ser")
-                    )
+                .thenReturn(
+                        Optional.of(
+                                Lock.forPublication(
+                                        File("/intake/queue/invocations-29-683ce793-8bb8-4dc9-a494-cb2543aa7964.ser")
+                                )
+                        )
                 )
-            )
 
         publicationImporter = PublicationImporterImpl(
-            codeBaseImporter,
-            invocationDataImporter,
-            validator,
-            agentService,
-            LockTemplate(lockManager)
+                codeBaseImporter,
+                invocationDataImporter,
+                validator,
+                agentService,
+                LockTemplate(lockManager)
         )
     }
 
@@ -78,7 +78,7 @@ internal class PublicationImporterImplTest {
         // given
         val file = getResourceAsFile("/sample-publications/codebase-v2.ser")
         whenever(codeBaseImporter.importPublication(any()))
-            .thenReturn(true)
+                .thenReturn(true)
 
         // when
         val handled = publicationImporter.importPublicationFile(file)
@@ -96,7 +96,7 @@ internal class PublicationImporterImplTest {
         // given
         val file = getResourceAsFile("/sample-publications/codebase-v2.ser")
         whenever(codeBaseImporter.importPublication(any()))
-            .thenThrow(DuplicateKeyException("Thrown by mock"))
+                .thenThrow(DuplicateKeyException("Thrown by mock"))
 
         // when
         val handled = publicationImporter.importPublicationFile(file)
@@ -126,7 +126,7 @@ internal class PublicationImporterImplTest {
         // given
         val file = getResourceAsFile("/sample-publications/invocations-v2.ser")
         whenever(invocationDataImporter.importPublication(any()))
-            .thenReturn(true)
+                .thenReturn(true)
 
         // when
         val handled = publicationImporter.importPublicationFile(file)
@@ -157,7 +157,7 @@ internal class PublicationImporterImplTest {
         // given
         val file = getResourceAsFile("/sample-publications/invocations-v2.ser")
         whenever(invocationDataImporter.importPublication(any()))
-            .thenThrow(DuplicateKeyException("Thrown by mock"))
+                .thenThrow(DuplicateKeyException("Thrown by mock"))
 
         // when
         val handled = publicationImporter.importPublicationFile(file)
@@ -174,7 +174,7 @@ internal class PublicationImporterImplTest {
         // given
         val file = getResourceAsFile("/sample-publications/invocations-v2.ser")
         whenever(invocationDataImporter.importPublication(any()))
-            .thenThrow(LockTimeoutException("Thrown by mock"))
+                .thenThrow(LockTimeoutException("Thrown by mock"))
 
         // when
         val handled = publicationImporter.importPublicationFile(file)
@@ -209,7 +209,7 @@ internal class PublicationImporterImplTest {
         // given
         val file = getResourceAsFile("/sample-publications/invocations-v2.ser")
         whenever(validator.validate(any<Any>()))
-            .thenReturn(setOf(mock()))
+                .thenReturn(setOf(mock()))
 
         // when
         val handled = publicationImporter.importPublicationFile(file)

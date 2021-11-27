@@ -3,11 +3,11 @@ package integrationTest.backoffice
 import io.codekvast.backoffice.CodekvastBackofficeApplication
 import io.codekvast.backoffice.service.MailSender
 import io.codekvast.backoffice.weeding.WeedingTask
-import org.hamcrest.MatcherAssert.*
-import org.hamcrest.Matchers.*
-import org.junit.Assume.*
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.not
+import org.junit.Assume.assumeTrue
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
@@ -23,8 +23,8 @@ import javax.inject.Inject
 /** @author olle.hallin@crisp.se
  */
 @SpringBootTest(
-    classes = [CodekvastBackofficeApplication::class],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+        classes = [CodekvastBackofficeApplication::class],
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @ActiveProfiles("integrationTest", "dev-secrets", "no-mail-sender")
 @Transactional
@@ -40,15 +40,15 @@ class BackofficeIntegrationTest {
 
         @Container
         val mariaDB = KMariaDBContainer("mariadb:10.4")
-            .withDatabaseName(DATABASE)
-            .withUsername(USERNAME)
-            .withPassword(PASSWORD)
-            .withEnv("MYSQL_INITDB_SKIP_TZINFO", "true")!!
+                .withDatabaseName(DATABASE)
+                .withUsername(USERNAME)
+                .withPassword(PASSWORD)
+                .withEnv("MYSQL_INITDB_SKIP_TZINFO", "true")!!
 
         @Container
         val rabbitMQ = RabbitMQContainer("rabbitmq:3.8-management-alpine")
-            .withVhost("/")
-            .withUser("admin", "secret")!!
+                .withVhost("/")
+                .withUser("admin", "secret")!!
 
         @BeforeAll
         @JvmStatic
@@ -130,10 +130,10 @@ class BackofficeIntegrationTest {
     }
 
     private fun rows(tableName: String, vararg args: Any) =
-        jdbcTemplate.queryForObject(
-            "SELECT COUNT(0) FROM $tableName",
-            Int::class.java,
-            *args
-        )
+            jdbcTemplate.queryForObject(
+                    "SELECT COUNT(0) FROM $tableName",
+                    Int::class.java,
+                    *args
+            )
 
 }

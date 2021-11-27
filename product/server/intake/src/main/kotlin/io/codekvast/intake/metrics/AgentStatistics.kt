@@ -27,10 +27,10 @@ package io.codekvast.intake.metrics
  * @author olle.hallin@crisp.se
  */
 data class AgentStatistics(
-    /** The number of disabled agents.  */
-    val numDisabled: Int,
-    /** The number of enabled but dead agents.  */
-    val numDead: Int,
-    /** The number of alive agents.  */
-    val numAlive: Int
+        /** The number of disabled agents.  */
+        val numDisabled: Int,
+        /** The number of enabled but dead agents.  */
+        val numDead: Int,
+        /** The number of alive agents.  */
+        val numAlive: Int
 )

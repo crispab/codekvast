@@ -31,11 +31,11 @@ data class CollectionStarted(val collectionStartedAt: Instant,
                              var welcomeMailSentTo: String? = null,
                              var welcomeMailSentAt: Instant? = null) : PersistentFact {
 
-  companion object {
+    companion object {
 
-    @JvmStatic
-    fun of(event: CodeBaseReceivedEvent): CollectionStarted {
-      return CollectionStarted(event.receivedAt, event.trialPeriodEndsAt)
+        @JvmStatic
+        fun of(event: CodeBaseReceivedEvent): CollectionStarted {
+            return CollectionStarted(event.receivedAt, event.trialPeriodEndsAt)
+        }
     }
-  }
 }

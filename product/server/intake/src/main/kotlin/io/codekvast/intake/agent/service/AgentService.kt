@@ -70,11 +70,11 @@ interface AgentService {
      * @see [generatePublicationFile]
      */
     fun savePublication(
-        publicationType: PublicationType,
-        licenseKey: String,
-        codebaseFingerprint: String,
-        publicationSize: Int,
-        inputStream: InputStream
+            publicationType: PublicationType,
+            licenseKey: String,
+            codebaseFingerprint: String,
+            publicationSize: Int,
+            inputStream: InputStream
     ): File
 
     /**
@@ -87,9 +87,9 @@ interface AgentService {
      * by [getPublicationTypeFromPublicationFile] and [getCorrelationIdFromPublicationFile].
      */
     fun generatePublicationFile(
-        publicationType: PublicationType,
-        customerId: Long,
-        correlationId: String
+            publicationType: PublicationType,
+            customerId: Long,
+            correlationId: String
     ): File
 
     /**

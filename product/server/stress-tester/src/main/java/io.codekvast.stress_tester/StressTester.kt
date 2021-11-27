@@ -24,7 +24,6 @@ package io.codekvast.stress_tester
 import io.codekvast.common.messaging.EventService
 import io.codekvast.common.messaging.model.AgentPolledEvent
 import org.slf4j.LoggerFactory
-import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -37,29 +36,29 @@ import java.time.temporal.ChronoUnit
 @Component
 class StressTester(private val eventService: EventService) {
 
-  val logger = LoggerFactory.getLogger(javaClass)!!
-  var count = 0
-  var firstTime = true
-  var startedAt = Instant.now()
+    val logger = LoggerFactory.getLogger(javaClass)!!
+    var count = 0
+    var firstTime = true
+    var startedAt = Instant.now()
 
-  @Scheduled(fixedRateString = "\${codekvast.stress-tester.eventRateMillis}")
-  fun sendSampleAgentPolledEvent() {
-    val oldName = Thread.currentThread().name
-    try {
-      Thread.currentThread().name = "Codekvast StressTester"
+    @Scheduled(fixedRateString = "\${codekvast.stress-tester.eventRateMillis}")
+    fun sendSampleAgentPolledEvent() {
+        val oldName = Thread.currentThread().name
+        try {
+            Thread.currentThread().name = "Codekvast StressTester"
 
-      if (firstTime) {
-        logger.info("StressTester started")
-        firstTime = false
-      }
+            if (firstTime) {
+                logger.info("StressTester started")
+                firstTime = false
+            }
 
-      eventService.send(AgentPolledEvent.sample())
+            eventService.send(AgentPolledEvent.sample())
 
-      if (++count % 100 == 0) {
-        logger.info("Sent {} events {} after start", count, Duration.between(startedAt, Instant.now()).truncatedTo(ChronoUnit.SECONDS))
-      }
-    } finally {
-      Thread.currentThread().name = oldName
+            if (++count % 100 == 0) {
+                logger.info("Sent {} events {} after start", count, Duration.between(startedAt, Instant.now()).truncatedTo(ChronoUnit.SECONDS))
+            }
+        } finally {
+            Thread.currentThread().name = oldName
+        }
     }
-  }
 }

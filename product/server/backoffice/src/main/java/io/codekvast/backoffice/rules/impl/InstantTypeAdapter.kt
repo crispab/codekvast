@@ -29,11 +29,11 @@ import java.time.Instant
 /** @author olle.hallin@crisp.se
  */
 class InstantTypeAdapter : TypeAdapter<Instant>() {
-  override fun write(out: JsonWriter, instant: Instant?) {
-    out.value(instant?.toString())
-  }
+    override fun write(out: JsonWriter, instant: Instant?) {
+        out.value(instant?.toString())
+    }
 
-  override fun read(jsonReader: JsonReader): Instant {
-    return Instant.parse(jsonReader.nextString())
-  }
+    override fun read(jsonReader: JsonReader): Instant {
+        return Instant.parse(jsonReader.nextString())
+    }
 }

@@ -21,14 +21,14 @@
  */
 package io.codekvast.backoffice.weeding.impl
 
+import io.codekvast.backoffice.metrics.BackofficeMetricsService
+import io.codekvast.backoffice.weeding.WeedingService
 import io.codekvast.common.aspects.Restartable
 import io.codekvast.common.customer.CustomerData
 import io.codekvast.common.customer.CustomerService
 import io.codekvast.common.lock.Lock
 import io.codekvast.common.lock.LockTemplate
 import io.codekvast.common.logging.LoggingUtils.humanReadableDuration
-import io.codekvast.backoffice.metrics.BackofficeMetricsService
-import io.codekvast.backoffice.weeding.WeedingService
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
