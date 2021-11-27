@@ -49,15 +49,15 @@ public class ScannerTest4 extends java.util.Date {
     return (ScannerTest4) super.clone();
   }
 
-  public class Inner {
-    public void m5(String s) {
-      System.out.printf("m5(String)");
-    }
-  }
-
   public static class StaticInner {
     public void m6(String s) {
       System.out.printf("m6(String)");
+    }
+  }
+
+  public class Inner {
+    public void m5(String s) {
+      System.out.printf("m5(String)");
     }
   }
 }

@@ -31,10 +31,6 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 /** @author olle.hallin@crisp.se */
 public interface CustomerService {
 
-  interface Source {
-    String HEROKU = "heroku";
-  }
-
   /**
    * Translates a licenseKey to customer data.
    *
@@ -165,6 +161,10 @@ public interface CustomerService {
    * @param customerId Identifies the customer
    */
   void updateAppDetails(String appName, String contactEmail, Long customerId);
+
+  interface Source {
+    String HEROKU = "heroku";
+  }
 
   /** Parameter object for {@link #addCustomer(AddCustomerRequest)} */
   @Value

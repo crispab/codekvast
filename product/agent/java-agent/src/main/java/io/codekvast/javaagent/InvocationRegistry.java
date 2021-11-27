@@ -122,11 +122,9 @@ public class InvocationRegistry {
   public static class RealInvocationReceiver implements InvocationReceiver {
     // Toggle between two invocation sets to avoid synchronisation
     private final Set<String>[] invocations;
-    private volatile int currentInvocationIndex = 0;
-
     // Do all updates to the current set from a single worker thread
     private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
-
+    private volatile int currentInvocationIndex = 0;
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
     RealInvocationReceiver() {

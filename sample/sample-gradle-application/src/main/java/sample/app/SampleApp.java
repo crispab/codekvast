@@ -12,12 +12,12 @@ import untracked.UntrackedClass;
 @Slf4j
 public class SampleApp {
 
-  private int sum = 0;
-
   static {
     SLF4JBridgeHandler.removeHandlersForRootLogger();
     SLF4JBridgeHandler.install();
   }
+
+  private int sum = 0;
 
   public static void main(String[] args) {
     new SampleApp().run();

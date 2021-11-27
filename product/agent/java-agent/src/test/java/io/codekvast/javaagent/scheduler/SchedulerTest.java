@@ -29,26 +29,7 @@ import org.mockito.MockitoAnnotations;
 @CaptureSystemOutput
 class SchedulerTest {
 
-  @Mock private ConfigPoller configPollerMock;
-
-  @Mock private CodeBasePublisherFactory codeBasePublisherFactoryMock;
-
-  @Mock private InvocationDataPublisherFactory invocationDataPublisherFactoryMock;
-
-  @Mock private SystemClock systemClockMock;
-
-  private AgentConfig config =
-      AgentConfigFactory.createSampleAgentConfig().toBuilder().appVersion("literal 1.17").build();
-
-  private CodeBasePublisher codeBasePublisher = new NoOpCodeBasePublisherImpl(config);
-
-  private InvocationDataPublisher invocationDataPublisher =
-      new NoOpInvocationDataPublisherImpl(config);
-
-  private Scheduler scheduler;
-
   private final long T1 = System.currentTimeMillis();
-
   private final GetConfigResponse2 configResponse =
       GetConfigResponse2.sample().toBuilder()
           .configPollIntervalSeconds(0)
@@ -56,6 +37,16 @@ class SchedulerTest {
           .codeBasePublisherCheckIntervalSeconds(0)
           .invocationDataPublisherIntervalSeconds(0)
           .build();
+  @Mock private ConfigPoller configPollerMock;
+  @Mock private CodeBasePublisherFactory codeBasePublisherFactoryMock;
+  @Mock private InvocationDataPublisherFactory invocationDataPublisherFactoryMock;
+  @Mock private SystemClock systemClockMock;
+  private AgentConfig config =
+      AgentConfigFactory.createSampleAgentConfig().toBuilder().appVersion("literal 1.17").build();
+  private CodeBasePublisher codeBasePublisher = new NoOpCodeBasePublisherImpl(config);
+  private InvocationDataPublisher invocationDataPublisher =
+      new NoOpInvocationDataPublisherImpl(config);
+  private Scheduler scheduler;
 
   @BeforeEach
   public void setUp() {

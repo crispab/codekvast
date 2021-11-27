@@ -21,7 +21,12 @@
  */
 package io.codekvast.dashboard.dashboard.model.status;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.Setter;
 
 /** @author olle.hallin@crisp.se */
 @Data

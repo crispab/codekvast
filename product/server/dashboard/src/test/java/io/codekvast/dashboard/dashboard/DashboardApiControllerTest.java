@@ -34,13 +34,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /** @author olle.hallin@crisp.se */
 public class DashboardApiControllerTest {
-  @Mock private DashboardService dashboardService;
-
   private final CodekvastCommonSettings settings = new CodekvastCommonSettings();
-
-  private MockMvc mockMvc;
-
   private final Gson gson = new Gson();
+  @Mock private DashboardService dashboardService;
+  private MockMvc mockMvc;
 
   @BeforeEach
   public void setup() {

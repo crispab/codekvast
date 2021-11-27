@@ -50,12 +50,12 @@ public class CodeBaseFingerprint {
 
   @NonNull private final String sha256;
 
-  int getNumFiles() {
-    return numClassFiles + numJarFiles;
-  }
-
   public static Builder builder(AgentConfig config) {
     return new Builder(config);
+  }
+
+  int getNumFiles() {
+    return numClassFiles + numJarFiles;
   }
 
   /** Builder for incrementally building a CodeBaseFingerprint */

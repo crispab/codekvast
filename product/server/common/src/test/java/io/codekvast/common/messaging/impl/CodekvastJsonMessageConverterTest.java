@@ -46,6 +46,22 @@ class CodekvastJsonMessageConverterTest {
 
   @InjectMocks private CodekvastJsonMessageConverter converter;
 
+  private static Stream<Arguments> provideCodekvastEventSamples() {
+    return Stream.of(
+        Arguments.of(AgentPolledEvent.sample()),
+        Arguments.of(AppDetailsUpdatedEvent.sample()),
+        Arguments.of(CodeBaseReceivedEvent.sample()),
+        Arguments.of(CollectionStartedEvent.sample()),
+        Arguments.of(CustomerAddedEvent.sample()),
+        Arguments.of(CustomerDeletedEvent.sample()),
+        Arguments.of(InvocationDataReceivedEvent.sample()),
+        Arguments.of(LicenseViolationEvent.sample()),
+        Arguments.of(PlanChangedEvent.sample()),
+        Arguments.of(PlanOverridesDeletedEvent.sample()),
+        Arguments.of(UserAuthenticatedEvent.sample()),
+        Arguments.of(UserLoggedInEvent.sample()));
+  }
+
   @BeforeEach
   void beforeEach() {
     MockitoAnnotations.openMocks(this);
@@ -76,21 +92,5 @@ class CodekvastJsonMessageConverterTest {
 
     // Then
     assertThat(json, matchesPattern(".*\"customerId\":1,.*"));
-  }
-
-  private static Stream<Arguments> provideCodekvastEventSamples() {
-    return Stream.of(
-        Arguments.of(AgentPolledEvent.sample()),
-        Arguments.of(AppDetailsUpdatedEvent.sample()),
-        Arguments.of(CodeBaseReceivedEvent.sample()),
-        Arguments.of(CollectionStartedEvent.sample()),
-        Arguments.of(CustomerAddedEvent.sample()),
-        Arguments.of(CustomerDeletedEvent.sample()),
-        Arguments.of(InvocationDataReceivedEvent.sample()),
-        Arguments.of(LicenseViolationEvent.sample()),
-        Arguments.of(PlanChangedEvent.sample()),
-        Arguments.of(PlanOverridesDeletedEvent.sample()),
-        Arguments.of(UserAuthenticatedEvent.sample()),
-        Arguments.of(UserLoggedInEvent.sample()));
   }
 }

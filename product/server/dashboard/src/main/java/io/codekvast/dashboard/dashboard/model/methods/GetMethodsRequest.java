@@ -71,6 +71,18 @@ public class GetMethodsRequest {
 
   private final List<String> locations;
 
+  public static GetMethodsRequest defaults() {
+    return builder()
+        .onlyInvokedBeforeMillis(Long.MAX_VALUE)
+        .onlyInvokedAfterMillis(0L)
+        .suppressUntrackedMethods(true)
+        .maxResults(100)
+        .minCollectedDays(14)
+        .normalizeSignature(true)
+        .signature("")
+        .build();
+  }
+
   public String getNormalizedSignature() {
     String result;
     if (!normalizeSignature) {
@@ -84,17 +96,5 @@ public class GetMethodsRequest {
       logger.debug("Normalized '{}' to '{}'", signature, result);
     }
     return result;
-  }
-
-  public static GetMethodsRequest defaults() {
-    return builder()
-        .onlyInvokedBeforeMillis(Long.MAX_VALUE)
-        .onlyInvokedAfterMillis(0L)
-        .suppressUntrackedMethods(true)
-        .maxResults(100)
-        .minCollectedDays(14)
-        .normalizeSignature(true)
-        .signature("")
-        .build();
   }
 }

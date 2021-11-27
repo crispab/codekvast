@@ -61,11 +61,9 @@ import okhttp3.Route;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class AgentConfig implements Serializable {
-  private static final long serialVersionUID = 1L;
-
   public static final String INVOCATIONS_BASENAME = "invocations.dat";
   public static final String JVM_BASENAME = "jvm.dat";
-
+  private static final long serialVersionUID = 1L;
   private boolean enabled;
 
   @NonNull private String licenseKey;

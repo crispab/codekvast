@@ -71,6 +71,7 @@ import org.testcontainers.containers.RabbitMQContainer;
 @Transactional
 public class DashboardIntegrationTest {
 
+  @ClassRule public static final SpringClassRule springClassRule = new SpringClassRule();
   private static final String DATABASE = "codekvast";
   private static final String USERNAME = "codekvastUser";
   private static final String PASSWORD = "codekvastPassword";
@@ -89,16 +90,7 @@ public class DashboardIntegrationTest {
           .withVhost("/")
           .withUser("admin", "secret");
 
-  @BeforeClass
-  public static void beforeClass() {
-    System.setProperty("spring.datasource.url", mariaDB.getJdbcUrl());
-    System.setProperty("spring.datasource.username", USERNAME);
-    System.setProperty("spring.datasource.password", PASSWORD);
-    System.setProperty("spring.rabbitmq.addresses", rabbitMQ.getAmqpUrl());
-  }
-
-  @ClassRule public static final SpringClassRule springClassRule = new SpringClassRule();
-
+  private final Set<Optional<Lock>> heldLocks = new HashSet<>();
   @Rule public SpringMethodRule springMethodRule = new SpringMethodRule();
 
   @MockBean private CommonMetricsService commonMetricsService;
@@ -115,7 +107,13 @@ public class DashboardIntegrationTest {
 
   @Inject private LockContentionTestHelper lockContentionTestHelper;
 
-  private final Set<Optional<Lock>> heldLocks = new HashSet<>();
+  @BeforeClass
+  public static void beforeClass() {
+    System.setProperty("spring.datasource.url", mariaDB.getJdbcUrl());
+    System.setProperty("spring.datasource.username", USERNAME);
+    System.setProperty("spring.datasource.password", PASSWORD);
+    System.setProperty("spring.rabbitmq.addresses", rabbitMQ.getAmqpUrl());
+  }
 
   private Optional<Lock> acquireLock(Lock lock) {
     Optional<Lock> result = lockManager.acquireLock(lock);
@@ -564,6 +562,16 @@ public class DashboardIntegrationTest {
     assertThat(acquireLock(lock).isPresent(), is(true));
   }
 
+  private long cutMillis(Timestamp timestamp) {
+    return Instant.ofEpochMilli(timestamp.getTime()).getEpochSecond() * 1000L;
+  }
+
+  private int countRowsInTable(String tableName, Object... args) {
+    Integer result =
+        jdbcTemplate.queryForObject("SELECT COUNT(0) FROM " + tableName, Integer.class, args);
+    return (result != null ? result : 0);
+  }
+
   @RequiredArgsConstructor
   public static class LockContentionTestHelper {
 
@@ -587,15 +595,5 @@ public class DashboardIntegrationTest {
       Thread.sleep(500);
       acquiredLock.ifPresent(lockManager::releaseLock);
     }
-  }
-
-  private long cutMillis(Timestamp timestamp) {
-    return Instant.ofEpochMilli(timestamp.getTime()).getEpochSecond() * 1000L;
-  }
-
-  private int countRowsInTable(String tableName, Object... args) {
-    Integer result =
-        jdbcTemplate.queryForObject("SELECT COUNT(0) FROM " + tableName, Integer.class, args);
-    return (result != null ? result : 0);
   }
 }

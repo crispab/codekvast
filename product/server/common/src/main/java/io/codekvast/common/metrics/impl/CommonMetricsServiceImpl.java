@@ -41,11 +41,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CommonMetricsServiceImpl implements CommonMetricsService {
 
-  private static final String EVENT_TAG = "event";
   public static final String LOCK_TAG = "lock";
   public static final String SOURCE_TAG = "source";
   public static final String CONSUMER_TAG = "consumer";
-
+  private static final String EVENT_TAG = "event";
   private final MeterRegistry meterRegistry;
 
   private final AtomicInteger eventCounter = new AtomicInteger();

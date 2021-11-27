@@ -35,15 +35,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class RuleEngineImplTest {
 
   private static final Instant NOW = Instant.now();
-
-  @Mock private FactDAO factDAO;
-
-  @Mock private MailSender mailSender;
-
-  @Mock private CustomerService customerService;
-
   private final Clock clock = Clock.fixed(NOW, ZoneId.of("Z"));
-
+  @Mock private FactDAO factDAO;
+  @Mock private MailSender mailSender;
+  @Mock private CustomerService customerService;
   private RuleEngine ruleEngine;
 
   @BeforeEach

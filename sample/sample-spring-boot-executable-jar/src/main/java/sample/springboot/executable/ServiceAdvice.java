@@ -17,7 +17,6 @@ public class ServiceAdvice {
     log.info("Loaded aspect");
   }
 
-
   @Around("execution(* sample.springboot.executable.*Service.*(..))")
   public Object auditIngest(ProceedingJoinPoint pjp) throws Throwable {
     log.info("Before {}", pjp);

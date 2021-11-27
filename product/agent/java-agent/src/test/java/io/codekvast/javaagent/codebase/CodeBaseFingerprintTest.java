@@ -17,10 +17,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 public class CodeBaseFingerprintTest {
 
-  @TempDir File tempDir;
-
   private final File[] files = new File[3];
   private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
+  @TempDir File tempDir;
 
   @BeforeEach
   public void beforeTest() {

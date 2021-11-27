@@ -31,15 +31,15 @@ import java.util.Set;
  */
 public interface InvocationDataPublisher extends Publisher {
 
+  /** @return The fingerprint associated with the publisher */
+  CodeBaseFingerprint getCodeBaseFingerprint();
+
   /**
    * Associate this published with a certain code base.
    *
    * @param fingerprint The fingerprint of the executing code base.
    */
   void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint);
-
-  /** @return The fingerprint associated with the publisher */
-  CodeBaseFingerprint getCodeBaseFingerprint();
 
   /**
    * Publish the invocation data.

@@ -81,6 +81,15 @@ public class SecurityServiceImpl implements SecurityService {
   private TokenFactory tokenFactory;
   private byte[] jwtSecret;
 
+  static String maskSecondHalf(String s) {
+    int pos = s.length() / 2;
+    StringBuilder sb = new StringBuilder(s.substring(0, pos));
+    while (sb.length() < s.length()) {
+      sb.append('X');
+    }
+    return sb.toString();
+  }
+
   @PostConstruct
   public void postConstruct() {
     String secret = settings.getJwtSecret();
@@ -274,14 +283,5 @@ public class SecurityServiceImpl implements SecurityService {
           .signWith(signatureAlgorithm, jwtSecret.getBytes(StandardCharsets.UTF_8))
           .compact();
     }
-  }
-
-  static String maskSecondHalf(String s) {
-    int pos = s.length() / 2;
-    StringBuilder sb = new StringBuilder(s.substring(0, pos));
-    while (sb.length() < s.length()) {
-      sb.append('X');
-    }
-    return sb.toString();
   }
 }

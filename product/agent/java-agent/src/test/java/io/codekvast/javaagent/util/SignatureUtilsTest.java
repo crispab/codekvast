@@ -312,6 +312,10 @@ public class SignatureUtilsTest {
       this(i, 0);
     }
 
+    public static Collection<List<String>> publicStaticMethod1(String p1, Collection<Integer> p2) {
+      return null;
+    }
+
     protected Integer protectedMethod2() {
       return null;
     }
@@ -328,10 +332,6 @@ public class SignatureUtilsTest {
     protected final strictfp int protectedMethod5(String p1, TestInterface p2)
         throws UnsupportedOperationException {
       return 0;
-    }
-
-    public static Collection<List<String>> publicStaticMethod1(String p1, Collection<Integer> p2) {
-      return null;
     }
   }
 }

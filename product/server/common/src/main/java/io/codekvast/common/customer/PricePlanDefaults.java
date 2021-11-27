@@ -54,11 +54,11 @@ public enum PricePlanDefaults {
   private final int trialPeriodDays;
   private final int retentionPeriodDays;
 
-  public String toDatabaseName() {
-    return name().toLowerCase();
-  }
-
   public static PricePlanDefaults ofDatabaseName(String planName) {
     return PricePlanDefaults.valueOf(planName.toUpperCase());
+  }
+
+  public String toDatabaseName() {
+    return name().toLowerCase();
   }
 }

@@ -36,11 +36,9 @@ import okhttp3.Response;
 /** @author olle.hallin@crisp.se */
 @Log
 public class ConfigPollerImpl implements ConfigPoller {
+  private static final MediaType JSON = MediaType.parse("application/json");
   private final AgentConfig config;
   private final GetConfigRequest2 requestTemplate;
-
-  private static final MediaType JSON = MediaType.parse("application/json");
-
   private final Gson gson = new Gson();
 
   public ConfigPollerImpl(AgentConfig config) {

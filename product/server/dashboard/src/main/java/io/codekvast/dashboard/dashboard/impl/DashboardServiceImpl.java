@@ -475,6 +475,68 @@ public class DashboardServiceImpl implements DashboardService {
   }
 
   @RequiredArgsConstructor
+  private static class QueryState {
+    private final long methodId;
+
+    private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();
+    private final Map<String, EnvironmentDescriptor> environments = new HashMap<>();
+
+    private MethodDescriptor1.MethodDescriptor1Builder builder;
+    private int rows;
+
+    MethodDescriptor1.MethodDescriptor1Builder getBuilder() {
+      if (builder == null) {
+        builder = MethodDescriptor1.builder().id(methodId);
+      }
+      return builder;
+    }
+
+    boolean isSameMethod(long id) {
+      return id == this.methodId;
+    }
+
+    void saveApplication(ApplicationDescriptor applicationDescriptor) {
+      ApplicationId appId = ApplicationId.of(applicationDescriptor);
+      applications.put(appId, applicationDescriptor.mergeWith(applications.get(appId)));
+    }
+
+    void saveEnvironment(EnvironmentDescriptor environmentDescriptor) {
+      String name = environmentDescriptor.getName();
+      environments.put(name, environmentDescriptor.mergeWith(environments.get(name)));
+    }
+
+    void addTo(List<MethodDescriptor1> result) {
+      if (builder != null) {
+        logger.trace(
+            "Adding method {} to result (compiled from {} result set rows)", methodId, rows);
+        builder.occursInApplications(new TreeSet<>(applications.values()));
+        builder.collectedInEnvironments(new TreeSet<>(environments.values()));
+        result.add(builder.build().computeFields());
+      }
+    }
+
+    void countRow() {
+      rows += 1;
+    }
+  }
+
+  /** @author olle.hallin@crisp.se */
+  @Value
+  static class ApplicationId implements Comparable<ApplicationId> {
+    String name;
+    String version;
+
+    static ApplicationId of(ApplicationDescriptor applicationDescriptor) {
+      return new ApplicationId(applicationDescriptor.getName(), applicationDescriptor.getVersion());
+    }
+
+    @Override
+    public int compareTo(ApplicationId that) {
+      return this.toString().compareTo(that.toString());
+    }
+  }
+
+  @RequiredArgsConstructor
   private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
     private final PricePlan pricePlan;
 
@@ -557,68 +619,6 @@ public class DashboardServiceImpl implements DashboardService {
       // Include the last method
       queryState.addTo(result);
       return result.stream().findFirst();
-    }
-  }
-
-  @RequiredArgsConstructor
-  private static class QueryState {
-    private final long methodId;
-
-    private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();
-    private final Map<String, EnvironmentDescriptor> environments = new HashMap<>();
-
-    private MethodDescriptor1.MethodDescriptor1Builder builder;
-    private int rows;
-
-    MethodDescriptor1.MethodDescriptor1Builder getBuilder() {
-      if (builder == null) {
-        builder = MethodDescriptor1.builder().id(methodId);
-      }
-      return builder;
-    }
-
-    boolean isSameMethod(long id) {
-      return id == this.methodId;
-    }
-
-    void saveApplication(ApplicationDescriptor applicationDescriptor) {
-      ApplicationId appId = ApplicationId.of(applicationDescriptor);
-      applications.put(appId, applicationDescriptor.mergeWith(applications.get(appId)));
-    }
-
-    void saveEnvironment(EnvironmentDescriptor environmentDescriptor) {
-      String name = environmentDescriptor.getName();
-      environments.put(name, environmentDescriptor.mergeWith(environments.get(name)));
-    }
-
-    void addTo(List<MethodDescriptor1> result) {
-      if (builder != null) {
-        logger.trace(
-            "Adding method {} to result (compiled from {} result set rows)", methodId, rows);
-        builder.occursInApplications(new TreeSet<>(applications.values()));
-        builder.collectedInEnvironments(new TreeSet<>(environments.values()));
-        result.add(builder.build().computeFields());
-      }
-    }
-
-    void countRow() {
-      rows += 1;
-    }
-  }
-
-  /** @author olle.hallin@crisp.se */
-  @Value
-  static class ApplicationId implements Comparable<ApplicationId> {
-    String name;
-    String version;
-
-    @Override
-    public int compareTo(ApplicationId that) {
-      return this.toString().compareTo(that.toString());
-    }
-
-    static ApplicationId of(ApplicationDescriptor applicationDescriptor) {
-      return new ApplicationId(applicationDescriptor.getName(), applicationDescriptor.getVersion());
     }
   }
 }

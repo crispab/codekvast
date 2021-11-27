@@ -17,6 +17,15 @@ public class SampleApp {
   private final int dummy = 17;
   private final SampleService1 sampleService1;
 
+  public static void main(String[] args) throws InterruptedException {
+    logger.info(
+        String.format(
+            "%s starts on Java %s",
+            SampleApp.class.getSimpleName(), System.getProperty("java.version")));
+    SpringApplication.run(SampleApp.class, args);
+    logger.info("Exit");
+  }
+
   public int add(int p1, int p2) {
     return privateAdd(p1, p2);
   }
@@ -29,14 +38,5 @@ public class SampleApp {
   public void postConstruct() {
     logger.info("2+2=" + add(2, 2));
     sampleService1.doSomething(1);
-  }
-
-  public static void main(String[] args) throws InterruptedException {
-    logger.info(
-        String.format(
-            "%s starts on Java %s",
-            SampleApp.class.getSimpleName(), System.getProperty("java.version")));
-    SpringApplication.run(SampleApp.class, args);
-    logger.info("Exit");
   }
 }

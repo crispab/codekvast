@@ -30,12 +30,10 @@ public class HttpInvocationDataPublisherImplTest {
           .appName("appName")
           .appVersion("appVersion")
           .build();
-
-  private File uploadedFile;
-  private int uploadedPublicationSize;
-
   private final HttpInvocationDataPublisherImpl publisher =
       new TestableHttpInvocationDataPublisherImpl();
+  private File uploadedFile;
+  private int uploadedPublicationSize;
 
   @Test
   public void should_create_and_upload_file_when_invocations_exist() throws Exception {

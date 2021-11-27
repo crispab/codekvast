@@ -38,13 +38,13 @@ import lombok.extern.java.Log;
 @Log
 public class AgentConfigLocator {
 
+  static final String SYSPROP_CONFIG = "codekvast.configuration";
   private static final String ENVVAR_CATALINA_BASE = "CATALINA_BASE";
   private static final String ENVVAR_CATALINA_HOME = "CATALINA_HOME";
   private static final String ENVVAR_CODEKVAST_CONFIG = "CODEKVAST_CONFIG";
   private static final String ENVVAR_HOME = "HOME";
   private static final String SYSPROP_CATALINA_BASE = "catalina.base";
   private static final String SYSPROP_CATALINA_HOME = "catalina.home";
-  static final String SYSPROP_CONFIG = "codekvast.configuration";
 
   private AgentConfigLocator() {}
 

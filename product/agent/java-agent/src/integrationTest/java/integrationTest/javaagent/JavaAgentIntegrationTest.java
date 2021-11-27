@@ -72,6 +72,32 @@ public class JavaAgentIntegrationTest {
     wireMockServer.shutdown();
   }
 
+  private static List<String> getJavaVersions() {
+    return Arrays.stream(javaVersionsString.split(","))
+        .map(String::trim)
+        .collect(Collectors.toList());
+  }
+
+  private static String getLowestJavaVersion() {
+    List<String> versions = getJavaVersions();
+    return versions.get(versions.size() - 1);
+  }
+
+  private static String getHighestJavaVersion() {
+    List<String> versions = getJavaVersions();
+    return versions.get(0);
+  }
+
+  public static List<Arguments> testConfigurations() {
+    List<Arguments> result = new ArrayList<>();
+    result.add(Arguments.of(getHighestJavaVersion(), false));
+    for (String v : getJavaVersions()) {
+      result.add(Arguments.of(v, true));
+    }
+    result.add(Arguments.of(getLowestJavaVersion(), false));
+    return result;
+  }
+
   @Test
   public void should_not_start_when_no_config() throws Exception {
     // given
@@ -203,32 +229,6 @@ public class JavaAgentIntegrationTest {
       verify(postRequestedFor(urlEqualTo(V3_UPLOAD_CODEBASE)));
       verify(postRequestedFor(urlEqualTo(V2_UPLOAD_INVOCATION_DATA)));
     }
-  }
-
-  private static List<String> getJavaVersions() {
-    return Arrays.stream(javaVersionsString.split(","))
-        .map(String::trim)
-        .collect(Collectors.toList());
-  }
-
-  private static String getLowestJavaVersion() {
-    List<String> versions = getJavaVersions();
-    return versions.get(versions.size() - 1);
-  }
-
-  private static String getHighestJavaVersion() {
-    List<String> versions = getJavaVersions();
-    return versions.get(0);
-  }
-
-  public static List<Arguments> testConfigurations() {
-    List<Arguments> result = new ArrayList<>();
-    result.add(Arguments.of(getHighestJavaVersion(), false));
-    for (String v : getJavaVersions()) {
-      result.add(Arguments.of(v, true));
-    }
-    result.add(Arguments.of(getLowestJavaVersion(), false));
-    return result;
   }
 
   private void assertSampleAppOutput(String stdout) {

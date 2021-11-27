@@ -59,6 +59,21 @@ public class PricePlan {
   private final int retryIntervalSeconds;
   private final int trialPeriodDays;
 
+  public static PricePlan of(PricePlanDefaults ppd) {
+    return PricePlan.builder()
+        .maxMethods(ppd.getMaxMethods())
+        .maxNumberOfAgents(ppd.getMaxNumberOfAgents())
+        .name(ppd.name())
+        .note(null)
+        .overrideBy(null)
+        .pollIntervalSeconds(ppd.getPollIntervalSeconds())
+        .publishIntervalSeconds(ppd.getPublishIntervalSeconds())
+        .retentionPeriodDays(ppd.getRetentionPeriodDays())
+        .retryIntervalSeconds(ppd.getRetryIntervalSeconds())
+        .trialPeriodDays(ppd.getTrialPeriodDays())
+        .build();
+  }
+
   /**
    * Adjusts the number of collected days with respect to the retention period. If the retention
    * period is defined (i.e., positive) then return the minimum value of the parameter and the
@@ -124,20 +139,5 @@ public class PricePlan {
     }
     long retentionPeriodStart = clock.instant().minus(retentionPeriodDays, DAYS).toEpochMilli();
     return Math.max(realTimestampMillis, retentionPeriodStart);
-  }
-
-  public static PricePlan of(PricePlanDefaults ppd) {
-    return PricePlan.builder()
-        .maxMethods(ppd.getMaxMethods())
-        .maxNumberOfAgents(ppd.getMaxNumberOfAgents())
-        .name(ppd.name())
-        .note(null)
-        .overrideBy(null)
-        .pollIntervalSeconds(ppd.getPollIntervalSeconds())
-        .publishIntervalSeconds(ppd.getPublishIntervalSeconds())
-        .retentionPeriodDays(ppd.getRetentionPeriodDays())
-        .retryIntervalSeconds(ppd.getRetryIntervalSeconds())
-        .trialPeriodDays(ppd.getTrialPeriodDays())
-        .build();
   }
 }

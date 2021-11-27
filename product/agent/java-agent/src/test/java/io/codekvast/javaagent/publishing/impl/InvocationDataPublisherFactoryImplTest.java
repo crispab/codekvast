@@ -19,10 +19,8 @@ import org.springframework.boot.test.system.OutputCaptureRule;
 public class InvocationDataPublisherFactoryImplTest {
 
   private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
-
-  @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
-
   private final InvocationDataPublisherFactory factory = new InvocationDataPublisherFactoryImpl();
+  @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
 
   @Test
   public void should_handle_noop_name() {

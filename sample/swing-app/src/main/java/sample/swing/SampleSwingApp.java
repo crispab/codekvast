@@ -3,7 +3,8 @@ package sample.swing;
 import io.codekvast.javaagent.CodekvastAgent;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class SampleSwingApp extends JFrame {

@@ -50,11 +50,9 @@ import org.springframework.validation.annotation.Validated;
 @Slf4j
 public class CodekvastCommonSettings {
 
+  private final String hostname = getLocalHostname();
   private String applicationName;
   private String displayVersion;
-
-  private final String hostname = getLocalHostname();
-
   @Default private String environment = "dev";
 
   private String jwtSecret;

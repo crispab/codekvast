@@ -55,10 +55,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class HeapDumpUploader {
+  private static final String SUFFIX = ".hprof";
   private final CodekvastCommonSettings settings;
   private final SlackService slackService;
-
-  private static final String SUFFIX = ".hprof";
   private final Map<File, FileStatus> fileStatuses = new HashMap<>();
 
   private boolean firstTime = true;

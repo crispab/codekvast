@@ -44,11 +44,6 @@ public class ComputerID {
 
   private final String value;
 
-  @Override
-  public String toString() {
-    return value;
-  }
-
   static ComputerID compute() {
     String value = computeComputerIdentity();
     return new ComputerID(value);
@@ -111,5 +106,10 @@ public class ComputerID {
       }
     }
     return sb.toString();
+  }
+
+  @Override
+  public String toString() {
+    return value;
   }
 }

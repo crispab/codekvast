@@ -26,15 +26,10 @@ import org.mockito.MockitoAnnotations;
 public class HerokuServiceImplTest {
 
   private final CodekvastLoginSettings settings = new CodekvastLoginSettings();
-
-  @Mock private HerokuApiWrapper herokuApiWrapper;
-
-  @Mock private HerokuDetailsDAO herokuDetailsDAO;
-
-  @Mock private CustomerService customerService;
-
   private final Gson gson = new Gson();
-
+  @Mock private HerokuApiWrapper herokuApiWrapper;
+  @Mock private HerokuDetailsDAO herokuDetailsDAO;
+  @Mock private CustomerService customerService;
   private HerokuServiceImpl service;
 
   @BeforeEach

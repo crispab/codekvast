@@ -112,12 +112,12 @@ class InvocationRegistryTest {
 
   private static class NullInvocationDataPublisher implements InvocationDataPublisher {
     @Override
-    public void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint) {}
-
-    @Override
     public CodeBaseFingerprint getCodeBaseFingerprint() {
       return null;
     }
+
+    @Override
+    public void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint) {}
 
     @Override
     public void publishInvocationData(

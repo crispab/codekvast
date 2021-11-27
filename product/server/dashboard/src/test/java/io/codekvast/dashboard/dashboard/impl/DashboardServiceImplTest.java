@@ -33,17 +33,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 /** @author olle.hallin@crisp.se */
 public class DashboardServiceImplTest {
 
-  @Mock private JdbcTemplate jdbcTemplate;
-
-  @Mock private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-  @Mock private CustomerService customerService;
-
-  @Mock private CustomerIdProvider customerIdProvider;
-
   private final Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
   private final Instant now = clock.instant();
-
+  @Mock private JdbcTemplate jdbcTemplate;
+  @Mock private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+  @Mock private CustomerService customerService;
+  @Mock private CustomerIdProvider customerIdProvider;
   private DashboardServiceImpl dashboardService;
 
   @BeforeEach

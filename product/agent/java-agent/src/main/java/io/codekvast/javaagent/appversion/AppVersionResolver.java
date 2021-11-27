@@ -44,6 +44,10 @@ public class AppVersionResolver {
     this.appVersionStrategies.add(new PropertiesAppVersionStrategy());
   }
 
+  public static boolean isUnresolved(String appVersion) {
+    return appVersion == null || appVersion.equals(AppVersionStrategy.UNKNOWN_VERSION);
+  }
+
   public String resolveAppVersion() {
     String[] args = version.split("\\s+");
 
@@ -61,9 +65,5 @@ public class AppVersionResolver {
     logger.info(
         String.format("Don't know how to resolve appVersion '%s', using it as-is", version));
     return version;
-  }
-
-  public static boolean isUnresolved(String appVersion) {
-    return appVersion == null || appVersion.equals(AppVersionStrategy.UNKNOWN_VERSION);
   }
 }

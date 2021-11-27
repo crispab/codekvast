@@ -14,9 +14,8 @@ import org.springframework.boot.test.system.OutputCaptureRule;
 @EnableRuleMigrationSupport
 public class AbstractPublisherImplTest {
 
-  @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
-
   private final Publisher publisher = new NoOpCodeBasePublisherImpl(null);
+  @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
 
   @Test
   public void should_handle_configure_enabled_true() throws Exception {

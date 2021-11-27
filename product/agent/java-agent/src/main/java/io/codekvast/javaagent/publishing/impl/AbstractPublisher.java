@@ -49,9 +49,8 @@ public abstract class AbstractPublisher implements Publisher {
 
   private static final MediaType APPLICATION_OCTET_STREAM =
       MediaType.parse("application/octet-stream");
-  private final AgentConfig config;
   protected final Logger logger;
-
+  private final AgentConfig config;
   @Setter private boolean enabled;
 
   private long customerId = -1L;

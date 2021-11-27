@@ -23,11 +23,11 @@ package io.codekvast.common.messaging;
 
 /** @author olle.hallin@crisp.se */
 public interface SlackService {
+  void sendNotification(String text, Channel channel);
+
   enum Channel {
     ALARMS,
     BUILDS,
     BUSINESS_EVENTS
   }
-
-  void sendNotification(String text, Channel channel);
 }

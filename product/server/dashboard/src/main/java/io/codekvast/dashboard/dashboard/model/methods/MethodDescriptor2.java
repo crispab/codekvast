@@ -21,7 +21,11 @@
  */
 package io.codekvast.dashboard.dashboard.model.methods;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.Setter;
 
 /** @author olle.hallin@crisp.se */
 // Cannot use @Value here, since that will prohibit computed fields.

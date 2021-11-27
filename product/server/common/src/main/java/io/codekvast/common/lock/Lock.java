@@ -45,33 +45,6 @@ public class Lock {
   @With Instant acquiredAt;
   @With Connection connection;
 
-  public boolean isTaskLock() {
-    return customerId == null || customerId < 0;
-  }
-
-  public String key() {
-    return isTaskLock()
-        ? String.format("codekvast-%s", name)
-        : String.format("codekvast-%s-%d", name, customerId);
-  }
-
-  public Duration getWaitDuration() {
-    return Duration.between(waitStartedAt, acquiredAt);
-  }
-
-  public Duration getLockDuration() {
-    return Duration.between(acquiredAt, Instant.now());
-  }
-
-  public boolean wasLongDuration() {
-    return getLockDuration().toSeconds() >= getMaxExpectedDurationSeconds();
-  }
-
-  @Override
-  public String toString() {
-    return String.format("%s(key=%s)", getClass().getSimpleName(), key());
-  }
-
   public static Lock forTask(@NonNull String name, int maxExpectedDurationSeconds) {
     return Lock.builder()
         .name(name)
@@ -108,5 +81,32 @@ public class Lock {
         .maxLockWaitSeconds(0)
         .maxExpectedDurationSeconds(90)
         .build();
+  }
+
+  public boolean isTaskLock() {
+    return customerId == null || customerId < 0;
+  }
+
+  public String key() {
+    return isTaskLock()
+        ? String.format("codekvast-%s", name)
+        : String.format("codekvast-%s-%d", name, customerId);
+  }
+
+  public Duration getWaitDuration() {
+    return Duration.between(waitStartedAt, acquiredAt);
+  }
+
+  public Duration getLockDuration() {
+    return Duration.between(acquiredAt, Instant.now());
+  }
+
+  public boolean wasLongDuration() {
+    return getLockDuration().toSeconds() >= getMaxExpectedDurationSeconds();
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s(key=%s)", getClass().getSimpleName(), key());
   }
 }

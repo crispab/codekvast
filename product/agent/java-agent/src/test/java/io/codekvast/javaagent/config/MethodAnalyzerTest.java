@@ -27,25 +27,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class MethodAnalyzerTest {
 
-  @Parameters(name = "{index}: {0}")
-  public static Object[][] data() {
-    return new Object[][] {
-      {null, true, false, false, false, false, SignatureUtils.PUBLIC},
-      {"   ", true, false, false, false, false, SignatureUtils.PUBLIC},
-      {" foobar ", true, false, false, false, true, SignatureUtils.PUBLIC},
-      {"   ", true, false, false, false, false, SignatureUtils.PUBLIC},
-      {"public", true, false, false, false, false, SignatureUtils.PUBLIC},
-      {"PuBlIc", true, false, false, false, false, SignatureUtils.PUBLIC},
-      {" public ", true, false, false, false, false, SignatureUtils.PUBLIC},
-      {"protected", true, true, false, false, false, SignatureUtils.PROTECTED},
-      {" protected ", true, true, false, false, false, SignatureUtils.PROTECTED},
-      {" PROTECTED ", true, true, false, false, false, SignatureUtils.PROTECTED},
-      {"package-private", true, true, true, false, false, SignatureUtils.PACKAGE_PRIVATE},
-      {"!private", true, true, true, false, false, SignatureUtils.PACKAGE_PRIVATE},
-      {"private", true, true, true, true, false, SignatureUtils.PRIVATE},
-      {"all", true, true, true, true, false, SignatureUtils.PRIVATE},
-    };
-  }
+  private final ByteArrayOutputStream capturedSystemErr = new ByteArrayOutputStream();
 
   @Parameter(0)
   public String input;
@@ -68,9 +50,6 @@ public class MethodAnalyzerTest {
   @Parameter(6)
   public String expectedToString;
 
-  private PrintStream savedSystemErr;
-  private final ByteArrayOutputStream capturedSystemErr = new ByteArrayOutputStream();
-
   @Rule
   public Verifier verifier =
       new Verifier() {
@@ -85,6 +64,28 @@ public class MethodAnalyzerTest {
           }
         }
       };
+
+  private PrintStream savedSystemErr;
+
+  @Parameters(name = "{index}: {0}")
+  public static Object[][] data() {
+    return new Object[][] {
+      {null, true, false, false, false, false, SignatureUtils.PUBLIC},
+      {"   ", true, false, false, false, false, SignatureUtils.PUBLIC},
+      {" foobar ", true, false, false, false, true, SignatureUtils.PUBLIC},
+      {"   ", true, false, false, false, false, SignatureUtils.PUBLIC},
+      {"public", true, false, false, false, false, SignatureUtils.PUBLIC},
+      {"PuBlIc", true, false, false, false, false, SignatureUtils.PUBLIC},
+      {" public ", true, false, false, false, false, SignatureUtils.PUBLIC},
+      {"protected", true, true, false, false, false, SignatureUtils.PROTECTED},
+      {" protected ", true, true, false, false, false, SignatureUtils.PROTECTED},
+      {" PROTECTED ", true, true, false, false, false, SignatureUtils.PROTECTED},
+      {"package-private", true, true, true, false, false, SignatureUtils.PACKAGE_PRIVATE},
+      {"!private", true, true, true, false, false, SignatureUtils.PACKAGE_PRIVATE},
+      {"private", true, true, true, true, false, SignatureUtils.PRIVATE},
+      {"all", true, true, true, true, false, SignatureUtils.PRIVATE},
+    };
+  }
 
   @Before
   public void beforeTest() {

@@ -94,6 +94,7 @@ import org.testcontainers.containers.RabbitMQContainer;
 @Transactional
 public class IntakeIntegrationTest {
 
+  @ClassRule public static final SpringClassRule springClassRule = new SpringClassRule();
   private static final String DATABASE = "codekvast";
   private static final String USERNAME = "codekvastUser";
   private static final String PASSWORD = "codekvastPassword";
@@ -114,16 +115,7 @@ public class IntakeIntegrationTest {
           .withVhost("/")
           .withUser("admin", "secret");
 
-  @BeforeClass
-  public static void beforeClass() {
-    System.setProperty("spring.datasource.url", mariaDB.getJdbcUrl());
-    System.setProperty("spring.datasource.username", USERNAME);
-    System.setProperty("spring.datasource.password", PASSWORD);
-    System.setProperty("spring.rabbitmq.addresses", rabbitMQ.getAmqpUrl());
-  }
-
-  @ClassRule public static final SpringClassRule springClassRule = new SpringClassRule();
-
+  private final Set<Optional<Lock>> heldLocks = new HashSet<>();
   @Rule public SpringMethodRule springMethodRule = new SpringMethodRule();
 
   @MockBean private CommonMetricsService commonMetricsService;
@@ -150,7 +142,13 @@ public class IntakeIntegrationTest {
 
   @Inject private MessageIdRepository messageIdRepository;
 
-  private final Set<Optional<Lock>> heldLocks = new HashSet<>();
+  @BeforeClass
+  public static void beforeClass() {
+    System.setProperty("spring.datasource.url", mariaDB.getJdbcUrl());
+    System.setProperty("spring.datasource.username", USERNAME);
+    System.setProperty("spring.datasource.password", PASSWORD);
+    System.setProperty("spring.rabbitmq.addresses", rabbitMQ.getAmqpUrl());
+  }
 
   private Optional<Lock> acquireLock(Lock lock) {
     Optional<Lock> result = lockManager.acquireLock(lock);
@@ -1049,31 +1047,6 @@ public class IntakeIntegrationTest {
     assertThat(acquireLock(lock).isPresent(), is(true));
   }
 
-  @RequiredArgsConstructor
-  public static class LockContentionTestHelper {
-
-    private final LockManager lockManager;
-
-    @Transactional
-    @SneakyThrows
-    public void doSteps(Lock lock, CountDownLatch[] latches) {
-      Optional<Lock> acquiredLock = lockManager.acquireLock(lock);
-      latches[0].countDown();
-      latches[1].await();
-      acquiredLock.ifPresent(lockManager::releaseLock);
-      latches[2].countDown();
-    }
-
-    @Transactional
-    @SneakyThrows
-    public void lockSleepUnlock(Lock lock, CountDownLatch latch) {
-      Optional<Lock> acquiredLock = lockManager.acquireLock(lock);
-      latch.countDown();
-      Thread.sleep(500);
-      acquiredLock.ifPresent(lockManager::releaseLock);
-    }
-  }
-
   private void assertAgentEnabledAndGarbage(
       String jvmUuid, Boolean expectedEnabled, Boolean expectedEnabledGarbage) {
     Boolean enabled =
@@ -1129,5 +1102,30 @@ public class IntakeIntegrationTest {
     Integer result =
         jdbcTemplate.queryForObject("SELECT COUNT(0) FROM " + tableName, Integer.class, args);
     return (result != null ? result : 0);
+  }
+
+  @RequiredArgsConstructor
+  public static class LockContentionTestHelper {
+
+    private final LockManager lockManager;
+
+    @Transactional
+    @SneakyThrows
+    public void doSteps(Lock lock, CountDownLatch[] latches) {
+      Optional<Lock> acquiredLock = lockManager.acquireLock(lock);
+      latches[0].countDown();
+      latches[1].await();
+      acquiredLock.ifPresent(lockManager::releaseLock);
+      latches[2].countDown();
+    }
+
+    @Transactional
+    @SneakyThrows
+    public void lockSleepUnlock(Lock lock, CountDownLatch latch) {
+      Optional<Lock> acquiredLock = lockManager.acquireLock(lock);
+      latch.countDown();
+      Thread.sleep(500);
+      acquiredLock.ifPresent(lockManager::releaseLock);
+    }
   }
 }

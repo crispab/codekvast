@@ -52,14 +52,6 @@ public class CustomerData {
 
   Instant trialPeriodEndsAt;
 
-  public boolean isTrialPeriodExpired(Instant now) {
-    return trialPeriodEndsAt != null && trialPeriodEndsAt.isBefore(now);
-  }
-
-  public String getDisplayName() {
-    return customerNotes != null ? customerNotes : customerName;
-  }
-
   public static CustomerData sample() {
     return CustomerData.builder()
         .customerId(1L)
@@ -67,5 +59,13 @@ public class CustomerData {
         .source("source")
         .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
         .build();
+  }
+
+  public boolean isTrialPeriodExpired(Instant now) {
+    return trialPeriodEndsAt != null && trialPeriodEndsAt.isBefore(now);
+  }
+
+  public String getDisplayName() {
+    return customerNotes != null ? customerNotes : customerName;
   }
 }

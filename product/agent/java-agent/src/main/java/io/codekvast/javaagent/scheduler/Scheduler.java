@@ -55,17 +55,13 @@ public class Scheduler implements Runnable {
   private final InvocationDataPublisherFactory invocationDataPublisherFactory;
   private final ScheduledExecutorService executor;
   private final SystemClock systemClock;
-
+  private final SchedulerState pollState;
+  private final SchedulerState codeBasePublisherState;
+  private final SchedulerState invocationDataPublisherState;
   // Mutable state
   private long stopWaitingForResolvedAppVersionAtMillis;
-
   private GetConfigResponse2 dynamicConfig;
-  private final SchedulerState pollState;
-
-  private final SchedulerState codeBasePublisherState;
   private CodeBasePublisher codeBasePublisher;
-
-  private final SchedulerState invocationDataPublisherState;
   private InvocationDataPublisher invocationDataPublisher;
 
   public Scheduler(

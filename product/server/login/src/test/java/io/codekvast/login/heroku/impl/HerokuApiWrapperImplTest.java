@@ -27,11 +27,9 @@ import org.junit.jupiter.api.Test;
 
 /** @author olle.hallin@crisp.se */
 public class HerokuApiWrapperImplTest {
-  private WireMockServer wireMockServer;
-
   private final Gson gson = new Gson();
   private final CodekvastLoginSettings settings = new CodekvastLoginSettings();
-
+  private WireMockServer wireMockServer;
   private HerokuApiWrapperImpl herokuApiWrapper;
 
   @BeforeEach

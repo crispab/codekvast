@@ -97,18 +97,6 @@ public class CommonPublicationData2 implements Serializable {
 
   @NonNull private String tags;
 
-  @Override
-  public String toString() {
-    return String.format(
-        "%1$s(customerId=%2$d, appName='%3$s', appVersion='%4$s', hostname='%5$s', publishedAt=%6$tF:%6$tT%6$tz)",
-        this.getClass().getSimpleName(),
-        customerId,
-        appName,
-        appVersion,
-        hostname,
-        publishedAtMillis);
-  }
-
   public static CommonPublicationData2 sampleCommonPublicationData() {
     return builder()
         .agentVersion("agentVersion")
@@ -128,5 +116,17 @@ public class CommonPublicationData2 implements Serializable {
         .sequenceNumber(1)
         .tags("tags")
         .build();
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+        "%1$s(customerId=%2$d, appName='%3$s', appVersion='%4$s', hostname='%5$s', publishedAt=%6$tF:%6$tT%6$tz)",
+        this.getClass().getSimpleName(),
+        customerId,
+        appName,
+        appVersion,
+        hostname,
+        publishedAtMillis);
   }
 }
