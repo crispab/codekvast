@@ -58,4 +58,5 @@ typings/
 ajcore.*.txt
 **/.DS_Store
 /product/server/dashboard/src/webapp/coverage/
+/product/server/dashboard/src/webapp/.angular/cache/
 /.idea/sonarlint/issuestore/
