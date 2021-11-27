@@ -1,31 +1,31 @@
 apply plugin: "com.github.hierynomus.license"
 
 license {
-    header file("$rootDir/LICENSE")
-    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+  header file("$rootDir/LICENSE")
+  ext.year = Calendar.getInstance().get(Calendar.YEAR)
 
-    include '**/*.java'
-    include '**/*.kt'
-    include '**/*.sql'
+  include '**/*.java'
+  include '**/*.kt'
+  include '**/*.sql'
 
-    strictCheck true
-    mapping 'java', 'SLASHSTAR_STYLE'
-    mapping 'kt', 'SLASHSTAR_STYLE'
+  strictCheck true
+  mapping 'java', 'SLASHSTAR_STYLE'
+  mapping 'kt', 'SLASHSTAR_STYLE'
 }
 
 licenseFormat {
-    description "Adds the correct license header to all source files"
-    group "License"
+  description "Adds the correct license header to all source files"
+  group "License"
 }
 
 downloadLicenses {
-    group "License"
+  group "License"
 }
 
 project.gradle.projectsEvaluated {
-    // Disable license check and formatting for all test source sets
-    project.tasks*.findAll { it.name.matches("license.*Test") }*.each { task ->
-        logger.debug "Disabling $task.name"
-        task.enabled = false
-    }
+  // Disable license check and formatting for all test source sets
+  project.tasks*.findAll { it.name.matches("license.*Test") }*.each { task ->
+    logger.debug "Disabling $task.name"
+    task.enabled = false
+  }
 }

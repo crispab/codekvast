@@ -5,66 +5,66 @@ description = 'Package codekvast-agent.zip and uploads it to http://download.cod
 
 distributions {
 
-    agent {
-        distributionBaseName = "codekvast-agent-$codekvastVersion"
-        contents {
-            from(file('src/dist/codekvast.conf')) {
-                into "/"
-                expand(project.properties)
-            }
+  agent {
+    distributionBaseName = "codekvast-agent-$codekvastVersion"
+    contents {
+      from(file('src/dist/codekvast.conf')) {
+        into "/"
+        expand(project.properties)
+      }
 
-            from([
-                    tasks.getByPath(':product:agent:java-agent:javaagents'),
-                    file("$rootDir/RELEASE-NOTES.md"),
-                    file("$rootDir/LICENSE"),
-            ]) {
-                into "/codekvast"
-            }
-        }
+      from([
+        tasks.getByPath(':product:agent:java-agent:javaagents'),
+        file("$rootDir/RELEASE-NOTES.md"),
+        file("$rootDir/LICENSE"),
+      ]) {
+        into "/codekvast"
+      }
     }
+  }
 }
 
 task fetchReleaseNotesMd(type: Sync) {
-    from(rootDir) {
-        include "RELEASE-NOTES.md"
-    }
-    into "$buildDir/markdown"
+  from(rootDir) {
+    include "RELEASE-NOTES.md"
+  }
+  into "$buildDir/markdown"
 }
 
 markdownToHtml {
-    dependsOn fetchReleaseNotesMd
-    sourceDir file("$buildDir/markdown")
-    outputDir file("$buildDir/staging")
-    inputEncoding 'UTF-8'
-    outputEncoding 'UTF-8'
+  dependsOn fetchReleaseNotesMd
+  sourceDir file("$buildDir/markdown")
+  outputDir file("$buildDir/staging")
+  inputEncoding 'UTF-8'
+  outputEncoding 'UTF-8'
 }
 
 task createIndexHtml(type: Copy) {
-    description "Creates index.html"
-    group "publish"
+  description "Creates index.html"
+  group "publish"
 
-    from file('src/html/index.html')
-    into "$buildDir/staging"
-    expand(project.properties)
+  from file('src/html/index.html')
+  into "$buildDir/staging"
+  expand(project.properties)
 }
 
 task stageForUpload(type: Copy) {
-    dependsOn agentDistZip, tasks.getByPath(':product:agent:java-agent:javaagents'), markdownToHtml, createIndexHtml
+  dependsOn agentDistZip, tasks.getByPath(':product:agent:java-agent:javaagents'), markdownToHtml, createIndexHtml
 
-    into "$buildDir/staging"
-    from("$rootDir/product/graphics/logo-feathers-60x104.png") {
-        into "assets"
+  into "$buildDir/staging"
+  from("$rootDir/product/graphics/logo-feathers-60x104.png") {
+    into "assets"
+  }
+  from "$buildDir/distributions/codekvast-agent-${codekvastVersion}.zip"
+  from("$rootDir/product/agent/java-agent/build/javaagents/codekvast-javaagent-${codekvastVersion}.jar") {
+    rename {
+      "codekvast-agent-${codekvastVersion}.jar"
     }
-    from "$buildDir/distributions/codekvast-agent-${codekvastVersion}.zip"
-    from("$rootDir/product/agent/java-agent/build/javaagents/codekvast-javaagent-${codekvastVersion}.jar") {
-        rename {
-            "codekvast-agent-${codekvastVersion}.jar"
-        }
-    }
-    doLast {
-        def releaseNotesFile = new File("$buildDir/staging", "RELEASE-NOTES.html")
-        def releaseNotesText = releaseNotesFile.text
-        releaseNotesFile.text = """<html>
+  }
+  doLast {
+    def releaseNotesFile = new File("$buildDir/staging", "RELEASE-NOTES.html")
+    def releaseNotesText = releaseNotesFile.text
+    releaseNotesFile.text = """<html>
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
     <meta http-equiv='x-ua-compatible' content='ie=edge'/>
@@ -146,20 +146,20 @@ task stageForUpload(type: Copy) {
 </body>
 </html>
 """
-    }
+  }
 }
 
 task uploadToS3 {
-    description "Uploads everything to $codekvastDownloadPrefix"
-    group "publish"
+  description "Uploads everything to $codekvastDownloadPrefix"
+  group "publish"
 
-    dependsOn stageForUpload
+  dependsOn stageForUpload
 
-    doLast {
-        def bucket = codekvastDownloadPrefix - 'http://' - 'https://'
-        def command = "s3cmd --reduced-redundancy --progress --recursive --force put ${buildDir}/staging/ s3://${bucket}"
-        logger.lifecycle(command)
-        def result = command.execute().waitFor()
-        assert result == 0: "Failed to execute $command"
-    }
+  doLast {
+    def bucket = codekvastDownloadPrefix - 'http://' - 'https://'
+    def command = "s3cmd --reduced-redundancy --progress --recursive --force put ${buildDir}/staging/ s3://${bucket}"
+    logger.lifecycle(command)
+    def result = command.execute().waitFor()
+    assert result == 0: "Failed to execute $command"
+  }
 }

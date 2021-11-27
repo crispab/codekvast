@@ -6,11 +6,11 @@ apply plugin: 'application'
 mainClassName = "sample.swing.SampleSwingApp"
 
 dependencies {
-    implementation project(":product:agent:java-agent")
-    implementation project(":sample:sample-lib")
+  implementation project(":product:agent:java-agent")
+  implementation project(":sample:sample-lib")
 
-    runtimeOnly logback
-    runtimeOnly aspectjRuntime
+  runtimeOnly logback
+  runtimeOnly aspectjRuntime
 }
 
 run.dependsOn installDist

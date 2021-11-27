@@ -7,24 +7,24 @@ apply plugin: 'com.github.sherter.google-java-format'
 apply from: "$rootDir/gradle/libs.gradle"
 
 uptodate {
-    connectionTimeout 20000
-    addExcludedVersionPatterns '.*-alpha.*'
-    addExcludedVersionPatterns '.*-beta.*'
-    addExcludedVersionPatterns '.*-rc.*'
-    addExcludedVersionPatterns '.*\\.pr[0-9]+$'
-    addExcludedVersionPatterns '.*-b[0-9]+$'
-    addExcludedVersionPatterns '.*-[0-9]$'
-    addExcludedVersionPatterns '.*-android$'
+  connectionTimeout 20000
+  addExcludedVersionPatterns '.*-alpha.*'
+  addExcludedVersionPatterns '.*-beta.*'
+  addExcludedVersionPatterns '.*-rc.*'
+  addExcludedVersionPatterns '.*\\.pr[0-9]+$'
+  addExcludedVersionPatterns '.*-b[0-9]+$'
+  addExcludedVersionPatterns '.*-[0-9]$'
+  addExcludedVersionPatterns '.*-android$'
 }
 
 dependencyManagement {
-    imports {
-        mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
-    }
+  imports {
+    mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
+  }
 }
 
 dependencies {
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
+  annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
 }
 
 // Let spring-boot-configuration-processor do it's job before compiling...
@@ -34,78 +34,78 @@ compileJava.dependsOn processResources
 compileJava.dependsOn verifyGoogleJavaFormat
 
 jar {
-    manifest {
-        attributes(
-                "Implementation-Title": archivesBaseName,
-                "Implementation-Version": codekvastDisplayVersion
-        )
-    }
-    preserveFileTimestamps false
-    reproducibleFileOrder true
+  manifest {
+    attributes(
+      "Implementation-Title": archivesBaseName,
+      "Implementation-Version": codekvastDisplayVersion
+    )
+  }
+  preserveFileTimestamps false
+  reproducibleFileOrder true
 }
 
 googleJavaFormat {
-    toolVersion = '1.10.0'
+  toolVersion = '1.10.0'
 }
 
 lombok {
-    version = '1.18.20'
-    config['lombok.log.fieldName'] = 'logger'
-    config['lombok.log.slf4j.flagUsage'] = 'ALLOW'
-    config['lombok.log.apacheCommons.flagUsage'] = 'ERROR'
-    config['lombok.log.javaUtilLogging.flagUsage'] = 'ERROR'
-    config['lombok.log.log4j.flagUsage'] = 'ERROR'
-    config['lombok.log.log4j2.flagUsage'] = 'ERROR'
-    config['lombok.log.xslf4j.flagUsage'] = 'ERROR'
+  version = '1.18.20'
+  config['lombok.log.fieldName'] = 'logger'
+  config['lombok.log.slf4j.flagUsage'] = 'ALLOW'
+  config['lombok.log.apacheCommons.flagUsage'] = 'ERROR'
+  config['lombok.log.javaUtilLogging.flagUsage'] = 'ERROR'
+  config['lombok.log.log4j.flagUsage'] = 'ERROR'
+  config['lombok.log.log4j2.flagUsage'] = 'ERROR'
+  config['lombok.log.xslf4j.flagUsage'] = 'ERROR'
 }
 
 delombok {
-    nocopy = true
+  nocopy = true
 }
 
 configurations.forEach { it ->
-    def config = it
-    def configName = config.name
-    def taskName = "sync${configName.capitalize()}Dependencies"
+  def config = it
+  def configName = config.name
+  def taskName = "sync${configName.capitalize()}Dependencies"
 
-    task "$taskName"(type: Sync) {
-        group = "Troubleshooting"
-        description = "Syncs $configName dependencies into build/deps/$configName"
+  task "$taskName"(type: Sync) {
+    group = "Troubleshooting"
+    description = "Syncs $configName dependencies into build/deps/$configName"
 
-        from config
-        into "$buildDir/deps/$configName"
-    }
+    from config
+    into "$buildDir/deps/$configName"
+  }
 }
 
 task coverageReport(type: JacocoReport) {
-    group 'Documentation'
-    description 'Generates a test coverage report'
-    sourceSets sourceSets.main
+  group 'Documentation'
+  description 'Generates a test coverage report'
+  sourceSets sourceSets.main
 
-    // One could do
-    // executionData test, integrationTest, run
-    // but then *all* of build/jacoco/test.exec, integrationTest.exec and run.exec  must exist, or else the report will be skipped.
-    // Instead, build a report on what execution data we happen to have.
+  // One could do
+  // executionData test, integrationTest, run
+  // but then *all* of build/jacoco/test.exec, integrationTest.exec and run.exec  must exist, or else the report will be skipped.
+  // Instead, build a report on what execution data we happen to have.
 
-    enabled = false
-    def jacocoDir = file('build/jacoco')
-    if (jacocoDir.exists()) {
-        jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
-    }
+  enabled = false
+  def jacocoDir = file('build/jacoco')
+  if (jacocoDir.exists()) {
+    jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
+  }
 
-    reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination file("${buildDir}/reports/coverage")
-    }
+  reports {
+    xml.enabled false
+    csv.enabled false
+    html.destination file("${buildDir}/reports/coverage")
+  }
 
 }
 
 // build.dependsOn coverageReport
 
 javadoc {
-    title "Codekvast version $codekvastDisplayVersion"
-    failOnError = false
-    options.addStringOption('Xdoclint:none')
-    options.addStringOption('quiet')
+  title "Codekvast version $codekvastDisplayVersion"
+  failOnError = false
+  options.addStringOption('Xdoclint:none')
+  options.addStringOption('quiet')
 }

@@ -89,9 +89,6 @@
     <XML>
       <option name="XML_ALIGN_ATTRIBUTES" value="false" />
     </XML>
-    <editorconfig>
-      <option name="ENABLED" value="false" />
-    </editorconfig>
     <codeStyleSettings language="CSS">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />

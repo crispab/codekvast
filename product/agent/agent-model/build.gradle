@@ -6,8 +6,8 @@ archivesBaseName = "codekvast-javaagent-model"
 version = codekvastVersion
 
 dependencies {
-    implementation 'javax.validation:validation-api:2.0.1.Final'
+  implementation 'javax.validation:validation-api:2.0.1.Final'
 
-    testImplementation testFrameworks
-    testImplementation "com.google.code.gson:gson:$gsonVersion"
+  testImplementation testFrameworks
+  testImplementation "com.google.code.gson:gson:$gsonVersion"
 }

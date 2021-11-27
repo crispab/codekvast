@@ -9,52 +9,52 @@ apply plugin: 'application'
 apply plugin: 'org.unbroken-dome.test-sets'
 
 configurations {
-    developmentOnly
+  developmentOnly
 
-    runtimeClasspath {
-        extendsFrom developmentOnly
-    }
+  runtimeClasspath {
+    extendsFrom developmentOnly
+  }
 }
 
 dependencies {
-    implementation 'javax.inject:javax.inject:1'
-    implementation 'org.springframework.boot:spring-boot-starter-logging'
+  implementation 'javax.inject:javax.inject:1'
+  implementation 'org.springframework.boot:spring-boot-starter-logging'
 
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+  developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 processResources {
-    inputs.property "codekvastDisplayVersion", codekvastDisplayVersion
-    from 'src/main/resources', {
-        include 'application.properties'
-        expand(project.properties)
-    }
-    from 'src/main/resources', {
-        exclude 'application.properties'
-    }
-    filteringCharset = 'UTF-8'
+  inputs.property "codekvastDisplayVersion", codekvastDisplayVersion
+  from 'src/main/resources', {
+    include 'application.properties'
+    expand(project.properties)
+  }
+  from 'src/main/resources', {
+    exclude 'application.properties'
+  }
+  filteringCharset = 'UTF-8'
 }
 
 bootJar {
-    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
-    archiveClassifier = 'all'
+  // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
+  archiveClassifier = 'all'
 
-    manifest {
-        attributes(
-                "Implementation-Title": archivesBaseName,
-                "Implementation-Version": codekvastDisplayVersion
-        )
-    }
+  manifest {
+    attributes(
+      "Implementation-Title": archivesBaseName,
+      "Implementation-Version": codekvastDisplayVersion
+    )
+  }
 }
 
 task startDockerContainers {
-    description "Starts MariaDB and RabbitMQ in Docker, using their default ports"
+  description "Starts MariaDB and RabbitMQ in Docker, using their default ports"
 
-    doLast {
-        def command = "$rootDir/docker/docker-compose.sh up -d"
-        logger.lifecycle(command)
-        assert command.execute().waitFor() == 0
-    }
+  doLast {
+    def command = "$rootDir/docker/docker-compose.sh up -d"
+    logger.lifecycle(command)
+    assert command.execute().waitFor() == 0
+  }
 }

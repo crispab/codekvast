@@ -1,121 +1,121 @@
 //--- Frontend -----------------------------------------------------------------------------------
 
 task frontendInstall(type: Exec) {
-    description 'Installs the node modules and tools required for frontend development'
-    group 'Frontend Development'
+  description 'Installs the node modules and tools required for frontend development'
+  group 'Frontend Development'
 
-    workingDir file('src/webapp')
-    executable 'yarn'
-    args 'install'
+  workingDir file('src/webapp')
+  executable 'yarn'
+  args 'install'
 
-    inputs.files file('src/webapp/package.json')
-    outputs.dir file('src/webapp/node_modules')
-    outputs.file file('src/webapp/yarn.lock')
+  inputs.files file('src/webapp/package.json')
+  outputs.dir file('src/webapp/node_modules')
+  outputs.file file('src/webapp/yarn.lock')
 }
 
 task frontendTest(type: Exec) {
-    description "Runs Typescript unit tests with Karma and Jasmine"
-    group "Frontend Development"
+  description "Runs Typescript unit tests with Karma and Jasmine"
+  group "Frontend Development"
 
-    dependsOn frontendInstall
-    mustRunAfter test
+  dependsOn frontendInstall
+  mustRunAfter test
 
-    def timestampFile = file("$buildDir/${name}.timestamp")
+  def timestampFile = file("$buildDir/${name}.timestamp")
 
-    inputs.files file('src/webapp/angular.json')
-    inputs.files file('src/webapp/package.json')
-    inputs.files file('src/webapp/tsconfig.json')
-    inputs.dir file('src/webapp/src')
-    outputs.file timestampFile
+  inputs.files file('src/webapp/angular.json')
+  inputs.files file('src/webapp/package.json')
+  inputs.files file('src/webapp/tsconfig.json')
+  inputs.dir file('src/webapp/src')
+  outputs.file timestampFile
 
-    workingDir file('src/webapp')
-    executable 'npm'
-    args 'run', 'test-ci'
+  workingDir file('src/webapp')
+  executable 'npm'
+  args 'run', 'test-ci'
 
-    doLast {
-        timestampFile.parentFile.mkdirs()
-        timestampFile.text = "${java.time.Instant.now()}\n"
-    }
+  doLast {
+    timestampFile.parentFile.mkdirs()
+    timestampFile.text = "${java.time.Instant.now()}\n"
+  }
 }
 check.dependsOn frontendTest
 
 task frontendLint(type: Exec) {
-    description "Runs tslint on all TypeScript sources"
-    group "Frontend Development"
+  description "Runs tslint on all TypeScript sources"
+  group "Frontend Development"
 
-    dependsOn frontendInstall
-    mustRunAfter test
+  dependsOn frontendInstall
+  mustRunAfter test
 
-    def timestampFile = file("$buildDir/${name}.timestamp")
+  def timestampFile = file("$buildDir/${name}.timestamp")
 
-    inputs.files file('src/webapp/angular.json')
-    inputs.files file('src/webapp/package.json')
-    inputs.files file('src/webapp/tsconfig.json')
-    inputs.dir file('src/webapp/src')
-    inputs.property "version", codekvastDisplayVersion
-    outputs.file timestampFile
+  inputs.files file('src/webapp/angular.json')
+  inputs.files file('src/webapp/package.json')
+  inputs.files file('src/webapp/tsconfig.json')
+  inputs.dir file('src/webapp/src')
+  inputs.property "version", codekvastDisplayVersion
+  outputs.file timestampFile
 
-    workingDir file('src/webapp')
-    executable 'npm'
-    args 'run', 'lint'
+  workingDir file('src/webapp')
+  executable 'npm'
+  args 'run', 'lint'
 
-    doLast {
-        timestampFile.parentFile.mkdirs()
-        timestampFile.text = "${java.time.Instant.now()}\n"
-    }
+  doLast {
+    timestampFile.parentFile.mkdirs()
+    timestampFile.text = "${java.time.Instant.now()}\n"
+  }
 }
 check.dependsOn frontendLint
 
 task frontendStart(type: Exec) {
-    description 'Starts the webpack dev server on port 8089'
-    group 'Frontend Development'
+  description 'Starts the webpack dev server on port 8089'
+  group 'Frontend Development'
 
-    dependsOn frontendInstall
+  dependsOn frontendInstall
 
-    workingDir file('src/webapp')
-    executable 'npm'
-    args 'start'
+  workingDir file('src/webapp')
+  executable 'npm'
+  args 'start'
 }
 
 task frontendGenerateProdEnvironmentFile(type: Copy) {
-    description "Generates an environment.ts containing $codekvastDisplayVersion"
-    group "Frontend Development"
+  description "Generates an environment.ts containing $codekvastDisplayVersion"
+  group "Frontend Development"
 
-    inputs.property "version", codekvastDisplayVersion
+  inputs.property "version", codekvastDisplayVersion
 
-    from('src/webapp/src/environments/environment.prod.ts')
-    into 'src/webapp/dist'
-    filter {
-        return it.replace('#CODEKVAST_VERSION_TO_BE_INJECTED_BY_GRADLE#', codekvastDisplayVersion)
-    }
+  from('src/webapp/src/environments/environment.prod.ts')
+  into 'src/webapp/dist'
+  filter {
+    return it.replace('#CODEKVAST_VERSION_TO_BE_INJECTED_BY_GRADLE#', codekvastDisplayVersion)
+  }
 }
 
 task frontendBuild(type: Exec) {
-    description "Builds the frontend webpack bundles for production"
-    group "Frontend Development"
-    dependsOn frontendTest, frontendGenerateProdEnvironmentFile
+  description "Builds the frontend webpack bundles for production"
+  group "Frontend Development"
+  dependsOn frontendTest, frontendGenerateProdEnvironmentFile
 
-    inputs.files file('src/webapp/angular.json')
-    inputs.files file('src/webapp/package.json')
-    inputs.files file('src/webapp/tsconfig.json')
-    inputs.dir file('src/webapp/src')
-    inputs.property "version", codekvastDisplayVersion
+  inputs.files file('src/webapp/angular.json')
+  inputs.files file('src/webapp/package.json')
+  inputs.files file('src/webapp/tsconfig.json')
+  inputs.dir file('src/webapp/src')
+  inputs.property "version", codekvastDisplayVersion
 
-    outputs.dir file('src/webapp/dist')
+  outputs.dir file('src/webapp/dist')
 
-    workingDir file('src/webapp')
-    executable 'npm'
-    args 'run', 'build-prod'
-    environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
+  workingDir file('src/webapp')
+  executable 'npm'
+  args 'run', 'build-prod'
+  environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
 }
 
 task frontendClean(type: Exec) {
-    description "Cleans the frontend webpack bundles"
-    group "Frontend Development"
+  description "Cleans the frontend webpack bundles"
+  group "Frontend Development"
 
-    workingDir file('src/webapp')
-    executable 'npm'
-    args 'run', 'clean'
+  workingDir file('src/webapp')
+  executable 'npm'
+  args 'run', 'clean'
 }
 
 clean.dependsOn frontendClean

@@ -14,58 +14,58 @@ mainClassName = 'io.codekvast.intake.CodekvastIntakeApplicationKt'
 //apply from: "$projectDir/src/integrationTest/build.gradle"
 
 configurations {
-    codekvastagent
+  codekvastagent
 }
 
 dependencies {
-    implementation project(':product:agent:agent-model')
-    implementation project(':product:server:common')
-    implementation project(':product:server:db-migration')
-    implementation "com.google.code.gson:gson:$gsonVersion"
+  implementation project(':product:agent:agent-model')
+  implementation project(':product:server:common')
+  implementation project(':product:server:db-migration')
+  implementation "com.google.code.gson:gson:$gsonVersion"
 
-    testImplementation junit5Framework
+  testImplementation junit5Framework
 
-    codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
+  codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
 }
 
 run {
-    dependsOn startDockerContainers
-    jvmArgs = ['-enableassertions',]
-    args = [
-            "--logging.file.name=$buildDir/${applicationName}.log",
-            '--spring.profiles.active=dev'
-    ]
+  dependsOn startDockerContainers
+  jvmArgs = ['-enableassertions',]
+  args = [
+    "--logging.file.name=$buildDir/${applicationName}.log",
+    '--spring.profiles.active=dev'
+  ]
 }
 
 bootRun {
-    dependsOn startDockerContainers
-    jvmArgs = run.jvmArgs
-    args = run.args
+  dependsOn startDockerContainers
+  jvmArgs = run.jvmArgs
+  args = run.args
 }
 
 //--- Packaging ------------------------------------------------------------------------------------------------------------------
 bootJar {
-    launchScript {
-        properties([
-                'initInfoProvides'        : applicationName,
-                'initInfoShortDescription': 'Codekvast Intake',
-                'initInfoDescription'     : 'Codekvast Intake is the interface to the java agents',
-        ])
-    }
+  launchScript {
+    properties([
+      'initInfoProvides'        : applicationName,
+      'initInfoShortDescription': 'Codekvast Intake',
+      'initInfoDescription'     : 'Codekvast Intake is the interface to the java agents',
+    ])
+  }
 }
 
 task generateCodekvastConfig {
-    group "Build"
-    description "Generates a codekvast.conf for test"
+  group "Build"
+  description "Generates a codekvast.conf for test"
 
-    def configFile = file("$buildDir/codekvast.conf")
+  def configFile = file("$buildDir/codekvast.conf")
 
-    inputs.files file("build.gradle")
-    outputs.file configFile
+  inputs.files file("build.gradle")
+  outputs.file configFile
 
-    doLast {
-        configFile.parentFile.mkdirs()
-        configFile.text = """# Run Codekvast against Codekvast Intake
+  doLast {
+    configFile.parentFile.mkdirs()
+    configFile.text = """# Run Codekvast against Codekvast Intake
 appName = $archivesBaseName
 appVersion = $codekvastDisplayVersion
 # aspectjOptions = -verbose -showWeaveInfo
@@ -80,30 +80,30 @@ environment = Gradle
 httpProxyHost =   
 httpProxyPort = 4711
 """
-    }
+  }
 }
 
 processResources.dependsOn generateCodekvastConfig
 
 task launchIntakeWithCodekvastAgentAttached(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:agent:java-agent:shadowJar", startDockerContainers]) {
-    def javaVersion = sdkmanJavaVersion_11
+  def javaVersion = sdkmanJavaVersion_11
 
-    description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
-    group "Application"
+  description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
+  group "Application"
 
-    executable "${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}/bin/java"
-    args "-XX:+ExitOnOutOfMemoryError"
-    args "-enableassertions"
-    args "-Xms10m"
-    args "-Xmx100m"
-    // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5011"
-    args "-javaagent:${configurations.codekvastagent.asPath}"
-    args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
+  executable "${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}/bin/java"
+  args "-XX:+ExitOnOutOfMemoryError"
+  args "-enableassertions"
+  args "-Xms10m"
+  args "-Xmx100m"
+  // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5011"
+  args "-javaagent:${configurations.codekvastagent.asPath}"
+  args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
 
-    args "-jar", "build/libs/${archivesBaseName}-${version}-all.jar"
-    args "--logging.level.root=INFO"
-    args "--logging.level.io.codekvast=INFO"
-    args "--logging.file.name=$buildDir/${applicationName}.log"
+  args "-jar", "build/libs/${archivesBaseName}-${version}-all.jar"
+  args "--logging.level.root=INFO"
+  args "--logging.level.io.codekvast=INFO"
+  args "--logging.file.name=$buildDir/${applicationName}.log"
 
-    args "--spring.profiles.active=dev,stress-test"
+  args "--spring.profiles.active=dev,stress-test"
 }

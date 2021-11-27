@@ -1,18 +1,18 @@
 description = "Modules that belongs to the Codekvast product"
 
 project.gradle.projectsEvaluated {
-    Set<Project> javaProjects = project.subprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }
+  Set<Project> javaProjects = project.subprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }
 
-    project.task('aggregateJavadoc', type: Javadoc) {
-        description = 'Aggregates Javadoc API documentation of all Java sub-projects.'
-        group = JavaBasePlugin.DOCUMENTATION_GROUP
-        dependsOn javaProjects.javadoc
+  project.task('aggregateJavadoc', type: Javadoc) {
+    description = 'Aggregates Javadoc API documentation of all Java sub-projects.'
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    dependsOn javaProjects.javadoc
 
-        inputs.files "$rootDir/gradle/java.gradle"
+    inputs.files "$rootDir/gradle/java.gradle"
 
-        source javaProjects.javadoc.source
-        destinationDir file("$buildDir/docs/javadoc")
-        classpath = project.files(javaProjects.javadoc.classpath)
-        title javaProjects.javadoc.title[0]
-    }
+    source javaProjects.javadoc.source
+    destinationDir file("$buildDir/docs/javadoc")
+    classpath = project.files(javaProjects.javadoc.classpath)
+    title javaProjects.javadoc.title[0]
+  }
 }

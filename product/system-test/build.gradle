@@ -13,13 +13,13 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.energizedwork.webdriver-binaries'
 
 dependencyManagement {
-    imports {
-        mavenBom SpringBootPlugin.BOM_COORDINATES
-    }
+  imports {
+    mavenBom SpringBootPlugin.BOM_COORDINATES
+  }
 }
 
 configurations {
-    jdbc
+  jdbc
 }
 
 ext.jdbcPort = allocateFreePort()
@@ -29,341 +29,341 @@ ext.jdbcUrl = "jdbc:mariadb://localhost:$jdbcPort/codekvast"
 ext.rabbitmqUrl = "amqp://codekvast:codekvast@localhost:$rabbitmqPort/codekvast"
 
 ext.endpointFiles = [
-        'backoffice': file("build/backofficeEndpoint.txt"),
-        'dashboard' : file("build/dashboardEndpoint.txt"),
-        'intake'    : file("build/intakeEndpoint.txt"),
-        'login'     : file("build/loginEndpoint.txt")
+  'backoffice': file("build/backofficeEndpoint.txt"),
+  'dashboard' : file("build/dashboardEndpoint.txt"),
+  'intake'    : file("build/intakeEndpoint.txt"),
+  'login'     : file("build/loginEndpoint.txt")
 ]
 
 ext.bootJars = [
-        'backoffice': tasks.getByPath(':product:server:backoffice:bootJar').outputs.files,
-        'dashboard' : tasks.getByPath(':product:server:dashboard:bootJar').outputs.files,
-        'intake'    : tasks.getByPath(':product:server:intake:bootJar').outputs.files,
-        'login'     : tasks.getByPath(':product:server:login:bootJar').outputs.files
+  'backoffice': tasks.getByPath(':product:server:backoffice:bootJar').outputs.files,
+  'dashboard' : tasks.getByPath(':product:server:dashboard:bootJar').outputs.files,
+  'intake'    : tasks.getByPath(':product:server:intake:bootJar').outputs.files,
+  'login'     : tasks.getByPath(':product:server:login:bootJar').outputs.files
 ]
 
 def javaHome = System.getenv("JAVA_HOME")
 def java = javaHome ? "$javaHome/bin/java" : "java"
 
 ext.launchCommands = [
-        'backoffice': "$java -jar ${bootJars['backoffice'].asPath} " +
-                "--server.port=${allocateFreePort()} " +
-                "--management.server.port=${allocateFreePort()} " +
-                "--spring.datasource.url=$jdbcUrl " +
-                "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-                "--spring.profiles.active=dev,system-test " +
-                "--logging.file.name=${buildDir}/system-test-backoffice.log ",
+  'backoffice': "$java -jar ${bootJars['backoffice'].asPath} " +
+    "--server.port=${allocateFreePort()} " +
+    "--management.server.port=${allocateFreePort()} " +
+    "--spring.datasource.url=$jdbcUrl " +
+    "--spring.rabbitmq.addresses=$rabbitmqUrl " +
+    "--spring.profiles.active=dev,system-test " +
+    "--logging.file.name=${buildDir}/system-test-backoffice.log ",
 
-        'dashboard' : "$java -jar ${bootJars['dashboard'].asPath} " +
-                "--server.port=${allocateFreePort()} " +
-                "--management.server.port=${allocateFreePort()} " +
-                "--spring.datasource.url=$jdbcUrl " +
-                "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-                "--spring.profiles.active=dev,system-test " +
-                "--logging.file.name=${buildDir}/system-test-dashboard.log ",
+  'dashboard' : "$java -jar ${bootJars['dashboard'].asPath} " +
+    "--server.port=${allocateFreePort()} " +
+    "--management.server.port=${allocateFreePort()} " +
+    "--spring.datasource.url=$jdbcUrl " +
+    "--spring.rabbitmq.addresses=$rabbitmqUrl " +
+    "--spring.profiles.active=dev,system-test " +
+    "--logging.file.name=${buildDir}/system-test-dashboard.log ",
 
-        'intake'    : "$java -jar ${bootJars['intake'].asPath} " +
-                "--server.port=${allocateFreePort()} " +
-                "--management.server.port=${allocateFreePort()} " +
-                "--spring.datasource.url=$jdbcUrl " +
-                "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-                "--spring.profiles.active=dev,system-test " +
-                "--logging.file.name=${buildDir}/system-test-intake.log ",
+  'intake'    : "$java -jar ${bootJars['intake'].asPath} " +
+    "--server.port=${allocateFreePort()} " +
+    "--management.server.port=${allocateFreePort()} " +
+    "--spring.datasource.url=$jdbcUrl " +
+    "--spring.rabbitmq.addresses=$rabbitmqUrl " +
+    "--spring.profiles.active=dev,system-test " +
+    "--logging.file.name=${buildDir}/system-test-intake.log ",
 
-        'login'     : "$java -jar ${bootJars['login'].asPath} " +
-                "--server.port=${allocateFreePort()} " +
-                "--management.server.port=${allocateFreePort()} " +
-                "--spring.datasource.url=$jdbcUrl " +
-                "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-                "--spring.profiles.active=dev,system-test " +
-                "--logging.file.name=${buildDir}/system-test-login.log "
+  'login'     : "$java -jar ${bootJars['login'].asPath} " +
+    "--server.port=${allocateFreePort()} " +
+    "--management.server.port=${allocateFreePort()} " +
+    "--spring.datasource.url=$jdbcUrl " +
+    "--spring.rabbitmq.addresses=$rabbitmqUrl " +
+    "--spring.profiles.active=dev,system-test " +
+    "--logging.file.name=${buildDir}/system-test-login.log "
 ]
 
 dependencies {
-    testImplementation 'io.jsonwebtoken:jjwt:0.9.1'
-    testImplementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation project(':product:server:common')
-    testImplementation "org.codehaus.groovy:groovy-all"
-    testImplementation 'org.gebish:geb-spock:3.4.1'
-    testImplementation 'org.spockframework:spock-core:2.0-M4-groovy-3.0'
-    testImplementation "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
+  testImplementation 'io.jsonwebtoken:jjwt:0.9.1'
+  testImplementation 'org.springframework.boot:spring-boot-starter-security'
+  testImplementation project(':product:server:common')
+  testImplementation "org.codehaus.groovy:groovy-all"
+  testImplementation 'org.gebish:geb-spock:3.4.1'
+  testImplementation 'org.spockframework:spock-core:2.0-M4-groovy-3.0'
+  testImplementation "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
-    testRuntimeOnly "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
-    testRuntimeOnly "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
-    testRuntimeOnly "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
-    testRuntimeOnly "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
-    testRuntimeOnly "com.squareup.okhttp3:okhttp:4.9.2"
-    testRuntimeOnly "com.squareup.okio:okio:3.0.0"
+  testRuntimeOnly "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
+  testRuntimeOnly "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+  testRuntimeOnly "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+  testRuntimeOnly "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+  testRuntimeOnly "com.squareup.okhttp3:okhttp:4.9.2"
+  testRuntimeOnly "com.squareup.okio:okio:3.0.0"
 
-    jdbc mariadbDriver
+  jdbc mariadbDriver
 }
 
 webdriverBinaries {
-    chromedriver '2.41'
-    geckodriver '0.21.0'
+  chromedriver '2.41'
+  geckodriver '0.21.0'
 }
 
 configurations.all {
-    resolutionStrategy {
+  resolutionStrategy {
 
-        // TODO: failOnVersionConflict()
+    // TODO: failOnVersionConflict()
 
-        eachDependency { DependencyResolveDetails details ->
-            if (details.requested.group == 'org.codehaus.groovy') {
-                details.useVersion '3.0.7'
-            }
-        }
+    eachDependency { DependencyResolveDetails details ->
+      if (details.requested.group == 'org.codehaus.groovy') {
+        details.useVersion '3.0.7'
+      }
     }
+  }
 }
 
 def doStartSystemTestEnvironment() {
 
-    logger.lifecycle("Stopping previous system test environments (if any)...")
-    doStopSystemTestEnvironment(true)
+  logger.lifecycle("Stopping previous system test environments (if any)...")
+  doStopSystemTestEnvironment(true)
 
-    startRabbitmqContainer()
-    startMariadbContainer()
+  startRabbitmqContainer()
+  startMariadbContainer()
 
-    launchAppsAndWaitForReady()
+  launchAppsAndWaitForReady()
 }
 
 private startRabbitmqContainer() {
-    def command = "docker pull rabbitmq:$rabbitmqVersion"
-    logger.lifecycle(command)
-    assert command.execute().waitFor() == 0
+  def command = "docker pull rabbitmq:$rabbitmqVersion"
+  logger.lifecycle(command)
+  assert command.execute().waitFor() == 0
 
-    command = 'docker run -d --restart=unless-stopped ' +
-            "--name codekvast_systest_rabbitmq_$rabbitmqPort " +
-            "-p $rabbitmqPort:5672 " +
-            "-e RABBITMQ_DEFAULT_VHOST=codekvast " +
-            "-e RABBITMQ_DEFAULT_USER=codekvast " +
-            "-e RABBITMQ_DEFAULT_PASS=codekvast " +
-            "rabbitmq:$rabbitmqVersion "
-    logger.lifecycle(command)
-    assert command.execute().waitFor() == 0
+  command = 'docker run -d --restart=unless-stopped ' +
+    "--name codekvast_systest_rabbitmq_$rabbitmqPort " +
+    "-p $rabbitmqPort:5672 " +
+    "-e RABBITMQ_DEFAULT_VHOST=codekvast " +
+    "-e RABBITMQ_DEFAULT_USER=codekvast " +
+    "-e RABBITMQ_DEFAULT_PASS=codekvast " +
+    "rabbitmq:$rabbitmqVersion "
+  logger.lifecycle(command)
+  assert command.execute().waitFor() == 0
 
-    logger.info("rabbitmqUrl={}", rabbitmqUrl)
+  logger.info("rabbitmqUrl={}", rabbitmqUrl)
 }
 
 private startMariadbContainer() {
-    def command = "docker pull mariadb:$mariadbVersion"
-    logger.lifecycle(command)
-    assert command.execute().waitFor() == 0
+  def command = "docker pull mariadb:$mariadbVersion"
+  logger.lifecycle(command)
+  assert command.execute().waitFor() == 0
 
-    command = 'docker run -d --restart=unless-stopped ' +
-            "--name codekvast_systest_mariadb_$jdbcPort " +
-            "-p $jdbcPort:3306 " +
-            '-e MYSQL_ROOT_PASSWORD=root ' +
-            '-e MYSQL_DATABASE=codekvast ' +
-            '-e MYSQL_USER=codekvast ' +
-            '-e MYSQL_PASSWORD=codekvast ' +
-            '-e MYSQL_INITDB_SKIP_TZINFO=true ' +
-            '-e TERM=xterm-256color ' +
-            "mariadb:$mariadbVersion " +
-            '--character-set-server=utf8 '
-    logger.lifecycle(command)
-    assert command.execute().waitFor() == 0
+  command = 'docker run -d --restart=unless-stopped ' +
+    "--name codekvast_systest_mariadb_$jdbcPort " +
+    "-p $jdbcPort:3306 " +
+    '-e MYSQL_ROOT_PASSWORD=root ' +
+    '-e MYSQL_DATABASE=codekvast ' +
+    '-e MYSQL_USER=codekvast ' +
+    '-e MYSQL_PASSWORD=codekvast ' +
+    '-e MYSQL_INITDB_SKIP_TZINFO=true ' +
+    '-e TERM=xterm-256color ' +
+    "mariadb:$mariadbVersion " +
+    '--character-set-server=utf8 '
+  logger.lifecycle(command)
+  assert command.execute().waitFor() == 0
 
-    logger.info("jdbcUrl={}", jdbcUrl)
+  logger.info("jdbcUrl={}", jdbcUrl)
 
-    waitForDatabaseReady(jdbcUrl)
+  waitForDatabaseReady(jdbcUrl)
 }
 
 static int allocateFreePort() {
-    ServerSocket socket = null
-    try {
-        socket = new ServerSocket(0)
-        return socket.getLocalPort()
-    } finally {
-        socket.close()
-    }
+  ServerSocket socket = null
+  try {
+    socket = new ServerSocket(0)
+    return socket.getLocalPort()
+  } finally {
+    socket.close()
+  }
 }
 
 def waitForDatabaseReady(jdbcUrl) {
-    URLClassLoader loader = GroovyObject.class.classLoader
-    configurations.jdbc.each { File file ->
-        loader.addURL(file.toURI().toURL())
+  URLClassLoader loader = GroovyObject.class.classLoader
+  configurations.jdbc.each { File file ->
+    loader.addURL(file.toURI().toURL())
+  }
+  Class driver = loader.loadClass('org.mariadb.jdbc.Driver')
+  Driver instance = driver.getDeclaredConstructor().newInstance()
+  DriverManager.registerDriver(instance)
+
+  logger.lifecycle("Waiting for {} to become ready...", jdbcUrl)
+  def maxWaitSeconds = 600
+  int second = 1
+  while (second <= maxWaitSeconds) {
+    try {
+      if (second < 100) {
+        logger.info("Waiting for {} #{}", jdbcUrl, second)
+      } else {
+        logger.lifecycle("Waiting for {} #{} (will give up in {} seconds)", jdbcUrl, second, maxWaitSeconds - second)
+      }
+      def sql = Sql.newInstance(jdbcUrl, 'codekvast', 'codekvast')
+
+      sql.eachRow('SHOW TABLES') { row ->
+        logger.debug("row={}", row[0])
+      }
+      return
+    } catch (SQLNonTransientConnectionException e) {
+      logger.debug("Exception=" + e)
+
+      second += 1
+      sleep(1000)
     }
-    Class driver = loader.loadClass('org.mariadb.jdbc.Driver')
-    Driver instance = driver.getDeclaredConstructor().newInstance()
-    DriverManager.registerDriver(instance)
-
-    logger.lifecycle("Waiting for {} to become ready...", jdbcUrl)
-    def maxWaitSeconds = 600
-    int second = 1
-    while (second <= maxWaitSeconds) {
-        try {
-            if (second < 100) {
-                logger.info("Waiting for {} #{}", jdbcUrl, second)
-            } else {
-                logger.lifecycle("Waiting for {} #{} (will give up in {} seconds)", jdbcUrl, second, maxWaitSeconds - second)
-            }
-            def sql = Sql.newInstance(jdbcUrl, 'codekvast', 'codekvast')
-
-            sql.eachRow('SHOW TABLES') { row ->
-                logger.debug("row={}", row[0])
-            }
-            return
-        } catch (SQLNonTransientConnectionException e) {
-            logger.debug("Exception=" + e)
-
-            second += 1
-            sleep(1000)
-        }
-    }
-    throw new IllegalStateException("${jdbcUrl} did not become ready within ${maxWaitSeconds} seconds")
+  }
+  throw new IllegalStateException("${jdbcUrl} did not become ready within ${maxWaitSeconds} seconds")
 }
 
 task stopSystemTestEnvironment {
-    description 'Stop system test environment'
-    group 'System test'
+  description 'Stop system test environment'
+  group 'System test'
 
-    doLast {
-        doStopSystemTestEnvironment(true)
-    }
+  doLast {
+    doStopSystemTestEnvironment(true)
+  }
 }
 
 private doStopSystemTestEnvironment(boolean deleteEndpointsFiles) {
-    def output = file("src/test/bin/stop-system-test-environment.sh").absolutePath.execute().in.text.trim()
-    if (output) {
-        logger.lifecycle output
-    }
+  def output = file("src/test/bin/stop-system-test-environment.sh").absolutePath.execute().in.text.trim()
+  if (output) {
+    logger.lifecycle output
+  }
 
-    if (deleteEndpointsFiles) {
-        endpointFiles.each { k, v -> delete v }
-    }
+  if (deleteEndpointsFiles) {
+    endpointFiles.each { k, v -> delete v }
+  }
 }
 
 task psSystemTestEnvironment {
-    description 'Shows the system test environment'
-    group 'System test'
-    doLast {
-        def anyMissing = false
-        endpointFiles.each { service, file ->
-            def endpoint = getEndpoint(service)
-            logger.lifecycle("{}@{}", service, endpoint)
-            if (endpoint.isEmpty()) {
-                anyMissing = true
-            } else {
-                file.text = endpoint
-            }
-        }
-        if (anyMissing) {
-            // Remove any dangling MariaDB containers too...
-            doStopSystemTestEnvironment(true)
-        }
+  description 'Shows the system test environment'
+  group 'System test'
+  doLast {
+    def anyMissing = false
+    endpointFiles.each { service, file ->
+      def endpoint = getEndpoint(service)
+      logger.lifecycle("{}@{}", service, endpoint)
+      if (endpoint.isEmpty()) {
+        anyMissing = true
+      } else {
+        file.text = endpoint
+      }
     }
+    if (anyMissing) {
+      // Remove any dangling MariaDB containers too...
+      doStopSystemTestEnvironment(true)
+    }
+  }
 }
 
 task startSystemTestEnvironment {
-    doFirst {
-        doStartSystemTestEnvironment()
-    }
+  doFirst {
+    doStartSystemTestEnvironment()
+  }
 }
 
 test {
-    description 'Runs end-to-end tests against the Codekvast services with MariaDB in a Docker container'
-    shouldRunAfter ':product:server:dashboard:integrationTest'
+  description 'Runs end-to-end tests against the Codekvast services with MariaDB in a Docker container'
+  shouldRunAfter ':product:server:dashboard:integrationTest'
 
-    def foundChromeBinary = locateChromeBinary()
-    assert !foundChromeBinary.isEmpty(): "Cannot find Chrome executable!"
+  def foundChromeBinary = locateChromeBinary()
+  assert !foundChromeBinary.isEmpty(): "Cannot find Chrome executable!"
 
-    ext.gebEnv = project.findProperty("browser") ?: "chromeHeadless"
+  ext.gebEnv = project.findProperty("browser") ?: "chromeHeadless"
 
-    bootJars.each { k, v ->
-        inputs.files v
+  bootJars.each { k, v ->
+    inputs.files v
+  }
+
+  inputs.property "geb.env", gebEnv
+
+  def failures = 0
+
+  afterTest { descriptor, result ->
+    logger.debug("test={}, result={}", descriptor, result)
+    failures += result.failedTestCount
+  }
+
+  doFirst {
+
+    doStartSystemTestEnvironment()
+
+    def endpoint = getEndpoint('dashboard')
+    logger.lifecycle("Running system tests against {}", endpoint)
+
+    logger.lifecycle "Running Geb with -Dgeb.env=$gebEnv, override with -Pbrowser=[chrome|chromeHeadless|firefox]"
+    systemProperty "geb.env", gebEnv
+    systemProperty "geb.build.reportsDir", "$reportsDir/dumps"
+    systemProperty 'geb.build.baseUrl', endpoint
+
+    systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
+    environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
+  }
+
+  doLast {
+    if (failures == 0) {
+      doStopSystemTestEnvironment(false)
+    } else {
+      logger.lifecycle("Since there were failures, the system test environment is still running at {}", endpoint)
     }
-
-    inputs.property "geb.env", gebEnv
-
-    def failures = 0
-
-    afterTest { descriptor, result ->
-        logger.debug("test={}, result={}", descriptor, result)
-        failures += result.failedTestCount
-    }
-
-    doFirst {
-
-        doStartSystemTestEnvironment()
-
-        def endpoint = getEndpoint('dashboard')
-        logger.lifecycle("Running system tests against {}", endpoint)
-
-        logger.lifecycle "Running Geb with -Dgeb.env=$gebEnv, override with -Pbrowser=[chrome|chromeHeadless|firefox]"
-        systemProperty "geb.env", gebEnv
-        systemProperty "geb.build.reportsDir", "$reportsDir/dumps"
-        systemProperty 'geb.build.baseUrl', endpoint
-
-        systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
-        environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
-    }
-
-    doLast {
-        if (failures == 0) {
-            doStopSystemTestEnvironment(false)
-        } else {
-            logger.lifecycle("Since there were failures, the system test environment is still running at {}", endpoint)
-        }
-    }
+  }
 }
 
 private static String locateChromeBinary() {
-    if (System.properties['os.name'] == 'Mac OS X') {
-        def binary = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
-        return binary.canExecute() ? binary : null
-    } else {
-        return "which google-chrome".execute().in.text.trim()
-    }
+  if (System.properties['os.name'] == 'Mac OS X') {
+    def binary = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+    return binary.canExecute() ? binary : null
+  } else {
+    return "which google-chrome".execute().in.text.trim()
+  }
 }
 
 private void launchAppsAndWaitForReady() {
-    def processes = [:]
-    def notReady = []
+  def processes = [:]
+  def notReady = []
 
-    launchCommands.each { service, command ->
-        logger.lifecycle(command)
-        processes[service] = command.execute()
-        notReady << service
-    }
+  launchCommands.each { service, command ->
+    logger.lifecycle(command)
+    processes[service] = command.execute()
+    notReady << service
+  }
 
-    sleep 5000
-    logger.lifecycle("Waiting for ${notReady.collect { "codekvast-$it@" + getEndpoint(it) }.join(", ")} to become ready...")
+  sleep 5000
+  logger.lifecycle("Waiting for ${notReady.collect { "codekvast-$it@" + getEndpoint(it) }.join(", ")} to become ready...")
 
-    int attempt = 1
-    int maxAttempts = 60
+  int attempt = 1
+  int maxAttempts = 60
 
-    while (notReady && attempt <= maxAttempts) {
-        processes.each { service, process ->
-            assert process.isAlive(): "codekvast-$service is dead"
+  while (notReady && attempt <= maxAttempts) {
+    processes.each { service, process ->
+      assert process.isAlive(): "codekvast-$service is dead"
 
-            def endpoint = getEndpoint(service)
+      def endpoint = getEndpoint(service)
 
-            logger.info("Waiting for {} #{}", endpoint, attempt)
+      logger.info("Waiting for {} #{}", endpoint, attempt)
 
-            try {
-                def text = new URL(endpoint).text
-                sleep 2000
-                endpointFiles[service].text = endpoint
-                notReady.remove(service)
-            } catch (e) {
-                if (attempt < 15) {
-                    logger.debug("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
-                } else {
-                    logger.lifecycle("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
-                }
-            }
+      try {
+        def text = new URL(endpoint).text
+        sleep 2000
+        endpointFiles[service].text = endpoint
+        notReady.remove(service)
+      } catch (e) {
+        if (attempt < 15) {
+          logger.debug("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+        } else {
+          logger.lifecycle("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
         }
-        attempt += 1
-        sleep(1000)
+      }
     }
-    if (notReady) {
-        def endpoints = notReady.collect { getEndpoint(it) }
-        throw new IllegalStateException(endpoints + " did not respond within " + maxAttempts + " seconds")
-    }
+    attempt += 1
+    sleep(1000)
+  }
+  if (notReady) {
+    def endpoints = notReady.collect { getEndpoint(it) }
+    throw new IllegalStateException(endpoints + " did not respond within " + maxAttempts + " seconds")
+  }
 }
 
 private String getEndpoint(String service) {
-    return file("src/test/bin/get-$service-endpoint.sh").absolutePath.execute().in.text.trim()
+  return file("src/test/bin/get-$service-endpoint.sh").absolutePath.execute().in.text.trim()
 }
 

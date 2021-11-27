@@ -1,6 +1,6 @@
 plugins {
-    id "io.freefair.aspectj" version "4.1.2"
-    id "java"
+  id "io.freefair.aspectj" version "4.1.2"
+  id "java"
 }
 
 apply from: "$rootDir/gradle/libs.gradle"
@@ -9,13 +9,13 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 aspectj {
-    version = aspectjVersion
+  version = aspectjVersion
 }
 
 description = """A sample concretization of AbstractMethodExecutionAspect for use in compile-time weaving (CTW).
 The aspect is written in @Aspect style"""
 
 dependencies {
-    inpath project(":product:agent:java-agent")
-    implementation aspectjRuntime
+  inpath project(":product:agent:java-agent")
+  implementation aspectjRuntime
 }

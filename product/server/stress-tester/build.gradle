@@ -10,21 +10,21 @@ version = codekvastVersion
 mainClassName = 'io.codekvast.stress_tester.StressTesterApplication'
 
 dependencies {
-    implementation project(':product:server:common')
+  implementation project(':product:server:common')
 
-    runtimeOnly project(':product:server:db-migration')
+  runtimeOnly project(':product:server:db-migration')
 }
 
 run {
-    dependsOn startDockerContainers
-    jvmArgs = ['-enableassertions',]
-    args = [
-            '--spring.profiles.active=dev'
-    ]
+  dependsOn startDockerContainers
+  jvmArgs = ['-enableassertions',]
+  args = [
+    '--spring.profiles.active=dev'
+  ]
 }
 
 bootRun {
-    dependsOn startDockerContainers
-    jvmArgs = run.jvmArgs
-    args = run.args
+  dependsOn startDockerContainers
+  jvmArgs = run.jvmArgs
+  args = run.args
 }

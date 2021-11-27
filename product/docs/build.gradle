@@ -5,19 +5,19 @@ description = "Home for the Codekvast documentation, which built by asciidoctor"
 version = codekvastVersion
 
 asciidoctor {
-    asciidoctorj {
-        modules {
-            diagram.use()
-            diagram.version '1.5.18'
-        }
-        attributes = [
-                'codekvastVersion'       : codekvastVersion,
-                'aspectjVersion'         : aspectjVersion,
-                'gitTime'                : gitTime,
-                'gitId'                  : gitId,
-                'codekvastDownloadPrefix': codekvastDownloadPrefix
-        ]
+  asciidoctorj {
+    modules {
+      diagram.use()
+      diagram.version '1.5.18'
     }
+    attributes = [
+      'codekvastVersion'       : codekvastVersion,
+      'aspectjVersion'         : aspectjVersion,
+      'gitTime'                : gitTime,
+      'gitId'                  : gitId,
+      'codekvastDownloadPrefix': codekvastDownloadPrefix
+    ]
+  }
 }
 
 build.dependsOn asciidoctor

@@ -1,56 +1,56 @@
 ext {
-    aspectjVersion = '1.9.7'
-    commonsLang3Version = '3.12.0'
-    droolsVersion = '7.62.0.Final'
-    gsonVersion = '2.8.9'
-    jacocoVersion = '0.8.7'
-    junit5Version = '5.8.1'
-    kotlinVersion = '1.6.0'
-    logbackVersion = '1.2.7'
-    mariadbVersion = '10.4'
-    mockitoVersion = '4.1.0'
-    openApiVersion = '1.5.12'
-    rabbitmqVersion = '3.8-management-alpine'
-    seleniumVersion = '4.1.0'
-    springBootVersion = '2.6.0'
-    testcontainersVersion = '1.16.2'
-    wiremockVersion = '2.27.2'
+  aspectjVersion = '1.9.7'
+  commonsLang3Version = '3.12.0'
+  droolsVersion = '7.62.0.Final'
+  gsonVersion = '2.8.9'
+  jacocoVersion = '0.8.7'
+  junit5Version = '5.8.1'
+  kotlinVersion = '1.6.0'
+  logbackVersion = '1.2.7'
+  mariadbVersion = '10.4'
+  mockitoVersion = '4.1.0'
+  openApiVersion = '1.5.12'
+  rabbitmqVersion = '3.8-management-alpine'
+  seleniumVersion = '4.1.0'
+  springBootVersion = '2.6.0'
+  testcontainersVersion = '1.16.2'
+  wiremockVersion = '2.27.2'
 
-    aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
-    aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
-    logback = [
-            "ch.qos.logback:logback-classic:$logbackVersion",
-            "ch.qos.logback:logback-access:$logbackVersion"
-    ]
+  aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
+  aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
+  logback = [
+    "ch.qos.logback:logback-classic:$logbackVersion",
+    "ch.qos.logback:logback-access:$logbackVersion"
+  ]
 
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
-    slf4jApi = 'org.slf4j:slf4j-api:1.7.32'
-    testFrameworks = [
-            'junit:junit:4.13.2',
-            'org.junit.jupiter:junit-jupiter-migrationsupport',
-            'org.hamcrest:hamcrest-core:2.2',
-            'org.hamcrest:hamcrest-library:2.2',
-            "org.mockito:mockito-core:$mockitoVersion",
-            "org.mockito:mockito-junit-jupiter:$mockitoVersion",
-            "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
-            'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
-    ]
+  mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
+  slf4jApi = 'org.slf4j:slf4j-api:1.7.32'
+  testFrameworks = [
+    'junit:junit:4.13.2',
+    'org.junit.jupiter:junit-jupiter-migrationsupport',
+    'org.hamcrest:hamcrest-core:2.2',
+    'org.hamcrest:hamcrest-library:2.2',
+    "org.mockito:mockito-core:$mockitoVersion",
+    "org.mockito:mockito-junit-jupiter:$mockitoVersion",
+    "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
+    'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+  ]
 
-    junit5Framework = [
-            "org.junit.jupiter:junit-jupiter:$junit5Version",
-            "org.mockito:mockito-core:$mockitoVersion",
-            "org.mockito:mockito-junit-jupiter:$mockitoVersion",
-            "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
-            'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
-    ]
+  junit5Framework = [
+    "org.junit.jupiter:junit-jupiter:$junit5Version",
+    "org.mockito:mockito-core:$mockitoVersion",
+    "org.mockito:mockito-junit-jupiter:$mockitoVersion",
+    "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
+    'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+  ]
 
-    junit5Engine = [
-            "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
-    ]
+  junit5Engine = [
+    "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
+  ]
 
-    testcontainers = [
-            "org.testcontainers:mariadb:$testcontainersVersion",
-            "org.testcontainers:rabbitmq:$testcontainersVersion",
-            "org.testcontainers:junit-jupiter:$testcontainersVersion"
-    ]
+  testcontainers = [
+    "org.testcontainers:mariadb:$testcontainersVersion",
+    "org.testcontainers:rabbitmq:$testcontainersVersion",
+    "org.testcontainers:junit-jupiter:$testcontainersVersion"
+  ]
 }

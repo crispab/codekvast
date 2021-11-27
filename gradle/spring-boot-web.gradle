@@ -4,14 +4,14 @@
 
 // We will never use embedded Tomcat...
 configurations.implementation {
-    exclude module: 'spring-boot-starter-tomcat'
+  exclude module: 'spring-boot-starter-tomcat'
 }
 
 dependencies {
-    implementation "org.springdoc:springdoc-openapi-ui:$openApiVersion"
-    implementation 'org.springframework.boot:spring-boot-starter-undertow'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-json'
+  implementation "org.springdoc:springdoc-openapi-ui:$openApiVersion"
+  implementation 'org.springframework.boot:spring-boot-starter-undertow'
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.boot:spring-boot-starter-json'
 
-    runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
+  runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
 }

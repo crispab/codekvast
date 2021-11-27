@@ -13,149 +13,149 @@ archivesBaseName = "codekvast-javaagent"
 version = codekvastVersion
 
 lombok {
-    config['lombok.log.slf4j.flagUsage'] = 'ERROR'
-    config['lombok.log.javaUtilLogging.flagUsage'] = 'ALLOW'
+  config['lombok.log.slf4j.flagUsage'] = 'ERROR'
+  config['lombok.log.javaUtilLogging.flagUsage'] = 'ALLOW'
 }
 
 configurations {
-    jacocoagent
+  jacocoagent
 }
 
 testSets {
-    integrationTest
+  integrationTest
 }
 check.dependsOn integrationTest
 
 dependencies {
-    implementation project(":product:agent:agent-model")
-    implementation "com.google.code.gson:gson:$gsonVersion"
-    implementation 'com.google.guava:guava:28.1-jre'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.3'
-    // the last version that does not bring Kotlin stuff
-    implementation aspectjWeaver
+  implementation project(":product:agent:agent-model")
+  implementation "com.google.code.gson:gson:$gsonVersion"
+  implementation 'com.google.guava:guava:28.1-jre'
+  implementation 'com.squareup.okhttp3:okhttp:3.14.3'
+  // the last version that does not bring Kotlin stuff
+  implementation aspectjWeaver
 
-    testImplementation testFrameworks
-    testImplementation project(":product:test-lib")
+  testImplementation testFrameworks
+  testImplementation project(":product:test-lib")
 
-    integrationTestImplementation "com.github.tomakehurst:wiremock-standalone:$wiremockVersion"
-    integrationTestImplementation "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
-    integrationTestImplementation testFrameworks
-    integrationTestRuntimeOnly aspectjWeaver
-    integrationTestRuntimeOnly logback
+  integrationTestImplementation "com.github.tomakehurst:wiremock-standalone:$wiremockVersion"
+  integrationTestImplementation "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
+  integrationTestImplementation testFrameworks
+  integrationTestRuntimeOnly aspectjWeaver
+  integrationTestRuntimeOnly logback
 
-    jacocoagent "org.jacoco:org.jacoco.agent:$jacocoVersion:runtime@jar"
+  jacocoagent "org.jacoco:org.jacoco.agent:$jacocoVersion:runtime@jar"
 }
 
 jar {
-    archiveClassifier = 'naked'
+  archiveClassifier = 'naked'
 }
 
 shadowJar {
-    archiveClassifier = ''
+  archiveClassifier = ''
 
-    inputs.files file('build.gradle')
-    inputs.files jar.outputs.files
-    outputs.file file("build/libs/${archivesBaseName}-${codekvastVersion}.jar")
+  inputs.files file('build.gradle')
+  inputs.files jar.outputs.files
+  outputs.file file("build/libs/${archivesBaseName}-${codekvastVersion}.jar")
 
-    manifest {
-        attributes(
-                "Automatic-Module-Name": "io.codekvast.javaagent",
-                "Created-By": "Hallin Information Technology AB",
-                "Implementation-Title": archivesBaseName,
-                "Implementation-Version": codekvastDisplayVersion,
-                "Premain-Class": "io.codekvast.javaagent.CodekvastAgent",
-                "Specification-Version": codekvastVersion,
-        )
-    }
+  manifest {
+    attributes(
+      "Automatic-Module-Name": "io.codekvast.javaagent",
+      "Created-By": "Hallin Information Technology AB",
+      "Implementation-Title": archivesBaseName,
+      "Implementation-Version": codekvastDisplayVersion,
+      "Premain-Class": "io.codekvast.javaagent.CodekvastAgent",
+      "Specification-Version": codekvastVersion,
+    )
+  }
 
-    dependencies {
-        exclude(dependency('com.google.code.findbugs:jsr305:'))
-        exclude(dependency('com.google.errorprone:error_prone_annotations:'))
-        exclude(dependency('com.google.j2objc:j2objc-annotations:'))
-        exclude(dependency('org.codehaus.mojo:animal-sniffer-annotations:'))
-    }
+  dependencies {
+    exclude(dependency('com.google.code.findbugs:jsr305:'))
+    exclude(dependency('com.google.errorprone:error_prone_annotations:'))
+    exclude(dependency('com.google.j2objc:j2objc-annotations:'))
+    exclude(dependency('org.codehaus.mojo:animal-sniffer-annotations:'))
+  }
 
-    exclude 'META-INF/maven/**'
-    exclude 'aspectj*.dtd'
-    exclude 'publicsuffixes.gz'
-    exclude 'module-info.class'
+  exclude 'META-INF/maven/**'
+  exclude 'aspectj*.dtd'
+  exclude 'publicsuffixes.gz'
+  exclude 'module-info.class'
 
-    relocate 'afu', 'ck.afu'
-    relocate 'aj.org', 'ck.aj.org'
-    relocate 'com', 'ck.com'
-    relocate 'javax.annotation', 'ck.javax.annotation'
-    relocate 'javax.validation', 'ck.javax.validation'
-    relocate 'okhttp3', 'ck.okhttp3'
-    relocate 'okio', 'ck.okio'
-    relocate 'org.aspectj', 'ck.org.aspectj'
-    relocate 'org.checkerframework', 'ck.org.checkerframework'
+  relocate 'afu', 'ck.afu'
+  relocate 'aj.org', 'ck.aj.org'
+  relocate 'com', 'ck.com'
+  relocate 'javax.annotation', 'ck.javax.annotation'
+  relocate 'javax.validation', 'ck.javax.validation'
+  relocate 'okhttp3', 'ck.okhttp3'
+  relocate 'okio', 'ck.okio'
+  relocate 'org.aspectj', 'ck.org.aspectj'
+  relocate 'org.checkerframework', 'ck.org.checkerframework'
 
-    minimize {
-        exclude(dependency('org.aspectj:aspectjweaver:'))
-    }
+  minimize {
+    exclude(dependency('org.aspectj:aspectjweaver:'))
+  }
 }
 
 task verifyShadowJar {
-    group "Verification"
-    description "Verifies that the shadow jar is correctly minimized and relocated to avoid class conflicts"
+  group "Verification"
+  description "Verifies that the shadow jar is correctly minimized and relocated to avoid class conflicts"
 
-    def timestampFile = file("$buildDir/${name}.timestamp")
-    inputs.files shadowJar.outputs.files
-    inputs.files file("build.gradle")
-    outputs.file timestampFile
+  def timestampFile = file("$buildDir/${name}.timestamp")
+  inputs.files shadowJar.outputs.files
+  inputs.files file("build.gradle")
+  outputs.file timestampFile
 
-    doLast {
-        def shadowJarFile = file(shadowJar.outputs.files.asPath)
-        logger.info("Verifying relocations in {}", shadowJarFile)
+  doLast {
+    def shadowJarFile = file(shadowJar.outputs.files.asPath)
+    logger.info("Verifying relocations in {}", shadowJarFile)
 
-        ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(shadowJarFile)))
+    ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(shadowJarFile)))
 
-        ZipEntry zipEntry
-        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            def name = zipEntry.getName()
+    ZipEntry zipEntry
+    while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+      def name = zipEntry.getName()
 
-            assert !name.endsWith(".class") ||
-                    name.startsWith("ck/") ||
-                    name.startsWith("io/codekvast/")
+      assert !name.endsWith(".class") ||
+        name.startsWith("ck/") ||
+        name.startsWith("io/codekvast/")
 
-            if (name.endsWith(".class")) {
-                // See https://en.wikipedia.org/wiki/Java_class_file#General_layout
-                byte[] header = new byte[8]
-                int read = zipInputStream.read(header, 0, 8)
-                short java_8_major_version = 52
-                short majorVersion = header[6] << 8 | (header[7] & 0xFF)
-                logger.debug("Class file major version for {} is {}", name, majorVersion)
-                if (majorVersion > java_8_major_version) {
-                    throw new UnsupportedClassVersionError(name + " has major Java version " + majorVersion + " which will not run in Java 8")
-                }
-            }
+      if (name.endsWith(".class")) {
+        // See https://en.wikipedia.org/wiki/Java_class_file#General_layout
+        byte[] header = new byte[8]
+        int read = zipInputStream.read(header, 0, 8)
+        short java_8_major_version = 52
+        short majorVersion = header[6] << 8 | (header[7] & 0xFF)
+        logger.debug("Class file major version for {} is {}", name, majorVersion)
+        if (majorVersion > java_8_major_version) {
+          throw new UnsupportedClassVersionError(name + " has major Java version " + majorVersion + " which will not run in Java 8")
         }
-
-        assert shadowJarFile.length() < 4_400_000 // bytes, it is currently approx. 4.3 MB
-        timestampFile.parentFile.mkdirs()
-        timestampFile.text = "${java.time.Instant.now()}\n"
+      }
     }
+
+    assert shadowJarFile.length() < 4_400_000 // bytes, it is currently approx. 4.3 MB
+    timestampFile.parentFile.mkdirs()
+    timestampFile.text = "${java.time.Instant.now()}\n"
+  }
 }
 check.dependsOn verifyShadowJar
 
 test {
-    systemProperty 'java.util.logging.config.file', 'src/test/resources/logging.properties'
+  systemProperty 'java.util.logging.config.file', 'src/test/resources/logging.properties'
 }
 
 integrationTest {
-    dependsOn verifyShadowJar
-    shouldRunAfter test
-    useJUnitPlatform()
+  dependsOn verifyShadowJar
+  shouldRunAfter test
+  useJUnitPlatform()
 
-    inputs.files file("build.gradle")
-    inputs.files shadowJar.outputs.files
-    inputs.files sourceSets.integrationTest.output
-    outputs.dir file("$buildDir/test-results/integrationTest")
+  inputs.files file("build.gradle")
+  inputs.files shadowJar.outputs.files
+  inputs.files sourceSets.integrationTest.output
+  outputs.dir file("$buildDir/test-results/integrationTest")
 
-    systemProperty 'integrationTest.codekvastAgent', shadowJar.outputs.files.asPath
-    systemProperty 'integrationTest.jacocoAgent', "${configurations.jacocoagent.asPath}=destfile=${buildDir}/jacoco/integrationTest2.exec,output=file,dumponexit=true"
-    systemProperty 'integrationTest.classpath', "build/classes/java/integrationTest:${configurations.integrationTestRuntimeClasspath.asPath}"
-    systemProperty 'integrationTest.javaVersions', """
+  systemProperty 'integrationTest.codekvastAgent', shadowJar.outputs.files.asPath
+  systemProperty 'integrationTest.jacocoAgent', "${configurations.jacocoagent.asPath}=destfile=${buildDir}/jacoco/integrationTest2.exec,output=file,dumponexit=true"
+  systemProperty 'integrationTest.classpath', "build/classes/java/integrationTest:${configurations.integrationTestRuntimeClasspath.asPath}"
+  systemProperty 'integrationTest.javaVersions', """
         ${sdkmanJavaVersion_8},
         ${sdkmanJavaVersion_9},
         ${sdkmanJavaVersion_10},
@@ -168,92 +168,92 @@ integrationTest {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    duplicatesStrategy = DuplicatesStrategy.FAIL
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource
+  duplicatesStrategy = DuplicatesStrategy.FAIL
+  archiveClassifier = 'sources'
+  from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    duplicatesStrategy = DuplicatesStrategy.FAIL
-    archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
+  duplicatesStrategy = DuplicatesStrategy.FAIL
+  archiveClassifier = 'javadoc'
+  from javadoc.destinationDir
 }
 
 task javaagents(type: Sync) {
-    from tasks.shadowJar
-    into "$buildDir/javaagents"
+  from tasks.shadowJar
+  into "$buildDir/javaagents"
 }
 
 tasks.withType(Zip) { task ->
-    task.doLast {
-        ant.checksum algorithm: "sha-1", file: it.archivePath
-    }
+  task.doLast {
+    ant.checksum algorithm: "sha-1", file: it.archivePath
+  }
 }
 
 artifacts {
-    archives javadocJar
-    archives sourcesJar
+  archives javadocJar
+  archives sourcesJar
 }
 
 publishing {
-    publications {
-        mavenShadowJar(MavenPublication) { publication ->
-            groupId 'io.codekvast'
-            artifactId 'codekvast-agent'
-            version codekvastVersion
-            pom {
-                packaging 'jar'
-                name = "Codekvast Java Agent"
-                url = "https://www.codekvast.io"
-                licenses {
-                    license {
-                        name = 'The MIT License'
-                        url = 'https://opensource.org/licenses/MIT'
-                    }
-                }
-            }
-
-            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}.jar")
-            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}.jar.sha-1"), extension: "jar.sha-1"
-            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-sources.jar"), classifier: "sources"
-            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-sources.jar.sha-1"), classifier: "sources", extension: "jar.sha-1"
-            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-javadoc.jar"), classifier: "javadoc"
-            artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-javadoc.jar.sha-1"), classifier: "javadoc", extension: "jar.sha-1"
+  publications {
+    mavenShadowJar(MavenPublication) { publication ->
+      groupId 'io.codekvast'
+      artifactId 'codekvast-agent'
+      version codekvastVersion
+      pom {
+        packaging 'jar'
+        name = "Codekvast Java Agent"
+        url = "https://www.codekvast.io"
+        licenses {
+          license {
+            name = 'The MIT License'
+            url = 'https://opensource.org/licenses/MIT'
+          }
         }
+      }
+
+      artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}.jar")
+      artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}.jar.sha-1"), extension: "jar.sha-1"
+      artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-sources.jar"), classifier: "sources"
+      artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-sources.jar.sha-1"), classifier: "sources", extension: "jar.sha-1"
+      artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-javadoc.jar"), classifier: "javadoc"
+      artifact source: file("build/libs/codekvast-javaagent-${codekvastVersion}-javadoc.jar.sha-1"), classifier: "javadoc", extension: "jar.sha-1"
     }
+  }
 }
 
 bintray {
-    // These are supposed to be defined in $HOME/.gradle/gradle.properties
-    user = project.findProperty('codekvast.bintray.user') ?: System.getenv('CODEKVAST_BINTRAY_USER')
-    key = project.findProperty('codekvast.bintray.key') ?: System.getenv('CODEKVAST_BINTRAY_KEY')
+  // These are supposed to be defined in $HOME/.gradle/gradle.properties
+  user = project.findProperty('codekvast.bintray.user') ?: System.getenv('CODEKVAST_BINTRAY_USER')
+  key = project.findProperty('codekvast.bintray.key') ?: System.getenv('CODEKVAST_BINTRAY_KEY')
 
-    publications = ['mavenShadowJar']
+  publications = ['mavenShadowJar']
 
-    dryRun = false
-    publish = true
-    override = false
+  dryRun = false
+  publish = true
+  override = false
 
-    pkg {
-        userOrg = 'crisp'
-        repo = 'maven-repo'
-        name = 'codekvast-agent'
-        desc = 'The javaagent part of Codekvast.'
-        websiteUrl = 'https://www.codekvast.io'
-        vcsUrl = 'https://github.com/crispab/codekvast.git'
-        issueTrackerUrl = 'https://github.com/crispab/codekvast/issues'
-        licenses = ['MIT']
-        githubRepo = 'crispab/codekvast'
-        githubReleaseNotesFile = 'RELEASE-NOTES.md'
-        publicDownloadNumbers = false
+  pkg {
+    userOrg = 'crisp'
+    repo = 'maven-repo'
+    name = 'codekvast-agent'
+    desc = 'The javaagent part of Codekvast.'
+    websiteUrl = 'https://www.codekvast.io'
+    vcsUrl = 'https://github.com/crispab/codekvast.git'
+    issueTrackerUrl = 'https://github.com/crispab/codekvast/issues'
+    licenses = ['MIT']
+    githubRepo = 'crispab/codekvast'
+    githubReleaseNotesFile = 'RELEASE-NOTES.md'
+    publicDownloadNumbers = false
 
-        version {
-            name = project.codekvastVersion
-            vcsTag = project.gitIdFull
-            released = project.gitTimeIso
-        }
-
+    version {
+      name = project.codekvastVersion
+      vcsTag = project.gitIdFull
+      released = project.gitTimeIso
     }
+
+  }
 }
 
 bintrayUpload.dependsOn build, generatePomFileForMavenShadowJarPublication

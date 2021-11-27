@@ -15,80 +15,80 @@ apply from: "$projectDir/src/webapp/build.gradle"
 apply from: "$projectDir/src/integrationTest/build.gradle"
 
 configurations {
-    codekvastagent
+  codekvastagent
 }
 
 dependencies {
-    implementation project(':product:agent:agent-model')
-    implementation project(':product:server:common')
-    implementation project(':product:server:db-migration')
-    implementation "com.google.code.gson:gson:$gsonVersion"
-    // implementation 'org.springframework.retry:spring-retry:1.3.0'
+  implementation project(':product:agent:agent-model')
+  implementation project(':product:server:common')
+  implementation project(':product:server:db-migration')
+  implementation "com.google.code.gson:gson:$gsonVersion"
+  // implementation 'org.springframework.retry:spring-retry:1.3.0'
 
-    codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
+  codekvastagent project(path: ":product:agent:java-agent", configuration: 'shadow')
 }
 
 bootJar {
-    dependsOn frontendBuild
+  dependsOn frontendBuild
 
-    // Spring Boot automatically serves static content from static/**
+  // Spring Boot automatically serves static content from static/**
 
-    // Output from frontendBuild
-    into('static') {
-        from('src/webapp/dist/dashboard')
-    }
+  // Output from frontendBuild
+  into('static') {
+    from('src/webapp/dist/dashboard')
+  }
 
-    launchScript {
-        properties([
-                'initInfoProvides'        : applicationName,
-                'initInfoShortDescription': 'Codekvast Dashboard',
-                'initInfoDescription'     : 'Codekvast Dashboard shows the collected data',
-        ])
-    }
+  launchScript {
+    properties([
+      'initInfoProvides'        : applicationName,
+      'initInfoShortDescription': 'Codekvast Dashboard',
+      'initInfoDescription'     : 'Codekvast Dashboard shows the collected data',
+    ])
+  }
 }
 
 task syncWebapp(type: Sync, dependsOn: frontendBuild) {
-    from 'src/webapp/dist/dashboard'
-    into 'build/jib-extra/app/resources/static'
+  from 'src/webapp/dist/dashboard'
+  into 'build/jib-extra/app/resources/static'
 }
 
 tasks.jibCollectExtra.dependsOn syncWebapp
 
 run {
-    dependsOn startDockerContainers, ":product:server:dashboard:frontendBuild"
+  dependsOn startDockerContainers, ":product:server:dashboard:frontendBuild"
 
-    jvmArgs = [
-            '-enableassertions',
-            // "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
-    ]
+  jvmArgs = [
+    '-enableassertions',
+    // "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
+  ]
 
-    args = [
-            "--logging.file.name=$buildDir/${applicationName}.log",
-            '--spring.profiles.active=dev,dev-webpack-dev-server',
-            '--codekvast.dashboard.fileImportIntervalSeconds=10',
-            '--codekvast.jwtExpirationHours=-5'
-    ]
+  args = [
+    "--logging.file.name=$buildDir/${applicationName}.log",
+    '--spring.profiles.active=dev,dev-webpack-dev-server',
+    '--codekvast.dashboard.fileImportIntervalSeconds=10',
+    '--codekvast.jwtExpirationHours=-5'
+  ]
 }
 
 bootRun {
-    dependsOn startDockerContainers
+  dependsOn startDockerContainers
 
-    jvmArgs = run.jvmArgs
-    args = run.args
+  jvmArgs = run.jvmArgs
+  args = run.args
 }
 
 task generateCodekvastConfig {
-    group "Build"
-    description "Generates a codekvast.conf for test"
+  group "Build"
+  description "Generates a codekvast.conf for test"
 
-    def configFile = file("$buildDir/codekvast.conf")
+  def configFile = file("$buildDir/codekvast.conf")
 
-    inputs.files file("build.gradle")
-    outputs.file configFile
+  inputs.files file("build.gradle")
+  outputs.file configFile
 
-    doLast {
-        configFile.parentFile.mkdirs()
-        configFile.text = """# Run Codekvast against Sample App
+  doLast {
+    configFile.parentFile.mkdirs()
+    configFile.text = """# Run Codekvast against Sample App
 appName = $archivesBaseName
 appVersion = $codekvastDisplayVersion
 aspectjOptions = -verbose -showWeaveInfo
@@ -103,30 +103,30 @@ environment = Gradle
 httpProxyHost =   
 httpProxyPort = 4711
 """
-    }
+  }
 }
 
 processResources.dependsOn generateCodekvastConfig
 
 task launchDashboardWithCodekvastAgentAttached(type: Exec, dependsOn: [bootJar, generateCodekvastConfig, ":product:agent:java-agent:shadowJar", startDockerContainers]) {
-    def javaVersion = sdkmanJavaVersion_11
+  def javaVersion = sdkmanJavaVersion_11
 
-    description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
-    group "Application"
+  description "Launches the executable jar produced by bootJar with OpenJDK " + javaVersion
+  group "Application"
 
-    executable "${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}/bin/java"
-    args "-enableassertions"
-    args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5011"
-    args "-javaagent:${configurations.codekvastagent.asPath}"
-    args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
+  executable "${System.getenv('HOME')}/.sdkman/candidates/java/${javaVersion}/bin/java"
+  args "-enableassertions"
+  args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5011"
+  args "-javaagent:${configurations.codekvastagent.asPath}"
+  args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
 
-    args "-jar", "build/libs/${archivesBaseName}-${version}-all.jar"
-    args "--logging.level.root=INFO"
-    args "--logging.level.io.codekvast=INFO"
-    args "--logging.level.io.codekvast.common.aspects=DEBUG"
-    args "--logging.file.name=$buildDir/${applicationName}.log"
-    args "--codekvast.dashboard.fileImportIntervalSeconds=10"
-    args "--codekvast.dashboard.dataWeedingIntervalSeconds=10"
-    args "--codekvast.dashboard.dataWeedingInitialDelaySeconds=10"
-    args "--codekvast.jwtExpirationHours=-5"
+  args "-jar", "build/libs/${archivesBaseName}-${version}-all.jar"
+  args "--logging.level.root=INFO"
+  args "--logging.level.io.codekvast=INFO"
+  args "--logging.level.io.codekvast.common.aspects=DEBUG"
+  args "--logging.file.name=$buildDir/${applicationName}.log"
+  args "--codekvast.dashboard.fileImportIntervalSeconds=10"
+  args "--codekvast.dashboard.dataWeedingIntervalSeconds=10"
+  args "--codekvast.dashboard.dataWeedingInitialDelaySeconds=10"
+  args "--codekvast.jwtExpirationHours=-5"
 }

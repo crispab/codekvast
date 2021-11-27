@@ -6,5 +6,5 @@ archivesBaseName = "codekvast-test-lib"
 version = codekvastVersion
 
 dependencies {
-    implementation testFrameworks
+  implementation testFrameworks
 }

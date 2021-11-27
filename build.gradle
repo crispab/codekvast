@@ -1,5 +1,5 @@
 buildscript {
-    apply from: "$rootDir/gradle/buildscript.gradle", to: buildscript
+  apply from: "$rootDir/gradle/buildscript.gradle", to: buildscript
 }
 
 /*
@@ -21,27 +21,27 @@ apply plugin: 'idea'
 idea.project.vcs = 'Git'
 
 subprojects {
-    buildscript { repositories { jcenter() } }
+  buildscript { repositories { jcenter() } }
 
-    apply plugin: 'idea'
+  apply plugin: 'idea'
 
-    def gitHead = Grgit.open(dir: rootDir).head()
+  def gitHead = Grgit.open(dir: rootDir).head()
 
-    ext.gitId = "$gitHead.id"[0..6].toString()
-    ext.gitIdFull = gitHead.id.toString()
-    ext.gitCommitter = "$gitHead.committer.name <$gitHead.committer.email>".toString()
-    ext.gitShortMessage = "$gitHead.shortMessage".toString()
-    ext.gitTime = new Date(gitHead.time * 1000L).format('yyyy-MM-dd HH:mm:ss')
-    ext.gitTimeIso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date(gitHead.time * 1000L))
-    ext.codekvastDisplayVersion = "${codekvastVersion}-${gitId}".toString()
+  ext.gitId = "$gitHead.id"[0..6].toString()
+  ext.gitIdFull = gitHead.id.toString()
+  ext.gitCommitter = "$gitHead.committer.name <$gitHead.committer.email>".toString()
+  ext.gitShortMessage = "$gitHead.shortMessage".toString()
+  ext.gitTime = new Date(gitHead.time * 1000L).format('yyyy-MM-dd HH:mm:ss')
+  ext.gitTimeIso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date(gitHead.time * 1000L))
+  ext.codekvastDisplayVersion = "${codekvastVersion}-${gitId}".toString()
 
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    }
+  repositories {
+    jcenter()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+  }
 
-    tasks.withType(JavaCompile) {
-        options.incremental = true
-    }
+  tasks.withType(JavaCompile) {
+    options.incremental = true
+  }
 }
 

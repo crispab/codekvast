@@ -10,44 +10,44 @@ version = codekvastVersion
 mainClassName = 'io.codekvast.login.CodekvastLoginApplication'
 
 dependencies {
-    implementation project(':product:server:common')
-    implementation 'org.springframework.security:spring-security-config'
-    implementation 'org.springframework.security:spring-security-core'
-    implementation 'org.springframework.security:spring-security-web'
-    implementation 'org.springframework.security:spring-security-oauth2-core'
-    implementation 'org.springframework.security:spring-security-oauth2-client'
-    implementation 'org.springframework.security:spring-security-oauth2-jose'
-    implementation 'org.springframework.boot:spring-boot-starter-mustache'
-    implementation "com.google.code.gson:gson:$gsonVersion"
-    implementation 'com.jayway.jsonpath:json-path:2.6.0'
+  implementation project(':product:server:common')
+  implementation 'org.springframework.security:spring-security-config'
+  implementation 'org.springframework.security:spring-security-core'
+  implementation 'org.springframework.security:spring-security-web'
+  implementation 'org.springframework.security:spring-security-oauth2-core'
+  implementation 'org.springframework.security:spring-security-oauth2-client'
+  implementation 'org.springframework.security:spring-security-oauth2-jose'
+  implementation 'org.springframework.boot:spring-boot-starter-mustache'
+  implementation "com.google.code.gson:gson:$gsonVersion"
+  implementation 'com.jayway.jsonpath:json-path:2.6.0'
 
-    runtimeOnly project(':product:server:db-migration')
+  runtimeOnly project(':product:server:db-migration')
 
-    testImplementation "com.github.tomakehurst:wiremock:$wiremockVersion"
+  testImplementation "com.github.tomakehurst:wiremock:$wiremockVersion"
 }
 
 run {
-    dependsOn startDockerContainers
-    jvmArgs = ['-enableassertions',]
-    args = [
-            "--logging.file.name=$buildDir/${applicationName}.log",
-            '--spring.profiles.active=dev,dev-secrets,dev-webpack-dev-server'
-    ]
+  dependsOn startDockerContainers
+  jvmArgs = ['-enableassertions',]
+  args = [
+    "--logging.file.name=$buildDir/${applicationName}.log",
+    '--spring.profiles.active=dev,dev-secrets,dev-webpack-dev-server'
+  ]
 }
 
 bootRun {
-    dependsOn startDockerContainers
-    jvmArgs = run.jvmArgs
-    args = run.args
+  dependsOn startDockerContainers
+  jvmArgs = run.jvmArgs
+  args = run.args
 }
 
 //--- Packaging ------------------------------------------------------------------------------------------------------------------
 bootJar {
-    launchScript {
-        properties([
-                'initInfoProvides'        : applicationName,
-                'initInfoShortDescription': 'Codekvast Login',
-                'initInfoDescription'     : 'Codekvast Login handles logins',
-        ])
-    }
+  launchScript {
+    properties([
+      'initInfoProvides'        : applicationName,
+      'initInfoShortDescription': 'Codekvast Login',
+      'initInfoDescription'     : 'Codekvast Login handles logins',
+    ])
+  }
 }

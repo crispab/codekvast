@@ -1,26 +1,26 @@
 // --- Integration test stuff -------------------------------------------------------------------------------
 
 testSets {
-    integrationTest
+  integrationTest
 }
 
 dependencies {
-    integrationTestImplementation 'org.springframework.amqp:spring-rabbit'
-    integrationTestImplementation testcontainers
+  integrationTestImplementation 'org.springframework.amqp:spring-rabbit'
+  integrationTestImplementation testcontainers
 }
 
 integrationTest {
-    doFirst {
-        mkdir "$buildDir/log"
-    }
+  doFirst {
+    mkdir "$buildDir/log"
+  }
 }
 
 compileIntegrationTestKotlin {
-    kotlinOptions {
-        javaParameters = true
-        jvmTarget = '11'
-        freeCompilerArgs = ['-Xjsr305=strict']
-    }
+  kotlinOptions {
+    javaParameters = true
+    jvmTarget = '11'
+    freeCompilerArgs = ['-Xjsr305=strict']
+  }
 }
 
 integrationTest.mustRunAfter test
