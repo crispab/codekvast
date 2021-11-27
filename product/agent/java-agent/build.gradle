@@ -30,7 +30,8 @@ dependencies {
     implementation project(":product:agent:agent-model")
     implementation "com.google.code.gson:gson:$gsonVersion"
     implementation 'com.google.guava:guava:28.1-jre'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.3' // the last version that does not bring Kotlin stuff
+    implementation 'com.squareup.okhttp3:okhttp:3.14.3'
+    // the last version that does not bring Kotlin stuff
     implementation aspectjWeaver
 
     testImplementation testFrameworks
@@ -58,12 +59,12 @@ shadowJar {
 
     manifest {
         attributes(
-            "Automatic-Module-Name": "io.codekvast.javaagent",
-            "Created-By": "Hallin Information Technology AB",
-            "Implementation-Title": archivesBaseName,
-            "Implementation-Version": codekvastDisplayVersion,
-            "Premain-Class": "io.codekvast.javaagent.CodekvastAgent",
-            "Specification-Version": codekvastVersion,
+                "Automatic-Module-Name": "io.codekvast.javaagent",
+                "Created-By": "Hallin Information Technology AB",
+                "Implementation-Title": archivesBaseName,
+                "Implementation-Version": codekvastDisplayVersion,
+                "Premain-Class": "io.codekvast.javaagent.CodekvastAgent",
+                "Specification-Version": codekvastVersion,
         )
     }
 
@@ -114,8 +115,8 @@ task verifyShadowJar {
             def name = zipEntry.getName()
 
             assert !name.endsWith(".class") ||
-                name.startsWith("ck/") ||
-                name.startsWith("io/codekvast/")
+                    name.startsWith("ck/") ||
+                    name.startsWith("io/codekvast/")
 
             if (name.endsWith(".class")) {
                 // See https://en.wikipedia.org/wiki/Java_class_file#General_layout

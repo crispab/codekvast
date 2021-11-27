@@ -14,9 +14,9 @@ distributions {
             }
 
             from([
-                tasks.getByPath(':product:agent:java-agent:javaagents'),
-                file("$rootDir/RELEASE-NOTES.md"),
-                file("$rootDir/LICENSE"),
+                    tasks.getByPath(':product:agent:java-agent:javaagents'),
+                    file("$rootDir/RELEASE-NOTES.md"),
+                    file("$rootDir/LICENSE"),
             ]) {
                 into "/codekvast"
             }

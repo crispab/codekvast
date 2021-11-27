@@ -11,11 +11,11 @@ asciidoctor {
             diagram.version '1.5.18'
         }
         attributes = [
-            'codekvastVersion'       : codekvastVersion,
-            'aspectjVersion'         : aspectjVersion,
-            'gitTime'                : gitTime,
-            'gitId'                  : gitId,
-            'codekvastDownloadPrefix': codekvastDownloadPrefix
+                'codekvastVersion'       : codekvastVersion,
+                'aspectjVersion'         : aspectjVersion,
+                'gitTime'                : gitTime,
+                'gitId'                  : gitId,
+                'codekvastDownloadPrefix': codekvastDownloadPrefix
         ]
     }
 }

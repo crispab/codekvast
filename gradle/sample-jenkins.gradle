@@ -38,12 +38,10 @@ task installJenkinsWarInTomcat {
         catalinaWebapps.mkdirs()
 
         logger.lifecycle "Downloading $tomcatDownloadUrl ..."
-        ant.get(
-            src: tomcatDownloadUrl,
-            dest: downloadDir,
-            usetimestamp: true,
-            verbose: true
-        )
+        ant.get(src: tomcatDownloadUrl,
+                dest: downloadDir,
+                usetimestamp: true,
+                verbose: true)
 
         logger.lifecycle "Unpacking Tomcat into $tomcatDir ..."
         copy {
@@ -57,12 +55,10 @@ task installJenkinsWarInTomcat {
         serverXml.text = serverXml.text.replace("8080", tomcatPort).replace("8005", "0").replace("8009", "0")
 
         logger.lifecycle "Downloading $jenkinsDownloadUrl into $downloadDir ..."
-        ant.get(
-            src: jenkinsDownloadUrl,
-            dest: downloadDir,
-            usetimestamp: true,
-            verbose: true
-        )
+        ant.get(src: jenkinsDownloadUrl,
+                dest: downloadDir,
+                usetimestamp: true,
+                verbose: true)
 
         logger.lifecycle "Copying jenkins.war into $catalinaWebapps ..."
         copy {

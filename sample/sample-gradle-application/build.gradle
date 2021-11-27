@@ -54,9 +54,9 @@ httpProxyPort = 4711
 
 application {
     applicationDefaultJvmArgs = [
-        // "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005",
-        "-javaagent:$configurations.codekvastagent.asPath",
-        "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
+            // "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005",
+            "-javaagent:$configurations.codekvastagent.asPath",
+            "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
     ]
 }
 installDist.dependsOn generateCodekvastConfig, ':product:agent:java-agent:shadowJar'

@@ -29,54 +29,54 @@ ext.jdbcUrl = "jdbc:mariadb://localhost:$jdbcPort/codekvast"
 ext.rabbitmqUrl = "amqp://codekvast:codekvast@localhost:$rabbitmqPort/codekvast"
 
 ext.endpointFiles = [
-    'backoffice': file("build/backofficeEndpoint.txt"),
-    'dashboard': file("build/dashboardEndpoint.txt"),
-    'intake': file("build/intakeEndpoint.txt"),
-    'login'    : file("build/loginEndpoint.txt")
+        'backoffice': file("build/backofficeEndpoint.txt"),
+        'dashboard' : file("build/dashboardEndpoint.txt"),
+        'intake'    : file("build/intakeEndpoint.txt"),
+        'login'     : file("build/loginEndpoint.txt")
 ]
 
 ext.bootJars = [
-    'backoffice': tasks.getByPath(':product:server:backoffice:bootJar').outputs.files,
-    'dashboard': tasks.getByPath(':product:server:dashboard:bootJar').outputs.files,
-    'intake': tasks.getByPath(':product:server:intake:bootJar').outputs.files,
-    'login'    : tasks.getByPath(':product:server:login:bootJar').outputs.files
+        'backoffice': tasks.getByPath(':product:server:backoffice:bootJar').outputs.files,
+        'dashboard' : tasks.getByPath(':product:server:dashboard:bootJar').outputs.files,
+        'intake'    : tasks.getByPath(':product:server:intake:bootJar').outputs.files,
+        'login'     : tasks.getByPath(':product:server:login:bootJar').outputs.files
 ]
 
 def javaHome = System.getenv("JAVA_HOME")
 def java = javaHome ? "$javaHome/bin/java" : "java"
 
 ext.launchCommands = [
-    'backoffice': "$java -jar ${bootJars['backoffice'].asPath} " +
-        "--server.port=${allocateFreePort()} " +
-        "--management.server.port=${allocateFreePort()} " +
-        "--spring.datasource.url=$jdbcUrl " +
-        "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-        "--spring.profiles.active=dev,system-test " +
-        "--logging.file.name=${buildDir}/system-test-backoffice.log ",
+        'backoffice': "$java -jar ${bootJars['backoffice'].asPath} " +
+                "--server.port=${allocateFreePort()} " +
+                "--management.server.port=${allocateFreePort()} " +
+                "--spring.datasource.url=$jdbcUrl " +
+                "--spring.rabbitmq.addresses=$rabbitmqUrl " +
+                "--spring.profiles.active=dev,system-test " +
+                "--logging.file.name=${buildDir}/system-test-backoffice.log ",
 
-    'dashboard': "$java -jar ${bootJars['dashboard'].asPath} " +
-        "--server.port=${allocateFreePort()} " +
-        "--management.server.port=${allocateFreePort()} " +
-        "--spring.datasource.url=$jdbcUrl " +
-        "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-        "--spring.profiles.active=dev,system-test " +
-        "--logging.file.name=${buildDir}/system-test-dashboard.log ",
+        'dashboard' : "$java -jar ${bootJars['dashboard'].asPath} " +
+                "--server.port=${allocateFreePort()} " +
+                "--management.server.port=${allocateFreePort()} " +
+                "--spring.datasource.url=$jdbcUrl " +
+                "--spring.rabbitmq.addresses=$rabbitmqUrl " +
+                "--spring.profiles.active=dev,system-test " +
+                "--logging.file.name=${buildDir}/system-test-dashboard.log ",
 
-    'intake': "$java -jar ${bootJars['intake'].asPath} " +
-        "--server.port=${allocateFreePort()} " +
-        "--management.server.port=${allocateFreePort()} " +
-        "--spring.datasource.url=$jdbcUrl " +
-        "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-        "--spring.profiles.active=dev,system-test " +
-        "--logging.file.name=${buildDir}/system-test-intake.log ",
+        'intake'    : "$java -jar ${bootJars['intake'].asPath} " +
+                "--server.port=${allocateFreePort()} " +
+                "--management.server.port=${allocateFreePort()} " +
+                "--spring.datasource.url=$jdbcUrl " +
+                "--spring.rabbitmq.addresses=$rabbitmqUrl " +
+                "--spring.profiles.active=dev,system-test " +
+                "--logging.file.name=${buildDir}/system-test-intake.log ",
 
-    'login'    : "$java -jar ${bootJars['login'].asPath} " +
-        "--server.port=${allocateFreePort()} " +
-        "--management.server.port=${allocateFreePort()} " +
-        "--spring.datasource.url=$jdbcUrl " +
-        "--spring.rabbitmq.addresses=$rabbitmqUrl " +
-        "--spring.profiles.active=dev,system-test " +
-        "--logging.file.name=${buildDir}/system-test-login.log "
+        'login'     : "$java -jar ${bootJars['login'].asPath} " +
+                "--server.port=${allocateFreePort()} " +
+                "--management.server.port=${allocateFreePort()} " +
+                "--spring.datasource.url=$jdbcUrl " +
+                "--spring.rabbitmq.addresses=$rabbitmqUrl " +
+                "--spring.profiles.active=dev,system-test " +
+                "--logging.file.name=${buildDir}/system-test-login.log "
 ]
 
 dependencies {
@@ -133,12 +133,12 @@ private startRabbitmqContainer() {
     assert command.execute().waitFor() == 0
 
     command = 'docker run -d --restart=unless-stopped ' +
-        "--name codekvast_systest_rabbitmq_$rabbitmqPort " +
-        "-p $rabbitmqPort:5672 " +
-        "-e RABBITMQ_DEFAULT_VHOST=codekvast " +
-        "-e RABBITMQ_DEFAULT_USER=codekvast " +
-        "-e RABBITMQ_DEFAULT_PASS=codekvast " +
-        "rabbitmq:$rabbitmqVersion "
+            "--name codekvast_systest_rabbitmq_$rabbitmqPort " +
+            "-p $rabbitmqPort:5672 " +
+            "-e RABBITMQ_DEFAULT_VHOST=codekvast " +
+            "-e RABBITMQ_DEFAULT_USER=codekvast " +
+            "-e RABBITMQ_DEFAULT_PASS=codekvast " +
+            "rabbitmq:$rabbitmqVersion "
     logger.lifecycle(command)
     assert command.execute().waitFor() == 0
 
@@ -151,16 +151,16 @@ private startMariadbContainer() {
     assert command.execute().waitFor() == 0
 
     command = 'docker run -d --restart=unless-stopped ' +
-        "--name codekvast_systest_mariadb_$jdbcPort " +
-        "-p $jdbcPort:3306 " +
-        '-e MYSQL_ROOT_PASSWORD=root ' +
-        '-e MYSQL_DATABASE=codekvast ' +
-        '-e MYSQL_USER=codekvast ' +
-        '-e MYSQL_PASSWORD=codekvast ' +
-        '-e MYSQL_INITDB_SKIP_TZINFO=true ' +
-        '-e TERM=xterm-256color ' +
-        "mariadb:$mariadbVersion " +
-        '--character-set-server=utf8 '
+            "--name codekvast_systest_mariadb_$jdbcPort " +
+            "-p $jdbcPort:3306 " +
+            '-e MYSQL_ROOT_PASSWORD=root ' +
+            '-e MYSQL_DATABASE=codekvast ' +
+            '-e MYSQL_USER=codekvast ' +
+            '-e MYSQL_PASSWORD=codekvast ' +
+            '-e MYSQL_INITDB_SKIP_TZINFO=true ' +
+            '-e TERM=xterm-256color ' +
+            "mariadb:$mariadbVersion " +
+            '--character-set-server=utf8 '
     logger.lifecycle(command)
     assert command.execute().waitFor() == 0
 
