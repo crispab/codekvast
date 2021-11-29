@@ -20,10 +20,11 @@
     "@angular/compiler": "13.0.2",
     "@angular/core": "13.0.2",
     "@angular/forms": "13.0.2",
+    "@angular/localize": "13.0.2",
     "@angular/platform-browser": "13.0.2",
     "@angular/platform-browser-dynamic": "13.0.2",
     "@angular/router": "13.0.2",
-    "@ng-bootstrap/ng-bootstrap": "5.2.1",
+    "@ng-bootstrap/ng-bootstrap": "11.0.0-rc.0",
     "core-js": "3.6.4",
     "ngx-clipboard": "12.3.0",
     "ngx-cookie": "4.0.2",
@@ -56,12 +57,12 @@
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jsdoc": "30.7.6",
     "eslint-plugin-prefer-arrow": "1.2.2",
-    "@angular-eslint/builder": "1.2.0",
-    "@angular-eslint/eslint-plugin": "1.2.0",
-    "@angular-eslint/eslint-plugin-template": "1.2.0",
-    "@angular-eslint/schematics": "1.2.0",
-    "@angular-eslint/template-parser": "1.2.0",
-    "@typescript-eslint/eslint-plugin": "4.3.0",
-    "@typescript-eslint/parser": "4.3.0"
+    "@angular-eslint/builder": "^13.0.1",
+    "@angular-eslint/eslint-plugin": "^13.0.1",
+    "@angular-eslint/eslint-plugin-template": "^13.0.1",
+    "@angular-eslint/schematics": "^13.0.1",
+    "@angular-eslint/template-parser": "^13.0.1",
+    "@typescript-eslint/eslint-plugin": "5.4.0",
+    "@typescript-eslint/parser": "5.4.0"
   }
 }

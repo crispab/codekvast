@@ -26,7 +26,7 @@ dependencies {
   implementation 'com.github.seratch:jslack:3.4.2'
   implementation 'io.jsonwebtoken:jjwt:0.9.1'
   implementation 'javax.servlet:javax.servlet-api'
-  implementation 'org.jetbrains:annotations:20.1.0'
+  implementation 'org.jetbrains:annotations:23.0.0'
   implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
   implementation 'org.springframework.boot:spring-boot-starter'
   implementation 'org.springframework.boot:spring-boot-starter-amqp'

@@ -4,7 +4,7 @@ ext {
   droolsVersion = '7.62.0.Final'
   gsonVersion = '2.8.9'
   jacocoVersion = '0.8.7'
-  junit5Version = '5.8.1'
+  junit5Version = '5.8.2'
   kotlinVersion = '1.6.0'
   logbackVersion = '1.2.7'
   mariadbVersion = '10.4'
@@ -12,7 +12,7 @@ ext {
   openApiVersion = '1.5.12'
   rabbitmqVersion = '3.8-management-alpine'
   seleniumVersion = '4.1.0'
-  springBootVersion = '2.6.0'
+  springBootVersion = '2.6.1'
   testcontainersVersion = '1.16.2'
   wiremockVersion = '2.27.2'
 
