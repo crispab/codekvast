@@ -12,7 +12,9 @@
     "test": "ng test",
     "test-ci": "ng test --no-watch --no-progress --code-coverage --browsers=ChromeHeadlessCI",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "prepare": "yarn run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "dependencies": {
     "@angular/animations": "13.0.2",
@@ -30,7 +32,8 @@
     "ngx-cookie": "4.0.2",
     "rxjs": "6.5.5",
     "tslib": "^2.0.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "@snyk/protect": "latest"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.0.3",
@@ -64,5 +67,6 @@
     "@angular-eslint/template-parser": "^13.0.1",
     "@typescript-eslint/eslint-plugin": "5.4.0",
     "@typescript-eslint/parser": "5.4.0"
-  }
+  },
+  "snyk": true
 }
