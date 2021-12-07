@@ -21,15 +21,12 @@
  */
 package io.codekvast.dashboard.dashboard.model.methods;
 
-import java.util.HashSet;
-import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.Singular;
 
 /**
  * Information the environments a particular method appears in.
@@ -42,14 +39,9 @@ import lombok.Singular;
 @EqualsAndHashCode(of = "name")
 public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> {
 
+  private static final int ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
   /** The name of the environment */
   @NonNull private final String name;
-
-  /** In what hosts does the particular method appear? */
-  @NonNull @Singular private final Set<String> hostnames;
-
-  /** What tags are configured for Codekvast in the environments for this particular method? */
-  @NonNull @Singular private final Set<String> tags;
 
   /** When was collection started in this environment? */
   @NonNull private final Long collectedSinceMillis;
@@ -64,9 +56,8 @@ public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> 
   private int collectedDays;
 
   public EnvironmentDescriptor computeFields() {
-    int oneDayInMillis = 24 * 60 * 60 * 1000;
     this.collectedDays =
-        Math.toIntExact((collectedToMillis - collectedSinceMillis) / oneDayInMillis);
+        Math.toIntExact((collectedToMillis - collectedSinceMillis) / ONE_DAY_IN_MILLIS);
     return this;
   }
 
@@ -85,16 +76,8 @@ public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> 
             .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
             .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
             .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
-            .hostnames(union(this.hostnames, that.hostnames))
-            .tags(union(this.tags, that.tags))
             .build()
             .computeFields();
-  }
-
-  private Set<String> union(Set<String> left, Set<String> right) {
-    Set<String> result = new HashSet<>(left);
-    result.addAll(right);
-    return result;
   }
 
   /**

@@ -1,8 +1,6 @@
 export class Environment {
-    collectedSinceMillis: number;
-    collectedToMillis: number;
-    hostnames: string[];
-    invokedAtMillis: number;
-    name: string;
-    tags: string[];
+  name: string;
+  collectedSinceMillis: number;
+  collectedToMillis: number;
+  invokedAtMillis: number;
 }

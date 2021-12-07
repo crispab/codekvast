@@ -24,7 +24,6 @@ package io.codekvast.dashboard.dashboard.model.methods;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -70,7 +69,6 @@ public class MethodDescriptor1 {
   private Integer collectedDays;
   private Integer trackedPercent;
   private Set<SignatureStatus2> statuses;
-  private Set<String> tags;
 
   @Singular private SortedSet<String> locations;
 
@@ -87,13 +85,13 @@ public class MethodDescriptor1 {
   public MethodDescriptor1 computeFields() {
     this.collectedSinceMillis =
         occursInApplications.stream()
-            .map(ApplicationDescriptor::getStartedAtMillis)
+            .map(ApplicationDescriptor::getCollectedSinceMillis)
             .reduce(Math::min)
             .orElse(0L);
 
     this.collectedToMillis =
         occursInApplications.stream()
-            .map(ApplicationDescriptor::getPublishedAtMillis)
+            .map(ApplicationDescriptor::getCollectedToMillis)
             .reduce(Math::max)
             .orElse(0L);
 
@@ -109,8 +107,6 @@ public class MethodDescriptor1 {
         occursInApplications.stream()
             .map(ApplicationDescriptor::getStatus)
             .collect(Collectors.toSet());
-    this.tags = new TreeSet<>();
-    collectedInEnvironments.stream().map(EnvironmentDescriptor::getTags).forEach(tags::addAll);
     long tracked =
         occursInApplications.stream()
             .map(ApplicationDescriptor::getStatus)

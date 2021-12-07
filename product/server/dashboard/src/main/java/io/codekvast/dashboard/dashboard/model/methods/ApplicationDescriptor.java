@@ -34,24 +34,22 @@ import lombok.Value;
  */
 @Value
 @Builder
-@EqualsAndHashCode(of = {"name", "version"})
+@EqualsAndHashCode(of = {"name"})
 public class ApplicationDescriptor implements Comparable<ApplicationDescriptor> {
 
-  @NonNull private final String name;
-
-  @NonNull private final String version;
+  @NonNull String name;
 
   /** When was this application version first seen? */
-  @NonNull private final Long startedAtMillis;
+  @NonNull Long collectedSinceMillis;
 
-  /** When was the last time we received data from this application version? */
-  @NonNull private final Long publishedAtMillis;
+  /** When was the last time we received data from this application? */
+  @NonNull Long collectedToMillis;
 
-  /** When was this particular method invoked in this application version? */
-  @NonNull private final Long invokedAtMillis;
+  /** When was this particular method invoked in this application? */
+  @NonNull Long invokedAtMillis;
 
   /** What is the status of this particular method for this application version? */
-  @NonNull private final SignatureStatus2 status;
+  @NonNull SignatureStatus2 status;
 
   /**
    * Merge two application descriptors, taking the min and max values of both.
@@ -65,9 +63,8 @@ public class ApplicationDescriptor implements Comparable<ApplicationDescriptor> 
         ? this
         : ApplicationDescriptor.builder()
             .name(this.name)
-            .version(this.version)
-            .startedAtMillis(Math.min(this.startedAtMillis, that.startedAtMillis))
-            .publishedAtMillis(Math.max(this.publishedAtMillis, that.publishedAtMillis))
+            .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
+            .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
             .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
             .status(this.invokedAtMillis > that.invokedAtMillis ? this.status : that.status)
             .build();
@@ -75,10 +72,6 @@ public class ApplicationDescriptor implements Comparable<ApplicationDescriptor> 
 
   @Override
   public int compareTo(ApplicationDescriptor that) {
-    int result = this.name.compareTo(that.name);
-    if (result == 0) {
-      result = this.version.compareTo(that.version);
-    }
-    return result;
+    return this.name.compareTo(that.name);
   }
 }

@@ -47,20 +47,16 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeSet;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -78,6 +74,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class DashboardServiceImpl implements DashboardService {
 
+  private static final long ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000L;
   private final JdbcTemplate jdbcTemplate;
   private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
   private final CustomerIdProvider customerIdProvider;
@@ -205,8 +202,7 @@ public class DashboardServiceImpl implements DashboardService {
 
   private int getCollectedDays(Timestamp latestCollectedSince) {
     long durationMillis = clock.millis() - latestCollectedSince.getTime();
-    long oneDayInMillis = 24 * 60 * 60 * 1000;
-    return (int) (durationMillis / oneDayInMillis);
+    return (int) (durationMillis / ONE_DAY_IN_MILLIS);
   }
 
   private List<Long> translateNamesToIds(
@@ -244,8 +240,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     MethodDescriptorRowCallbackHandler rch = new MethodDescriptorRowCallbackHandler(pricePlan);
     namedParameterJdbcTemplate.query(
-        "SELECT i.methodId, a.name AS appName, j.applicationVersion AS appVersion, "
-            + "  e.name AS envName, i.invokedAtMillis, i.createdAt, i.status, j.publishedAt, j.hostname, j.tags, "
+        "SELECT i.methodId, a.name AS appName, "
+            + "  e.name AS envName, i.invokedAtMillis, i.createdAt, i.status, ad.collectedSince, ad.collectedTo, "
             + "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m.modifiers,  m.packageName, ml.location, "
             + "  m.annotation AS methodAnnotation, ml.annotation AS methodLocationAnnotation, "
             + "  t.annotation AS typeAnnotation, p.annotation AS packageAnnotation "
@@ -255,9 +251,9 @@ public class DashboardServiceImpl implements DashboardService {
             + "    INNER JOIN methods m ON m.id = i.methodId  "
             + "    INNER JOIN types t ON t.name = m.declaringType "
             + "    INNER JOIN packages p ON p.name = m.packageName "
-            + "    INNER JOIN jvms j ON j.applicationId = i.applicationId AND j.environmentId = i.environmentId "
+            + "    INNER JOIN application_descriptors ad ON ad.applicationId = i.applicationId AND ad.environmentId = i.environmentId "
             + "    LEFT JOIN method_locations ml ON m.id = ml.methodId  "
-            + "  WHERE i.customerId = :customerId AND i.methodId = :methodId AND j.garbage = FALSE ",
+            + "  WHERE i.customerId = :customerId AND i.methodId = :methodId ",
         params,
         rch);
 
@@ -478,7 +474,7 @@ public class DashboardServiceImpl implements DashboardService {
   private static class QueryState {
     private final long methodId;
 
-    private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();
+    private final Map<String, ApplicationDescriptor> applications = new HashMap<>();
     private final Map<String, EnvironmentDescriptor> environments = new HashMap<>();
 
     private MethodDescriptor1.MethodDescriptor1Builder builder;
@@ -496,8 +492,8 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     void saveApplication(ApplicationDescriptor applicationDescriptor) {
-      ApplicationId appId = ApplicationId.of(applicationDescriptor);
-      applications.put(appId, applicationDescriptor.mergeWith(applications.get(appId)));
+      String name = applicationDescriptor.getName();
+      applications.put(name, applicationDescriptor.mergeWith(applications.get(name)));
     }
 
     void saveEnvironment(EnvironmentDescriptor environmentDescriptor) {
@@ -517,22 +513,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     void countRow() {
       rows += 1;
-    }
-  }
-
-  /** @author olle.hallin@crisp.se */
-  @Value
-  static class ApplicationId implements Comparable<ApplicationId> {
-    String name;
-    String version;
-
-    static ApplicationId of(ApplicationDescriptor applicationDescriptor) {
-      return new ApplicationId(applicationDescriptor.getName(), applicationDescriptor.getVersion());
-    }
-
-    @Override
-    public int compareTo(ApplicationId that) {
-      return this.toString().compareTo(that.toString());
     }
   }
 
@@ -559,23 +539,20 @@ public class DashboardServiceImpl implements DashboardService {
       }
 
       queryState.countRow();
-      long createdAt =
-          pricePlan.adjustTimestampMillis(rs.getTimestamp("i.createdAt").getTime(), clock);
-      long publishedAt =
-          pricePlan.adjustTimestampMillis(rs.getTimestamp("j.publishedAt").getTime(), clock);
+      long collectedSinceMillis =
+          pricePlan.adjustTimestampMillis(rs.getTimestamp("ad.collectedSince").getTime(), clock);
+      val collectedToMillis =
+          pricePlan.adjustTimestampMillis(rs.getTimestamp("ad.collectedTo").getTime(), clock);
       long invokedAtMillis =
           pricePlan.adjustTimestampMillis(rs.getLong("i.invokedAtMillis"), clock);
 
       MethodDescriptor1.MethodDescriptor1Builder builder = queryState.getBuilder();
-      String appName = rs.getString("appName");
-      String appVersion = rs.getString("appVersion");
 
       queryState.saveApplication(
           ApplicationDescriptor.builder()
-              .name(appName)
-              .version(appVersion)
-              .startedAtMillis(createdAt)
-              .publishedAtMillis(publishedAt)
+              .name(rs.getString("appName"))
+              .collectedSinceMillis(collectedSinceMillis)
+              .collectedToMillis(collectedToMillis)
               .invokedAtMillis(invokedAtMillis)
               .status(SignatureStatus2.valueOf(rs.getString("i.status")))
               .build());
@@ -583,10 +560,8 @@ public class DashboardServiceImpl implements DashboardService {
       queryState.saveEnvironment(
           EnvironmentDescriptor.builder()
               .name(rs.getString("envName"))
-              .hostname(rs.getString("j.hostname"))
-              .tags(splitOnCommaOrSemicolon(rs.getString("j.tags")))
-              .collectedSinceMillis(createdAt)
-              .collectedToMillis(publishedAt)
+              .collectedSinceMillis(collectedSinceMillis)
+              .collectedToMillis(collectedToMillis)
               .invokedAtMillis(invokedAtMillis)
               .build()
               .computeFields());
@@ -609,10 +584,6 @@ public class DashboardServiceImpl implements DashboardService {
       if (location != null) {
         builder.location(location);
       }
-    }
-
-    private Set<String> splitOnCommaOrSemicolon(String tags) {
-      return new HashSet<>(Arrays.asList(tags.split("\\s*[,;]\\s")));
     }
 
     private Optional<MethodDescriptor1> getResult() {
