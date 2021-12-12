@@ -44,6 +44,10 @@ jar {
   reproducibleFileOrder true
 }
 
+jacoco {
+  toolVersion = jacocoVersion
+}
+
 googleJavaFormat {
   toolVersion = '1.10.0'
 }

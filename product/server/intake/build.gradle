@@ -11,7 +11,7 @@ archivesBaseName = 'codekvast-intake'
 version = codekvastVersion
 mainClassName = 'io.codekvast.intake.CodekvastIntakeApplicationKt'
 
-//apply from: "$projectDir/src/integrationTest/build.gradle"
+apply from: "$projectDir/src/integrationTest/build.gradle"
 
 configurations {
   codekvastagent

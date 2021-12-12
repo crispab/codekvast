@@ -11,7 +11,7 @@
         <ENTRY IS_ENABLED="true" PARSER="runconfig" />
       </ENTRIES>
     </extension>
-    <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboardApplication" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboardApplicationKt" />
     <option name="ACTIVE_PROFILES" value="dev,common-dev,dev-secrets,dev-webpack-dev-server" />
     <option name="VM_PARAMETERS" value="-ea -XX:+UseParallelGC" />
     <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
