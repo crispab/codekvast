@@ -263,7 +263,7 @@ task startSystemTestEnvironment {
 
 test {
   description 'Runs end-to-end tests against the Codekvast services with MariaDB in a Docker container'
-  shouldRunAfter ':product:server:dashboard:integrationTest'
+  shouldRunAfter ':product:server:intake:check', ':product:server:login:check', ':product:server:backoffice:check', ':product:server:dashboard:check'
 
   def foundChromeBinary = locateChromeBinary()
   assert !foundChromeBinary.isEmpty(): "Cannot find Chrome executable!"

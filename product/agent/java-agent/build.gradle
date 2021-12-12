@@ -6,7 +6,6 @@ apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'maven-publish'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'org.unbroken-dome.test-sets'
 
 description = "The javaagent part of Codekvast, the code that runs inside the instrumented app's JVM"
 archivesBaseName = "codekvast-javaagent"
@@ -21,11 +20,6 @@ configurations {
   jacocoagent
 }
 
-testSets {
-  integrationTest
-}
-check.dependsOn integrationTest
-
 dependencies {
   implementation project(":product:agent:agent-model")
   implementation "com.google.code.gson:gson:$gsonVersion"
@@ -36,12 +30,6 @@ dependencies {
 
   testImplementation testFrameworks
   testImplementation project(":product:test-lib")
-
-  integrationTestImplementation "com.github.tomakehurst:wiremock-standalone:$wiremockVersion"
-  integrationTestImplementation "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
-  integrationTestImplementation testFrameworks
-  integrationTestRuntimeOnly aspectjWeaver
-  integrationTestRuntimeOnly logback
 
   jacocoagent "org.jacoco:org.jacoco.agent:$jacocoVersion:runtime@jar"
 }
@@ -141,31 +129,7 @@ check.dependsOn verifyShadowJar
 test {
   systemProperty 'java.util.logging.config.file', 'src/test/resources/logging.properties'
 }
-
-integrationTest {
-  dependsOn verifyShadowJar
-  shouldRunAfter test
-  useJUnitPlatform()
-
-  inputs.files file("build.gradle")
-  inputs.files shadowJar.outputs.files
-  inputs.files sourceSets.integrationTest.output
-  outputs.dir file("$buildDir/test-results/integrationTest")
-
-  systemProperty 'integrationTest.codekvastAgent', shadowJar.outputs.files.asPath
-  systemProperty 'integrationTest.jacocoAgent', "${configurations.jacocoagent.asPath}=destfile=${buildDir}/jacoco/integrationTest2.exec,output=file,dumponexit=true"
-  systemProperty 'integrationTest.classpath', "build/classes/java/integrationTest:${configurations.integrationTestRuntimeClasspath.asPath}"
-  systemProperty 'integrationTest.javaVersions', """
-        ${sdkmanJavaVersion_8},
-        ${sdkmanJavaVersion_9},
-        ${sdkmanJavaVersion_10},
-        ${sdkmanJavaVersion_11},
-        ${sdkmanJavaVersion_12},
-        ${sdkmanJavaVersion_13},
-        ${sdkmanJavaVersion_14},
-        ${sdkmanJavaVersion_15}
-        """
-}
+apply from: "$projectDir/src/integrationTest/build.gradle"
 
 task sourcesJar(type: Jar, dependsOn: classes) {
   duplicatesStrategy = DuplicatesStrategy.FAIL

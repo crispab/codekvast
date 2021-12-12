@@ -4,16 +4,9 @@ apply from: "$rootDir/gradle/java-11.gradle"
 apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'java-library'
-apply plugin: 'org.unbroken-dome.test-sets'
+apply from: "$projectDir/src/integrationTest/build.gradle"
 
 archivesBaseName = 'codekvast-common'
-
-testSets {
-  integrationTest
-}
-
-integrationTest.mustRunAfter test
-check.dependsOn integrationTest
 
 dependencies {
   api 'io.micrometer:micrometer-registry-datadog'
@@ -47,7 +40,5 @@ dependencies {
 
   testImplementation testFrameworks
   testRuntimeOnly logback
-
-  integrationTestImplementation sourceSets.test.output
 }
 

@@ -1,7 +1,7 @@
 # Codekvast Release Notes
 
 ## 1.4.2
-1. Added support for using the Java agent with Java 16
+1. Added support for using the Java agent with Java 16 & 17 (need to add --add-opens=java.base/java.lang=ALL-UNNAMED to launch command though)
 2. Moved database weeding to codekvast-backoffice
 3. Upgraded to Spring Boot 2.6.1
 4. Switched from springfox-swagger2 to springdoc-openapi-ui

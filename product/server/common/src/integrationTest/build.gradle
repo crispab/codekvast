@@ -1,0 +1,12 @@
+apply plugin: 'org.unbroken-dome.test-sets'
+
+testSets {
+  integrationTest
+}
+
+integrationTest.mustRunAfter test
+check.dependsOn integrationTest
+
+dependencies {
+  integrationTestImplementation sourceSets.test.output
+}

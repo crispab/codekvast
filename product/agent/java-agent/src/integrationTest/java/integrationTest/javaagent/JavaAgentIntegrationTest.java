@@ -32,6 +32,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -271,6 +273,14 @@ public class JavaAgentIntegrationTest {
     return !javaVersion.startsWith("8");
   }
 
+  private boolean atLeastJava16(String javaVersion) {
+    Matcher majorVersionMatcher = Pattern.compile("^([0-9]+)").matcher(javaVersion);
+    if (majorVersionMatcher.find()) {
+      return Integer.parseInt(majorVersionMatcher.group(1)) >= 16;
+    }
+    return false;
+  }
+
   private List<String> buildJavaCommand(String javaVersion, String configPath) {
     String cp =
         classpath.endsWith(":") ? classpath.substring(0, classpath.length() - 2) : classpath;
@@ -289,6 +299,9 @@ public class JavaAgentIntegrationTest {
                 "-Djava.util.logging.config.file=src/integrationTest/resources/logging.properties",
                 "-Duser.language=en",
                 "-Duser.country=US"));
+    if (atLeastJava16(javaVersion)) {
+      command.add("--add-opens=java.base/java.lang=ALL-UNNAMED");
+    }
     if (configPath != null) {
       command.add("-Dcodekvast.configuration=" + configPath);
     }
