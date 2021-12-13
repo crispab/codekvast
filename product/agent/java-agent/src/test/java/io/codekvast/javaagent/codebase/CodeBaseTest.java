@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.codekvast.javaagent.config.AgentConfigFactory;
@@ -13,7 +14,7 @@ import java.net.URL;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CodeBaseTest {
+class CodeBaseTest {
 
   private static final String SAMPLE_WEB_APP = "/sample-web-app";
   private static final String SAMPLE_APP_LIB = "/sample-web-app/WEB-INF/lib";
@@ -43,21 +44,24 @@ public class CodeBaseTest {
   }
 
   @Test
-  public void should_handle_null_codeBase() {
-    codeBase = new CodeBase(null);
+  void should_throw_NPE_when_null_config() {
+    assertThrows(NullPointerException.class, () -> new CodeBase(null));
   }
 
   @Test
-  public void should_handle_missing_codeBase() {
-    // when
+  void should_handle_missing_codeBase() {
+    // given
     codeBase = getCodeBase("foobar");
 
+    // when
+    URL[] urls = codeBase.getUrls();
+
     // then
-    assertThrows(NullPointerException.class, () -> codeBase.getUrls());
+    assertEquals(0, urls.length);
   }
 
   @Test
-  public void should_handle_dir_containing_classes_but_no_jars() {
+  void should_handle_dir_containing_classes_but_no_jars() {
     // when
     codeBase = getCodeBase(SAMPLE_CLASSES_DIR);
 
@@ -82,7 +86,7 @@ public class CodeBaseTest {
   }
 
   @Test
-  public void should_handle_directory_containing_only_jars() {
+  void should_handle_directory_containing_only_jars() {
     // when
     codeBase = getCodeBase(SAMPLE_APP_LIB);
 
@@ -106,7 +110,7 @@ public class CodeBaseTest {
   }
 
   @Test
-  public void should_handle_directories_containing_classes_and_jars() {
+  void should_handle_directories_containing_classes_and_jars() {
     // when
     codeBase = getCodeBase(SAMPLE_CLASSES_DIR, SAMPLE_APP_LIB);
 
@@ -130,7 +134,7 @@ public class CodeBaseTest {
   }
 
   @Test
-  public void should_handle_typical_webapp() {
+  void should_handle_typical_webapp() {
     // when
     codeBase = getCodeBase(SAMPLE_WEB_APP);
 
@@ -155,7 +159,7 @@ public class CodeBaseTest {
   }
 
   @Test
-  public void should_handle_typical_webapp_WEB_INF() {
+  void should_handle_typical_webapp_WEB_INF() {
     codeBase = getCodeBase(SAMPLE_WEB_APP + "/WEB-INF");
     assertThat(codeBase.getUrls(), notNullValue());
     assertThat(codeBase.getUrls().length, is(4));
@@ -176,7 +180,7 @@ public class CodeBaseTest {
   }
 
   @Test
-  public void should_handle_typical_webapp_WEB_INF_with_extra_codeBase() {
+  void should_handle_typical_webapp_WEB_INF_with_extra_codeBase() {
     codeBase = getCodeBase(SAMPLE_WEB_APP + "/WEB-INF", CODEBASE2);
 
     assertThat(codeBase.getUrls(), notNullValue());
@@ -198,7 +202,7 @@ public class CodeBaseTest {
   }
 
   @Test
-  public void should_handle_single_jar() {
+  void should_handle_single_jar() {
     // when
     codeBase = getCodeBase(SAMPLE_APP_JAR);
 

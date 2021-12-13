@@ -61,7 +61,7 @@
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="org.jetbrains.annotations.Nullable" />
-    <option name="myDefaultNotNull" value="javax.annotation.Nonnull" />
+    <option name="myDefaultNotNull" value="lombok.NonNull" />
     <option name="myNullables">
       <value>
         <list size="14">

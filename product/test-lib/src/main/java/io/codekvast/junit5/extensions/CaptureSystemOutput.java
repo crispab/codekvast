@@ -34,6 +34,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.SneakyThrows;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -163,7 +164,6 @@ public @interface CaptureSystemOutput {
       public void write(int b) throws IOException {
         this.copy.write(b);
         this.original.write(b);
-        this.original.flush();
       }
 
       @Override
@@ -182,6 +182,7 @@ public @interface CaptureSystemOutput {
         this.copy.flush();
         this.original.flush();
       }
+
     }
   }
 }

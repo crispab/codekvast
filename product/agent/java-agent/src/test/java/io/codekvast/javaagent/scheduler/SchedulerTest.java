@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import io.codekvast.javaagent.InvocationRegistry;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v2.GetConfigResponse2;
@@ -65,6 +66,7 @@ class SchedulerTest {
         .thenReturn(invocationDataPublisher);
 
     when(systemClockMock.currentTimeMillis()).thenReturn(T1);
+    InvocationRegistry.initialize(config);
   }
 
   private void setTimeToSecondsAndRunScheduler(double seconds) {
@@ -75,11 +77,11 @@ class SchedulerTest {
   @Test
   void should_handle_shutdown_before_first_poll(OutputCapture outputCapture) {
     scheduler.shutdown();
+
     verifyNoMoreInteractions(configPollerMock);
-    outputCapture.flush();
-    outputCapture.expect(containsString("Codekvast agent stoppedx in 0 ms"));
     assertThat(codeBasePublisher.getSequenceNumber(), is(0));
     assertThat(invocationDataPublisher.getSequenceNumber(), is(0));
+    outputCapture.expect(containsString("Codekvast agent stopped in 0 ms"));
   }
 
   @Test

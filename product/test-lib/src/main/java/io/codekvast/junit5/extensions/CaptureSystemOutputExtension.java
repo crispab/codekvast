@@ -25,6 +25,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 
 import io.codekvast.junit5.extensions.CaptureSystemOutput.OutputCapture;
+import java.lang.reflect.Method;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -49,13 +51,14 @@ class CaptureSystemOutputExtension
     implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
   @Override
-  public void beforeEach(ExtensionContext context) throws Exception {
+  public void beforeEach(ExtensionContext context) {
     getOutputCapture(context).captureOutput();
   }
 
   @Override
-  public void afterEach(ExtensionContext context) throws Exception {
+  public void afterEach(ExtensionContext context) {
     OutputCapture outputCapture = getOutputCapture(context);
+
     try {
       if (!outputCapture.matchers.isEmpty()) {
         String output = outputCapture.toString();

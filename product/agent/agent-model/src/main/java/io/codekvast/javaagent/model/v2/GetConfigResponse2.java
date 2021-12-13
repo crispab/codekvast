@@ -37,55 +37,55 @@ import lombok.Value;
 public class GetConfigResponse2 {
 
   /** What customerId should I use when publishing data? */
-  @NonNull private final Long customerId;
+  @NonNull Long customerId;
 
   /** How often shall the server be polled for dynamic config? */
-  @NonNull private final Integer configPollIntervalSeconds;
+  @NonNull Integer configPollIntervalSeconds;
 
   /** How fast shall a failed config poll be retried? */
-  @NonNull private final Integer configPollRetryIntervalSeconds;
+  @NonNull Integer configPollRetryIntervalSeconds;
 
   /**
    * The name of the code base publisher to use.
    *
-   * <p>Each implementation defines it's own name.
+   * <p>Each implementation defines its own name.
    */
-  @NonNull private final String codeBasePublisherName;
+  @NonNull String codeBasePublisherName;
 
   /**
    * The configuration of the CodeBasePublisher to use, coded as semicolon-separated list of
-   * key=value pairs. Neither keys nor values may contains semicolons, space or tab characters.
+   * key=value pairs. Neither keys nor values may contain semicolons, space or tab characters.
    *
    * <p>It is up to the specified CodeBasePublisher to parse the config.
    */
-  @NonNull private final String codeBasePublisherConfig;
+  @NonNull String codeBasePublisherConfig;
 
   /** How often shall the codebase be re-scanned for changes? */
-  @NonNull private final Integer codeBasePublisherCheckIntervalSeconds;
+  @NonNull Integer codeBasePublisherCheckIntervalSeconds;
 
   /** How often shall a failed codebase publishing be retried? */
-  @NonNull private final Integer codeBasePublisherRetryIntervalSeconds;
+  @NonNull Integer codeBasePublisherRetryIntervalSeconds;
 
   /**
    * The name of the invocation data publisher to use.
    *
-   * <p>Each implementation defines it's own name.
+   * <p>Each implementation defines its own name.
    */
-  @NonNull private final String invocationDataPublisherName;
+  @NonNull String invocationDataPublisherName;
 
   /**
    * The configuration of the InvocationDataPublisher to use, coded as semicolon-separated list of
-   * key=value pairs. Neither keys nor values may contains semicolons, space or tab characters.
+   * key=value pairs. Neither keys nor values may contain semicolons, space or tab characters.
    *
    * <p>It is up to the specified InvocationDataPublisher to parse the config.
    */
-  @NonNull private final String invocationDataPublisherConfig;
+  @NonNull String invocationDataPublisherConfig;
 
   /** How often shall the invocation data be published? */
-  @NonNull private final Integer invocationDataPublisherIntervalSeconds;
+  @NonNull Integer invocationDataPublisherIntervalSeconds;
 
   /** How often shall a failed invocation data publishing be retried? */
-  @NonNull private final Integer invocationDataPublisherRetryIntervalSeconds;
+  @NonNull Integer invocationDataPublisherRetryIntervalSeconds;
 
   /**
    * Convert a format 2 response back to format 1.
