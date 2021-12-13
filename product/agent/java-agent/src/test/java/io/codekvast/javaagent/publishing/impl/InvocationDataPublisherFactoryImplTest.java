@@ -9,50 +9,48 @@ import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
-import org.junit.Rule;
+import io.codekvast.junit5.extensions.CaptureSystemOutput;
+import io.codekvast.junit5.extensions.CaptureSystemOutput.OutputCapture;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.springframework.boot.test.system.OutputCaptureRule;
 
 /** @author olle.hallin@crisp.se */
-@EnableRuleMigrationSupport
-public class InvocationDataPublisherFactoryImplTest {
+@CaptureSystemOutput
+class InvocationDataPublisherFactoryImplTest {
 
   private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
   private final InvocationDataPublisherFactory factory = new InvocationDataPublisherFactoryImpl();
-  @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
 
   @Test
-  public void should_handle_noop_name() {
+  void should_handle_noop_name(OutputCapture outputCapture) {
     // given
     InvocationDataPublisher publisher =
         factory.create(NoOpInvocationDataPublisherImpl.NAME, config);
 
     // then
     assertThat(publisher, instanceOf(NoOpInvocationDataPublisherImpl.class));
-    output.expect(is(""));
+    outputCapture.expect(is(""));
   }
 
   @Test
-  public void should_handle_http_name() {
+  void should_handle_http_name(OutputCapture outputCapture) {
     // given
     InvocationDataPublisher publisher =
         factory.create(HttpInvocationDataPublisherImpl.NAME, config);
 
     // then
     assertThat(publisher, instanceOf(HttpInvocationDataPublisherImpl.class));
-    output.expect(is(""));
+    outputCapture.expect(is(""));
   }
 
   @Test
-  public void should_warn_when_unrecognized_name() {
+  void should_warn_when_unrecognized_name(OutputCapture outputCapture) {
     // given
     InvocationDataPublisher publisher = factory.create("foobar", config);
 
     // then
     assertThat(publisher, instanceOf(NoOpInvocationDataPublisherImpl.class));
-    output.expect(containsString("[WARNING]"));
-    output.expect(
+    outputCapture.expect(containsString("WARN"));
+    outputCapture.expect(
         containsString("Unrecognized invocation data publisher name: 'foobar', will use no-op"));
   }
 }

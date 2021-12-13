@@ -12,9 +12,10 @@ ext {
   openApiVersion = '1.5.12'
   rabbitmqVersion = '3.8-management-alpine'
   seleniumVersion = '4.1.0'
+  slf4jVersion = '1.7.32'
   springBootVersion = '2.6.1'
   testcontainersVersion = '1.16.2'
-  wiremockVersion = '2.27.2'
+  wiremockVersion = '2.32.0'
 
   aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
   aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
@@ -24,7 +25,7 @@ ext {
   ]
 
   mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
-  slf4jApi = 'org.slf4j:slf4j-api:1.7.32'
+  slf4jApi = "org.slf4j:slf4j-api:$slf4jVersion"
   testFrameworks = [
     'junit:junit:4.13.2',
     'org.junit.jupiter:junit-jupiter-migrationsupport',

@@ -23,7 +23,7 @@ dependencies {
 
   runtimeOnly project(':product:server:db-migration')
 
-  testImplementation "com.github.tomakehurst:wiremock:$wiremockVersion"
+  testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:$wiremockVersion"
 }
 
 run {

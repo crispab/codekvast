@@ -34,9 +34,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.SneakyThrows;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * {@code @CaptureSystemOutput} is a JUnit Jupiter extension for capturing output to {@code
@@ -102,12 +102,19 @@ public @interface CaptureSystemOutput {
 
     private ByteArrayOutputStream copy;
 
+    private void captureJavaUtilLogging() {
+      SLF4JBridgeHandler.removeHandlersForRootLogger(); // (since SLF4J 1.6.5)
+      SLF4JBridgeHandler.install();
+    }
+
     void captureOutput() {
       this.copy = new ByteArrayOutputStream();
       this.captureOut = new CaptureOutputStream(System.out, this.copy);
       this.captureErr = new CaptureOutputStream(System.err, this.copy);
+
       System.setOut(new PrintStream(this.captureOut));
       System.setErr(new PrintStream(this.captureErr));
+      captureJavaUtilLogging();
     }
 
     void releaseOutput() {
@@ -118,6 +125,7 @@ public @interface CaptureSystemOutput {
 
     public void flush() {
       try {
+        this.copy.flush();
         this.captureOut.flush();
         this.captureErr.flush();
       } catch (IOException ex) {
@@ -183,6 +191,11 @@ public @interface CaptureSystemOutput {
         this.original.flush();
       }
 
+      @Override
+      public void close() throws IOException {
+        this.copy.close();
+        this.original.close();
+      }
     }
   }
 }

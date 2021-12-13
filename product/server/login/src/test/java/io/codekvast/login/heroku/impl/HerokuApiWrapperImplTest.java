@@ -4,11 +4,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.gson.Gson;
 import io.codekvast.login.bootstrap.CodekvastLoginSettings;
@@ -21,36 +21,28 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /** @author olle.hallin@crisp.se */
-public class HerokuApiWrapperImplTest {
+@WireMockTest
+class HerokuApiWrapperImplTest {
   private final Gson gson = new Gson();
   private final CodekvastLoginSettings settings = new CodekvastLoginSettings();
-  private WireMockServer wireMockServer;
   private HerokuApiWrapperImpl herokuApiWrapper;
 
   @BeforeEach
-  public void beforeTest() {
-    wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
-    wireMockServer.start();
+  void beforeTest(WireMockRuntimeInfo wmRuntimeInfo) {
 
-    settings.setHerokuApiBaseUrl("http://localhost:" + wireMockServer.port());
-    settings.setHerokuOAuthBaseUrl("http://localhost:" + wireMockServer.port());
+    settings.setHerokuApiBaseUrl(wmRuntimeInfo.getHttpBaseUrl());
+    settings.setHerokuOAuthBaseUrl(wmRuntimeInfo.getHttpBaseUrl());
     settings.setHerokuOAuthClientSecret("clientSecret");
 
     herokuApiWrapper = new HerokuApiWrapperImpl(settings);
   }
 
-  @AfterEach
-  public void afterTest() {
-    wireMockServer.stop();
-  }
-
   @Test
-  public void should_deserialize_exchange_grant_code_exchange_response() {
+  void should_deserialize_exchange_grant_code_exchange_response() {
     BufferedReader reader =
         new BufferedReader(
             new InputStreamReader(
@@ -68,7 +60,7 @@ public class HerokuApiWrapperImplTest {
   }
 
   @Test
-  public void should_exchange_authorization_code_grant() throws IOException {
+  void should_exchange_authorization_code_grant() throws IOException {
     // given
     String response = readResource("/heroku/sample-exchange-grant-code-response.json");
 
@@ -89,7 +81,7 @@ public class HerokuApiWrapperImplTest {
   }
 
   @Test
-  public void should_refresh_token() throws IOException {
+  void should_refresh_token() throws IOException {
     // given
     String response = readResource("/heroku/sample-exchange-grant-code-response.json");
 
@@ -103,7 +95,7 @@ public class HerokuApiWrapperImplTest {
   }
 
   @Test
-  public void should_get_app_details() throws IOException {
+  void should_get_app_details() throws IOException {
     // given
     givenThat(
         get("/addons/some-external-id")

@@ -7,7 +7,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.codekvast.javaagent.model.Endpoints.Agent.V2_POLL_CONFIG;
 import static io.codekvast.javaagent.model.Endpoints.Agent.V2_UPLOAD_INVOCATION_DATA;
 import static io.codekvast.javaagent.model.Endpoints.Agent.V3_UPLOAD_CODEBASE;
@@ -16,8 +15,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.google.gson.Gson;
 import io.codekvast.javaagent.AspectjMessageHandler;
 import io.codekvast.javaagent.config.AgentConfig;
@@ -35,7 +34,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -46,6 +44,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@WireMockTest
 public class JavaAgentIntegrationTest {
 
   private static final String jacocoAgentPath = System.getProperty("integrationTest.jacocoAgent");
@@ -55,7 +54,6 @@ public class JavaAgentIntegrationTest {
   private static final String javaVersionsString =
       System.getProperty("integrationTest.javaVersions");
   private static final Gson gson = new Gson();
-  private static WireMockServer wireMockServer;
 
   @BeforeAll
   public static void beforeAll() {
@@ -63,15 +61,6 @@ public class JavaAgentIntegrationTest {
     assertNotNull(codekvastAgentPath, "This test must be started from Gradle");
     assertNotNull(classpath, "This test must be started from Gradle");
     assertNotNull(javaVersionsString, "This test must be started from Gradle");
-
-    wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
-    wireMockServer.start();
-    WireMock.configureFor(wireMockServer.port());
-  }
-
-  @AfterAll
-  public static void afterAll() {
-    wireMockServer.shutdown();
   }
 
   private static List<String> getJavaVersions() {
@@ -131,10 +120,13 @@ public class JavaAgentIntegrationTest {
   }
 
   @Test
-  public void should_not_start_when_disabled_in_config() throws Exception {
+  public void should_not_start_when_disabled_in_config(WireMockRuntimeInfo wireMockRuntimeInfo)
+      throws Exception {
     // given
     List<String> command =
-        buildJavaCommand(getLowestJavaVersion(), createAgentConfigFile(false).getAbsolutePath());
+        buildJavaCommand(
+            getLowestJavaVersion(),
+            createAgentConfigFile(wireMockRuntimeInfo.getHttpBaseUrl(), false).getAbsolutePath());
 
     // when
     String stdout = executeCommand(command);
@@ -147,7 +139,8 @@ public class JavaAgentIntegrationTest {
   @ParameterizedTest(
       name = "should weave and call server when Java version is {0} and enabled is {1}")
   @MethodSource("testConfigurations")
-  public void should_weave_and_call_server(String javaVersion, boolean enabledByServer)
+  public void should_weave_and_call_server(
+      String javaVersion, boolean enabledByServer, WireMockRuntimeInfo wireMockRuntimeInfo)
       throws Exception {
     // given
 
@@ -173,7 +166,7 @@ public class JavaAgentIntegrationTest {
     givenThat(post(V3_UPLOAD_CODEBASE).willReturn(ok()));
     givenThat(post(V2_UPLOAD_INVOCATION_DATA).willReturn(ok()));
 
-    File agentConfigFile = createAgentConfigFile(true);
+    File agentConfigFile = createAgentConfigFile(wireMockRuntimeInfo.getHttpBaseUrl(), true);
 
     List<String> command = buildJavaCommand(javaVersion, agentConfigFile.getAbsolutePath());
 
@@ -248,10 +241,10 @@ public class JavaAgentIntegrationTest {
     assertThat(stdout, containsString("[INFO] sample.app.SampleApp - Exit"));
   }
 
-  private File createAgentConfigFile(boolean enabled) throws Exception {
+  private File createAgentConfigFile(String serverUrl, boolean enabled) throws Exception {
     AgentConfig agentConfig =
         AgentConfigFactory.createTemplateConfig().toBuilder()
-            .serverUrl("http://localhost:" + wireMockServer.port())
+            .serverUrl(serverUrl)
             .appName("SampleApp")
             .appVersion("literal 1.0")
             .aspectjOptions("-verbose -showWeaveInfo")

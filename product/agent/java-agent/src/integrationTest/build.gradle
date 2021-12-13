@@ -6,7 +6,7 @@ testSets {
 check.dependsOn integrationTest
 
 dependencies {
-  integrationTestImplementation "com.github.tomakehurst:wiremock-standalone:$wiremockVersion"
+  integrationTestImplementation "com.github.tomakehurst:wiremock-jre8-standalone:$wiremockVersion"
   integrationTestImplementation "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
   integrationTestImplementation testFrameworks
   integrationTestRuntimeOnly aspectjWeaver

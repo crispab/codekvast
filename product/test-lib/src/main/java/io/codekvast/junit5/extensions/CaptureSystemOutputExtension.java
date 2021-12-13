@@ -25,8 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 
 import io.codekvast.junit5.extensions.CaptureSystemOutput.OutputCapture;
-import java.lang.reflect.Method;
-import lombok.SneakyThrows;
+import java.util.Locale;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -50,8 +49,12 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 class CaptureSystemOutputExtension
     implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
+  private Locale savedLocale;
+
   @Override
   public void beforeEach(ExtensionContext context) {
+    savedLocale = Locale.getDefault();
+
     getOutputCapture(context).captureOutput();
   }
 
@@ -67,6 +70,7 @@ class CaptureSystemOutputExtension
     } finally {
       outputCapture.releaseOutput();
     }
+    Locale.setDefault(savedLocale);
   }
 
   @Override

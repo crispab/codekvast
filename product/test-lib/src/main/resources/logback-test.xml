@@ -1,0 +1,19 @@
+<configuration>
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    <resetJUL>true</resetJUL>
+  </contextListener>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="io.codekvast" level="trace"/>
+<!--  <logger name="io.codekvast.junit5" additivity="false" level="error"/>-->
+
+  <root level="info">
+    <appender-ref ref="STDOUT"/>
+  </root>
+
+</configuration>

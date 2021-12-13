@@ -83,7 +83,7 @@ public class MethodDescriptor1Test {
                 .build())
         .occursInApplication(
             ApplicationDescriptor.builder()
-                .name("app1")
+                .name("app2")
                 .status(NOT_INVOKED)
                 .collectedSinceMillis(collectedSinceMillis + 10)
                 .collectedToMillis(collectedToMillis - 10)
@@ -91,7 +91,7 @@ public class MethodDescriptor1Test {
                 .build())
         .occursInApplication(
             ApplicationDescriptor.builder()
-                .name("app1")
+                .name("app3")
                 .status(INVOKED)
                 .collectedSinceMillis(collectedSinceMillis)
                 .collectedToMillis(collectedToMillis)

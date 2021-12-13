@@ -17,26 +17,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.Is.is;
 
-import io.codekvast.javaagent.publishing.impl.JulAwareOutputCapture;
+import io.codekvast.junit5.extensions.CaptureSystemOutput;
+import io.codekvast.junit5.extensions.CaptureSystemOutput.OutputCapture;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.springframework.boot.test.system.OutputCaptureRule;
 
-@EnableRuleMigrationSupport
+@CaptureSystemOutput
 public class ConfigUtilsTest {
 
   private static final String MY_PROP1 = ConfigUtilsTest.class.getName() + ".prop1";
   private static final String MY_PROP2 = ConfigUtilsTest.class.getName() + ".prop2";
   private static final String MY_PROP3 = ConfigUtilsTest.class.getName() + ".prop3";
   private static final String CODEKVAST_APP_VERSION = "codekvast.appVersion";
-
-  @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
 
   @AfterEach
   public void afterTest() {
@@ -184,13 +180,13 @@ public class ConfigUtilsTest {
   }
 
   @Test
-  public void should_handle_missing_expansions() {
+  public void should_handle_missing_expansions(OutputCapture outputCapture) {
     assertThat(
         expandVariables(new Properties(), "foo $missingProp1 bar ${missing.prop2} baz"),
         is("foo $missingProp1 bar ${missing.prop2} baz"));
 
-    output.expect(containsString("Unrecognized variable: $missingProp1"));
-    output.expect(containsString("Unrecognized variable: ${missing.prop2}"));
+    outputCapture.expect(containsString("Unrecognized variable: $missingProp1"));
+    outputCapture.expect(containsString("Unrecognized variable: ${missing.prop2}"));
   }
 
   @Test

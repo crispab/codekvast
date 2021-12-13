@@ -9,38 +9,36 @@ import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
-import org.junit.Rule;
+import io.codekvast.junit5.extensions.CaptureSystemOutput;
+import io.codekvast.junit5.extensions.CaptureSystemOutput.OutputCapture;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.springframework.boot.test.system.OutputCaptureRule;
 
 /** @author olle.hallin@crisp.se */
-@EnableRuleMigrationSupport
-public class CodeBasePublisherFactoryImplTest {
+@CaptureSystemOutput
+class CodeBasePublisherFactoryImplTest {
 
   private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
   private final CodeBasePublisherFactory factory = new CodeBasePublisherFactoryImpl();
-  @Rule public OutputCaptureRule output = new JulAwareOutputCapture();
 
   @Test
-  public void should_handle_noop_name() throws Exception {
+  void should_handle_noop_name(OutputCapture outputCapture) {
     // given
     CodeBasePublisher publisher = factory.create(NoOpCodeBasePublisherImpl.NAME, config);
 
     // then
     assertThat(publisher, instanceOf(NoOpCodeBasePublisherImpl.class));
-    output.expect(is(""));
+    outputCapture.expect(is(""));
   }
 
   @Test
-  public void should_warn_when_unrecognized_name() throws Exception {
+  void should_warn_when_unrecognized_name(OutputCapture outputCapture) {
     // given
     CodeBasePublisher publisher = factory.create("foobar", config);
 
     // then
     assertThat(publisher, instanceOf(NoOpCodeBasePublisherImpl.class));
-    output.expect(containsString("[WARNING]"));
-    output.expect(
+    outputCapture.expect(containsString("WARN"));
+    outputCapture.expect(
         containsString("Unrecognized code base publisher name: 'foobar', will use no-op"));
   }
 }
