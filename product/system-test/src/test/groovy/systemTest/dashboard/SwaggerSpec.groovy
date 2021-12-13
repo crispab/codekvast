@@ -6,6 +6,7 @@ class SwaggerSpec extends BaseSpec {
         to SwaggerPage
 
         then:
-        info_title =~ /(?s)codekvast-dashboard.*${System.getProperty('expectedCodekvastVersion')}/
+        info_title =~ /(?s)Codekvast dashboard API/
+        codekvastVersion == System.getProperty('expectedCodekvastVersion')
     }
 }

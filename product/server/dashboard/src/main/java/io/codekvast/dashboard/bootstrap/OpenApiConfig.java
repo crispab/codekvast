@@ -44,7 +44,7 @@ public class OpenApiConfig {
     return GroupedOpenApi.builder()
         .group("Java agent endpoints")
         .pathsToMatch("/javaagent/**")
-        .addOpenApiCustomiser(getOpenApiCustomizer(settings, "Java agent"))
+        .addOpenApiCustomiser(getOpenApiCustomizer(settings, "Codekvast Java agent intake"))
         .build();
   }
 
@@ -53,7 +53,7 @@ public class OpenApiConfig {
     return GroupedOpenApi.builder()
         .group("Dashboard endpoints")
         .pathsToMatch("/dashboard/**")
-        .addOpenApiCustomiser(getOpenApiCustomizer(settings, "dashboard web app"))
+        .addOpenApiCustomiser(getOpenApiCustomizer(settings, "Codekvast dashboard"))
         .build();
   }
 
