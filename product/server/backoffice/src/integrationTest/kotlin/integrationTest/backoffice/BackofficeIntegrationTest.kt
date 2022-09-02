@@ -39,7 +39,7 @@ class BackofficeIntegrationTest {
         private const val PASSWORD = "codekvastPassword"
 
         @Container
-        val mariaDB = KMariaDBContainer("mariadb:10.4")
+        val mariaDB = KMariaDBContainer("mariadb:10.4.25")
                 .withDatabaseName(DATABASE)
                 .withUsername(USERNAME)
                 .withPassword(PASSWORD)

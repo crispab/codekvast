@@ -8,7 +8,7 @@ volumes:
 
 services:
     database:
-        image: mariadb:10.4
+        image: mariadb:10.4.25
         restart: unless-stopped
         environment:
         - "MYSQL_ROOT_PASSWORD=root"

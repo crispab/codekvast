@@ -103,7 +103,7 @@ public class IntakeIntegrationTest {
 
   @ClassRule
   public static MariaDBContainer<?> mariaDB =
-      new MariaDBContainer<>("mariadb:10.4")
+      new MariaDBContainer<>("mariadb:10.4.25")
           .withDatabaseName(DATABASE)
           .withUsername(USERNAME)
           .withPassword(PASSWORD)

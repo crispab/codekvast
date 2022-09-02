@@ -81,7 +81,7 @@
         db_subnet_group_name:                            "codekvast-{{ env }}"
         db_name:                                         codekvast
         engine:                                          mariadb
-        engine_version:                                  "10.4.13"
+        engine_version:                                  "10.4.25"
         master_user_password:                            "{{ secrets.mariadb[env].root_password }}"
         master_username:                                 root
         port:                                            3306
