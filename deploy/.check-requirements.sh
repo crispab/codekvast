@@ -4,12 +4,12 @@ if [[ "$(which ansible)" == "" ]]; then
     exit 1
 fi
 
-declare ansibleVersion=$(ansible --version | awk '/^ansible/ {print $2}')
+declare ansibleVersion=$(ansible --version | awk '/^ansible/ {print $3}')
 case "$ansibleVersion" in
-    2.4*|2.5*|2.6*|2.7*|2.8*|2.9*|2.10*)
+    2.13*)
         ;;
     *)
-        echo "Ansible version 2.4+ is required. Installed version is $ansibleVersion"
+        echo "Ansible version 2.13+ is required. Installed version is $ansibleVersion"
         exit 1;
         ;;
 esac

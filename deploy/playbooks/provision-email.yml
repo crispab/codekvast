@@ -43,8 +43,6 @@
         ttl:                  86400
         type:                 "{{ item.type | default('CNAME') }}"
         value:                "{{ item.value }}"
-        alias:                "{{ item.alias | default(False) }}"
-        alias_hosted_zone_id: "{{ item.alias_zone_id | default(None) }}"
       with_items: "{{ email_dns_records }}"
       loop_control:
         label: "{{ item.type | default('CNAME') }} {{ item.name }} -> {{ item.value }}"
@@ -84,7 +82,7 @@
         name:     "mail-forwarder"
         role:     "arn:aws:iam::{{ aws_account }}:role/Mail-forwarder"
         handler:  "index.handler"
-        runtime:  "nodejs12.x"
+        runtime:  "nodejs16.x"
         zip_file: "/tmp/aws-ses-forwarder.zip"
         tags:
           Owner: Codekvast
