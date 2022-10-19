@@ -8,8 +8,8 @@ logging:
     io.codekvast:                                         INFO
     # io.codekvast.common.aspects.HealthCheckLoggingAspect: DEBUG
     io.micrometer.datadog.DatadogMeterRegistry:           OFF
+    io.undertow.request:                                  OFF
     org.springframework.boot.actuate:                     INFO
-
 management:
   server:
     port: 9080
