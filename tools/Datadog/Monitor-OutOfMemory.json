@@ -6,54 +6,50 @@
   "message": "@olle.hallin@hit.se @slack-codekvast-alarms",
   "tags": [],
   "options": {
+    "notify_audit": false,
+    "locked": false,
+    "timeout_h": 0,
+    "include_tags": true,
+    "thresholds": {
+      "critical": 1
+    },
     "queryConfig": {
-      "timeRange": {
-        "from": 1591758013421,
-        "to": 1591773013421,
-        "live": true
-      },
-      "queryString": "message:*java.lang.OutOfMemoryError*",
-      "queryIsFailed": false,
       "logset": {
         "name": "main",
-        "type": "logs",
+        "readDataAccess": true,
         "dailyLimit": null,
         "rateLimited": null,
         "scopeId": "8939",
         "query": "",
-        "retention": 15,
-        "readDataAccess": true,
+        "dailyQuotaDisabled": true,
+        "type": "logs",
         "id": "8939",
-        "dailyQuotaDisabled": true
+        "retention": 15
       },
       "track": "logs",
+      "timeRange": {
+        "to": 1591773013421,
+        "live": true,
+        "from": 1591758013421
+      },
+      "queryString": "message:*java.lang.OutOfMemoryError*",
       "indexes": [
         "main"
-      ]
+      ],
+      "queryIsFailed": false
     },
+    "new_host_delay": 300,
+    "notify_no_data": false,
+    "renotify_interval": 0,
+    "groupby_simple_monitor": false,
+    "enable_logs_sample": true,
     "aggregation": {
       "metric": "count",
       "type": "count",
       "groupBy": "core_service"
     },
-    "thresholds": {
-      "comparison": ">=",
-      "period": {
-        "value": "last_5m",
-        "seconds": 300
-      },
-      "critical": "1",
-      "timeAggregator": "avg"
-    },
-    "enable_logs_sample": true,
-    "notify_audit": false,
-    "locked": false,
-    "timeout_h": 0,
-    "include_tags": true,
-    "new_host_delay": 300,
-    "notify_no_data": false,
-    "renotify_interval": 0,
-    "groupby_simple_monitor": false,
-    "no_data_timeframe": 2
-  }
+    "silenced": {}
+  },
+  "priority": null,
+  "restricted_roles": null
 }

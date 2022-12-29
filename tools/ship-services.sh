@@ -9,6 +9,7 @@ tools/clean-workspace.sh
 tools/build-it.sh --no-daemon --no-build-cache --max-workers=1 build
 
 deploy/deploy-backoffice.sh
+deploy/deploy-intake.sh
 deploy/deploy-login.sh
 deploy/deploy-dashboard.sh
 

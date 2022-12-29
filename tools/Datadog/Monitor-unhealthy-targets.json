@@ -1,8 +1,8 @@
 {
-  "id": 25800573,
-  "name": "Publication queue buildup",
-  "type": "query alert",
-  "query": "avg(last_30m):avg:codekvast.publication.queueLength{*} > 200",
+  "id": 28609928,
+  "name": "Unhealthy targets for more than 1 hour",
+  "type": "metric alert",
+  "query": "avg(last_1h):max:aws.applicationelb.un_healthy_host_count.maximum{env:prod} > 1",
   "message": "@olle.hallin@hit.se @slack-codekvast-alarms",
   "tags": [],
   "options": {
@@ -14,13 +14,11 @@
     "require_full_window": true,
     "new_host_delay": 300,
     "notify_no_data": false,
-    "renotify_interval": 0,
+    "renotify_interval": 120,
+    "evaluation_delay": 900,
     "escalation_message": "",
     "thresholds": {
-      "critical": 200,
-      "warning": 150,
-      "critical_recovery": 25,
-      "warning_recovery": 50
+      "critical": 1
     },
     "silenced": {}
   },

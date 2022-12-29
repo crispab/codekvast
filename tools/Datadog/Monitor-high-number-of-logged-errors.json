@@ -9,7 +9,6 @@
     "notify_audit": false,
     "locked": false,
     "timeout_h": 0,
-    "silenced": {},
     "include_tags": true,
     "thresholds": {
       "critical": 5,
@@ -18,15 +17,15 @@
     "queryConfig": {
       "logset": {
         "name": "main",
-        "type": "logs",
+        "readDataAccess": true,
         "dailyLimit": null,
         "rateLimited": false,
         "scopeId": "8939",
         "query": "",
-        "retention": 15,
-        "readDataAccess": true,
+        "dailyQuotaDisabled": true,
+        "type": "logs",
         "id": "8939",
-        "dailyQuotaDisabled": true
+        "retention": 15
       },
       "track": "logs",
       "timeRange": {
@@ -48,6 +47,9 @@
       "metric": "count",
       "type": "count",
       "groupBy": "core_service"
-    }
-  }
+    },
+    "silenced": {}
+  },
+  "priority": null,
+  "restricted_roles": null
 }

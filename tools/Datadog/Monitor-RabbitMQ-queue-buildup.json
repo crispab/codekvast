@@ -9,7 +9,6 @@
     "notify_audit": false,
     "locked": false,
     "timeout_h": 0,
-    "silenced": {},
     "include_tags": true,
     "no_data_timeframe": null,
     "require_full_window": true,
@@ -20,8 +19,11 @@
     "thresholds": {
       "critical": 1000,
       "warning": 500,
-      "warning_recovery": 100,
-      "critical_recovery": 50
-    }
-  }
+      "critical_recovery": 50,
+      "warning_recovery": 100
+    },
+    "silenced": {}
+  },
+  "priority": null,
+  "restricted_roles": null
 }
